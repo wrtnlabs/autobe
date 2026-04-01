@@ -1,0 +1,1067 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo",
+  "totalScore": 79,
+  "grade": "C",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 99,
+      "maxScore": 100,
+      "weightedScore": 99,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846276927-nfxdpvgk5gq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2041
+          },
+          "id": "type-error-1774846276927-kn6t66yeryl",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2093
+          },
+          "id": "type-error-1774846276927-0smd2po9hxg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2224
+          },
+          "id": "type-error-1774846276927-vnv4gqcnivh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2279
+          },
+          "id": "type-error-1774846276927-ejgjgicynuh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2416
+          },
+          "id": "type-error-1774846276927-x75s2zucbgk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2472
+          },
+          "id": "type-error-1774846276927-blcat5e2ap4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2619
+          },
+          "id": "type-error-1774846276927-3k51mx5ubbh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2678
+          },
+          "id": "type-error-1774846276927-9p43pzwzbz",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2815
+          },
+          "id": "type-error-1774846276927-gocnzgn1oa8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 2875
+          },
+          "id": "type-error-1774846276927-wel1lfp6qui",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 3022
+          },
+          "id": "type-error-1774846276927-3ecjqwgvbbe",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 3085
+          },
+          "id": "type-error-1774846276927-7lqqozn6zer",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 3242
+          },
+          "id": "type-error-1774846276927-8bmjdzdsnny",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 3306
+          },
+          "id": "type-error-1774846276927-go6pem49fsh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 3473
+          },
+          "id": "type-error-1774846276927-y99x9gfsbxm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 3540
+          },
+          "id": "type-error-1774846276927-1zwl7q7kni3j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 3721
+          },
+          "id": "type-error-1774846276927-51fkkuah718",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 3789
+          },
+          "id": "type-error-1774846276927-eus6re0cmm6",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 3980
+          },
+          "id": "type-error-1774846276927-ibkiv9yubnh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 4051
+          },
+          "id": "type-error-1774846276927-oc7wg7o8nh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 4186
+          },
+          "id": "type-error-1774846276927-s844nxq4yg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberSessions.ts",
+            "line": 4257
+          },
+          "id": "type-error-1774846276927-im3vhpisxg",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 2789,
+      "metrics": {
+        "totalFiles": 97,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 1,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 1,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 90,
+      "maxScore": 100,
+      "weightedScore": 6.300000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 147080,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 9,
+        "providerCount": 24,
+        "structureCount": 16,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 9,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 73,
+      "maxScore": 100,
+      "weightedScore": 16.79,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 63,
+        "controllerCount": 9,
+        "routeAnalysis": true,
+        "totalRoutes": 22,
+        "coveredRoutes": 13,
+        "routeCoveragePercent": 59,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "GET,PUT,POST,PATCH,DELETE",
+        "controllersAnalyzed": 9,
+        "stubTests": 4,
+        "assertionTests": 59,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 76,
+      "maxScore": 100,
+      "weightedScore": 22.8,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 3,
+        "criticalCount": 3,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 22,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 22,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 220,
+      "complexFunctions": 2,
+      "maxComplexity": 39,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putTodoAppMemberTodosTodoId\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/putTodoAppMemberTodosTodoId.ts",
+            "line": 16
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846277064-sbyvaawd3y",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"postTodoAppAuthMemberRefresh\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/postTodoAppAuthMemberRefresh.ts",
+            "line": 16
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846277063-vgng8t3wxe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchTodoAppMemberSessions\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberSessions.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846277077-zaw8w1nvkc",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchTodoAppMemberPasswordResets\" has complexity 39 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberPasswordResets.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846277078-zuousr0f11c",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 13,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 40
+          },
+          "id": "duplication-1774846277195-hshe2oiceo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 41
+          },
+          "id": "duplication-1774846277195-2ap83xy9hug",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 42
+          },
+          "id": "duplication-1774846277195-cigvi6v7nqt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 43
+          },
+          "id": "duplication-1774846277195-b7lik05p8i9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 44
+          },
+          "id": "duplication-1774846277195-c7eojnqxbfj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 166
+          },
+          "id": "duplication-1774846277195-h26zgk3ehrh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 167
+          },
+          "id": "duplication-1774846277195-0qe2ly5a15sr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 168
+          },
+          "id": "duplication-1774846277195-xymh1zw234s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 169
+          },
+          "id": "duplication-1774846277195-rklbjdl8h1k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 170
+          },
+          "id": "duplication-1774846277195-2yzcsye71ab",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 171
+          },
+          "id": "duplication-1774846277195-oegpz271kif",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 172
+          },
+          "id": "duplication-1774846277195-mkdzplgzm0n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
+            "line": 173
+          },
+          "id": "duplication-1774846277195-25d5w11oat6",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 0,
+      "issues": []
+    },
+    "jsdoc": {
+      "totalMissing": 9,
+      "totalApis": 10,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/members/TodoappMembersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846277170-lv8fn9wlj1t",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846277171-tiuso31hpmg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846277170-3rz01yb809a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774846277172-r8nss2ov2p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberEmailverificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/emailVerifications/TodoappMemberEmailverificationsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846277171-jbw1ureu3ke",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846277173-3lpvfyf15nv",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberPasswordresetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/passwordResets/TodoappMemberPasswordresetsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846277172-zqqum6514cf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosTrashController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/todos/trash/TodoappMemberTodosTrashController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846277173-99qfcwojsbl",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosEdithistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/todos/editHistories/TodoappMemberTodosEdithistoriesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846277174-fw20tlwfks4",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 35,
+      "emptyTypes": 0,
+      "mismatchedProperties": 0,
+      "issues": []
+    }
+  },
+  "summary": {
+    "totalIssues": 23,
+    "criticalCount": 0,
+    "warningCount": 1,
+    "suggestionCount": 22
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846276927-nfxdpvgk5gq",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2041
+      },
+      "id": "type-error-1774846276927-kn6t66yeryl",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2093
+      },
+      "id": "type-error-1774846276927-0smd2po9hxg",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2224
+      },
+      "id": "type-error-1774846276927-vnv4gqcnivh",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2279
+      },
+      "id": "type-error-1774846276927-ejgjgicynuh",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2416
+      },
+      "id": "type-error-1774846276927-x75s2zucbgk",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2472
+      },
+      "id": "type-error-1774846276927-blcat5e2ap4",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2619
+      },
+      "id": "type-error-1774846276927-3k51mx5ubbh",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2678
+      },
+      "id": "type-error-1774846276927-9p43pzwzbz",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2815
+      },
+      "id": "type-error-1774846276927-gocnzgn1oa8",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 2875
+      },
+      "id": "type-error-1774846276927-wel1lfp6qui",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 3022
+      },
+      "id": "type-error-1774846276927-3ecjqwgvbbe",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 3085
+      },
+      "id": "type-error-1774846276927-7lqqozn6zer",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 3242
+      },
+      "id": "type-error-1774846276927-8bmjdzdsnny",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 3306
+      },
+      "id": "type-error-1774846276927-go6pem49fsh",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 3473
+      },
+      "id": "type-error-1774846276927-y99x9gfsbxm",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 3540
+      },
+      "id": "type-error-1774846276927-1zwl7q7kni3j",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 3721
+      },
+      "id": "type-error-1774846276927-51fkkuah718",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 3789
+      },
+      "id": "type-error-1774846276927-eus6re0cmm6",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 3980
+      },
+      "id": "type-error-1774846276927-ibkiv9yubnh",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 4051
+      },
+      "id": "type-error-1774846276927-oc7wg7o8nh",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 4186
+      },
+      "id": "type-error-1774846276927-s844nxq4yg",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberSessions.ts",
+        "line": 4257
+      },
+      "id": "type-error-1774846276927-im3vhpisxg",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:51:17.214Z",
+    "totalDurationMs": 2983,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 97
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 4,
+      "missing": 9,
+      "ratio": "90%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 420,
+    "totalFiles": 97,
+    "totalLines": 7944,
+    "avgLinesPerFile": 82,
+    "largestFile": "src/api/functional/todoApp/member/todos/index.ts",
+    "largestFileSizeKB": 38,
+    "controllers": 9,
+    "providers": 24,
+    "structures": 16,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

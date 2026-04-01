@@ -1,0 +1,2366 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp",
+  "totalScore": 85,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 97,
+      "maxScore": 100,
+      "weightedScore": 97,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846074777-num0sxdh9h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<{ count: number; }> | Promise<erp_hrm_departments>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<erp_hrm_departments>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteErpHrmMemberOrganizationsOrganizationIdDepartmentsDepartmentId.ts",
+            "line": 1948
+          },
+          "id": "type-error-1774846074777-l0dwigpv9m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<{ count: number; }> | Promise<erp_hrm_tasks>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<erp_hrm_tasks>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 2609
+          },
+          "id": "type-error-1774846074777-429x1fzefet",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeNullableFilter'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberOrganizationMembersOrganizationMemberIdContracts.ts",
+            "line": 3521
+          },
+          "id": "type-error-1774846074777-ci9l4pe8bzh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberOrganizationMembersOrganizationMemberIdContracts.ts",
+            "line": 4017
+          },
+          "id": "type-error-1774846074777-104j24047d4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: string; role_id: string & Format<\"uuid\">; permission_code: string; created_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; role_id: string & Format<\"uuid\">; permission_code: string; created_at: Date; }[]'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 3463
+          },
+          "id": "type-error-1774846074777-073qnoq1y0k7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberSessions.ts",
+            "line": 1628
+          },
+          "id": "type-error-1774846074777-kexwsxse2e",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberSessions.ts",
+            "line": 2100
+          },
+          "id": "type-error-1774846074777-nduhskygv4k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '{ id: string; email: string; created_at: Date; updated_at: Date; deleted_at: Date | null; sessions: erp_hrm_member_sessions[]; passwordResets: erp_hrm_member_password_resets[]; ownedOrganizations: erp_hrm_organizations[]; organizationMembers: erp_hrm_organization_members[]; invitations: erp_hrm_invitations[]; }' is not assignable to parameter of type 'erp_hrm_members'.\n  Property 'password_hash' is missing in type '{ id: string; email: string; created_at: Date; updated_at: Date; deleted_at: Date | null; sessions: erp_hrm_member_sessions[]; passwordResets: erp_hrm_member_password_resets[]; ownedOrganizations: erp_hrm_organizations[]; organizationMembers: erp_hrm_organization_members[]; invitations: erp_hrm_invitations[]; }' but required in type 'erp_hrm_members'.",
+          "location": {
+            "file": "src/providers/postErpHrmAuthMemberLogin.ts",
+            "line": 3105
+          },
+          "id": "type-error-1774846074777-os9trl5dgak",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: string; erp_hrm_organization_id: string; name: string; is_builtin: true; created_at: Date; updated_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; erp_hrm_organization_id: string; name: string; is_builtin: true; created_at: Date; updated_at: Date; }[]'.",
+          "location": {
+            "file": "src/providers/postErpHrmMemberOrganizations.ts",
+            "line": 2546
+          },
+          "id": "type-error-1774846074777-quu7zlebpms",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<erp_hrm_organization_members> | Promise<erp_hrm_invitations>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<erp_hrm_organization_members> | Promise<erp_hrm_invitations>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/postErpHrmMemberOrganizationsOrganizationIdInvitations.ts",
+            "line": 5244
+          },
+          "id": "type-error-1774846074777-zgdoidlbmv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<erp_hrm_organization_members> | Promise<erp_hrm_organizations>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<erp_hrm_organization_members> | Promise<erp_hrm_organizations>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/postErpHrmMemberOrganizationsOrganizationIdOwnershipTransfer.ts",
+            "line": 4572
+          },
+          "id": "type-error-1774846074777-tt79ucuu6li",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: string; role_id: string & Format<\"uuid\">; permission_code: string; created_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; role_id: string & Format<\"uuid\">; permission_code: string; created_at: Date; }[]'.",
+          "location": {
+            "file": "src/providers/putErpHrmMemberOrganizationsOrganizationIdRolesRoleId.ts",
+            "line": 3730
+          },
+          "id": "type-error-1774846074777-r2ep3v7pnem",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 5555,
+      "metrics": {
+        "totalFiles": 258,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 3,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 9,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 86,
+      "maxScore": 100,
+      "weightedScore": 6.0200000000000005,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 612375,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 26,
+        "providerCount": 92,
+        "structureCount": 38,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 26,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 73,
+      "maxScore": 100,
+      "weightedScore": 16.79,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 174,
+        "controllerCount": 26,
+        "routeAnalysis": true,
+        "totalRoutes": 83,
+        "coveredRoutes": 46,
+        "routeCoveragePercent": 55,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "PATCH,GET,PUT,DELETE,POST",
+        "controllersAnalyzed": 24,
+        "stubTests": 1,
+        "assertionTests": 173,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 89,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 89,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 849,
+      "complexFunctions": 3,
+      "maxComplexity": 28,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putErpHrmMemberTimesheetsTimesheetId\" has complexity 26 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberTimesheetsTimesheetId.ts",
+            "line": 24
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846075002-anvtaonm637",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putErpHrmMemberTimelogsTimelogId\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberTimelogsTimelogId.ts",
+            "line": 24
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075005-4ve8bcf9qcp",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putErpHrmMemberProjectsProjectIdTasksTaskId\" has complexity 28 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 23
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846075006-uypljo68ftn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putErpHrmMemberOrganizationsOrganizationIdMembers\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberOrganizationsOrganizationIdMembers.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075007-ho7svmmt2ks",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberTimelogs\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberTimelogs.ts",
+            "line": 25
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075033-sx1n05k7bdh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberSessions\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberSessions.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075031-nlpl91rm1a",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmMemberProjectsProjectIdTasks\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 23
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846075032-1z5mz715zyf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberProjectsProjectIdMembers\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 24
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075037-m44yhe93me",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberProjectAssignments\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectAssignments.ts",
+            "line": 24
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075035-x67tgalc8ec",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberOrganizationsOrganizationIdInvitations\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberOrganizationsOrganizationIdInvitations.ts",
+            "line": 23
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075039-51rlk5u598d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberOrganizationMembersOrganizationMemberIdContracts\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberOrganizationMembersOrganizationMemberIdContracts.ts",
+            "line": 24
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075041-tsg23z25jsk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberActivityLogs\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberActivityLogs.ts",
+            "line": 23
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075042-lkxrr63p14",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"transform\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/transformers/ErpHrmTimelogTransformer.ts",
+            "line": 346
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846075063-mw1nb97qc1s",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 107,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/roles/ErphrmMemberOrganizationsRolesController.ts",
+            "line": 212
+          },
+          "id": "duplication-1774846075229-u5jcqw1vww",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/roles/ErphrmMemberOrganizationsRolesController.ts",
+            "line": 269
+          },
+          "id": "duplication-1774846075229-bdta9inb0de",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 105
+          },
+          "id": "duplication-1774846075229-vupl22we4n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 106
+          },
+          "id": "duplication-1774846075229-gi2kq5zoj7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 107
+          },
+          "id": "duplication-1774846075229-77ou4hlcg1x",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 108
+          },
+          "id": "duplication-1774846075229-jx5ugepbrsa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 109
+          },
+          "id": "duplication-1774846075229-hv64ahjg0bq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 110
+          },
+          "id": "duplication-1774846075229-64xuq2s6f6p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 111
+          },
+          "id": "duplication-1774846075229-c1bwm259mtj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 112
+          },
+          "id": "duplication-1774846075229-20srwf6bubt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846075229-ktpj17id14m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 7 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846075229-kctzesnou0j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+            "line": 32
+          },
+          "id": "duplication-1774846075229-reaj233ljc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+            "line": 42
+          },
+          "id": "duplication-1774846075229-yq9pjoga19a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+            "line": 43
+          },
+          "id": "duplication-1774846075229-hvuc6jn901c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+            "line": 44
+          },
+          "id": "duplication-1774846075229-p8qyzn7lcrh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberOrganizationsOrganizationIdMembers.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846075229-og4i6hccz3s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberOrganizationsOrganizationIdInvitationsInvitationId.ts",
+            "line": 41
+          },
+          "id": "duplication-1774846075229-9wi8l1u8eyk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberOrganizationsOrganizationIdDepartmentsDepartmentId.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846075229-a5lrcbehw35",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/putErpHrmMemberOrganizationsOrganizationIdDepartmentsDepartmentId.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846075229-famuyerk6i7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 18
+          },
+          "id": "duplication-1774846075229-zf0k3mj6rqc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 19
+          },
+          "id": "duplication-1774846075229-8m1lc025usw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846075229-m1e1si0t4j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846075229-o7wb360wccd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846075229-kw1z10c42rd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846075229-12x5xw8j4kik",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846075229-64ocigzyfi6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846075229-2sbkw5cf7qh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846075229-832e2718oeb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 31
+          },
+          "id": "duplication-1774846075229-z5ktaofhz7e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 49
+          },
+          "id": "duplication-1774846075229-ifp576sz0tr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 50
+          },
+          "id": "duplication-1774846075229-nxdwvjijwb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdRoles.ts",
+            "line": 34
+          },
+          "id": "duplication-1774846075229-t1twi1podir",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdRoles.ts",
+            "line": 39
+          },
+          "id": "duplication-1774846075229-fqgat4ft78c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdRoles.ts",
+            "line": 47
+          },
+          "id": "duplication-1774846075229-6dq4pf9yyf4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdRoles.ts",
+            "line": 54
+          },
+          "id": "duplication-1774846075229-q2dnnholyr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdDepartments.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846075229-di0wfdvo6jf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdDepartments.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846075229-ngczq4uxi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdDepartments.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846075229-vtqysw3zrvj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdDepartments.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846075229-ez72letoc2w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdDepartments.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846075229-ji9hiqg0caa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationsOrganizationIdDepartments.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846075229-d06d3ec4qr8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationMembersOrganizationMemberIdDeactivate.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846075229-mrhf5m3cqbd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationMembersOrganizationMemberIdDeactivate.ts",
+            "line": 14
+          },
+          "id": "duplication-1774846075229-gf63mwydbob",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationMembersOrganizationMemberIdDeactivate.ts",
+            "line": 15
+          },
+          "id": "duplication-1774846075229-q8hr2v37jwn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationMembersOrganizationMemberIdDeactivate.ts",
+            "line": 16
+          },
+          "id": "duplication-1774846075229-uodninyr2bc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationMembersOrganizationMemberIdDeactivate.ts",
+            "line": 17
+          },
+          "id": "duplication-1774846075229-lht1376a9h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/postErpHrmMemberOrganizationMembersOrganizationMemberIdDeactivate.ts",
+            "line": 18
+          },
+          "id": "duplication-1774846075229-rqngnw3o1ak",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMembers.ts",
+            "line": 58
+          },
+          "id": "duplication-1774846075229-rq55qew10xg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMembers.ts",
+            "line": 59
+          },
+          "id": "duplication-1774846075229-06s9iolha35l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMembers.ts",
+            "line": 60
+          },
+          "id": "duplication-1774846075229-q4qrly6pvtd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMembers.ts",
+            "line": 75
+          },
+          "id": "duplication-1774846075229-g2gsbhgsb7w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMembers.ts",
+            "line": 76
+          },
+          "id": "duplication-1774846075229-ker2vn8kt3d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846075229-pjye6xu47n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 31
+          },
+          "id": "duplication-1774846075229-ds7ks316cn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 32
+          },
+          "id": "duplication-1774846075229-qcodski32g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 33
+          },
+          "id": "duplication-1774846075229-ydrlwwx65d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 34
+          },
+          "id": "duplication-1774846075229-1a3f16px5z5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 35
+          },
+          "id": "duplication-1774846075229-9habf05cgq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 36
+          },
+          "id": "duplication-1774846075229-7hihnl3gwua",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 37
+          },
+          "id": "duplication-1774846075229-wf2b8sb3k3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 38
+          },
+          "id": "duplication-1774846075229-o8c70sulv9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 39
+          },
+          "id": "duplication-1774846075229-49zok52mbac",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 40
+          },
+          "id": "duplication-1774846075229-te6wv7gfnk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 41
+          },
+          "id": "duplication-1774846075229-m6cwg4eh9h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 42
+          },
+          "id": "duplication-1774846075229-0iovs6zxkhq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 42
+          },
+          "id": "duplication-1774846075229-ei91zfzen8p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 142
+          },
+          "id": "duplication-1774846075229-g441l0qltdu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846075229-sdd9ja2rex",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 42
+          },
+          "id": "duplication-1774846075229-mgwq17uj0ur",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 94
+          },
+          "id": "duplication-1774846075229-9t1hgrp9sde",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 95
+          },
+          "id": "duplication-1774846075229-eekyruj772",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 96
+          },
+          "id": "duplication-1774846075229-2622j7trgt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 118
+          },
+          "id": "duplication-1774846075229-ig3ppyyijw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 119
+          },
+          "id": "duplication-1774846075229-84pw7uic7b7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 120
+          },
+          "id": "duplication-1774846075229-r2cx56e1vrr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 121
+          },
+          "id": "duplication-1774846075229-1z84p47rmpa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberProjectAssignments.ts",
+            "line": 107
+          },
+          "id": "duplication-1774846075229-z2d9emdqp0s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberOrganizationsOrganizationIdRoles.ts",
+            "line": 33
+          },
+          "id": "duplication-1774846075229-py4mi5sdvu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberOrganizationsOrganizationIdRoles.ts",
+            "line": 34
+          },
+          "id": "duplication-1774846075229-lxya2ha458i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/patchErpHrmMemberOrganizationsOrganizationIdRoles.ts",
+            "line": 35
+          },
+          "id": "duplication-1774846075229-1ms6reyreik",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberTimesheetsTimesheetId.ts",
+            "line": 31
+          },
+          "id": "duplication-1774846075229-66tcfwk6f4n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberTimesheetsTimesheetId.ts",
+            "line": 32
+          },
+          "id": "duplication-1774846075229-h7a3w631ld8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberTimersTimerId.ts",
+            "line": 51
+          },
+          "id": "duplication-1774846075229-b4qfdu1z1xc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberTimersTimerId.ts",
+            "line": 52
+          },
+          "id": "duplication-1774846075229-01ypb8prajpw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberTimersTimerId.ts",
+            "line": 53
+          },
+          "id": "duplication-1774846075229-d4aad8epqwg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846075229-91js35unh7n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 31
+          },
+          "id": "duplication-1774846075229-z1wy5lqrc09",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 32
+          },
+          "id": "duplication-1774846075229-m4iepmbyowe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 33
+          },
+          "id": "duplication-1774846075229-vy0cb23kum8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 34
+          },
+          "id": "duplication-1774846075229-lpkzfuf6xlr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 35
+          },
+          "id": "duplication-1774846075229-e1n9c65yk7h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 36
+          },
+          "id": "duplication-1774846075229-eecttk5kzy9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 37
+          },
+          "id": "duplication-1774846075229-zx1mvkxp5sn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/getErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 51
+          },
+          "id": "duplication-1774846075229-l8w5odoqhxq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846075229-5ywx74x47wh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846075229-c4z3x8220h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 31
+          },
+          "id": "duplication-1774846075229-wjy76zdff3k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 32
+          },
+          "id": "duplication-1774846075229-btf6fh5daot",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 33
+          },
+          "id": "duplication-1774846075229-gktcxqteoq9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 34
+          },
+          "id": "duplication-1774846075229-ft47cvrgmwo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 35
+          },
+          "id": "duplication-1774846075229-xuxzcu6yjm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846075229-kb9dptxirtm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846075229-i081whplsf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846075229-4i0ogr8s5ls",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846075229-alc0e1ixaye",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdMembers.ts",
+            "line": 8
+          },
+          "id": "duplication-1774846075229-xk1j4um9zu",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 1,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ErphrmMemberOrganizations_switchController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/switch/ErphrmMemberOrganizations_switchController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846075235-6mlsonjxn1p",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 26,
+      "totalApis": 27,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/members/ErphrmMembersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846075269-gjt4uodr9lr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/auth/member/ErphrmAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846075270-r8axcmodn88",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/auth/guest/ErphrmAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846075270-n7e8x64mw2",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimesheetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/timesheets/ErphrmMemberTimesheetsController.ts",
+            "line": 18
+          },
+          "id": "jsdoc-1774846075273-ip1334e2xcp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/timers/ErphrmMemberTimersController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1774846075272-g95cp52yela",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimelogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/timelogs/ErphrmMemberTimelogsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846075271-4w2y1ebftl7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/profile/ErphrmMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846075272-j5517vxi0u",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectassignmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/projectAssignments/ErphrmMemberProjectassignmentsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846075277-zh3hs1tctzi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/projects/ErphrmMemberProjectsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846075277-q0vh32uyhg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/sessions/ErphrmMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846075274-j4odyir5ft",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationmembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1774846075276-kswem3js5gq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberActivitylogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/activityLogs/ErphrmMemberActivitylogsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846075276-dyvhz8qn8s4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/ErphrmMemberOrganizationsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846075274-asyr7mph9ft",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimersCurrentController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/timers/current/ErphrmMemberTimersCurrentController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846075275-hxf3dh1eo9v",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectsTasksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/projects/tasks/ErphrmMemberProjectsTasksController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846075281-epdnwfwnq9c",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectsMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/projects/members/ErphrmMemberProjectsMembersController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846075278-zmeknbyljad",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberInvitationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/invitations/accept/ErphrmMemberInvitationsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846075278-v82h05p6o7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationmembersContractsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizationMembers/contracts/ErphrmMemberOrganizationmembersContractsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846075279-aml1a5vqu89",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/members/ErphrmMemberOrganizationsMembersController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846075284-n4xrjuh7vkh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsRolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/roles/ErphrmMemberOrganizationsRolesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846075280-is5qfg0z0qb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizations_switchController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/switch/ErphrmMemberOrganizations_switchController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846075278-jmsshbj2xvp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsInvitationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/invitations/ErphrmMemberOrganizationsInvitationsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846075282-w1ykzlcu5ke",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectsTasksHistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/projects/tasks/histories/ErphrmMemberProjectsTasksHistoriesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846075282-bh6pc4wa584",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/departments/ErphrmMemberOrganizationsDepartmentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846075283-wuozndqnq1m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsRolesPermissionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/roles/permissions/ErphrmMemberOrganizationsRolesPermissionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846075279-lhn24dsh5uo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsOwnershipTransferController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/erp/src/controllers/erpHrm/member/organizations/ownership/transfer/ErphrmMemberOrganizationsOwnershipTransferController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846075285-e8w9jo98168",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 104,
+      "emptyTypes": 0,
+      "mismatchedProperties": 6,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmOrganizationMember\" not found — referenced by @x-autobe-database-schema-property organizationMember",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimelog.ts",
+            "line": 313
+          },
+          "id": "completeness-1774846075302-7eeu7p83e89",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmProject\" not found — referenced by @x-autobe-database-schema-property project",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimelog.ts",
+            "line": 321
+          },
+          "id": "completeness-1774846075302-3t3k25dohnm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTask\" not found — referenced by @x-autobe-database-schema-property task",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimelog.ts",
+            "line": 329
+          },
+          "id": "completeness-1774846075302-fcqt0iv2t0w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"task\" not found in Prisma model \"erp_hrm_tasks\"",
+          "location": {
+            "file": "src/api/structures/IErpHrmTaskHistory.ts",
+            "line": 28
+          },
+          "id": "completeness-1774846075302-vkuiha9m9s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"organizationMember\" not found in Prisma model \"erp_hrm_organization_members\"",
+          "location": {
+            "file": "src/api/structures/IErpHrmTaskHistory.ts",
+            "line": 36
+          },
+          "id": "completeness-1774846075302-ubew7ycjik",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"this\" not found — referenced by @x-autobe-database-schema-property children",
+          "location": {
+            "file": "src/api/structures/IErpHrmDepartment.ts",
+            "line": 43
+          },
+          "id": "completeness-1774846075304-r7q1hcunudn",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 13,
+    "criticalCount": 0,
+    "warningCount": 9,
+    "suggestionCount": 4
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846074777-num0sxdh9h",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<{ count: number; }> | Promise<erp_hrm_departments>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<erp_hrm_departments>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteErpHrmMemberOrganizationsOrganizationIdDepartmentsDepartmentId.ts",
+        "line": 1948
+      },
+      "id": "type-error-1774846074777-l0dwigpv9m",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<{ count: number; }> | Promise<erp_hrm_tasks>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<erp_hrm_tasks>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+        "line": 2609
+      },
+      "id": "type-error-1774846074777-429x1fzefet",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: string; role_id: string & Format<\"uuid\">; permission_code: string; created_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; role_id: string & Format<\"uuid\">; permission_code: string; created_at: Date; }[]'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+        "line": 3463
+      },
+      "id": "type-error-1774846074777-073qnoq1y0k7",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '{ id: string; email: string; created_at: Date; updated_at: Date; deleted_at: Date | null; sessions: erp_hrm_member_sessions[]; passwordResets: erp_hrm_member_password_resets[]; ownedOrganizations: erp_hrm_organizations[]; organizationMembers: erp_hrm_organization_members[]; invitations: erp_hrm_invitations[]; }' is not assignable to parameter of type 'erp_hrm_members'.\n  Property 'password_hash' is missing in type '{ id: string; email: string; created_at: Date; updated_at: Date; deleted_at: Date | null; sessions: erp_hrm_member_sessions[]; passwordResets: erp_hrm_member_password_resets[]; ownedOrganizations: erp_hrm_organizations[]; organizationMembers: erp_hrm_organization_members[]; invitations: erp_hrm_invitations[]; }' but required in type 'erp_hrm_members'.",
+      "location": {
+        "file": "src/providers/postErpHrmAuthMemberLogin.ts",
+        "line": 3105
+      },
+      "id": "type-error-1774846074777-os9trl5dgak",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: string; erp_hrm_organization_id: string; name: string; is_builtin: true; created_at: Date; updated_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; erp_hrm_organization_id: string; name: string; is_builtin: true; created_at: Date; updated_at: Date; }[]'.",
+      "location": {
+        "file": "src/providers/postErpHrmMemberOrganizations.ts",
+        "line": 2546
+      },
+      "id": "type-error-1774846074777-quu7zlebpms",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<erp_hrm_organization_members> | Promise<erp_hrm_invitations>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<erp_hrm_organization_members> | Promise<erp_hrm_invitations>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/postErpHrmMemberOrganizationsOrganizationIdInvitations.ts",
+        "line": 5244
+      },
+      "id": "type-error-1774846074777-zgdoidlbmv",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<erp_hrm_organization_members> | Promise<erp_hrm_organizations>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<erp_hrm_organization_members> | Promise<erp_hrm_organizations>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/postErpHrmMemberOrganizationsOrganizationIdOwnershipTransfer.ts",
+        "line": 4572
+      },
+      "id": "type-error-1774846074777-tt79ucuu6li",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: string; role_id: string & Format<\"uuid\">; permission_code: string; created_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; role_id: string & Format<\"uuid\">; permission_code: string; created_at: Date; }[]'.",
+      "location": {
+        "file": "src/providers/putErpHrmMemberOrganizationsOrganizationIdRolesRoleId.ts",
+        "line": 3730
+      },
+      "id": "type-error-1774846074777-r2ep3v7pnem",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeNullableFilter'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberOrganizationMembersOrganizationMemberIdContracts.ts",
+        "line": 3521
+      },
+      "id": "type-error-1774846074777-ci9l4pe8bzh",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberOrganizationMembersOrganizationMemberIdContracts.ts",
+        "line": 4017
+      },
+      "id": "type-error-1774846074777-104j24047d4",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberSessions.ts",
+        "line": 1628
+      },
+      "id": "type-error-1774846074777-kexwsxse2e",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberSessions.ts",
+        "line": 2100
+      },
+      "id": "type-error-1774846074777-nduhskygv4k",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:47:55.305Z",
+    "totalDurationMs": 5927,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 258
+  },
+  "penalties": {
+    "duplication": {
+      "amount": 1,
+      "blocks": 107
+    },
+    "jsdoc": {
+      "amount": 5,
+      "missing": 26,
+      "ratio": "96%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 1746,
+    "totalFiles": 258,
+    "totalLines": 33258,
+    "avgLinesPerFile": 129,
+    "largestFile": "src/api/functional/erpHrm/member/timesheets/index.ts",
+    "largestFileSizeKB": 48,
+    "controllers": 26,
+    "providers": 92,
+    "structures": 38,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

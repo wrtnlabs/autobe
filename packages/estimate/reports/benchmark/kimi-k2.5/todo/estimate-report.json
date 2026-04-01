@@ -1,0 +1,368 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo",
+  "totalScore": 89,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 99,
+      "maxScore": 100,
+      "weightedScore": 99,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846230304-uze8uugix6a",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 2316,
+      "metrics": {
+        "totalFiles": 87,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 1,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 1,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 87,
+      "maxScore": 100,
+      "weightedScore": 6.090000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 117322,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 9,
+        "providerCount": 21,
+        "structureCount": 11,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 9,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 79,
+      "maxScore": 100,
+      "weightedScore": 18.17,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 48,
+        "controllerCount": 9,
+        "routeAnalysis": true,
+        "totalRoutes": 18,
+        "coveredRoutes": 13,
+        "routeCoveragePercent": 72,
+        "definedMethods": "POST,PATCH,GET,DELETE,PUT",
+        "testedMethods": "POST,GET,DELETE,PUT,PATCH",
+        "controllersAnalyzed": 9,
+        "stubTests": 7,
+        "assertionTests": 41,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 18,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 18,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 185,
+      "complexFunctions": 1,
+      "maxComplexity": 24,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putMultiUserTodoMemberTodosTodoId\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+            "line": 16
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846230359-9vwi6xzvf3",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 24 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846230354-l812ntgmh5d",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 0,
+      "issues": []
+    },
+    "naming": {
+      "totalIssues": 0,
+      "issues": []
+    },
+    "jsdoc": {
+      "totalMissing": 9,
+      "totalApis": 10,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846230394-zmugnfn2d",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846230394-vd1l61soyxc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846230394-u0id06qxcaj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846230395-3fupym90utf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846230394-c6p9k85bg5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846230395-ed8j3b5h8nw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberPasswordController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/password/MultiusertodoMemberPasswordController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846230395-jamscw1s7dq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberAccountController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/account/MultiusertodoMemberAccountController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846230395-6ba7s37qy7k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosHistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/histories/MultiusertodoMemberTodosHistoriesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846230396-qm2ro1bn7lj",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 28,
+      "emptyTypes": 1,
+      "mismatchedProperties": 0,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: IUpdate = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoMember.ts",
+            "line": 136
+          },
+          "id": "completeness-1774846230399-8iiqs9uxc7m",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 1,
+    "criticalCount": 0,
+    "warningCount": 1,
+    "suggestionCount": 0
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846230304-uze8uugix6a",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:50:30.399Z",
+    "totalDurationMs": 2505,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 87
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 4,
+      "missing": 9,
+      "ratio": "90%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 247,
+    "totalFiles": 87,
+    "totalLines": 6321,
+    "avgLinesPerFile": 73,
+    "largestFile": "src/api/functional/multiUserTodo/member/todos/index.ts",
+    "largestFileSizeKB": 23,
+    "controllers": 9,
+    "providers": 21,
+    "structures": 11,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

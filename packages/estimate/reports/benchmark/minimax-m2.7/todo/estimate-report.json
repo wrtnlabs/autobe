@@ -1,0 +1,796 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo",
+  "totalScore": 90,
+  "grade": "A",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 96,
+      "maxScore": 100,
+      "weightedScore": 96,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846183484-jnlpxonvr5k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '{ member: MemberPayload; }' is not assignable to parameter of type '{ member: MemberPayload; query: { page?: number | undefined; limit?: number | undefined; sortBy?: \"created_at\" | \"start_date\" | \"due_date\" | undefined; sortOrder?: \"asc\" | \"desc\" | undefined; }; }'.\n  Property 'query' is missing in type '{ member: MemberPayload; }' but required in type '{ member: MemberPayload; query: { page?: number | undefined; limit?: number | undefined; sortBy?: \"created_at\" | \"start_date\" | \"due_date\" | undefined; sortOrder?: \"asc\" | \"desc\" | undefined; }; }'.",
+          "location": {
+            "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
+            "line": 3555
+          },
+          "id": "type-error-1774846183484-wsenvfhlom",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2724",
+          "message": "'\"src/prisma/client\".Prisma' has no exported member named 'multi_user_todo_todo_edit_historiesCreateWithoutTodoInput'. Did you mean 'multi_user_todo_todo_edit_historiesCreateInput'?",
+          "location": {
+            "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+            "line": 2880
+          },
+          "id": "type-error-1774846183484-0lu3ljy572v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'PrismaPromise<unknown>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'PrismaPromise<unknown>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+            "line": 5071
+          },
+          "id": "type-error-1774846183484-vzr3rf2f2sg",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 2782,
+      "metrics": {
+        "totalFiles": 75,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 4,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 3,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 92,
+      "maxScore": 100,
+      "weightedScore": 6.44,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 133785,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 6,
+        "providerCount": 20,
+        "structureCount": 9,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 6,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 87,
+      "maxScore": 100,
+      "weightedScore": 20.01,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 47,
+        "controllerCount": 6,
+        "routeAnalysis": true,
+        "totalRoutes": 17,
+        "coveredRoutes": 14,
+        "routeCoveragePercent": 82,
+        "definedMethods": "POST,PUT,PATCH,GET,DELETE",
+        "testedMethods": "POST,PUT,PATCH,GET,DELETE",
+        "controllersAnalyzed": 6,
+        "stubTests": 3,
+        "assertionTests": 44,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 17,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 17,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 175,
+      "complexFunctions": 1,
+      "maxComplexity": 28,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putMultiUserTodoMemberTodosTodoId\" has complexity 28 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846183719-ny29qezz5mo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846183725-mtz2axnu7md",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"getMultiUserTodoMemberTodosTodoIdHistoryHistoryId\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/getMultiUserTodoMemberTodosTodoIdHistoryHistoryId.ts",
+            "line": 17
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846183726-1cxj4j253ql",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 30,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846183750-uorpynkur9o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846183750-gn30fdj9wow",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846183750-y77oko10uf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846183750-w66rtz9v3nm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 44
+          },
+          "id": "duplication-1774846183750-2rhc0npygpa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 45
+          },
+          "id": "duplication-1774846183750-ko3cxwgj6u",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 46
+          },
+          "id": "duplication-1774846183750-bqp518h7qif",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 47
+          },
+          "id": "duplication-1774846183750-e6vdhg38dp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 48
+          },
+          "id": "duplication-1774846183750-kq24v4syd9a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 49
+          },
+          "id": "duplication-1774846183750-qcdpxona9c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 50
+          },
+          "id": "duplication-1774846183750-ghe01nzfs4k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 51
+          },
+          "id": "duplication-1774846183750-bw8jorg5wyp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 52
+          },
+          "id": "duplication-1774846183750-ex7r4ea8uv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 53
+          },
+          "id": "duplication-1774846183750-phgse8wc3ha",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 54
+          },
+          "id": "duplication-1774846183750-mbaj1ofcmk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 55
+          },
+          "id": "duplication-1774846183750-neq5jqc5ugm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 56
+          },
+          "id": "duplication-1774846183750-eaid02gqbyu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 57
+          },
+          "id": "duplication-1774846183750-uhdl74bbvag",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
+            "line": 47
+          },
+          "id": "duplication-1774846183750-ucby6byn8jg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
+            "line": 48
+          },
+          "id": "duplication-1774846183750-j0ce8cjqn8s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
+            "line": 49
+          },
+          "id": "duplication-1774846183750-kf7oflx2e7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+            "line": 8
+          },
+          "id": "duplication-1774846183750-t7dn00k1ul",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+            "line": 9
+          },
+          "id": "duplication-1774846183750-jadmd00ehx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+            "line": 10
+          },
+          "id": "duplication-1774846183750-5n9jekdndyi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+            "line": 11
+          },
+          "id": "duplication-1774846183750-xflf6sx2qhe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+            "line": 12
+          },
+          "id": "duplication-1774846183750-wleb0jk67bb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846183750-802t4q83m5k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+            "line": 14
+          },
+          "id": "duplication-1774846183750-nw2eoddp0o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+            "line": 15
+          },
+          "id": "duplication-1774846183750-i3zv1zllah",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+            "line": 16
+          },
+          "id": "duplication-1774846183750-nk3dzt6xklj",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 0,
+      "issues": []
+    },
+    "jsdoc": {
+      "totalMissing": 6,
+      "totalApis": 7,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846183758-fuuyp7xorg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846183758-m3rexky3a7n",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846183758-65ww4rkwf9w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1774846183760-m25y31zq9a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosTrashController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846183759-x621q3kdsso",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosHistoryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/history/MultiusertodoMemberTodosHistoryController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846183759-bctgw7qcule",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 23,
+      "emptyTypes": 0,
+      "mismatchedProperties": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"todo\" not found in Prisma model \"multi_user_todo_todos\"",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodoEditHistory.ts",
+            "line": 93
+          },
+          "id": "completeness-1774846183763-vglbcv5z0k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IMultiUserTodoMember\" not found — referenced by @x-autobe-database-schema-property member",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 154
+          },
+          "id": "completeness-1774846183763-p6teb2fmp6f",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 4,
+    "criticalCount": 0,
+    "warningCount": 3,
+    "suggestionCount": 1
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846183484-jnlpxonvr5k",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '{ member: MemberPayload; }' is not assignable to parameter of type '{ member: MemberPayload; query: { page?: number | undefined; limit?: number | undefined; sortBy?: \"created_at\" | \"start_date\" | \"due_date\" | undefined; sortOrder?: \"asc\" | \"desc\" | undefined; }; }'.\n  Property 'query' is missing in type '{ member: MemberPayload; }' but required in type '{ member: MemberPayload; query: { page?: number | undefined; limit?: number | undefined; sortBy?: \"created_at\" | \"start_date\" | \"due_date\" | undefined; sortOrder?: \"asc\" | \"desc\" | undefined; }; }'.",
+      "location": {
+        "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
+        "line": 3555
+      },
+      "id": "type-error-1774846183484-wsenvfhlom",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'PrismaPromise<unknown>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'PrismaPromise<unknown>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 5071
+      },
+      "id": "type-error-1774846183484-vzr3rf2f2sg",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2724",
+      "message": "'\"src/prisma/client\".Prisma' has no exported member named 'multi_user_todo_todo_edit_historiesCreateWithoutTodoInput'. Did you mean 'multi_user_todo_todo_edit_historiesCreateInput'?",
+      "location": {
+        "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 2880
+      },
+      "id": "type-error-1774846183484-0lu3ljy572v",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:49:43.764Z",
+    "totalDurationMs": 2869,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 75
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 4,
+      "missing": 6,
+      "ratio": "86%"
+    },
+    "schemaSync": {
+      "amount": 1,
+      "emptyTypes": 0,
+      "mismatchedProperties": 2
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 238,
+    "totalFiles": 75,
+    "totalLines": 6003,
+    "avgLinesPerFile": 80,
+    "largestFile": "src/api/functional/multiUserTodo/member/todos/index.ts",
+    "largestFileSizeKB": 29,
+    "controllers": 6,
+    "providers": 20,
+    "structures": 9,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

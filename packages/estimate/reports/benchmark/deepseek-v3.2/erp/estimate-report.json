@@ -1,0 +1,189 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/erp",
+  "totalScore": 0,
+  "grade": "F",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": false,
+      "score": 0,
+      "maxScore": 100,
+      "weightedScore": 0,
+      "issues": [
+        {
+          "code": "GATE001",
+          "severity": "critical",
+          "category": "syntax",
+          "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+          "id": "syntax-1774846110876-s54bihstob",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 0,
+      "metrics": {
+        "failedAt": "no-source",
+        "reason": "No TypeScript files found"
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 89,
+      "maxScore": 100,
+      "weightedScore": 6.23,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 544811,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 5,
+      "maxScore": 100,
+      "weightedScore": 0.8999999999999999,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 0,
+        "providerCount": 0,
+        "structureCount": 0,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 0,
+        "unmappedControllers": 0,
+        "mappingRatio": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 0,
+      "maxScore": 100,
+      "weightedScore": 0,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 0,
+        "controllerCount": 0,
+        "routeAnalysis": false,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 0,
+      "maxScore": 100,
+      "weightedScore": 0,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 0,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 0,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 0,
+        "implementationRate": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 0,
+      "complexFunctions": 0,
+      "maxComplexity": 0,
+      "issues": []
+    },
+    "duplication": {
+      "totalBlocks": 0,
+      "issues": []
+    },
+    "naming": {
+      "totalIssues": 0,
+      "issues": []
+    },
+    "jsdoc": {
+      "totalMissing": 0,
+      "totalApis": 0,
+      "issues": []
+    },
+    "schemaSync": {
+      "totalTypes": 0,
+      "emptyTypes": 0,
+      "mismatchedProperties": 0,
+      "issues": []
+    }
+  },
+  "summary": {
+    "totalIssues": 1,
+    "criticalCount": 1,
+    "warningCount": 0,
+    "suggestionCount": 0
+  },
+  "criticalIssues": [
+    {
+      "code": "GATE001",
+      "severity": "critical",
+      "category": "syntax",
+      "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+      "id": "syntax-1774846110876-s54bihstob",
+      "autoFixable": false
+    }
+  ],
+  "warnings": [],
+  "suggestions": [],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:48:30.877Z",
+    "totalDurationMs": 12,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 0
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 0,
+    "totalFiles": 0,
+    "totalLines": 0,
+    "avgLinesPerFile": 0,
+    "largestFile": "N/A",
+    "largestFileSizeKB": 0,
+    "controllers": 0,
+    "providers": 0,
+    "structures": 0,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

@@ -1,0 +1,1755 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit",
+  "totalScore": 85,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 99,
+      "maxScore": 100,
+      "weightedScore": 99,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846084507-gpqvcocjibe",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchCommunityGuestSessions.ts",
+            "line": 1294
+          },
+          "id": "type-error-1774846084507-zex46kye1fm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchCommunityGuestSessions.ts",
+            "line": 1738
+          },
+          "id": "type-error-1774846084507-xf24tkl32j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
+            "line": 2188
+          },
+          "id": "type-error-1774846084507-wxu4d9bdhc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchCommunityPosts.ts",
+            "line": 2558
+          },
+          "id": "type-error-1774846084507-6qnvc7hrkat",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '$queryRaw' does not exist on type 'PrismaClient'.",
+          "location": {
+            "file": "src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
+            "line": 1983
+          },
+          "id": "type-error-1774846084507-vm1c4oqpwei",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'community_communities'.",
+          "location": {
+            "file": "src/transformers/CommunityCommunityAtSummaryTransformer.ts",
+            "line": 1190
+          },
+          "id": "type-error-1774846084507-sjk9tmbxgtt",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2724",
+          "message": "'\"src/prisma/client\".Prisma' has no exported member named 'community_post_linksDefaultArgs'. Did you mean 'community_post_linksDeleteArgs'?",
+          "location": {
+            "file": "src/transformers/CommunityPostAtSummaryTransformer.ts",
+            "line": 1845
+          },
+          "id": "type-error-1774846084507-m2pyeq58ekh",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 8097,
+      "metrics": {
+        "totalFiles": 226,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 1,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 3,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 87,
+      "maxScore": 100,
+      "weightedScore": 6.090000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 320386,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 30,
+        "providerCount": 66,
+        "structureCount": 31,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 30,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 69,
+      "maxScore": 100,
+      "weightedScore": 15.870000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 167,
+        "controllerCount": 30,
+        "routeAnalysis": true,
+        "totalRoutes": 63,
+        "coveredRoutes": 31,
+        "routeCoveragePercent": 49,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "GET,PUT,DELETE,PATCH,POST",
+        "controllersAnalyzed": 30,
+        "stubTests": 4,
+        "assertionTests": 163,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 63,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 63,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 638,
+      "complexFunctions": 3,
+      "maxComplexity": 27,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchCommunityPostsPostIdComments\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846084890-871ur7n9449",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchCommunityPosts\" has complexity 27 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPosts.ts",
+            "line": 19
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846084886-njad41ijwd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchCommunityMemberPostsPostIdCommentsCommentIdReplies\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
+            "line": 21
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846084889-s2j6hwa4rh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchCommunityMemberFeed\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberFeed.ts",
+            "line": 20
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846084894-m85gdfzn6w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchCommunityGuests\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityGuests.ts",
+            "line": 17
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846084893-hkbarslmmts",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchCommunityGuestSessions\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityGuestSessions.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846084898-ld3a9m26hco",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchCommunityCommunitiesCommunityIdPosts\" has complexity 27 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityCommunitiesCommunityIdPosts.ts",
+            "line": 19
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846084897-cut18q2wm4",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 69,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
+            "line": 99
+          },
+          "id": "duplication-1774846085032-1fgns2nw57v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
+            "line": 165
+          },
+          "id": "duplication-1774846085032-kna9aj2gn49",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846085032-7j55vg4qdby",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846085032-w2vyzh5tk1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846085032-65z9gwet12c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846085032-t8njw7hh1fo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdCommentsCommentIdVotesVoteId.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846085032-y9fgyh6zcct",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityIdReportsReportId.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846085032-gfmb8sef59g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityIdReportsReportId.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846085032-pykqcgg3xsb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityIdReportsReportId.ts",
+            "line": 31
+          },
+          "id": "duplication-1774846085032-kfji8gozscd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846085032-huo0o855bxj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846085032-rhj59fa2lk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846085032-9wxax920fo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846085032-ik2iqp48vtl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846085032-fyriage6f44",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846085032-gfbyvezp8xv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846085032-iata413x5yc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846085032-ajpw70im09",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityMemberCommunitiesCommunityIdReportsReportIdDismiss.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846085032-6zah42ufes8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846085032-vv4lb2y1fo9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityAuthGuestRefresh.ts",
+            "line": 90
+          },
+          "id": "duplication-1774846085032-ptnc66qyi3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityAuthGuestRefresh.ts",
+            "line": 91
+          },
+          "id": "duplication-1774846085032-cc9fsjoey3j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityUserProfilesUserProfileIdPosts.ts",
+            "line": 42
+          },
+          "id": "duplication-1774846085032-gm95swo5cnh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityUserProfilesUserProfileIdPosts.ts",
+            "line": 76
+          },
+          "id": "duplication-1774846085032-cpcgm1tmj6w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityUserProfilesUserProfileIdPosts.ts",
+            "line": 77
+          },
+          "id": "duplication-1774846085032-87ivskuv84o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846085032-cj2bs15nyfn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846085032-zrk5dvgd519",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846085032-u8lkiv4xb7r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846085032-1ib67qojbbji",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846085032-4mvtc47f30a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846085032-3ihqjcoxnmq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846085032-cxku0zz7lr6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846085032-d3e6vgf7a8e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 31
+          },
+          "id": "duplication-1774846085032-g7h368r7o5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 32
+          },
+          "id": "duplication-1774846085032-8rc65fxyp2a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
+            "line": 33
+          },
+          "id": "duplication-1774846085032-wbo4p9jooi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 74
+          },
+          "id": "duplication-1774846085032-ekr36xm6k8f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 75
+          },
+          "id": "duplication-1774846085032-uni0w15hky8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 76
+          },
+          "id": "duplication-1774846085032-cjhhbvudgrv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 77
+          },
+          "id": "duplication-1774846085032-25m6d5whbih",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 78
+          },
+          "id": "duplication-1774846085032-tiq64gsk6cb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 79
+          },
+          "id": "duplication-1774846085032-kdocao7lun",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 80
+          },
+          "id": "duplication-1774846085032-qqgx2hdrc3n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 81
+          },
+          "id": "duplication-1774846085032-gyfwd84kewd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 82
+          },
+          "id": "duplication-1774846085032-tifezzos1p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 83
+          },
+          "id": "duplication-1774846085032-z8gv7zmc5fk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 84
+          },
+          "id": "duplication-1774846085032-iylvx87ux5k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 85
+          },
+          "id": "duplication-1774846085032-2d9sq9gighs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
+            "line": 86
+          },
+          "id": "duplication-1774846085032-t3gbyn2d5a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdVotes.ts",
+            "line": 63
+          },
+          "id": "duplication-1774846085032-wpvcyxiiwv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdVotes.ts",
+            "line": 64
+          },
+          "id": "duplication-1774846085032-s5ypxcuxz88",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
+            "line": 86
+          },
+          "id": "duplication-1774846085032-zuxb5lqjvcr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
+            "line": 91
+          },
+          "id": "duplication-1774846085032-4m90mp6uo2t",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
+            "line": 95
+          },
+          "id": "duplication-1774846085032-29pgupsxup4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
+            "line": 96
+          },
+          "id": "duplication-1774846085032-qy48au6elx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
+            "line": 97
+          },
+          "id": "duplication-1774846085032-yxaivzky2ug",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberCommunitiesCommunityIdReports.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846085032-wl6al6afucj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberCommunitiesCommunityIdReports.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846085032-s68oba5odsp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberCommunitiesCommunityIdReports.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846085032-949lq1xzbag",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityCommunitiesCommunityIdPosts.ts",
+            "line": 98
+          },
+          "id": "duplication-1774846085032-u6yjww2kita",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityCommunitiesCommunityIdPosts.ts",
+            "line": 99
+          },
+          "id": "duplication-1774846085032-mjryft8zes",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+            "line": 8
+          },
+          "id": "duplication-1774846085032-c8rlb2crz9s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+            "line": 9
+          },
+          "id": "duplication-1774846085032-nd2jhajv1fo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+            "line": 10
+          },
+          "id": "duplication-1774846085032-92zswz3wrkf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+            "line": 11
+          },
+          "id": "duplication-1774846085032-0wgz8njo0y7r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+            "line": 12
+          },
+          "id": "duplication-1774846085032-fxce47qmai",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846085032-vufnw5w70gf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+            "line": 14
+          },
+          "id": "duplication-1774846085032-9alg926b39",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+            "line": 15
+          },
+          "id": "duplication-1774846085032-2har2hrka8",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 0,
+      "issues": []
+    },
+    "jsdoc": {
+      "totalMissing": 30,
+      "totalApis": 31,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/members/CommunityMembersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085056-vg6xjp1iy2r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityUserprofilesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/CommunityUserprofilesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085055-8g05nq6txos",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/CommunityPostsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085056-mykqohzhen",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/CommunityCommunitiesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085057-j4d3j6428m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityGuestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/guests/CommunityGuestsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085056-jt9fzee15be",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/comments/CommunityPostsCommentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085057-5a08kohxdp2",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityCommunitiesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/posts/CommunityCommunitiesPostsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846085057-oyybfvm6dtf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityCommunitiesModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/moderators/CommunityCommunitiesModeratorsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085058-s2iov35si2",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/guest/sessions/CommunityGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846085057-ii0zki9ttv8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityUserprofilesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/posts/CommunityUserprofilesPostsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846085058-k63dp7atbpc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityUserprofilesKarmalogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/karmaLogs/CommunityUserprofilesKarmalogsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085058-ygswny9w2de",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityUserprofilesCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/comments/CommunityUserprofilesCommentsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846085058-pozgs3d8v7f",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/auth/member/CommunityAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085059-xukfr6ex2c9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/auth/guest/CommunityAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846085059-4lhpzgjhf49",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/subscriptions/CommunityMemberSubscriptionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846085060-2nyj7vfc09k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/CommunityMemberCommunitiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846085062-2apaigvw957",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityPostsCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/comments/votes/CommunityPostsCommentsVotesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085061-bi9fzcwp1r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/CommunityMemberPostsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846085061-dbbf2336nzo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberFeedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/feed/CommunityMemberFeedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846085060-a54ttm06yrd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/profile/CommunityMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085061-6kgw57ktbvc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/subscriptions/CommunityMemberCommunitiesSubscriptionsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846085064-zqvxjbrcpng",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/posts/CommunityMemberCommunitiesPostsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085064-qris4od3n9h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/moderators/CommunityMemberCommunitiesModeratorsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846085062-ltb19shbv2j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/bans/CommunityMemberCommunitiesBansController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846085063-60pnatypfk4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/reports/CommunityMemberCommunitiesReportsController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774846085064-1dvrnp9j50d",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberPostsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/votes/CommunityMemberPostsVotesController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846085065-acy7rctb7w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846085066-oorleajkz6",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityGuestPostsCommentsRepliesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/guest/posts/comments/replies/CommunityGuestPostsCommentsRepliesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846085065-nsifetkfumo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberPostsCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/votes/CommunityMemberPostsCommentsVotesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846085066-8lm4thvcbcu",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberPostsCommentsRepliesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/replies/CommunityMemberPostsCommentsRepliesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846085066-dkbjky4ir0c",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 86,
+      "emptyTypes": 0,
+      "mismatchedProperties": 7,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"ICommunityMember\" not found — referenced by @x-autobe-database-schema-property reporter",
+          "location": {
+            "file": "src/api/structures/ICommunityReport.ts",
+            "line": 28
+          },
+          "id": "completeness-1774846085079-5a6pw8p12x9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"ICommunityCommunity\" not found — referenced by @x-autobe-database-schema-property community",
+          "location": {
+            "file": "src/api/structures/ICommunityReport.ts",
+            "line": 36
+          },
+          "id": "completeness-1774846085079-ynvdzn6q95d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"ICommunityPost\" not found — referenced by @x-autobe-database-schema-property post",
+          "location": {
+            "file": "src/api/structures/ICommunityReport.ts",
+            "line": 44
+          },
+          "id": "completeness-1774846085079-yeamok4t7ji",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"ICommunityComment\" not found — referenced by @x-autobe-database-schema-property comment",
+          "location": {
+            "file": "src/api/structures/ICommunityReport.ts",
+            "line": 52
+          },
+          "id": "completeness-1774846085079-hj1opu6nv68",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"ICommunityMember\" not found — referenced by @x-autobe-database-schema-property resolver",
+          "location": {
+            "file": "src/api/structures/ICommunityReport.ts",
+            "line": 60
+          },
+          "id": "completeness-1774846085079-mu8hpvcan3j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"owner\" not found in Prisma model \"community_members\"",
+          "location": {
+            "file": "src/api/structures/ICommunityCommunity.ts",
+            "line": 45
+          },
+          "id": "completeness-1774846085080-dl3virm8atl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"member\" not found in Prisma model \"community_members\"",
+          "location": {
+            "file": "src/api/structures/ICommunityCommentVote.ts",
+            "line": 141
+          },
+          "id": "completeness-1774846085079-5d5kxncaupq",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 8,
+    "criticalCount": 0,
+    "warningCount": 3,
+    "suggestionCount": 5
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846084507-gpqvcocjibe",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '$queryRaw' does not exist on type 'PrismaClient'.",
+      "location": {
+        "file": "src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
+        "line": 1983
+      },
+      "id": "type-error-1774846084507-vm1c4oqpwei",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'community_communities'.",
+      "location": {
+        "file": "src/transformers/CommunityCommunityAtSummaryTransformer.ts",
+        "line": 1190
+      },
+      "id": "type-error-1774846084507-sjk9tmbxgtt",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchCommunityGuestSessions.ts",
+        "line": 1294
+      },
+      "id": "type-error-1774846084507-zex46kye1fm",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchCommunityGuestSessions.ts",
+        "line": 1738
+      },
+      "id": "type-error-1774846084507-xf24tkl32j",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
+        "line": 2188
+      },
+      "id": "type-error-1774846084507-wxu4d9bdhc",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchCommunityPosts.ts",
+        "line": 2558
+      },
+      "id": "type-error-1774846084507-6qnvc7hrkat",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2724",
+      "message": "'\"src/prisma/client\".Prisma' has no exported member named 'community_post_linksDefaultArgs'. Did you mean 'community_post_linksDeleteArgs'?",
+      "location": {
+        "file": "src/transformers/CommunityPostAtSummaryTransformer.ts",
+        "line": 1845
+      },
+      "id": "type-error-1774846084507-m2pyeq58ekh",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:48:05.081Z",
+    "totalDurationMs": 8432,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 226
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 5,
+      "missing": 30,
+      "ratio": "97%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 1118,
+    "totalFiles": 226,
+    "totalLines": 22024,
+    "avgLinesPerFile": 97,
+    "largestFile": "src/api/functional/community/member/communities/reports/index.ts",
+    "largestFileSizeKB": 39,
+    "controllers": 30,
+    "providers": 66,
+    "structures": 31,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

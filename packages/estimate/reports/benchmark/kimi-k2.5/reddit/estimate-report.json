@@ -1,0 +1,3454 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit",
+  "totalScore": 78,
+  "grade": "C",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 96,
+      "maxScore": 100,
+      "weightedScore": 96,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846201466-2ozr70mo9pi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2740",
+          "message": "Type 'IThread[]' is missing the following properties from type 'IThread': id, content, voteScore, isEdited, and 4 more.",
+          "location": {
+            "file": "src/controllers/redditLike/guest/posts/comments/thread/RedditlikeGuestPostsCommentsController.ts",
+            "line": 2642
+          },
+          "id": "type-error-1774846201466-civpguvluoh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2740",
+          "message": "Type 'IThread[]' is missing the following properties from type 'IThread': id, content, voteScore, isEdited, and 4 more.",
+          "location": {
+            "file": "src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
+            "line": 10621
+          },
+          "id": "type-error-1774846201466-t2b6xc0b16",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2740",
+          "message": "Type 'IThread[]' is missing the following properties from type 'IThread': id, content, voteScore, isEdited, and 4 more.",
+          "location": {
+            "file": "src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
+            "line": 4988
+          },
+          "id": "type-error-1774846201466-6v620um9lbe",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2740",
+          "message": "Type 'IThread[]' is missing the following properties from type 'IThread': id, content, voteScore, isEdited, and 4 more.",
+          "location": {
+            "file": "src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
+            "line": 2642
+          },
+          "id": "type-error-1774846201466-h5zwnbl1da7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2307",
+          "message": "Cannot find module '../payload/AdminPayload' or its corresponding type declarations.",
+          "location": {
+            "file": "src/decorators/AdminAuth.ts",
+            "line": 186
+          },
+          "id": "type-error-1774846201466-ho6vs5i0jp5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'ParameterDecorator'.\n  Type 'void' is not assignable to type 'ParameterDecorator'.",
+          "location": {
+            "file": "src/decorators/AdminAuth.ts",
+            "line": 338
+          },
+          "id": "type-error-1774846201466-sizhc1h58b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 3 arguments, but got 1.",
+          "location": {
+            "file": "src/decorators/AdminAuth.ts",
+            "line": 345
+          },
+          "id": "type-error-1774846201466-2gqb8b7zyhv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property 'get' does not exist on type 'typeof Singleton'.",
+          "location": {
+            "file": "src/decorators/AdminAuth.ts",
+            "line": 476
+          },
+          "id": "type-error-1774846201466-d9b7lqamdo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property 'admins' does not exist on type 'PrismaClient'.",
+          "location": {
+            "file": "src/providers/authorize/adminAuthorize.ts",
+            "line": 546
+          },
+          "id": "type-error-1774846201466-wzv5nz2fcdn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<reddit_like_comments> | Promise<reddit_like_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<reddit_like_comments> | Promise<reddit_like_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteRedditLikeMemberCommentsCommentIdMyVote.ts",
+            "line": 1281
+          },
+          "id": "type-error-1774846201466-uwwruy2id6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'reddit_like_guests'.",
+          "location": {
+            "file": "src/providers/getRedditLikeGuestSessionsMe.ts",
+            "line": 2363
+          },
+          "id": "type-error-1774846201466-zztszdwdmr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+            "line": 3215
+          },
+          "id": "type-error-1774846201466-5693wa0ch08",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '{} | undefined' is not assignable to parameter of type 'string'.\n  Type 'undefined' is not assignable to type 'string'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+            "line": 3461
+          },
+          "id": "type-error-1774846201466-qia6l02xy7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'rc._count' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+            "line": 3475
+          },
+          "id": "type-error-1774846201466-a9k0yccuw17",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeGuestSessions.ts",
+            "line": 2324
+          },
+          "id": "type-error-1774846201466-w2ornidg0al",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeGuestSessions.ts",
+            "line": 2779
+          },
+          "id": "type-error-1774846201466-lifbn29jpn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
+            "line": 3451
+          },
+          "id": "type-error-1774846201466-hgyfrimnt2g",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
+            "line": 3515
+          },
+          "id": "type-error-1774846201466-wl0ftt0ovi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
+            "line": 2554
+          },
+          "id": "type-error-1774846201466-fimir16q6n9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
+            "line": 2657
+          },
+          "id": "type-error-1774846201466-aoxr117mxj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
+            "line": 3492
+          },
+          "id": "type-error-1774846201466-1e61d5zytu2",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS7023",
+          "message": "'select' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.",
+          "location": {
+            "file": "src/transformers/RedditLikeCommentAtThreadTransformer.ts",
+            "line": 715
+          },
+          "id": "type-error-1774846201466-ubs5ei8cxx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'reddit_like_communities'.",
+          "location": {
+            "file": "src/transformers/RedditLikeCommunityAtSummaryTransformer.ts",
+            "line": 1836
+          },
+          "id": "type-error-1774846201466-9mptiyvsxig",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'reddit_like_communities'.",
+          "location": {
+            "file": "src/transformers/RedditLikeCommunityTransformer.ts",
+            "line": 1871
+          },
+          "id": "type-error-1774846201466-mc1d3fcr9qk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'reddit_like_guests'.",
+          "location": {
+            "file": "src/transformers/RedditLikeGuestAtSummaryTransformer.ts",
+            "line": 1213
+          },
+          "id": "type-error-1774846201466-deurb19f3z9",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 10381,
+      "metrics": {
+        "totalFiles": 410,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 4,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 16,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 79,
+      "maxScore": 100,
+      "weightedScore": 5.53,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 254523,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 99,
+      "maxScore": 100,
+      "weightedScore": 17.82,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 70,
+        "providerCount": 124,
+        "structureCount": 48,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 70,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 64,
+      "maxScore": 100,
+      "weightedScore": 14.72,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 306,
+        "controllerCount": 70,
+        "routeAnalysis": true,
+        "totalRoutes": 118,
+        "coveredRoutes": 54,
+        "routeCoveragePercent": 46,
+        "definedMethods": "PATCH,GET,POST,PUT,DELETE",
+        "testedMethods": "GET,POST,DELETE,PUT,PATCH",
+        "controllersAnalyzed": 69,
+        "stubTests": 33,
+        "assertionTests": 273,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 92,
+      "maxScore": 100,
+      "weightedScore": 27.599999999999998,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 1,
+        "criticalCount": 1,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 119,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 119,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 1038,
+      "complexFunctions": 4,
+      "maxComplexity": 31,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"postRedditLikeOwnerAttachmentsBatchCleanup\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeOwnerAttachmentsBatchCleanup.ts",
+            "line": 15
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846201709-9xsxffk4lt",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchRedditLikePosts\" has complexity 26 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePosts.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846201725-4ut7gydccdm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchRedditLikeOwnerAuditLogsMyActivity\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogsMyActivity.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846201725-4jobaw04w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchRedditLikeOwnerAuditLogs\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846201726-t6n4ppxdue",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchRedditLikeOwnerAttachmentsAttachmentIdAccessLogs\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAttachmentsAttachmentIdAccessLogs.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846201727-ibwda1eujhn",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchRedditLikeMemberFeedsPopular\" has complexity 31 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeMemberFeedsPopular.ts",
+            "line": 21
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846201732-dex0iam91in",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchRedditLikeMemberFeedsHome\" has complexity 31 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeMemberFeedsHome.ts",
+            "line": 21
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846201733-gai9910hejb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchRedditLikeGuests\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeGuests.ts",
+            "line": 17
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846201735-f5a6ie2mmrp",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchRedditLikeGuestFeedsPopular\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeGuestFeedsPopular.ts",
+            "line": 21
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846201738-m09j6g5egdq",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 110,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846201904-a6v2sybn6wb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846201904-6xy74yzyjq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/popular/RedditlikeMemberFeedsPopularController.ts",
+            "line": 46
+          },
+          "id": "duplication-1774846201904-j2rdgeyble",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeOwnerCommunitiesCommunityId.ts",
+            "line": 48
+          },
+          "id": "duplication-1774846201904-ywg7g7t42vj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeOwnerCommunitiesCommunityId.ts",
+            "line": 49
+          },
+          "id": "duplication-1774846201904-qhptmmw9if",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846201904-ll4bif3x8d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846201904-u9kffw3uwv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
+            "line": 42
+          },
+          "id": "duplication-1774846201904-r5o8eknyug",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
+            "line": 43
+          },
+          "id": "duplication-1774846201904-bqecaaf0eti",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
+            "line": 46
+          },
+          "id": "duplication-1774846201904-juhmtbn518",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
+            "line": 47
+          },
+          "id": "duplication-1774846201904-vcjm85r1sl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
+            "line": 48
+          },
+          "id": "duplication-1774846201904-oug3m725ac",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeOwnerReportsReportIdApprove.ts",
+            "line": 83
+          },
+          "id": "duplication-1774846201904-jiwju0d19m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeOwnerModerators.ts",
+            "line": 45
+          },
+          "id": "duplication-1774846201904-tlcb7zlelh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
+            "line": 19
+          },
+          "id": "duplication-1774846201904-1gir1aq1jmn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846201904-ltud5478c39",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846201904-vmhb8l5j7i9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846201904-86ho47syixn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846201904-8eqa31yaq6t",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846201904-117oln56lamq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846201904-6dtxd4zomjm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846201904-lqkefrmigx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846201904-qd5ytyqu9wi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 19
+          },
+          "id": "duplication-1774846201904-yc1pj6dfkug",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846201904-i52jru9d2v8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846201904-7xjgud49jig",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846201904-wqgvgqnmk29",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846201904-xvckdrpw4am",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846201904-ycdcf7rrq8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846201904-cz15xz22fj6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846201904-yjdzdauosd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846201904-ff560t7ykf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846201904-hz7u1coknwi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846201904-keja6zrsshs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdAccess.ts",
+            "line": 34
+          },
+          "id": "duplication-1774846201904-vyejzmg9qzb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdAccess.ts",
+            "line": 35
+          },
+          "id": "duplication-1774846201904-i091mz68v0b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeMemberCommunitiesCommunityIdSubscriptions.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846201904-vzr3rd6fhz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeMemberCommunitiesCommunityIdSubscriptions.ts",
+            "line": 14
+          },
+          "id": "duplication-1774846201904-2j0wqrreej3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeMemberCommunitiesCommunityIdSubscriptions.ts",
+            "line": 15
+          },
+          "id": "duplication-1774846201904-wexl5lhwkwe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeAuthModeratorLogin.ts",
+            "line": 37
+          },
+          "id": "duplication-1774846201904-yog1w1ti4v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeAuthModeratorLogin.ts",
+            "line": 76
+          },
+          "id": "duplication-1774846201904-qj2fs8tgbbq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeAuthModeratorLogin.ts",
+            "line": 77
+          },
+          "id": "duplication-1774846201904-c4ithzhvmmw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 38
+          },
+          "id": "duplication-1774846201904-lh2iwogxnlo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 39
+          },
+          "id": "duplication-1774846201904-gybh28v0ry9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 40
+          },
+          "id": "duplication-1774846201904-v77jvj9uuyl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 41
+          },
+          "id": "duplication-1774846201904-5vj4b6vifb3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 42
+          },
+          "id": "duplication-1774846201904-hl93cm0gnnc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 43
+          },
+          "id": "duplication-1774846201904-f0ap7snzdjh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 44
+          },
+          "id": "duplication-1774846201904-5rugnw1e0ir",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 45
+          },
+          "id": "duplication-1774846201904-9s55cbmbs1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 59
+          },
+          "id": "duplication-1774846201904-ri60ai8pkp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 60
+          },
+          "id": "duplication-1774846201904-qrvfkc17x2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 61
+          },
+          "id": "duplication-1774846201904-iy4ih7y24j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 62
+          },
+          "id": "duplication-1774846201904-ywyq3a9vf2m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 63
+          },
+          "id": "duplication-1774846201904-fza6x3v0qg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 64
+          },
+          "id": "duplication-1774846201904-pinj9pgfy8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 65
+          },
+          "id": "duplication-1774846201904-l7ak6wfqia",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 66
+          },
+          "id": "duplication-1774846201904-69tki1rp7ww",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 67
+          },
+          "id": "duplication-1774846201904-bfm7nm3fd8k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 68
+          },
+          "id": "duplication-1774846201904-8c42qlzq8d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 69
+          },
+          "id": "duplication-1774846201904-vt24ve8alfh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 70
+          },
+          "id": "duplication-1774846201904-2ycpma9jt6a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 71
+          },
+          "id": "duplication-1774846201904-5p7042ym57k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 72
+          },
+          "id": "duplication-1774846201904-c3vymt8hhd6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
+            "line": 73
+          },
+          "id": "duplication-1774846201904-dmemv4tl1ag",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
+            "line": 67
+          },
+          "id": "duplication-1774846201904-nblhksit4sd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
+            "line": 75
+          },
+          "id": "duplication-1774846201904-62jb0yoygl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
+            "line": 76
+          },
+          "id": "duplication-1774846201904-oogwbrveln",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
+            "line": 77
+          },
+          "id": "duplication-1774846201904-4w2sphbbo44",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
+            "line": 78
+          },
+          "id": "duplication-1774846201904-bt89qsq9d65",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
+            "line": 79
+          },
+          "id": "duplication-1774846201904-pdx320f67i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 13 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
+            "line": 80
+          },
+          "id": "duplication-1774846201904-ctzrnmdupg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846201904-qt9w16vk6v9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846201904-ak6vvfg8cqo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
+            "line": 31
+          },
+          "id": "duplication-1774846201904-l95k4hy671m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
+            "line": 32
+          },
+          "id": "duplication-1774846201904-mvoywy352se",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
+            "line": 74
+          },
+          "id": "duplication-1774846201904-beq01jsj3me",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
+            "line": 76
+          },
+          "id": "duplication-1774846201904-8zhw8337m09",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
+            "line": 77
+          },
+          "id": "duplication-1774846201904-wox9ncnt0mp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
+            "line": 78
+          },
+          "id": "duplication-1774846201904-mjvhfm1291",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
+            "line": 79
+          },
+          "id": "duplication-1774846201904-b61nhjycram",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
+            "line": 80
+          },
+          "id": "duplication-1774846201904-jyrvqaf9d3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
+            "line": 81
+          },
+          "id": "duplication-1774846201904-jyorsecgw2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
+            "line": 82
+          },
+          "id": "duplication-1774846201904-hjxq7u3b1nv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeMemberFeedsPopular.ts",
+            "line": 132
+          },
+          "id": "duplication-1774846201904-jkyicqb3ffb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeOwnerPostsPostIdCommentsThread.ts",
+            "line": 19
+          },
+          "id": "duplication-1774846201904-x5hiz4lggg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846201904-23exisost87h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846201904-oknc6a9a2xd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846201904-kfwoc2pxa5r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846201904-8bq9iz0644b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846201904-l4bifet5m0o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846201904-i5ehbx188md",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846201904-41slbjvtau",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846201904-odnlxka2jc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846201904-kji3kvl6ien",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846201904-xsxhl00erh8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 16
+          },
+          "id": "duplication-1774846201904-9afh2jzfk0a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 17
+          },
+          "id": "duplication-1774846201904-394vckheetn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 18
+          },
+          "id": "duplication-1774846201904-onq67m1tre",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 19
+          },
+          "id": "duplication-1774846201904-1rgrv0l6xkk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846201904-49lzy39874",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846201904-kuic59iqauf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846201904-pj4rz02rld",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846201904-o7hkzn0brem",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846201904-kdwk9y6yr8c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846201904-9o9zs4ajd2h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846201904-uik6lv25t28",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846201904-fjubiys4yks",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846201904-hk4yklgn1lf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846201904-r0rn34eisji",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 14,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeAttachment_referencesController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachment-references/RedditlikeAttachment_referencesController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846201905-xdtoszcc7v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeOwnerAudit_logsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846201906-c8eiuhjnu4a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeMemberSubscribed_communitiesController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/subscribed-communities/RedditlikeMemberSubscribed_communitiesController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846201907-ajayfffjff",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeMemberPassword_resetsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/password-resets/RedditlikeMemberPassword_resetsController.ts",
+            "line": 13
+          },
+          "id": "naming-1774846201908-6q5dzwss9jv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeMemberAttachment_referencesController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachment-references/RedditlikeMemberAttachment_referencesController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846201908-4qcbnbk7mkx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeOwnerAttachmentsGenerate_thumbnailsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/generate-thumbnails/RedditlikeOwnerAttachmentsGenerate_thumbnailsController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846201910-whajrqk6w7e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeOwnerAttachmentsBatch_cleanupController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/batch-cleanup/RedditlikeOwnerAttachmentsBatch_cleanupController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846201910-l2w7k94nea",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeOwnerAttachmentsAccess_logsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access-logs/RedditlikeOwnerAttachmentsAccess_logsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846201911-kw2kpdz15vh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeOwnerAudit_logsMy_activityController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/my-activity/RedditlikeOwnerAudit_logsMy_activityController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846201911-30zhsa63uyd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeModeratorAttachmentsGenerate_thumbnailsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/generate-thumbnails/RedditlikeModeratorAttachmentsGenerate_thumbnailsController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846201911-vur9mj8p0v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeModeratorAttachmentsAccess_logsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access-logs/RedditlikeModeratorAttachmentsAccess_logsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846201913-6dksdfzjvsp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeMemberPostsMy_voteController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/my-vote/RedditlikeMemberPostsMy_voteController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846201912-t4hmnfot4rh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeMemberAttachmentsGenerate_thumbnailsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/generate-thumbnails/RedditlikeMemberAttachmentsGenerate_thumbnailsController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846201913-lk0u14haol",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeMemberCommentsMy_voteController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/my-vote/RedditlikeMemberCommentsMy_voteController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846201913-4pypyih61ct",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 70,
+      "totalApis": 71,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikePostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/posts/RedditlikePostsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201943-qdudo6if2s",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderators/RedditlikeModeratorsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201942-n5qtqbm103j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owners/RedditlikeOwnersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201943-deum18qlg3d",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/members/RedditlikeMembersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201942-v94tqjs59w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guests/RedditlikeGuestsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201942-0ydgqy4li0v",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAttachmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachments/RedditlikeAttachmentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201943-r2l67a3qiu",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/communities/RedditlikeCommunitiesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201943-ol8vxf11wx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAttachment_referencesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachment-references/RedditlikeAttachment_referencesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201943-52tte93wygr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikePostsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/posts/snapshots/RedditlikePostsSnapshotsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201944-yjxw97gtowi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikePostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/posts/comments/RedditlikePostsCommentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201944-o5xvuww44xm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/reports/RedditlikeOwnerReportsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201944-5g3ekhxzphh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAudit_logsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201944-2kthlmlw7m8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/communities/RedditlikeOwnerCommunitiesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201945-xiuzi2njzen",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/moderators/RedditlikeOwnerModeratorsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201945-w5dz6u9b8fp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/reports/RedditlikeModeratorReportsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846201945-s6qgma8xxx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/moderators/RedditlikeModeratorModeratorsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201946-cp094jwp2gc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/RedditlikeModeratorPostsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846201946-m8pp1o8p6ns",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberSubscribed_communitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/subscribed-communities/RedditlikeMemberSubscribed_communitiesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201945-ar98y412uzf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/subscriptions/RedditlikeMemberSubscriptionsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201946-2adwsiu6c1i",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/reports/RedditlikeMemberReportsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201946-pti7a6m2ktm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/profile/RedditlikeMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201947-6scrbzkp88y",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/password-resets/RedditlikeMemberPassword_resetsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846201946-9j3ghox58h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201947-4fksqrts58p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberMeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/me/RedditlikeMemberMeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201947-txp8avk4d9h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/communities/RedditlikeMemberCommunitiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201948-gxeoztnf7l",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberAttachment_referencesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachment-references/RedditlikeMemberAttachment_referencesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201947-o1qzkdrycm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberAttachmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/RedditlikeMemberAttachmentsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201948-vmxka0kzpja",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAuthOwnerController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/owner/RedditlikeAuthOwnerController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201948-t4v7s443kzm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAuthModeratorController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/moderator/RedditlikeAuthModeratorController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201948-ks4rww3wdyk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/member/RedditlikeAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201949-bbbx99s9muo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAttachmentsThumbnailsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachments/thumbnails/RedditlikeAttachmentsThumbnailsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201949-tax4sya5o",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/RedditlikeMemberCommentsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201949-qzv960tt0ko",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/guest/RedditlikeAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846201949-5oyd4auh5wx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/sessions/RedditlikeGuestSessionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846201950-pfnqel3xwmb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeCommentsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/comments/snapshots/RedditlikeCommentsSnapshotsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201950-52rpaxm9gtq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerSessionsMeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/sessions/me/RedditlikeOwnerSessionsMeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201950-arpziky4bma",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAttachmentsGenerate_thumbnailsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/generate-thumbnails/RedditlikeOwnerAttachmentsGenerate_thumbnailsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201950-qxoddeldx9k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAttachmentsBatch_cleanupController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/batch-cleanup/RedditlikeOwnerAttachmentsBatch_cleanupController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201950-pcoa4yrw189",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAttachmentsAccessController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access/RedditlikeOwnerAttachmentsAccessController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201951-fjsac0pofa9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAttachmentsAccess_logsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access-logs/RedditlikeOwnerAttachmentsAccess_logsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201951-nzuqom4n6s",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorSessionsMeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/sessions/me/RedditlikeModeratorSessionsMeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201951-5q2o6mkv47n",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAudit_logsMy_activityController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/my-activity/RedditlikeOwnerAudit_logsMy_activityController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201951-pmyecn4rp3",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorReportsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/reports/snapshots/RedditlikeModeratorReportsSnapshotsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201951-dftdrbl8xun",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201951-2an775i5vij",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorAttachmentsGenerate_thumbnailsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/generate-thumbnails/RedditlikeModeratorAttachmentsGenerate_thumbnailsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201952-ja3fj8ay94n",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorAttachmentsAccess_logsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access-logs/RedditlikeModeratorAttachmentsAccess_logsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201952-iu7rsfoh9af",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorAttachmentsAccessController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access/RedditlikeModeratorAttachmentsAccessController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201952-pfobm2eqbch",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberSessionsMeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/sessions/me/RedditlikeMemberSessionsMeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201952-bc32l3rsix",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/votes/RedditlikeMemberPostsVotesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201952-ea4bekzkzrf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsMy_voteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/my-vote/RedditlikeMemberPostsMy_voteController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201952-3s7fc0xiwuo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846201953-x6mzptrqqpb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberFeedsPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/popular/RedditlikeMemberFeedsPopularController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201953-lb6ge12v94k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberFeedsHomeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/home/RedditlikeMemberFeedsHomeController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201953-7ziccpex6rn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommunitiesSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/communities/subscriptions/RedditlikeMemberCommunitiesSubscriptionsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201953-ngjlv5y7c48",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommunitiesSubscriptionController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/communities/subscription/RedditlikeMemberCommunitiesSubscriptionController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201954-xod28eyhffj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberAttachmentsGenerate_thumbnailsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/generate-thumbnails/RedditlikeMemberAttachmentsGenerate_thumbnailsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201954-zzrlhnds59c",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberAttachmentsAccessController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/access/RedditlikeMemberAttachmentsAccessController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201954-jtu8rhepa",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/votes/RedditlikeMemberCommentsVotesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201960-bhnb2fs3bww",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommentsMy_voteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/my-vote/RedditlikeMemberCommentsMy_voteController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201960-5c5xoxw559p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestSessionsMeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/sessions/me/RedditlikeGuestSessionsMeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201960-h4wohb78ac5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestFeedsPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/feeds/popular/RedditlikeGuestFeedsPopularController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201960-n0zmv7txmob",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestAttachmentsAccessController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/attachments/access/RedditlikeGuestAttachmentsAccessController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201961-pfnb9n4xklk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201961-uor9wwwg9hf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerPostsCommentsSortedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/posts/comments/sorted/RedditlikeOwnerPostsCommentsSortedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201961-3axjc9isj9y",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerCommunitiesReportsPendingController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/communities/reports/pending/RedditlikeOwnerCommunitiesReportsPendingController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201961-bhu0fnu854r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorPostsCommentsSortedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/comments/sorted/RedditlikeModeratorPostsCommentsSortedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201961-npqwj6pecqg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorCommunitiesReportsPendingController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/communities/reports/pending/RedditlikeModeratorCommunitiesReportsPendingController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201961-imds7rjj30g",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsCommentsSortedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/comments/sorted/RedditlikeMemberPostsCommentsSortedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201962-0q02tk55frze",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/posts/comments/thread/RedditlikeGuestPostsCommentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201961-s4hajzc5hri",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestPostsCommentsSortedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/posts/comments/sorted/RedditlikeGuestPostsCommentsSortedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201961-tkf3t0yco89",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 119,
+      "emptyTypes": 0,
+      "mismatchedProperties": 15,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeMember\" not found — referenced by @x-autobe-database-schema-property reporter",
+          "location": {
+            "file": "src/api/structures/IRedditLikeReport.ts",
+            "line": 25
+          },
+          "id": "completeness-1774846201977-rtqv598r3gd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeCommunity\" not found — referenced by @x-autobe-database-schema-property community",
+          "location": {
+            "file": "src/api/structures/IRedditLikeReport.ts",
+            "line": 33
+          },
+          "id": "completeness-1774846201977-yplzu8hulg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikePost\" not found — referenced by @x-autobe-database-schema-property post",
+          "location": {
+            "file": "src/api/structures/IRedditLikePostSnapshot.ts",
+            "line": 128
+          },
+          "id": "completeness-1774846201977-6buefxahvcb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeAttachment\" not found — referenced by @x-autobe-database-schema-property attachment",
+          "location": {
+            "file": "src/api/structures/IRedditLikePostImageContent.ts",
+            "line": 21
+          },
+          "id": "completeness-1774846201977-aubtfl5nxk8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeAttachment\" not found — referenced by @x-autobe-database-schema-property thumbnailAttachment",
+          "location": {
+            "file": "src/api/structures/IRedditLikePostImageContent.ts",
+            "line": 29
+          },
+          "id": "completeness-1774846201977-lhzk5k4gzgd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"community_id\" not found in Prisma model \"reddit_like_communities\"",
+          "location": {
+            "file": "src/api/structures/IRedditLikePost.ts",
+            "line": 316
+          },
+          "id": "completeness-1774846201978-p2lxpyjhmuq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeOwner\" not found — referenced by @x-autobe-database-schema-property owner",
+          "location": {
+            "file": "src/api/structures/IRedditLikeOwnerAuditLog.ts",
+            "line": 77
+          },
+          "id": "completeness-1774846201977-20fh1li6mw6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeMember\" not found — referenced by @x-autobe-database-schema-property member",
+          "location": {
+            "file": "src/api/structures/IRedditLikeModerator.ts",
+            "line": 31
+          },
+          "id": "completeness-1774846201977-275xrjemlxj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeCommunity\" not found — referenced by @x-autobe-database-schema-property community",
+          "location": {
+            "file": "src/api/structures/IRedditLikeModerator.ts",
+            "line": 39
+          },
+          "id": "completeness-1774846201977-ginpje7gfzj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeCommunity\" not found — referenced by @x-autobe-database-schema-property community",
+          "location": {
+            "file": "src/api/structures/IRedditLikeCommunitySubscription.ts",
+            "line": 110
+          },
+          "id": "completeness-1774846201978-nvh6gfty45j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"owner\" not found in Prisma model \"reddit_like_members\"",
+          "location": {
+            "file": "src/api/structures/IRedditLikeCommunity.ts",
+            "line": 215
+          },
+          "id": "completeness-1774846201978-rkpr89ata6j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"iconAttachment\" not found in Prisma model \"reddit_like_attachments\"",
+          "location": {
+            "file": "src/api/structures/IRedditLikeCommunity.ts",
+            "line": 223
+          },
+          "id": "completeness-1774846201978-ptkfdp7lh2c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeMember\" not found — referenced by @x-autobe-database-schema-property author",
+          "location": {
+            "file": "src/api/structures/IRedditLikeComment.ts",
+            "line": 235
+          },
+          "id": "completeness-1774846201978-itgekvmbjbl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeMember\" not found — referenced by @x-autobe-database-schema-property actor",
+          "location": {
+            "file": "src/api/structures/IRedditLikeAttachmentAccessLog.ts",
+            "line": 240
+          },
+          "id": "completeness-1774846201978-t17w04co5wa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IRedditLikeMember\" not found — referenced by @x-autobe-database-schema-property uploadedByMember",
+          "location": {
+            "file": "src/api/structures/IRedditLikeAttachment.ts",
+            "line": 178
+          },
+          "id": "completeness-1774846201978-l0nczm3l6l",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 26,
+    "criticalCount": 0,
+    "warningCount": 16,
+    "suggestionCount": 10
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846201466-2ozr70mo9pi",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2307",
+      "message": "Cannot find module '../payload/AdminPayload' or its corresponding type declarations.",
+      "location": {
+        "file": "src/decorators/AdminAuth.ts",
+        "line": 186
+      },
+      "id": "type-error-1774846201466-ho6vs5i0jp5",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'ParameterDecorator'.\n  Type 'void' is not assignable to type 'ParameterDecorator'.",
+      "location": {
+        "file": "src/decorators/AdminAuth.ts",
+        "line": 338
+      },
+      "id": "type-error-1774846201466-sizhc1h58b",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 3 arguments, but got 1.",
+      "location": {
+        "file": "src/decorators/AdminAuth.ts",
+        "line": 345
+      },
+      "id": "type-error-1774846201466-2gqb8b7zyhv",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property 'get' does not exist on type 'typeof Singleton'.",
+      "location": {
+        "file": "src/decorators/AdminAuth.ts",
+        "line": 476
+      },
+      "id": "type-error-1774846201466-d9b7lqamdo",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property 'admins' does not exist on type 'PrismaClient'.",
+      "location": {
+        "file": "src/providers/authorize/adminAuthorize.ts",
+        "line": 546
+      },
+      "id": "type-error-1774846201466-wzv5nz2fcdn",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<reddit_like_comments> | Promise<reddit_like_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<reddit_like_comments> | Promise<reddit_like_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteRedditLikeMemberCommentsCommentIdMyVote.ts",
+        "line": 1281
+      },
+      "id": "type-error-1774846201466-uwwruy2id6",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'reddit_like_guests'.",
+      "location": {
+        "file": "src/providers/getRedditLikeGuestSessionsMe.ts",
+        "line": 2363
+      },
+      "id": "type-error-1774846201466-zztszdwdmr",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '{} | undefined' is not assignable to parameter of type 'string'.\n  Type 'undefined' is not assignable to type 'string'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+        "line": 3461
+      },
+      "id": "type-error-1774846201466-qia6l02xy7",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'rc._count' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+        "line": 3475
+      },
+      "id": "type-error-1774846201466-a9k0yccuw17",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
+        "line": 2554
+      },
+      "id": "type-error-1774846201466-fimir16q6n9",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
+        "line": 2657
+      },
+      "id": "type-error-1774846201466-aoxr117mxj",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
+        "line": 3492
+      },
+      "id": "type-error-1774846201466-1e61d5zytu2",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'reddit_like_communities'.",
+      "location": {
+        "file": "src/transformers/RedditLikeCommunityAtSummaryTransformer.ts",
+        "line": 1836
+      },
+      "id": "type-error-1774846201466-9mptiyvsxig",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'reddit_like_communities'.",
+      "location": {
+        "file": "src/transformers/RedditLikeCommunityTransformer.ts",
+        "line": 1871
+      },
+      "id": "type-error-1774846201466-mc1d3fcr9qk",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'reddit_like_guests'.",
+      "location": {
+        "file": "src/transformers/RedditLikeGuestAtSummaryTransformer.ts",
+        "line": 1213
+      },
+      "id": "type-error-1774846201466-deurb19f3z9",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2740",
+      "message": "Type 'IThread[]' is missing the following properties from type 'IThread': id, content, voteScore, isEdited, and 4 more.",
+      "location": {
+        "file": "src/controllers/redditLike/guest/posts/comments/thread/RedditlikeGuestPostsCommentsController.ts",
+        "line": 2642
+      },
+      "id": "type-error-1774846201466-civpguvluoh",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2740",
+      "message": "Type 'IThread[]' is missing the following properties from type 'IThread': id, content, voteScore, isEdited, and 4 more.",
+      "location": {
+        "file": "src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
+        "line": 10621
+      },
+      "id": "type-error-1774846201466-t2b6xc0b16",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2740",
+      "message": "Type 'IThread[]' is missing the following properties from type 'IThread': id, content, voteScore, isEdited, and 4 more.",
+      "location": {
+        "file": "src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
+        "line": 4988
+      },
+      "id": "type-error-1774846201466-6v620um9lbe",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2740",
+      "message": "Type 'IThread[]' is missing the following properties from type 'IThread': id, content, voteScore, isEdited, and 4 more.",
+      "location": {
+        "file": "src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
+        "line": 2642
+      },
+      "id": "type-error-1774846201466-h5zwnbl1da7",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+        "line": 3215
+      },
+      "id": "type-error-1774846201466-5693wa0ch08",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeGuestSessions.ts",
+        "line": 2324
+      },
+      "id": "type-error-1774846201466-w2ornidg0al",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeGuestSessions.ts",
+        "line": 2779
+      },
+      "id": "type-error-1774846201466-lifbn29jpn",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
+        "line": 3451
+      },
+      "id": "type-error-1774846201466-hgyfrimnt2g",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
+        "line": 3515
+      },
+      "id": "type-error-1774846201466-wl0ftt0ovi",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS7023",
+      "message": "'select' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.",
+      "location": {
+        "file": "src/transformers/RedditLikeCommentAtThreadTransformer.ts",
+        "line": 715
+      },
+      "id": "type-error-1774846201466-ubs5ei8cxx",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:50:01.979Z",
+    "totalDurationMs": 10750,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 410
+  },
+  "penalties": {
+    "duplication": {
+      "amount": 2,
+      "blocks": 110
+    },
+    "jsdoc": {
+      "amount": 5,
+      "missing": 70,
+      "ratio": "99%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 1494,
+    "totalFiles": 410,
+    "totalLines": 36468,
+    "avgLinesPerFile": 89,
+    "largestFile": "src/api/functional/redditLike/moderator/reports/index.ts",
+    "largestFileSizeKB": 21,
+    "controllers": 70,
+    "providers": 124,
+    "structures": 48,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

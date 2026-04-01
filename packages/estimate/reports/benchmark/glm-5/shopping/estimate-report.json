@@ -1,0 +1,3530 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping",
+  "totalScore": 82,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 95,
+      "maxScore": 100,
+      "weightedScore": 95,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846552480-rdyj2ixqm0m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2739",
+          "message": "Type 'ISummary[]' is missing the following properties from type 'ISummary': id, image_url, display_order, created_at",
+          "location": {
+            "file": "src/controllers/shoppingMall/seller/products/images/ShoppingmallSellerProductsImagesController.ts",
+            "line": 17386
+          },
+          "id": "type-error-1774846552480-hm84qpj5ywp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<{ count: number; }> | Promise<shopping_mall_categories>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<shopping_mall_categories>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteShoppingMallAdministratorCategoriesCategoryId.ts",
+            "line": 1587
+          },
+          "id": "type-error-1774846552480-5qm24odnpxg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<shopping_mall_cart_items> | Promise<shopping_mall_carts>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<shopping_mall_cart_items> | Promise<shopping_mall_carts>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteShoppingMallCustomerCartsItemsCartItemId.ts",
+            "line": 1361
+          },
+          "id": "type-error-1774846552480-x0dt7k2pp2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<{ count: number; }> | Promise<shopping_mall_product_variants>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<shopping_mall_product_variants>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteShoppingMallSellerProductsProductIdVariantsVariantId.ts",
+            "line": 3016
+          },
+          "id": "type-error-1774846552480-0yxu8no59cyi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/getShoppingMallProductsProductIdReviewStats.ts",
+            "line": 1347
+          },
+          "id": "type-error-1774846552480-0c12kj6gfqt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'found._count' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/getShoppingMallProductsProductIdReviewStats.ts",
+            "line": 1811
+          },
+          "id": "type-error-1774846552480-4alqeq2034u",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'avgResult._avg' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/getShoppingMallProductsProductIdReviewStats.ts",
+            "line": 2071
+          },
+          "id": "type-error-1774846552480-s7ib5w7tl1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'avgResult._avg' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/getShoppingMallProductsProductIdReviewStats.ts",
+            "line": 2121
+          },
+          "id": "type-error-1774846552480-e852cmenzb8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<{ count: number; }> | Promise<shopping_mall_addresses>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<shopping_mall_addresses>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallCustomerAddressesAddressIdDefault.ts",
+            "line": 1622
+          },
+          "id": "type-error-1774846552480-nlx65ue7tml",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallCustomerAdminOrders.ts",
+            "line": 1439
+          },
+          "id": "type-error-1774846552480-0zsta9cn9fsp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'FloatFilter'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallCustomerAdminOrders.ts",
+            "line": 1833
+          },
+          "id": "type-error-1774846552480-sunj45h7s7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallCustomerRefundRequests.ts",
+            "line": 1292
+          },
+          "id": "type-error-1774846552480-vc1ziyj9qbs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'StringFilter'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallProductsSearch.ts",
+            "line": 1996
+          },
+          "id": "type-error-1774846552480-8k2b559evk6",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'StringFilter'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallProductsSearch.ts",
+            "line": 2532
+          },
+          "id": "type-error-1774846552480-rvo4bkdvxao",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'FloatFilter'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallProductsSearch.ts",
+            "line": 2868
+          },
+          "id": "type-error-1774846552480-yzy1p7r8cwj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '$queryRaw' does not exist on type 'PrismaClient'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallProductsSearch.ts",
+            "line": 3087
+          },
+          "id": "type-error-1774846552480-tk3neu0ffr8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS7006",
+          "message": "Parameter 'p' implicitly has an 'any' type.",
+          "location": {
+            "file": "src/providers/patchShoppingMallProductsSearch.ts",
+            "line": 3532
+          },
+          "id": "type-error-1774846552480-fpdmvub1xek",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'Promise<shopping_mall_product_images>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<shopping_mall_product_images>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallSellerProductsProductIdImagesReorder.ts",
+            "line": 2634
+          },
+          "id": "type-error-1774846552480-pxvo2zo3b7i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<shopping_mall_refund_request_snapshots> | Promise<shopping_mall_inventory_records> | Promise<shopping_mall_order_items> | Promise<shopping_mall_refund_requests>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<shopping_mall_refund_request_snapshots> | Promise<shopping_mall_inventory_records> | Promise<shopping_mall_order_items> | Promise<shopping_mall_refund_requests>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdApprove.ts",
+            "line": 2785
+          },
+          "id": "type-error-1774846552480-bc4shh3m5oe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'inventorySum._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/postShoppingMallCustomerCheckout.ts",
+            "line": 2946
+          },
+          "id": "type-error-1774846552480-08f032hi0kl5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'inventorySum._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/postShoppingMallCustomerCheckout.ts",
+            "line": 4223
+          },
+          "id": "type-error-1774846552480-51o68sbuzs6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'stockRecords._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/postShoppingMallCustomerCheckoutComplete.ts",
+            "line": 3845
+          },
+          "id": "type-error-1774846552480-ieb4uaxbgs8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'maxOrder._max' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/postShoppingMallSellerProductsProductIdImages.ts",
+            "line": 2171
+          },
+          "id": "type-error-1774846552480-7jw55dt8mp9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'currentStock._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/postShoppingMallSellerVariantsVariantIdInventory.ts",
+            "line": 1991
+          },
+          "id": "type-error-1774846552480-zvar6nbia2a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'shopping_mall_customers'.",
+          "location": {
+            "file": "src/transformers/ShoppingMallCustomerAtSummaryTransformer.ts",
+            "line": 1240
+          },
+          "id": "type-error-1774846552480-wfuvxbkoe9m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'shopping_mall_product_snapshots'.",
+          "location": {
+            "file": "src/transformers/ShoppingMallProductSnapshotAtSummaryTransformer.ts",
+            "line": 1274
+          },
+          "id": "type-error-1774846552480-vtoc2au6osd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'shopping_mall_shipments'.",
+          "location": {
+            "file": "src/transformers/ShoppingMallShipmentAtSummaryTransformer.ts",
+            "line": 2212
+          },
+          "id": "type-error-1774846552480-jj2a75nafza",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 8755,
+      "metrics": {
+        "totalFiles": 415,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 5,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 20,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 88,
+      "maxScore": 100,
+      "weightedScore": 6.16,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 1651257,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 68,
+        "providerCount": 127,
+        "structureCount": 50,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 68,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 65,
+      "maxScore": 100,
+      "weightedScore": 14.950000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 298,
+        "controllerCount": 68,
+        "routeAnalysis": true,
+        "totalRoutes": 118,
+        "coveredRoutes": 52,
+        "routeCoveragePercent": 44,
+        "definedMethods": "PUT,PATCH,GET,POST,DELETE",
+        "testedMethods": "PUT,GET,DELETE,POST,PATCH",
+        "controllersAnalyzed": 64,
+        "stubTests": 17,
+        "assertionTests": 281,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 123,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 123,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 1099,
+      "complexFunctions": 3,
+      "maxComplexity": 41,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putShoppingMallSellerProductsProductId\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/putShoppingMallSellerProductsProductId.ts",
+            "line": 20
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846552677-a1iqrs3bfqv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"postShoppingMallCustomerShipmentsShipmentIdConfirmDelivery\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallCustomerShipmentsShipmentIdConfirmDelivery.ts",
+            "line": 23
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846552684-tlv1rrpljco",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchShoppingMallSellerVariantsVariantIdInventory\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerVariantsVariantIdInventory.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846552694-ols3teuib7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchShoppingMallSellerShipments\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 21
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846552695-e4oit1e04c",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchShoppingMallSellerOrderItems\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerOrderItems.ts",
+            "line": 25
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846552697-x1e9uhd9lzd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchShoppingMallReviews\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallReviews.ts",
+            "line": 22
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846552699-b9zclxpyqgl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchShoppingMallProductsSearch\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallProductsSearch.ts",
+            "line": 20
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846552700-mvm3j4tnqlb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchShoppingMallProductsProductIdVariants\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallProductsProductIdVariants.ts",
+            "line": 17
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846552699-uohlc6aqn9m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchShoppingMallProductsProductIdImages\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallProductsProductIdImages.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846552701-6jc9o7708f9",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchShoppingMallCustomerSessions\" has complexity 41 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerSessions.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846552706-r2ke0e6i20k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchShoppingMallCustomerOrdersOrderIdItems\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerOrdersOrderIdItems.ts",
+            "line": 25
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846552709-fblkl8f5h1",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchShoppingMallCustomerAdminOrders\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerAdminOrders.ts",
+            "line": 19
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846552710-iqz29dx9gka",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 89,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/putShoppingMallSellerProductsProductIdImagesImageId.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846552890-9hwmi93ecf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/putShoppingMallSellerProductsProductIdImagesImageId.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846552890-szlg26fgden",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallSellerVariantsVariantIdInventory.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846552890-4jdgqsn8hox",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallSellerVariantsVariantIdInventory.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846552890-h7po61kfpbi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallSellerCancellationRequestsCancellationRequestIdReject.ts",
+            "line": 18
+          },
+          "id": "duplication-1774846552890-4vuty5bbpjt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallSellerCancellationRequestsCancellationRequestIdReject.ts",
+            "line": 19
+          },
+          "id": "duplication-1774846552890-i7b697jvve",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallSellerCancellationRequestsCancellationRequestIdReject.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846552890-1c6fyh2mer5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallSellerCancellationRequestsCancellationRequestIdReject.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846552890-785j0qg47j7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallSellerCancellationRequestsCancellationRequestIdReject.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846552890-mlmo85cfnz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallCustomerCheckoutComplete.ts",
+            "line": 124
+          },
+          "id": "duplication-1774846552890-htdc3exeoao",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallCustomerCheckoutComplete.ts",
+            "line": 125
+          },
+          "id": "duplication-1774846552890-evacl6nh8vj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallCustomerCheckoutComplete.ts",
+            "line": 188
+          },
+          "id": "duplication-1774846552890-0rgicndv9kk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallCustomerCheckoutComplete.ts",
+            "line": 189
+          },
+          "id": "duplication-1774846552890-0msjzyo8xavb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallCustomerCheckoutComplete.ts",
+            "line": 190
+          },
+          "id": "duplication-1774846552890-qbkjmxfocg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallCustomerCheckoutComplete.ts",
+            "line": 191
+          },
+          "id": "duplication-1774846552890-zzoqe52s7bj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallCustomerCheckoutComplete.ts",
+            "line": 193
+          },
+          "id": "duplication-1774846552890-3lel10c8279",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/postShoppingMallCustomerCheckout.ts",
+            "line": 65
+          },
+          "id": "duplication-1774846552890-3xt02rrz3ya",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerVariantsVariantIdInventory.ts",
+            "line": 66
+          },
+          "id": "duplication-1774846552890-7ha4njz3x9a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerVariantsVariantIdInventory.ts",
+            "line": 80
+          },
+          "id": "duplication-1774846552890-yzbtrdbltca",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerVariantsVariantIdInventory.ts",
+            "line": 81
+          },
+          "id": "duplication-1774846552890-ylwdevdws3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 43
+          },
+          "id": "duplication-1774846552890-0lob3ani0pdh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 44
+          },
+          "id": "duplication-1774846552890-u2eeltd7oe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 45
+          },
+          "id": "duplication-1774846552890-j6gkja70p2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 46
+          },
+          "id": "duplication-1774846552890-ukmlit6j3kb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 80
+          },
+          "id": "duplication-1774846552890-meae4wknoxk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 81
+          },
+          "id": "duplication-1774846552890-zt5ej4snon",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 82
+          },
+          "id": "duplication-1774846552890-v0h7ja608cj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 83
+          },
+          "id": "duplication-1774846552890-473xbw56mud",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 84
+          },
+          "id": "duplication-1774846552890-2iha7xhh3d8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 85
+          },
+          "id": "duplication-1774846552890-a2k0tfsj7pu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 86
+          },
+          "id": "duplication-1774846552890-ep2uf2ufge",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerShipments.ts",
+            "line": 87
+          },
+          "id": "duplication-1774846552890-9jxofbc2d0h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 44
+          },
+          "id": "duplication-1774846552890-hjph1xb2c6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 45
+          },
+          "id": "duplication-1774846552890-hi2unnswdtc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 46
+          },
+          "id": "duplication-1774846552890-txzs3ltrx6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 47
+          },
+          "id": "duplication-1774846552890-nkqs1m79htp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 48
+          },
+          "id": "duplication-1774846552890-dxljevlw7ia",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 49
+          },
+          "id": "duplication-1774846552890-sa32rwk2mc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 50
+          },
+          "id": "duplication-1774846552890-wqqznwsdyia",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 51
+          },
+          "id": "duplication-1774846552890-sx9yg4wc30g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 52
+          },
+          "id": "duplication-1774846552890-5jwuf37xjng",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 53
+          },
+          "id": "duplication-1774846552890-gshjbhp5x0s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 54
+          },
+          "id": "duplication-1774846552890-96efrq4lj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 55
+          },
+          "id": "duplication-1774846552890-1tzghxt3dsgi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 56
+          },
+          "id": "duplication-1774846552890-0t26jbac05j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 57
+          },
+          "id": "duplication-1774846552890-bbqxvwnuvs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 58
+          },
+          "id": "duplication-1774846552890-czbfhyabrje",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 59
+          },
+          "id": "duplication-1774846552890-l40fnhb8p9a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerSellerCancellationRequests.ts",
+            "line": 60
+          },
+          "id": "duplication-1774846552890-nzo6bucqqa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 19
+          },
+          "id": "duplication-1774846552890-wqlrrkro4e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846552890-7mvlhjgtc82",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846552890-mucsraf5y4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846552890-imwuwl8jai9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846552890-ofl4849nep",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846552890-5ghp89yoctx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846552890-n7byngo5lj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846552890-y6mh2orol5l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846552890-d5zh8wg8hwf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846552890-zzd5xplibbq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846552890-go5wn5mx8i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdReject.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846552890-wmsaozmti8j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerOrderItems.ts",
+            "line": 97
+          },
+          "id": "duplication-1774846552890-bmg1tai35r5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 57
+          },
+          "id": "duplication-1774846552890-9jepyr9rksp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 58
+          },
+          "id": "duplication-1774846552890-d8j30pcrh0e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 59
+          },
+          "id": "duplication-1774846552890-6xgivjlrjak",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 60
+          },
+          "id": "duplication-1774846552890-ztn2thb0t3f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 61
+          },
+          "id": "duplication-1774846552890-ej5r1ruec46",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 62
+          },
+          "id": "duplication-1774846552890-k5uttlvem7g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 63
+          },
+          "id": "duplication-1774846552890-xyslm32lz7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 64
+          },
+          "id": "duplication-1774846552890-n70vqz8lhxg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 65
+          },
+          "id": "duplication-1774846552890-l2ld0abqbso",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 66
+          },
+          "id": "duplication-1774846552890-9i631pyznuk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 67
+          },
+          "id": "duplication-1774846552890-qsvx30zwz4j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 68
+          },
+          "id": "duplication-1774846552890-xje43edssx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 69
+          },
+          "id": "duplication-1774846552890-h4jd8r9wqch",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 70
+          },
+          "id": "duplication-1774846552890-ugjjb50v7i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallSellerCancellationRequestSnapshots.ts",
+            "line": 71
+          },
+          "id": "duplication-1774846552890-x7urvil186d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallProductsSearch.ts",
+            "line": 12
+          },
+          "id": "duplication-1774846552890-18l5mef0ol8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallProductsSearch.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846552890-3a15bjwopp9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallProductsSearch.ts",
+            "line": 14
+          },
+          "id": "duplication-1774846552890-ttmjwqhivn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerSessions.ts",
+            "line": 56
+          },
+          "id": "duplication-1774846552890-duek9abswsg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerSessions.ts",
+            "line": 194
+          },
+          "id": "duplication-1774846552890-2qow6t62a37",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerSessions.ts",
+            "line": 195
+          },
+          "id": "duplication-1774846552890-ivrt1afeeom",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerSessions.ts",
+            "line": 227
+          },
+          "id": "duplication-1774846552890-t0espsw2a39",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerSessions.ts",
+            "line": 228
+          },
+          "id": "duplication-1774846552890-47x5qg10hv7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerSessions.ts",
+            "line": 260
+          },
+          "id": "duplication-1774846552890-eidvq8xq9ja",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerSessions.ts",
+            "line": 261
+          },
+          "id": "duplication-1774846552890-7y9kw7evgrd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/patchShoppingMallCustomerRefundRequestsRefundRequestIdSnapshots.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846552890-7bdigtnv6w4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/providers/getShoppingMallSellerCancellationRequestSnapshotsSnapshotId.ts",
+            "line": 45
+          },
+          "id": "duplication-1774846552890-00bovue5o2eja",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 20,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallProductsReview_statsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/products/review-stats/ShoppingmallProductsReview_statsController.ts",
+            "line": 8
+          },
+          "id": "naming-1774846552892-agh6em7r58",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallCustomerRefund_requestsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/refund-requests/ShoppingmallCustomerRefund_requestsController.ts",
+            "line": 13
+          },
+          "id": "naming-1774846552893-1mivlj64a1rh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallCustomerCancellation_requestsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/cancellation-requests/ShoppingmallCustomerCancellation_requestsController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846552893-ek08l2jwp1q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallCustomerCancellation_request_snapshotsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/cancellation-request-snapshots/ShoppingmallCustomerCancellation_request_snapshotsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846552894-cctw2fvpzvv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallSellerRefund_requestsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/refund-requests/ShoppingmallSellerRefund_requestsController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846552894-1n68xxhn011",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallSellerOrder_itemsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/order-items/ShoppingmallSellerOrder_itemsController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846552895-4gjwjcvlfjk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallSellerCancellation_requestsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/cancellation-requests/ShoppingmallSellerCancellation_requestsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846552896-qkuarvyk9x",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallSellerCancellation_request_snapshotsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/cancellation-request-snapshots/ShoppingmallSellerCancellation_request_snapshotsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846552896-su0jzf5czkc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallAdministratorRefund_request_snapshotsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/refund-request-snapshots/ShoppingmallAdministratorRefund_request_snapshotsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846552897-3q95iydezfm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallAdministratorCancellation_requestsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/cancellation-requests/ShoppingmallAdministratorCancellation_requestsController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846552897-iabsk9l0lxf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallAdministratorAdministrator_requestsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/administrator-requests/ShoppingmallAdministratorAdministrator_requestsController.ts",
+            "line": 13
+          },
+          "id": "naming-1774846552900-4292vfrwd8q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallAdministratorCancellation_request_snapshotsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/cancellation-request-snapshots/ShoppingmallAdministratorCancellation_request_snapshotsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846552898-9fxogqpjtl8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallCustomerShipmentsConfirm_deliveryController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/shipments/confirm-delivery/ShoppingmallCustomerShipmentsConfirm_deliveryController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846552899-8aketjhrsbw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallCustomerRefund_requestsSnapshotsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/refund-requests/snapshots/ShoppingmallCustomerRefund_requestsSnapshotsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846552899-qygxbh6609j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallCustomerSellerCancellation_requestsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/seller/cancellation-requests/ShoppingmallCustomerSellerCancellation_requestsController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846552899-9z6mkywpn85",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallCustomerAddresses_defaultController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/addresses/default/ShoppingmallCustomerAddresses_defaultController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846552900-66y3nkufthv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallSellerSellersApproval_statusController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/sellers/approval-status/ShoppingmallSellerSellersApproval_statusController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846552901-r1zvb0pbfmq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallSellerSellerCancellation_requestsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/seller/cancellation-requests/ShoppingmallSellerSellerCancellation_requestsController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846552902-82q858vige2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallAdministratorSellerCancellation_requestsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/seller/cancellation-requests/ShoppingmallAdministratorSellerCancellation_requestsController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846552902-wiim79h98c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ShoppingmallCustomerCustomersOrdersItemsCancellation_requestController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/customers/orders/items/cancellation-request/ShoppingmallCustomerCustomersOrdersItemsCancellation_requestController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846552903-9fdoejun4ge",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 68,
+      "totalApis": 69,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallReviewsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/reviews/ShoppingmallReviewsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552937-0t9d3hjh9s7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallProductsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/products/ShoppingmallProductsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552937-1ms0jhsue0b",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCategoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/categories/ShoppingmallCategoriesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552937-2a0q5qbcx0d",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallProductsVariantsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/products/variants/ShoppingmallProductsVariantsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552938-tix92anvd8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallProductsSearchController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/products/search/ShoppingmallProductsSearchController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846552938-gh2fn2erqgp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallProductsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/products/snapshots/ShoppingmallProductsSnapshotsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552938-amqh1ikfqit",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallProductsImagesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/products/images/ShoppingmallProductsImagesController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846552938-y0eq0gfg7on",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerWishlistsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/wishlists/ShoppingmallCustomerWishlistsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552938-xzjvgng4y4p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallProductsReview_statsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/products/review-stats/ShoppingmallProductsReview_statsController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774846552938-ygfskqsu6z9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/sessions/ShoppingmallCustomerSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552939-tn0fg5r8g17",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerSellersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/sellers/ShoppingmallCustomerSellersController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552939-tyfcou3k5nj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerReviewsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/reviews/ShoppingmallCustomerReviewsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552940-dzpud9k86o",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerRefund_requestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/refund-requests/ShoppingmallCustomerRefund_requestsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846552939-b5iyyaht1jg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/profile/ShoppingmallCustomerProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552939-yapwi9a7sy",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerOrdersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/orders/ShoppingmallCustomerOrdersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552940-iggzizg34i",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerCheckoutController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/checkout/ShoppingmallCustomerCheckoutController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552941-vgjdymmjcga",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerCancellation_requestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/cancellation-requests/ShoppingmallCustomerCancellation_requestsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552940-vlanqaq0r0i",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerCartsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/carts/ShoppingmallCustomerCartsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552940-uql9a2efbfj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerAddressesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/addresses/ShoppingmallCustomerAddressesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846552941-r6rnsd0jxk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerCancellation_request_snapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/cancellation-request-snapshots/ShoppingmallCustomerCancellation_request_snapshotsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552942-rf2ylb23an8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerShipmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/shipments/ShoppingmallSellerShipmentsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846552941-nle8j31vrg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerProductsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/products/ShoppingmallSellerProductsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552942-chq8mo9psro",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerRefund_requestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/refund-requests/ShoppingmallSellerRefund_requestsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552942-wmog5fpud6",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/resubmit/ShoppingmallSellerController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552942-d0xtnaillb9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerPasswordController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/password/ShoppingmallSellerPasswordController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552943-e4b9hx7q97n",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerOrder_itemsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/order-items/ShoppingmallSellerOrder_itemsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552943-lhbttx0lma",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerOrderitemsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/orderItems/ShoppingmallSellerOrderitemsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552943-h0dyahyop0b",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerDashboardController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/dashboard/ShoppingmallSellerDashboardController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552943-gglcq5yh6cv",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerCancellation_requestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/cancellation-requests/ShoppingmallSellerCancellation_requestsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552943-xgaj5930qb8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerCancellation_request_snapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/cancellation-request-snapshots/ShoppingmallSellerCancellation_request_snapshotsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552944-0y9th6x3026g",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorRefund_request_snapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/refund-request-snapshots/ShoppingmallAdministratorRefund_request_snapshotsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552944-87xbwjdmric",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorCustomersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/customers/ShoppingmallAdministratorCustomersController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552944-iuihgs4b0r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorCategoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/categories/ShoppingmallAdministratorCategoriesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552944-0fhz4t3coea9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorCancellation_requestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/cancellation-requests/ShoppingmallAdministratorCancellation_requestsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552944-edxp1vq0puv",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorAdministratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/administrators/ShoppingmallAdministratorAdministratorsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846552945-r3is929ugu",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorAdministrator_requestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/administrator-requests/ShoppingmallAdministratorAdministrator_requestsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846552948-a60xcwedu64",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCategoriesSubcategoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/categories/subcategories/ShoppingmallCategoriesSubcategoriesController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846552945-a163zfejo6h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAuthSellerController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/auth/seller/ShoppingmallAuthSellerController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552945-3r4ampbtyet",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAuthCustomerController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/auth/customer/ShoppingmallAuthCustomerController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552946-w462gbaef3k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAuthAdministratorController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/auth/administrator/ShoppingmallAuthAdministratorController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552946-dapkgwnfc2q",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorCancellation_request_snapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/cancellation-request-snapshots/ShoppingmallAdministratorCancellation_request_snapshotsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552946-ydgnamp1n5k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerShipmentsConfirm_deliveryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/shipments/confirm-delivery/ShoppingmallCustomerShipmentsConfirm_deliveryController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552947-74mcr89ek5c",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerWishlistsItemsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/wishlists/items/ShoppingmallCustomerWishlistsItemsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552947-86f5vkimmt9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerReviewsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/reviews/snapshots/ShoppingmallCustomerReviewsSnapshotsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552948-ao80ee5j4sj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerRefund_requestsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/refund-requests/snapshots/ShoppingmallCustomerRefund_requestsSnapshotsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552947-79t53c7c8v3",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerSellerCancellation_requestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/seller/cancellation-requests/ShoppingmallCustomerSellerCancellation_requestsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552948-dx97kpqzfik",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerOrdersShipmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/orders/shipments/ShoppingmallCustomerOrdersShipmentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552947-uikrznacjy",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerOrdersItemsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/orders/items/ShoppingmallCustomerOrdersItemsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552948-oy9k3my305f",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerCartsItemsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/carts/items/ShoppingmallCustomerCartsItemsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552949-uxlrccf6yb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerAdminOrdersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/admin/orders/ShoppingmallCustomerAdminOrdersController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552948-2g3alzlj6z4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerAddresses_defaultController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/addresses/default/ShoppingmallCustomerAddresses_defaultController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552948-s1o8eqkjg6",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerVariantsInventoryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/variants/inventory/ShoppingmallSellerVariantsInventoryController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846552949-og5yc1ekgte",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerSellersApproval_statusController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/sellers/approval-status/ShoppingmallSellerSellersApproval_statusController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552950-efppp15uy79",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerProductsVariantsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/products/variants/ShoppingmallSellerProductsVariantsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552951-2u005qvjlel",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerProductsImagesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/products/images/ShoppingmallSellerProductsImagesController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846552950-onztrzpwpi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerSellerShipmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/seller/shipments/ShoppingmallSellerSellerShipmentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552950-kwq2mtrp7he",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerSellerProductsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/seller/products/ShoppingmallSellerSellerProductsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552950-7hq4gnzkuts",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerSellerCancellation_requestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/seller/cancellation-requests/ShoppingmallSellerSellerCancellation_requestsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552950-ae0evuagheb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerCustomersProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/customers/profile/ShoppingmallSellerCustomersProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552950-7eitrly9tur",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorVariantsInventoryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/variants/inventory/ShoppingmallAdministratorVariantsInventoryController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552950-lg3ol01sfpr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorSellerCancellation_requestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/seller/cancellation-requests/ShoppingmallAdministratorSellerCancellation_requestsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846552951-9csnov9j4ie",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorCategoriesSubcategoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/categories/subcategories/ShoppingmallAdministratorCategoriesSubcategoriesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552951-scwmw5itne",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorReviewsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/reviews/snapshots/ShoppingmallAdministratorReviewsSnapshotsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846552951-jvl62adw1c9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallAdministratorAdminCategoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/administrator/admin/categories/ShoppingmallAdministratorAdminCategoriesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552951-qortv4bql0p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerOrdersItemsSnapshotController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/orders/items/snapshot/ShoppingmallCustomerOrdersItemsSnapshotController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552952-zzv9h3htvyr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerCustomersCartItemsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/customers/cart/items/ShoppingmallCustomerCustomersCartItemsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552952-s1ld1eylup",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallSellerSellerProductsVariantsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/seller/seller/products/variants/ShoppingmallSellerSellerProductsVariantsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552952-a5jdbpg1ryw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ShoppingmallCustomerCustomersOrdersItemsCancellation_requestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/shopping/src/controllers/shoppingMall/customer/customers/orders/items/cancellation-request/ShoppingmallCustomerCustomersOrdersItemsCancellation_requestController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846552952-1xg8mcq5biu",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 138,
+      "emptyTypes": 1,
+      "mismatchedProperties": 30,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"product\" not found in Prisma model \"shopping_mall_products\"",
+          "location": {
+            "file": "src/api/structures/IShoppingMallWishlistItem.ts",
+            "line": 21
+          },
+          "id": "completeness-1774846552967-s55452kxcg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallProduct\" not found — referenced by @x-autobe-database-schema-property product",
+          "location": {
+            "file": "src/api/structures/IShoppingMallWishlistItem.ts",
+            "line": 92
+          },
+          "id": "completeness-1774846552967-y28uvrasx3p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallCustomer\" not found — referenced by @x-autobe-database-schema-property customer",
+          "location": {
+            "file": "src/api/structures/IShoppingMallReview.ts",
+            "line": 39
+          },
+          "id": "completeness-1774846552967-bxgquizmhgt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallProduct\" not found — referenced by @x-autobe-database-schema-property product",
+          "location": {
+            "file": "src/api/structures/IShoppingMallReview.ts",
+            "line": 47
+          },
+          "id": "completeness-1774846552967-1b2ur5mi1ohh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallOrder\" not found — referenced by @x-autobe-database-schema-property order",
+          "location": {
+            "file": "src/api/structures/IShoppingMallReview.ts",
+            "line": 55
+          },
+          "id": "completeness-1774846552967-r2axagdx1e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallCustomer\" not found — referenced by @x-autobe-database-schema-property customer",
+          "location": {
+            "file": "src/api/structures/IShoppingMallReview.ts",
+            "line": 261
+          },
+          "id": "completeness-1774846552967-gws7exjrcx9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallProduct\" not found — referenced by @x-autobe-database-schema-property product",
+          "location": {
+            "file": "src/api/structures/IShoppingMallReview.ts",
+            "line": 269
+          },
+          "id": "completeness-1774846552967-y999mo0ckyi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallOrder\" not found — referenced by @x-autobe-database-schema-property order",
+          "location": {
+            "file": "src/api/structures/IShoppingMallReview.ts",
+            "line": 277
+          },
+          "id": "completeness-1774846552967-osxbgi7mzj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallOrderItem\" not found — referenced by @x-autobe-database-schema-property orderItem",
+          "location": {
+            "file": "src/api/structures/IShoppingMallRefundRequest.ts",
+            "line": 37
+          },
+          "id": "completeness-1774846552967-hzlfge2tqc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: ISummary = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/IShoppingMallRefundRequest.ts",
+            "line": 148
+          },
+          "id": "completeness-1774846552967-gwoo9y099o8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallProduct\" not found — referenced by @x-autobe-database-schema-property product",
+          "location": {
+            "file": "src/api/structures/IShoppingMallProductVariant.ts",
+            "line": 54
+          },
+          "id": "completeness-1774846552967-uyaayyh2qti",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallProduct\" not found — referenced by @x-autobe-database-schema-property product",
+          "location": {
+            "file": "src/api/structures/IShoppingMallProductImage.ts",
+            "line": 21
+          },
+          "id": "completeness-1774846552967-ang5yhnfiue",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"shopping_mall_category_id\" not found in Prisma model \"shopping_mall_categories\"",
+          "location": {
+            "file": "src/api/structures/IShoppingMallProduct.ts",
+            "line": 170
+          },
+          "id": "completeness-1774846552968-kele6kmorph",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"category\" not found in Prisma model \"shopping_mall_categories\"",
+          "location": {
+            "file": "src/api/structures/IShoppingMallProduct.ts",
+            "line": 215
+          },
+          "id": "completeness-1774846552968-r05eq9tuwrr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"seller\" not found in Prisma model \"shopping_mall_sellers\"",
+          "location": {
+            "file": "src/api/structures/IShoppingMallProduct.ts",
+            "line": 223
+          },
+          "id": "completeness-1774846552968-b21z9tx3f6e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallProduct\" not found — referenced by @x-autobe-database-schema-property product",
+          "location": {
+            "file": "src/api/structures/IShoppingMallOrderItem.ts",
+            "line": 69
+          },
+          "id": "completeness-1774846552968-15eyn5yvjde",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallProductVariant\" not found — referenced by @x-autobe-database-schema-property variant",
+          "location": {
+            "file": "src/api/structures/IShoppingMallOrderItem.ts",
+            "line": 77
+          },
+          "id": "completeness-1774846552968-7g0w2h7fl3a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallSeller\" not found — referenced by @x-autobe-database-schema-property seller",
+          "location": {
+            "file": "src/api/structures/IShoppingMallOrderItem.ts",
+            "line": 85
+          },
+          "id": "completeness-1774846552968-9e0hkyzg7l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallOrder\" not found — referenced by @x-autobe-database-schema-property order",
+          "location": {
+            "file": "src/api/structures/IShoppingMallOrderItem.ts",
+            "line": 93
+          },
+          "id": "completeness-1774846552968-g8cn60cchkt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallShipment\" not found — referenced by @x-autobe-database-schema-property shipment",
+          "location": {
+            "file": "src/api/structures/IShoppingMallOrderItem.ts",
+            "line": 101
+          },
+          "id": "completeness-1774846552968-fnmr5fy6ur8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"parent\" not found — referenced by @x-autobe-database-schema-property parent",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCategory.ts",
+            "line": 35
+          },
+          "id": "completeness-1774846552968-0otj8xhb8yts",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"this\" not found — referenced by @x-autobe-database-schema-property children",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCategory.ts",
+            "line": 43
+          },
+          "id": "completeness-1774846552968-3abktsj9ppo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallCategory\" not found — referenced by @x-autobe-database-schema-property parent",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCategory.ts",
+            "line": 180
+          },
+          "id": "completeness-1774846552968-gaghx1sdskd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallCategory\" not found — referenced by @x-autobe-database-schema-property name",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCategory.ts",
+            "line": 217
+          },
+          "id": "completeness-1774846552968-siilfa6ywjr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallCategory\" not found — referenced by @x-autobe-database-schema-property description",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCategory.ts",
+            "line": 225
+          },
+          "id": "completeness-1774846552968-xnc7462yi7d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallCategory\" not found — referenced by @x-autobe-database-schema-property parent_id",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCategory.ts",
+            "line": 233
+          },
+          "id": "completeness-1774846552968-b72pgwb8l9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallProductVariant\" not found — referenced by @x-autobe-database-schema-property variant",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCartItem.ts",
+            "line": 37
+          },
+          "id": "completeness-1774846552968-m2pgqw05fr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"shopping_mall_product_variant_id\" not found in Prisma model \"shopping_mall_product_variants\"",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCartItem.ts",
+            "line": 79
+          },
+          "id": "completeness-1774846552968-4wpankmlio5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallCancellationRequest\" not found — referenced by @x-autobe-database-schema-property cancellationRequest",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCancellationRequestSnapshot.ts",
+            "line": 45
+          },
+          "id": "completeness-1774846552968-ax6k8bee1to",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallOrderItem\" not found — referenced by @x-autobe-database-schema-property orderItem",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCancellationRequest.ts",
+            "line": 62
+          },
+          "id": "completeness-1774846552968-btl82unfyx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IShoppingMallSeller\" not found — referenced by @x-autobe-database-schema-property seller",
+          "location": {
+            "file": "src/api/structures/IShoppingMallCancellationRequest.ts",
+            "line": 70
+          },
+          "id": "completeness-1774846552968-mf8hcar61b",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 28,
+    "criticalCount": 0,
+    "warningCount": 20,
+    "suggestionCount": 8
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846552480-rdyj2ixqm0m",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<{ count: number; }> | Promise<shopping_mall_categories>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<shopping_mall_categories>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteShoppingMallAdministratorCategoriesCategoryId.ts",
+        "line": 1587
+      },
+      "id": "type-error-1774846552480-5qm24odnpxg",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<shopping_mall_cart_items> | Promise<shopping_mall_carts>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<shopping_mall_cart_items> | Promise<shopping_mall_carts>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteShoppingMallCustomerCartsItemsCartItemId.ts",
+        "line": 1361
+      },
+      "id": "type-error-1774846552480-x0dt7k2pp2",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<{ count: number; }> | Promise<shopping_mall_product_variants>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<shopping_mall_product_variants>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteShoppingMallSellerProductsProductIdVariantsVariantId.ts",
+        "line": 3016
+      },
+      "id": "type-error-1774846552480-0yxu8no59cyi",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'found._count' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/getShoppingMallProductsProductIdReviewStats.ts",
+        "line": 1811
+      },
+      "id": "type-error-1774846552480-4alqeq2034u",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'avgResult._avg' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/getShoppingMallProductsProductIdReviewStats.ts",
+        "line": 2071
+      },
+      "id": "type-error-1774846552480-s7ib5w7tl1",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'avgResult._avg' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/getShoppingMallProductsProductIdReviewStats.ts",
+        "line": 2121
+      },
+      "id": "type-error-1774846552480-e852cmenzb8",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<{ count: number; }> | Promise<shopping_mall_addresses>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<shopping_mall_addresses>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallCustomerAddressesAddressIdDefault.ts",
+        "line": 1622
+      },
+      "id": "type-error-1774846552480-nlx65ue7tml",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '$queryRaw' does not exist on type 'PrismaClient'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallProductsSearch.ts",
+        "line": 3087
+      },
+      "id": "type-error-1774846552480-tk3neu0ffr8",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS7006",
+      "message": "Parameter 'p' implicitly has an 'any' type.",
+      "location": {
+        "file": "src/providers/patchShoppingMallProductsSearch.ts",
+        "line": 3532
+      },
+      "id": "type-error-1774846552480-fpdmvub1xek",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'Promise<shopping_mall_product_images>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<shopping_mall_product_images>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallSellerProductsProductIdImagesReorder.ts",
+        "line": 2634
+      },
+      "id": "type-error-1774846552480-pxvo2zo3b7i",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<shopping_mall_refund_request_snapshots> | Promise<shopping_mall_inventory_records> | Promise<shopping_mall_order_items> | Promise<shopping_mall_refund_requests>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<shopping_mall_refund_request_snapshots> | Promise<shopping_mall_inventory_records> | Promise<shopping_mall_order_items> | Promise<shopping_mall_refund_requests>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallSellerRefundRequestsRefundRequestIdApprove.ts",
+        "line": 2785
+      },
+      "id": "type-error-1774846552480-bc4shh3m5oe",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'inventorySum._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/postShoppingMallCustomerCheckout.ts",
+        "line": 2946
+      },
+      "id": "type-error-1774846552480-08f032hi0kl5",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'inventorySum._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/postShoppingMallCustomerCheckout.ts",
+        "line": 4223
+      },
+      "id": "type-error-1774846552480-51o68sbuzs6",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'stockRecords._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/postShoppingMallCustomerCheckoutComplete.ts",
+        "line": 3845
+      },
+      "id": "type-error-1774846552480-ieb4uaxbgs8",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'maxOrder._max' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/postShoppingMallSellerProductsProductIdImages.ts",
+        "line": 2171
+      },
+      "id": "type-error-1774846552480-7jw55dt8mp9",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'currentStock._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/postShoppingMallSellerVariantsVariantIdInventory.ts",
+        "line": 1991
+      },
+      "id": "type-error-1774846552480-zvar6nbia2a",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'shopping_mall_customers'.",
+      "location": {
+        "file": "src/transformers/ShoppingMallCustomerAtSummaryTransformer.ts",
+        "line": 1240
+      },
+      "id": "type-error-1774846552480-wfuvxbkoe9m",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'shopping_mall_product_snapshots'.",
+      "location": {
+        "file": "src/transformers/ShoppingMallProductSnapshotAtSummaryTransformer.ts",
+        "line": 1274
+      },
+      "id": "type-error-1774846552480-vtoc2au6osd",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'shopping_mall_shipments'.",
+      "location": {
+        "file": "src/transformers/ShoppingMallShipmentAtSummaryTransformer.ts",
+        "line": 2212
+      },
+      "id": "type-error-1774846552480-jj2a75nafza",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2739",
+      "message": "Type 'ISummary[]' is missing the following properties from type 'ISummary': id, image_url, display_order, created_at",
+      "location": {
+        "file": "src/controllers/shoppingMall/seller/products/images/ShoppingmallSellerProductsImagesController.ts",
+        "line": 17386
+      },
+      "id": "type-error-1774846552480-hm84qpj5ywp",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/getShoppingMallProductsProductIdReviewStats.ts",
+        "line": 1347
+      },
+      "id": "type-error-1774846552480-0c12kj6gfqt",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallCustomerAdminOrders.ts",
+        "line": 1439
+      },
+      "id": "type-error-1774846552480-0zsta9cn9fsp",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'FloatFilter'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallCustomerAdminOrders.ts",
+        "line": 1833
+      },
+      "id": "type-error-1774846552480-sunj45h7s7",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallCustomerRefundRequests.ts",
+        "line": 1292
+      },
+      "id": "type-error-1774846552480-vc1ziyj9qbs",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'StringFilter'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallProductsSearch.ts",
+        "line": 1996
+      },
+      "id": "type-error-1774846552480-8k2b559evk6",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'StringFilter'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallProductsSearch.ts",
+        "line": 2532
+      },
+      "id": "type-error-1774846552480-rvo4bkdvxao",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'FloatFilter'.",
+      "location": {
+        "file": "src/providers/patchShoppingMallProductsSearch.ts",
+        "line": 2868
+      },
+      "id": "type-error-1774846552480-yzy1p7r8cwj",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:55:52.969Z",
+    "totalDurationMs": 9165,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 415
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 5,
+      "missing": 68,
+      "ratio": "99%"
+    },
+    "schemaSync": {
+      "amount": 2,
+      "emptyTypes": 1,
+      "mismatchedProperties": 30
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 1897,
+    "totalFiles": 415,
+    "totalLines": 44059,
+    "avgLinesPerFile": 106,
+    "largestFile": "src/api/structures/IShoppingMallSeller.ts",
+    "largestFileSizeKB": 35,
+    "controllers": 68,
+    "providers": 127,
+    "structures": 50,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}
