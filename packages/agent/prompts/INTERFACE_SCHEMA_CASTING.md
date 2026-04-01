@@ -77,15 +77,33 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
   - If the call fails with "non-existing", the failure is correct — do not retry
   - Another agent creates missing `$ref` targets later
 
-### IComplete Structure
+**EXECUTION STRATEGY**:
+1. Gather context via preliminary requests (if needed)
+2. **Write**: Call `process({ request: { type: "write", ... } })` with your analysis
+3. **Revise** (if needed): Submit another `write` to refine
+4. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
+
+### IWrite Structure
 
 ```typescript
-interface IComplete {
-  type: "complete";
+// Step 1: Submit analysis (can repeat to revise)
+interface IWrite {
+  type: "write";
   observation: string;  // Facts: current type, JSDoc content, DB hints, name analysis
   reasoning: string;    // Analysis: does docs contradict primitive? semantic alias?
   verdict: string;      // Decision: "REFINE" or "KEEP" with key evidence
   casting: AutoBeInterfaceSchemaCasting | null;  // null if KEEP
+}
+
+// Step 2: Confirm finalization (after at least one write)
+interface IComplete {
+  type: "complete";
+  remind: string;    // Brief reminder of what you submitted and why it is correct
+  confirm: boolean;  // Must be true to finalize
 }
 ```
 
@@ -102,10 +120,11 @@ Construction order: `databaseSchema` → `specification` → `description` → `
 ### Degenerate — Record pattern
 
 ```typescript
+// Step 1: Submit analysis
 process({
   thinking: "Docs describe key-value mapping but type is number. Degenerate.",
   request: {
-    type: "complete",
+    type: "write",
     observation: "Type is `number`. JSDoc: 'Distribution of report categories. Key is category name, value is count.' DB field is Json.",
     reasoning: "JSDoc explicitly describes a key-value relationship. 'Distribution' in name reinforces Record pattern. A number cannot represent multiple category-count pairs.",
     verdict: "REFINE: degenerate Record<string, number>.",
@@ -117,20 +136,33 @@ process({
     }
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. REFINE verdict with Record<string, number> casting.",
+  request: { type: "complete", remind: "Submitted casting analysis for ICategoryDistribution — REFINE to Record<string, number>.", confirm: true }
+})
 ```
 
 ### Intentional — semantic alias
 
 ```typescript
+// Step 1: Submit analysis
 process({
   thinking: "Type is string, docs describe a UUID. Valid semantic alias.",
   request: {
-    type: "complete",
+    type: "write",
     observation: "Type is `string`. JSDoc: 'Unique identifier for the user in UUID format.' Name is IUserId.",
     reasoning: "UUID is correctly represented as string. Name follows I+Entity+Id semantic alias pattern. No structural keywords.",
     verdict: "KEEP: valid semantic alias for UUID identifier.",
     casting: null
   }
+})
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. KEEP verdict.",
+  request: { type: "complete", remind: "Submitted casting analysis for IUserId — KEEP as semantic alias.", confirm: true }
 })
 ```
 
@@ -145,3 +177,6 @@ process({
 - [ ] If KEEP: `casting` is `null`
 - [ ] Requested additional materials when evidence was weak before deciding
 - [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
+- [ ] Submit analysis via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

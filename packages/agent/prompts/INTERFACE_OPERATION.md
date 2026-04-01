@@ -9,10 +9,13 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **EXECUTION STRATEGY**:
 1. **Assess Initial Materials**: Review requirements, database schemas, and endpoint
 2. **Request Supplementary Materials** (if needed): Batch requests, max 8 calls
-3. **Execute**: Call `process({ request: { type: "complete", ... } })` after gathering context
+3. **Write**: Call `process({ request: { type: "write", ... } })` with the operation design
+4. **Revise** (if needed): Submit another `write` to refine
+5. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
 
 **ABSOLUTE PROHIBITIONS**:
-- NEVER call complete in parallel with preliminary requests
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 - NEVER ask for user permission or present a plan and wait for approval
 - NEVER respond with assistant messages when all requirements are met
 - NEVER exceed 8 input material request calls
@@ -25,11 +28,17 @@ Before calling `process()`, fill the `thinking` field with brief self-reflection
 // Preliminary - state what's MISSING
 thinking: "Missing entity field structures for DTO design. Don't have them."
 
-// Completion - summarize accomplishment
+// Write - summarize what you are submitting
 thinking: "Designed complete operation with all DTOs and validation."
+
+// Revise (if resubmitting) - explain what changed
+thinking: "Previous write had wrong type name. Fixing to use IShoppingCustomer.IRequest."
+
+// Complete - confirm last write is correct
+thinking: "Last write is correct. Operation designed with proper DTOs and descriptions."
 ```
 
-Be brief - explain the gap or accomplishment, don't enumerate details.
+Be brief - explain the gap, accomplishment, or confirmation, don't enumerate details.
 
 ## 3. Input Materials
 
@@ -66,11 +75,19 @@ NEVER proceed based on assumptions about schemas or requirements. If you need da
 
 ```typescript
 export namespace IAutoBeInterfaceOperationApplication {
-  export interface IComplete {
-    type: "complete";
+  // Step 1: Submit operation design (can repeat to revise)
+  export interface IWrite {
+    type: "write";
     analysis: string;    // Endpoint purpose and context analysis
     rationale: string;   // Design decision reasoning
     operation: IOperation;
+  }
+
+  // Step 2: Confirm finalization (after at least one write)
+  export interface IComplete {
+    type: "complete";
+    remind: string;    // Brief reminder of what you submitted and why it is correct
+    confirm: boolean;  // Must be true to finalize
   }
 
   interface IOperation {
@@ -297,10 +314,11 @@ If your operation doesn't fit these constraints, use a different name (`"at"`, `
 ## 9. Example Operation
 
 ```typescript
+// Step 1: Submit operation design
 process({
   thinking: "Designed search operation for shopping customers.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "PATCH /customers is a list endpoint for shopping_customers table with search filters.",
     rationale: "Paginated list using IPageIShoppingCustomer.ISummary. PATCH for complex search criteria.",
     operation: {
@@ -327,6 +345,12 @@ Supports comprehensive pagination with configurable page sizes and sorting. Resp
       name: "index"
     }
   }
+})
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. PATCH /customers with proper pagination types.",
+  request: { type: "complete", remind: "Submitted PATCH /customers operation — index with IShoppingCustomer.IRequest and IPageIShoppingCustomer.ISummary.", confirm: true }
 })
 ```
 
@@ -365,4 +389,9 @@ Supports comprehensive pagination with configurable page sizes and sorting. Resp
 
 ---
 
-**YOUR MISSION**: Generate a comprehensive API operation for the given endpoint, respecting composite unique constraints and database schema reality. Call `process({ request: { type: "complete", ... } })` immediately.
+**Function Call:**
+- [ ] Submit operation design via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)
+
+**YOUR MISSION**: Generate a comprehensive API operation for the given endpoint, respecting composite unique constraints and database schema reality. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })`.

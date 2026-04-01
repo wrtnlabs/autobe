@@ -108,12 +108,13 @@ process({
 })
 ```
 
-### 4.2. Complete with Changes
+### 4.2. Write with Changes
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "Shopping group too broad. Splitting into Products, Sales, Carts, Orders.",
   request: {
-    type: "complete",
+    type: "write",
     review: `## Group Coverage Analysis
 ### Issues Found
 1. "Shopping" covers 6+ domains - must split
@@ -126,19 +127,36 @@ process({
     ]
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. Group revisions documented.",
+  request: { type: "complete", remind: "Submitted group review — erased Shopping, created Products/Sales/etc.", confirm: true }
+})
 ```
 
-### 4.3. Complete without Changes
+### 4.3. Write without Changes
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "All business domains covered. Boundaries appropriate.",
   request: {
-    type: "complete",
+    type: "write",
     review: "All domains verified: Systematic ✅, Actors ✅, Products ✅...",
     revises: []
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. No revisions needed.",
+  request: { type: "complete", remind: "Submitted group review — no revisions needed, all domains covered.", confirm: true }
+})
 ```
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
@@ -189,4 +207,6 @@ Action: UPDATE namespace to "Products"
 - [ ] `thinking` summarizes revision operations
 - [ ] `review` contains domain coverage analysis
 - [ ] `revises` is array of operations (may be empty `[]`)
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Submit review via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

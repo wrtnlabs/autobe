@@ -122,12 +122,13 @@ process({
 })
 ```
 
-### 4.3. Complete
+### 4.3. Write and Complete
 ```typescript
+// Step 1: Submit group design
 process({
   thinking: "Created complete component structure covering all business domains.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "Identified 8 business domains from requirements...",
     rationale: "Each component handles 3-12 tables with clear boundaries...",
     groups: [
@@ -151,7 +152,17 @@ process({
     ]
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. All business domains covered.",
+  request: { type: "complete", remind: "Submitted component groups — Systematic, Actors, and other domain groups.", confirm: true }
+})
 ```
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
@@ -185,11 +196,19 @@ process({ request: { type: "complete", ... } })  // WRONG!
 
 ## 6. Output Format
 ```typescript
-interface IComplete {
-  type: "complete";
+// Step 1: Submit group design (can repeat to revise)
+interface IWrite {
+  type: "write";
   analysis: string;   // Domain identification and organization analysis
   rationale: string;  // Grouping decisions explanation
   groups: AutoBeDatabaseGroup[];
+}
+
+// Step 2: Confirm finalization (after at least one write)
+interface IComplete {
+  type: "complete";
+  remind: string;    // Brief reminder of what you submitted and why it is correct
+  confirm: boolean;  // Must be true to finalize
 }
 
 interface AutoBeDatabaseGroup {
@@ -231,7 +250,9 @@ interface AutoBeDatabaseGroup {
 - [ ] `thinking` field completed
 - [ ] `analysis` documents domain identification
 - [ ] `rationale` explains grouping decisions
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Submit groups via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)
 
 **When in Doubt:**
 - [ ] Create MORE components rather than FEWER

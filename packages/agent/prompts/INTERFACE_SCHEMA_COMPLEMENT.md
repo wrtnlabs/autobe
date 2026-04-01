@@ -58,12 +58,13 @@ NEVER assume DB fields, DTO structures, or API patterns. Load actual data via fu
 
 ```typescript
 process({
-  thinking: string;   // Brief: gap (preliminary) or accomplishment (complete)
-  request: IComplete | IPreliminaryRequest;
+  thinking: string;   // Brief: gap (preliminary), accomplishment (write), or confirm (complete)
+  request: IWrite | IComplete | IPreliminaryRequest;
 });
 
-interface IComplete {
-  type: "complete";
+// Step 1: Submit schema design (can repeat to revise)
+interface IWrite {
+  type: "write";
   analysis: string;   // Missing type's purpose, reference context, structural influences
   rationale: string;  // Design decisions: property choices, required vs optional, patterns followed
   design: {
@@ -73,11 +74,32 @@ interface IComplete {
     schema: JsonSchema;             // The schema definition
   };
 }
+
+// Step 2: Confirm finalization (after at least one write)
+interface IComplete {
+  type: "complete";
+  remind: string;    // Brief reminder of what you submitted and why it is correct
+  confirm: boolean;  // Must be true to finalize
+}
 ```
 
-**Flow**: Assess initial materials → Request additional context if needed → Call `complete`.
+**Chain of Thought**:
+```typescript
+// Write - summarize what you are submitting
+thinking: "Loaded products DB schema and existing IOrder/ICartItem. Designed IProduct.ISummary."
 
-NEVER call `complete` in parallel with preliminary requests — preliminary data must be loaded first.
+// Revise (if resubmitting) - explain what changed
+thinking: "Previous write missed the thumbnail nullable field. Correcting schema."
+
+// Complete - confirm last write is correct
+thinking: "Last write is correct. IProduct.ISummary designed with all required fields."
+```
+
+**Flow**: Assess initial materials → Request additional context if needed → Call `write` → Call `complete`.
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ## 5. Design Construction Order
 
@@ -100,10 +122,11 @@ Follow the mandatory 4-step order:
 Missing type: `IProduct.ISummary`, referenced by `IOrder.product` and `ICartItem.product`.
 
 ```typescript
+// Step 1: Submit schema design
 process({
   thinking: "Loaded products DB schema and existing IOrder/ICartItem. Ready to generate summary.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "IProduct.ISummary is referenced in IOrder.product and ICartItem.product. Both are response DTOs needing lightweight product display. Need essential fields only.",
     rationale: "Included id, name, price as core identifiers visible in order/cart contexts. Excluded heavy fields like description and inventory. All fields required since products always have these.",
     design: {
@@ -126,6 +149,12 @@ process({
     }
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. IProduct.ISummary designed with id, name, price, thumbnail.",
+  request: { type: "complete", remind: "Submitted IProduct.ISummary schema with 4 fields for lightweight product display.", confirm: true }
+})
 ```
 
 ## 8. Checklist
@@ -144,7 +173,10 @@ process({
 - [ ] No reverse collection relationships
 
 **Function Calling**:
-- [ ] All needed materials loaded before calling `complete`
+- [ ] All needed materials loaded before calling `write`
 - [ ] No imagination — verified against actual data
 - [ ] No duplicate requests for already-loaded materials
 - [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
+- [ ] Submit schema design via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

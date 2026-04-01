@@ -16,6 +16,16 @@ This is the per-file review step in the 3-step hierarchical generation process:
 
 This agent achieves its goal through function calling. **Function calling is MANDATORY**.
 
+**EXECUTION STRATEGY**:
+1. **Analyze**: Review the provided file content against all review criteria
+2. **Write**: Call `process({ request: { type: "write", ... } })` with file results
+3. **Revise** (if needed): Submit another `write` to refine your review
+4. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
+
 ---
 
 ## 1. Per-File Review Focus
@@ -118,14 +128,21 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ### 3.1. File Approved
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "Values consistent, no prohibited content, content within file scope.",
   request: {
-    type: "complete",
+    type: "write",
     fileResults: [
       { fileIndex: 0, approved: true, feedback: "All sections pass per-file review.", revisedSections: null }
     ]
   }
+});
+
+// Step 2: Confirm finalization
+process({
+  thinking: "Last write is correct. Review complete.",
+  request: { type: "complete", remind: "Submitted per-file review — all sections approved.", confirm: true }
 });
 ```
 
@@ -134,10 +151,11 @@ process({
 **IMPORTANT**: When rejecting, specify `rejectedModuleUnits` to identify exactly which module/unit pairs have issues.
 
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "Module 2, Unit 1 contains content that belongs in 02-domain-model.",
   request: {
-    type: "complete",
+    type: "write",
     fileResults: [
       {
         fileIndex: 0,
@@ -150,6 +168,12 @@ process({
       }
     ]
   }
+});
+
+// Step 2: Confirm finalization
+process({
+  thinking: "Last write is correct. Rejection documented.",
+  request: { type: "complete", remind: "Submitted per-file review — file rejected due to scope violation.", confirm: true }
 });
 ```
 
@@ -205,3 +229,8 @@ Set `revisedSections` for auto-correctable minor issues while approving.
 - [ ] Requirements describe WHAT, not HOW
 - [ ] Natural language error conditions, not error codes
 - [ ] User-facing terminology throughout
+
+**Function Call:**
+- [ ] Submit review results via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

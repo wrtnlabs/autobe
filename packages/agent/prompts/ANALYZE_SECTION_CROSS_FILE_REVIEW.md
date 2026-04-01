@@ -14,6 +14,16 @@ This is the cross-file consistency check in the 3-step hierarchical generation p
 
 This agent achieves its goal through function calling. **Function calling is MANDATORY**.
 
+**EXECUTION STRATEGY**:
+1. **Analyze**: Review cross-file semantic consistency across all files
+2. **Write**: Call `process({ request: { type: "write", ... } })` with file results
+3. **Revise** (if needed): Submit another `write` to refine your review
+4. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
+
 ---
 
 ## 1. Cross-File Semantic Consistency Focus
@@ -85,25 +95,33 @@ You receive section titles, keywords, and brief content summaries from ALL files
 
 ### 3.1. All Files Approved
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "All files use consistent models and concept names.",
   request: {
-    type: "complete",
+    type: "write",
     fileResults: [
       { fileIndex: 0, approved: true, feedback: "Consistent with all other files." },
       { fileIndex: 1, approved: true, feedback: "Minor note: consider aligning terminology." }
     ]
   }
 });
+
+// Step 2: Confirm finalization
+process({
+  thinking: "Last write is correct. Cross-file review complete.",
+  request: { type: "complete", remind: "Submitted cross-file review — all files approved.", confirm: true }
+});
 ```
 
 ### 3.2. Some Files Rejected (with granular identification)
 
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "File 1 describes hard delete, contradicting File 2's soft delete.",
   request: {
-    type: "complete",
+    type: "write",
     fileResults: [
       { fileIndex: 0, approved: true, feedback: "Consistent.", rejectedModuleUnits: null },
       {
@@ -116,6 +134,12 @@ process({
       }
     ]
   }
+});
+
+// Step 2: Confirm finalization
+process({
+  thinking: "Last write is correct. Contradictions documented.",
+  request: { type: "complete", remind: "Submitted cross-file review — file 1 rejected due to soft/hard delete contradiction.", confirm: true }
 });
 ```
 
@@ -144,3 +168,8 @@ process({
 - [ ] All files describe WHAT, not HOW
 - [ ] Consistent business terminology across files
 - [ ] No technical implementation details
+
+**Function Call:**
+- [ ] Submit review results via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

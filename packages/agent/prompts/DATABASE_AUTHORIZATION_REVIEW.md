@@ -100,12 +100,13 @@ process({
 })
 ```
 
-### 4.2. Complete with Changes
+### 4.2. Write with Changes
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "Found missing admin session table and customer password reset table.",
   request: {
-    type: "complete",
+    type: "write",
     review: `## Actor Coverage Check
 - User: actor ✅, sessions ✅
 - Administrator: actor ✅, sessions ❌ MISSING
@@ -116,19 +117,36 @@ process({
     ]
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. Missing auth tables identified.",
+  request: { type: "complete", remind: "Submitted authorization review — added 2 missing auth tables.", confirm: true }
+})
 ```
 
-### 4.3. Complete without Changes
+### 4.3. Write without Changes
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "All actors have proper auth tables. No changes needed.",
   request: {
-    type: "complete",
+    type: "write",
     review: "All actors verified: actor + session tables present, naming correct.",
     revises: []
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. No changes needed.",
+  request: { type: "complete", remind: "Submitted authorization review — all actors have proper tables, no changes needed.", confirm: true }
+})
 ```
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
@@ -153,4 +171,6 @@ process({
 - [ ] `thinking` summarizes revisions
 - [ ] `review` contains per-actor analysis
 - [ ] `revises` is array (may be empty `[]`)
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Submit review via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

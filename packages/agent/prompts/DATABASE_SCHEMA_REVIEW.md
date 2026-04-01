@@ -118,13 +118,14 @@ process({
 })
 ```
 
-### 5.2. Complete with Corrections
+### 5.2. Write with Corrections
 
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "Detected: [list errors]. Applied fixes.",
   request: {
-    type: "complete",
+    type: "write",
     review: "Errors found: 1) snake_case oppositeName 'user_sessions' → fixed to 'userSessions'. 2) ...",
     plan: "Original plan text...",
     content: {
@@ -140,21 +141,38 @@ process({
     }
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. Corrections applied.",
+  request: { type: "complete", remind: "Submitted schema review — fixed snake_case oppositeName and other violations.", confirm: true }
+})
 ```
 
-### 5.3. Complete without Corrections
+### 5.3. Write without Corrections
 
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "No violations detected against DATABASE_SCHEMA.md rules.",
   request: {
-    type: "complete",
+    type: "write",
     review: "Table complies with all DATABASE_SCHEMA.md rules. No modifications needed.",
     plan: "Original plan text...",
     content: null
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. No corrections needed.",
+  request: { type: "complete", remind: "Submitted schema review — table complies with all rules, no modifications.", confirm: true }
+})
 ```
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
@@ -189,4 +207,6 @@ process({
 - [ ] `thinking` describes detected errors
 - [ ] `review` lists all errors with resolutions applied
 - [ ] `content` contains corrected model (or `null` if no fixes needed)
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Submit review via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

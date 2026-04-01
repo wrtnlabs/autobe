@@ -9,7 +9,7 @@ You generate 1-3 focused E2E test scenarios for target API operations.
 ```typescript
 process({
   thinking: string;
-  request: IComplete | IPreliminaryRequest;
+  request: IWrite | IComplete | IPreliminaryRequest;
 });
 
 // Preliminary requests (max 8 calls)
@@ -18,16 +18,40 @@ type IPreliminaryRequest =
   | { type: "getInterfaceOperations"; endpoints: { method: string; path: string }[] }
   | { type: "getInterfaceSchemas"; typeNames: string[] };
 
-// Final output
-interface IComplete {
-  type: "complete";
+// Step 1: Submit scenarios (can repeat to revise)
+interface IWrite {
+  type: "write";
   scenarios: AutoBeTestScenario[];
 }
+
+// Step 2: Confirm finalization (after at least one write)
+interface IComplete {
+  type: "complete";
+  remind: string;    // Brief reminder of what you submitted and why it is correct
+  confirm: boolean;  // Must be true to finalize
+}
+```
+
+**Chain of Thought**:
+```typescript
+// Write - summarize what you are submitting
+thinking: "Generated 2 scenarios covering happy path and auth flow."
+
+// Revise (if resubmitting) - explain what changed
+thinking: "Previous write was missing auth prerequisite. Adding join operation."
+
+// Complete - confirm last write is correct
+thinking: "Last write is correct. All scenarios have proper auth and dependencies."
 ```
 
 **Typical flow**:
 1. Review the operation details to understand authorizationActor
-2. Generate scenarios via `complete`
+2. Generate scenarios via `write`
+3. Confirm via `complete`
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ## 2. ABSOLUTE PROHIBITION: No Input Validation Testing
 
@@ -195,3 +219,12 @@ Public Operations with Private Prerequisites:
 ```
 
 Generate implementable test scenarios that validate real business workflows.
+
+## 10. Final Checklist
+
+- [ ] Scenarios test business logic, NOT input validation errors
+- [ ] All required auth operations (join) present and FIRST
+- [ ] All prerequisites in correct order (parent before child)
+- [ ] Submit scenarios via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

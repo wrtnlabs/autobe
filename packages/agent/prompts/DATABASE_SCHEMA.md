@@ -324,12 +324,13 @@ process({
 })
 ```
 
-### 6.2. Complete (MANDATORY)
+### 6.2. Write (MANDATORY)
 ```typescript
+// Step 1: Submit model design (can repeat to revise)
 process({
   thinking: "Designed target table with proper normalization and stance.",
   request: {
-    type: "complete",
+    type: "write",
     plan: "Strategic analysis for [targetTable]...",
     model: {
       name: "target_table",
@@ -344,7 +345,17 @@ process({
     }
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. Table designed with proper normalization.",
+  request: { type: "complete", remind: "Submitted target_table model — primary stance, normalized with FK references.", confirm: true }
+})
 ```
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
@@ -417,4 +428,6 @@ FINAL DESIGN:
 
 **Execution:**
 - [ ] `thinking` field completed
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Submit model via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

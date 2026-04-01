@@ -85,12 +85,13 @@ process({
 })
 ```
 
-### 3.2. Complete
+### 3.2. Write and Complete
 ```typescript
+// Step 1: Submit auth tables
 process({
   thinking: "Designed complete auth tables for user actor with member kind.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "Actor 'user' is kind 'member' requiring email/password login, password reset, email verification.",
     rationale: "Created main table with auth fields, session table for JWT, and password_resets per requirements.",
     tables: [
@@ -101,7 +102,17 @@ process({
     ]
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. All auth tables for user member kind designed.",
+  request: { type: "complete", remind: "Submitted 4 auth tables for user actor — users, sessions, password_resets, email_verifications.", confirm: true }
+})
 ```
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
@@ -123,4 +134,6 @@ process({
 - [ ] `analysis` documents auth requirements
 - [ ] `rationale` explains design decisions
 - [ ] Each table has name + description
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Submit tables via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)

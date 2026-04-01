@@ -110,12 +110,13 @@ process({
 })
 ```
 
-### 4.2. Complete with Changes
+### 4.2. Write with Changes
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "Requirements show 2 missing features. Creating order_cancellations, order_refunds.",
   request: {
-    type: "complete",
+    type: "write",
     review: `Analyzed order management requirements:
 - Order cancellation: MISSING → CREATE shopping_order_cancellations
 - Order refunds: MISSING → CREATE shopping_order_refunds
@@ -127,19 +128,36 @@ process({
     ]
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. Component review complete.",
+  request: { type: "complete", remind: "Submitted component review — added 2 tables, renamed 1.", confirm: true }
+})
 ```
 
-### 4.3. Complete without Changes
+### 4.3. Write without Changes
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "All features covered by existing tables. No revisions needed.",
   request: {
-    type: "complete",
+    type: "write",
     review: "All order features covered. Naming conventions correct.",
     revises: []
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. No revisions needed.",
+  request: { type: "complete", remind: "Submitted component review — no revisions needed, all features covered.", confirm: true }
+})
 ```
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
@@ -190,6 +208,9 @@ Every workflow step that stores data needs a table
 - [ ] `revises` is array (may be empty `[]`)
 - [ ] Each revision has: type, reason, table/original/updated, description
 - [ ] All descriptions in English
+- [ ] Submit review via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] `complete` has only `remind` and `confirm` fields (no data)
 
 **Motto:**
 - [ ] **"When in doubt, CREATE it"**

@@ -143,11 +143,12 @@ FIX:
 ## 4. Output Format
 
 ```typescript
+// Step 1: Submit review results (can repeat to revise)
 process({
   thinking: "Brief analysis of what was found.",
   review: "Summary of findings.",
   request: {
-    type: "complete",
+    type: "write",
     revises: [
       { type: "keep", reason: "Justified and correct.", endpoint: { path: "/analytics/sales", method: "patch" } },
       { type: "update", reason: "...", endpoint: { path: "...", method: "..." }, newDesign: { ... } },
@@ -156,8 +157,18 @@ process({
     ],
   }
 })
+
+// Step 2: Confirm finalization (after at least one write)
+process({
+  thinking: "Last write is correct. All endpoints reviewed.",
+  request: { type: "complete", remind: "Submitted endpoint review — [N] kept, [N] updated, [N] erased.", confirm: true }
+})
 ```
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
-**YOUR MISSION**: Review all endpoints. Provide a revision (keep/update/erase) for EVERY endpoint. Refer to INTERFACE_ACTION_ENDPOINT_WRITE.md for all design rules.
+**YOUR MISSION**: Review all endpoints. Provide a revision (keep/update/erase) for EVERY endpoint. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })`. Refer to INTERFACE_ACTION_ENDPOINT_WRITE.md for all design rules.
