@@ -16,6 +16,7 @@ import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
@@ -99,9 +100,12 @@ async function process(
       { log: false, logPrefix: "realizeTransformerPlan" },
     );
 
-  const preliminary: AutoBePreliminaryController<
+  let previousWrite: IAutoBeRealizeTransformerPlanApplication.IWrite | null =
+    null;
+
+  const cyclinic = new AutoBeCyclinicController<
     "analysisSections" | "databaseSchemas" | "interfaceSchemas"
-  > = new AutoBePreliminaryController({
+  >({
     state: ctx.state(),
     source: SOURCE,
     application:
@@ -116,123 +120,151 @@ async function process(
       ),
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeTransformerPlanApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: "realizePlan",
-      controller: createController({
-        prismaSchemaNames: props.prismaSchemaNames,
-        dtoTypeName: props.dtoTypeName,
-        build: (next) => {
-          pointer.value = next;
-        },
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformRealizeTransformerPlanHistory({
-        state: ctx.state(),
-        preliminary,
-        dtoTypeName: props.dtoTypeName,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
 
-    const plans: AutoBeRealizeTransformerPlan[] = pointer.value.plans
-      .filter((p) => p.databaseSchemaName !== null)
-      .map((p) => ({
-        type: "transformer",
-        dtoTypeName: p.dtoTypeName,
-        thinking: p.thinking,
-        databaseSchemaName: p.databaseSchemaName!,
-      }));
-    const event: AutoBeRealizePlanEvent = {
-      type: "realizePlan",
-      id: v4(),
-      plans,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: new Date().toISOString(),
-    };
-    ctx.dispatch(event);
-    return out(result)(plans);
-  });
+  return cyclinic.orchestrate(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | {
+            type: "write";
+            data: IAutoBeRealizeTransformerPlanApplication.IWrite;
+          }
+        | { type: "complete" }
+        | null
+      > = { value: null };
+
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          prismaSchemaNames: props.prismaSchemaNames,
+          dtoTypeName: props.dtoTypeName,
+          cyclinic,
+          action,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformRealizeTransformerPlanHistory({
+          state: ctx.state(),
+          preliminary: context.preliminary,
+          dtoTypeName: props.dtoTypeName,
+          previousWrite,
+          failures: context.failures,
+        }),
+      });
+
+      return { result, action: action.value };
+    },
+    // VALIDATE: check dtoTypeName match and prismaSchemaNames validity
+    async (writeData) => {
+      previousWrite = writeData;
+      const errors: IValidation.IError[] = [];
+      writeData.plans.forEach((plan, i) => {
+        if (plan.dtoTypeName !== props.dtoTypeName)
+          errors.push({
+            path: `$input.request.plans[${i}].dtoTypeName`,
+            value: plan.dtoTypeName,
+            expected: JSON.stringify(props.dtoTypeName),
+            description: StringUtil.trim`
+              The DTO type name must be ${JSON.stringify(props.dtoTypeName)}.
+
+              If you have planned other DTO type's transformer,
+              please entirely remake the plan with ONLY the DTO type
+              ${JSON.stringify(props.dtoTypeName)}.
+            `,
+          });
+        if (
+          plan.databaseSchemaName !== null &&
+          props.prismaSchemaNames.has(plan.databaseSchemaName) === false
+        )
+          errors.push({
+            path: `$input.request.plans[${i}].databaseSchemaName`,
+            value: plan.databaseSchemaName,
+            expected: Array.from(props.prismaSchemaNames)
+              .map((s) => JSON.stringify(s))
+              .join(" | "),
+            description: StringUtil.trim`
+              The database schema name must be one of the available database schemas.
+
+              ${Array.from(props.prismaSchemaNames)
+                .map((s) => `- ${s}`)
+                .join("\n")}
+            `,
+          });
+      });
+      return errors.length
+        ? { success: false, diagnostics: errors }
+        : { success: true };
+    },
+    // FINALIZE: build plans, dispatch event, return
+    async (lastWrite, result) => {
+      const plans: AutoBeRealizeTransformerPlan[] = lastWrite.plans
+        .filter((p) => p.databaseSchemaName !== null)
+        .map((p) => ({
+          type: "transformer" as const,
+          dtoTypeName: p.dtoTypeName,
+          thinking: p.thinking,
+          databaseSchemaName: p.databaseSchemaName!,
+        }));
+
+      if (result !== null) {
+        const event: AutoBeRealizePlanEvent = {
+          type: "realizePlan",
+          id: v4(),
+          plans,
+          acquisition: cyclinic.getPreliminary().getAcquisition(),
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          completed: ++props.progress.completed,
+          total: props.progress.total,
+          step: ctx.state().analyze?.step ?? 0,
+          created_at: new Date().toISOString(),
+        };
+        ctx.dispatch(event);
+      }
+      return plans;
+    },
+  );
 }
 
 function createController(props: {
   prismaSchemaNames: Set<string>;
   dtoTypeName: string;
-  build: (next: IAutoBeRealizeTransformerPlanApplication.IComplete) => void;
-  preliminary: AutoBePreliminaryController<
+  cyclinic: AutoBeCyclinicController<
     "analysisSections" | "databaseSchemas" | "interfaceSchemas"
   >;
+  action: IPointer<
+    | {
+        type: "write";
+        data: IAutoBeRealizeTransformerPlanApplication.IWrite;
+      }
+    | { type: "complete" }
+    | null
+  >;
 }): ILlmController {
+  const preliminary: AutoBePreliminaryController<
+    "analysisSections" | "databaseSchemas" | "interfaceSchemas"
+  > = props.cyclinic.getPreliminary();
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerPlanApplication.IProps> =
       typia.validate<IAutoBeRealizeTransformerPlanApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
-      return props.preliminary.validate({
-        thinking: result.data.thinking,
-        request: result.data.request,
-      });
-
-    const errors: IValidation.IError[] = [];
-    result.data.request.plans.map((plan, i) => {
-      if (plan.dtoTypeName !== props.dtoTypeName)
-        errors.push({
-          path: `$input.request.plans[${i}].dtoTypeName`,
-          value: plan.dtoTypeName,
-          expected: JSON.stringify(props.dtoTypeName),
-          description: StringUtil.trim`
-            The DTO type name must be ${JSON.stringify(props.dtoTypeName)}.
-
-            If you have planned other DTO type's transformer, 
-            please entirely remake the plan with ONLY the DTO type 
-            ${JSON.stringify(props.dtoTypeName)}.
-          `,
-        });
-      if (
-        plan.databaseSchemaName !== null &&
-        props.prismaSchemaNames.has(plan.databaseSchemaName) === false
-      )
-        errors.push({
-          path: `$input.request.plans[${i}].databaseSchemaName`,
-          value: plan.databaseSchemaName,
-          expected: Array.from(props.prismaSchemaNames)
-            .map((s) => JSON.stringify(s))
-            .join(" | "),
-          description: StringUtil.trim`
-            The database schema name must be one of the available database schemas.
-
-            ${Array.from(props.prismaSchemaNames)
-              .map((s) => `- ${s}`)
-              .join("\n")}
-          `,
-        });
+    const req = result.data.request;
+    if (req.type === "write" || req.type === "complete") return result;
+    return preliminary.validate({
+      thinking: result.data.thinking,
+      request: req,
     });
-    return errors.length
-      ? {
-          success: false,
-          errors,
-          data: result.data,
-        }
-      : result;
   };
 
-  const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeRealizeTransformerPlanApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeRealizeTransformerPlanApplication>({
+        validate: {
+          process: validate,
+        },
+      }),
+    ),
   );
 
   return {
@@ -240,8 +272,11 @@ function createController(props: {
     name: SOURCE,
     application,
     execute: {
-      process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+      process: (input) => {
+        if (input.request.type === "write")
+          props.action.value = { type: "write", data: input.request };
+        else if (input.request.type === "complete")
+          props.action.value = { type: "complete" };
       },
     } satisfies IAutoBeRealizeTransformerPlanApplication,
   };

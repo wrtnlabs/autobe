@@ -1,6 +1,7 @@
 import { CamelCasePattern, PascalCasePattern } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Generates authentication components (provider, decorator, payload) for an
@@ -31,17 +32,21 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
     /**
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
+     *
+     * - `complete` is only available after at least one `write` submission.
      */
-    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request: IWrite | IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**
-   * Request to generate authentication components (provider, decorator,
-   * payload).
+   * Submit authentication components (provider, decorator, payload).
+   *
+   * This is an intermediate step — you can submit multiple times to refine.
+   * The last submitted components will be used when you call `complete`.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Authentication Provider function (JWT verification, role validation, DB
