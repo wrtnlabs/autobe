@@ -40,6 +40,9 @@ export * from "./AutoBeInterfaceSchemaPropertyKeep";
 export * from "./AutoBeInterfaceSchemaPropertyNullish";
 export * from "./AutoBeInterfaceSchemaPropertyExclude";
 export * from "./AutoBeInterfaceSchemaPropertyUpdate";
+export * from "./AutoBeInterfaceSchemaDecoupleEdge";
+export * from "./AutoBeInterfaceSchemaDecoupleCycle";
+export * from "./AutoBeInterfaceSchemaDecoupleRemoval";
 
 export * from "./AutoBeTestFile";
 export * from "./AutoBeTestScenario";
