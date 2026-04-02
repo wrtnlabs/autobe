@@ -85,7 +85,9 @@ export const transformInterfaceSchemaDecoupleHistory = (props: {
 
           ## Operations Involved
 
+          \`\`\`json
           ${JSON.stringify(operations)}
+          \`\`\`
         `,
       },
     ],
