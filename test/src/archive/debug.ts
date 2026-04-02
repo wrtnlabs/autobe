@@ -121,12 +121,24 @@ const main = async (): Promise<void> => {
     await fs.promises.rmdir(`${TestGlobal.ROOT}/results`, {
       recursive: true,
     });
-  for (const vendor of await AutoBeExampleStorage.getVendorModels())
+
+  const specifiedVendors: string[] | null = TestGlobal.getArguments("vendor");
+  console.log(specifiedVendors);
+
+  for (const x of await AutoBeExampleStorage.getVendorModels()) {
+    if (
+      specifiedVendors !== null &&
+      specifiedVendors.every(
+        (y) => x.includes(y) === false && y.includes(x) === false,
+      )
+    )
+      continue;
     for (const project of typia.misc.literals<AutoBeExampleProject>())
       await visit({
         dbms,
-        vendor,
+        vendor: x,
         project,
       });
+  }
 };
 main().catch(console.error);

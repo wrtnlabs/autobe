@@ -3,7 +3,10 @@ import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
-import { generateTS2339Hints } from "../../realize/utils/generateTS2339Hints";
+import {
+  extractDidYouMeanHints,
+  generateTS2339Hints,
+} from "../../realize/utils/generateTS2339Hints";
 import { printErrorHints } from "../../realize/utils/printErrorHints";
 
 export const transformPreviousAndLatestCorrectHistory = (
@@ -21,6 +24,22 @@ export const transformPreviousAndLatestCorrectHistory = (
     const ts2339Hints = isLatest
       ? generateTS2339Hints(failure.diagnostics)
       : "";
+    const didYouMeanHints = isLatest
+      ? extractDidYouMeanHints(failure.diagnostics)
+      : [];
+    const didYouMeanSection =
+      didYouMeanHints.length > 0
+        ? [
+            "",
+            "## Compiler-Suggested Name Corrections",
+            "",
+            "The TypeScript compiler identified these likely typos. **Apply all of them**:",
+            ...didYouMeanHints.map(
+              (h) =>
+                `- Replace \`${h.wrong}\` with \`${h.suggested}\` everywhere in the code`,
+            ),
+          ].join("\n")
+        : "";
 
     return {
       id: v7(),
@@ -84,6 +103,8 @@ export const transformPreviousAndLatestCorrectHistory = (
               ${printErrorHints(failure.script, failure.diagnostics)}
 
               ${ts2339Hints}
+
+              ${didYouMeanSection}
             `
             : ""
         }

@@ -430,7 +430,7 @@ export async function transform(input: Payload): Promise<IBbsArticle> {
 
 ### Database Schema
 - [ ] Every field in select() verified against schema
-- [ ] Using EXACT relation names (not shortened)
+- [ ] Using EXACT relation names from Relation Mapping Table (not shortened, not snake_cased)
 - [ ] No fabricated fields
 
 ### Code Structure
