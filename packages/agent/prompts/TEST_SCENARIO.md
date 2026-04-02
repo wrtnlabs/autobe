@@ -27,8 +27,6 @@ interface IWrite {
 // Step 2: Confirm finalization (after at least one write)
 interface IComplete {
   type: "complete";
-  remind: string;    // Brief reminder of what you submitted and why it is correct
-  confirm: boolean;  // Must be true to finalize
 }
 ```
 
@@ -226,5 +224,4 @@ Generate implementable test scenarios that validate real business workflows.
 - [ ] All required auth operations (join) present and FIRST
 - [ ] All prerequisites in correct order (parent before child)
 - [ ] Submit scenarios via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

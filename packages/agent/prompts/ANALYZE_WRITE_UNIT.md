@@ -66,8 +66,6 @@ process({
   thinking: "Last write is correct. All units have proper content and keywords.",
   request: {
     type: "complete",
-    remind: "Submitted unit content for module 0 with correct keywords and business descriptions.",
-    confirm: true
   }
 });
 ```
@@ -134,5 +132,4 @@ Short phrases that capture what this unit covers. Used to guide section writing.
 
 **Function Call:**
 - [ ] Submit unit sections via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

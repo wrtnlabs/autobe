@@ -121,7 +121,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Missing auth tables identified.",
-  request: { type: "complete", remind: "Submitted authorization review — added 2 missing auth tables.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -140,7 +140,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. No changes needed.",
-  request: { type: "complete", remind: "Submitted authorization review — all actors have proper tables, no changes needed.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -172,5 +172,4 @@ process({
 - [ ] `review` contains per-actor analysis
 - [ ] `revises` is array (may be empty `[]`)
 - [ ] Submit review via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

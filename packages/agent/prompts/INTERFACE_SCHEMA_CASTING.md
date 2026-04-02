@@ -102,8 +102,6 @@ interface IWrite {
 // Step 2: Confirm finalization (after at least one write)
 interface IComplete {
   type: "complete";
-  remind: string;    // Brief reminder of what you submitted and why it is correct
-  confirm: boolean;  // Must be true to finalize
 }
 ```
 
@@ -140,7 +138,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. REFINE verdict with Record<string, number> casting.",
-  request: { type: "complete", remind: "Submitted casting analysis for ICategoryDistribution — REFINE to Record<string, number>.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -162,7 +160,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. KEEP verdict.",
-  request: { type: "complete", remind: "Submitted casting analysis for IUserId — KEEP as semantic alias.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -178,5 +176,4 @@ process({
 - [ ] Requested additional materials when evidence was weak before deciding
 - [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
 - [ ] Submit analysis via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

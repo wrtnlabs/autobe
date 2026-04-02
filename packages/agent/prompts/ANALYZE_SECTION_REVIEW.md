@@ -142,7 +142,7 @@ process({
 // Step 2: Confirm finalization
 process({
   thinking: "Last write is correct. Review complete.",
-  request: { type: "complete", remind: "Submitted per-file review — all sections approved.", confirm: true }
+  request: { type: "complete" }
 });
 ```
 
@@ -173,7 +173,7 @@ process({
 // Step 2: Confirm finalization
 process({
   thinking: "Last write is correct. Rejection documented.",
-  request: { type: "complete", remind: "Submitted per-file review — file rejected due to scope violation.", confirm: true }
+  request: { type: "complete" }
 });
 ```
 
@@ -232,5 +232,4 @@ Set `revisedSections` for auto-correctable minor issues while approving.
 
 **Function Call:**
 - [ ] Submit review results via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

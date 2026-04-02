@@ -234,8 +234,6 @@ process({
   thinking: "All errors resolved. Finalizing.",
   request: {
     type: "complete",
-    remind: "Submitted corrected users/orders/products models fixing duplicate field, invalid FK, and enum errors.",
-    confirm: true
   }
 })
 ```
@@ -282,7 +280,7 @@ Action: Rename one, update all its references
 
 **Function Call:**
 - [ ] Submit corrected models via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] Finalize via `complete` after last `write`
 - [ ] NO preliminary requests in parallel with `write`/`complete`
 - [ ] `thinking` summarizes fixes
 - [ ] `planning` documents error analysis

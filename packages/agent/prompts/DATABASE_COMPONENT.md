@@ -191,7 +191,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. All 12 tables designed for Sales component.",
-  request: { type: "complete", remind: "Submitted 12 tables for Sales component covering all requirements.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -245,8 +245,7 @@ process({
 - [ ] `analysis` documents component scope
 - [ ] `rationale` explains design decisions
 - [ ] Submit tables via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`
 
 **When in Doubt:**
 - [ ] Create MORE tables rather than FEWER

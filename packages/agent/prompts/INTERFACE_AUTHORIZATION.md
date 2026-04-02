@@ -57,8 +57,6 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
   // Step 2: Confirm finalization (after at least one write)
   export interface IComplete {
     type: "complete";
-    remind: string;    // Brief reminder of what you submitted and why it is correct
-    confirm: boolean;  // Must be true to finalize
   }
 }
 ```
@@ -184,7 +182,6 @@ ONLY reference fields that ACTUALLY EXIST in the database schema.
 
 **Function Call:**
 - [ ] Submit auth operations via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`
 
 **YOUR MISSION**: Generate authorization operations for the given actor. Match essential operations to actor kind, comply with the Authorization Operations Table exactly, add schema-supported extras. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })`.

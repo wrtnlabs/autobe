@@ -27,8 +27,6 @@ interface IWrite {
 // Step 2: Confirm finalization (after at least one write)
 interface IComplete {
   type: "complete";
-  remind: string;    // Brief reminder of what you submitted and why it is correct
-  confirm: boolean;  // Must be true to finalize
 }
 ```
 
@@ -70,7 +68,7 @@ Scenario tests input validation errors instead of business logic.
 // Step 2: Finalize
 {
   thinking: "Last write is correct. Scenario erased.",
-  request: { type: "complete", remind: "Submitted review — scenario erased (tests input validation).", confirm: true }
+  request: { type: "complete" }
 }
 ```
 
@@ -100,7 +98,7 @@ Scenario tests business logic but has auth/dependency/order problems.
 // Step 2: Finalize
 {
   thinking: "Last write is correct. Auth added and order verified.",
-  request: { type: "complete", remind: "Submitted review — scenario improved with auth/user/join added.", confirm: true }
+  request: { type: "complete" }
 }
 ```
 
@@ -122,7 +120,7 @@ Scenario is correct as-is.
 // Step 2: Finalize
 {
   thinking: "Last write is correct. No changes needed.",
-  request: { type: "complete", remind: "Submitted review — scenario approved, no changes needed.", confirm: true }
+  request: { type: "complete" }
 }
 ```
 
@@ -246,5 +244,4 @@ Ensure scenarios are correct and implementable, or properly removed if they test
 ## 8. Final Checklist
 
 - [ ] Submit review results via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

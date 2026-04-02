@@ -65,8 +65,6 @@ process({
   thinking: "Last write is correct. All scenario data extracted with proper actors and concepts.",
   request: {
     type: "complete",
-    remind: "Submitted scenario for todo app with guest/member actors and User/Todo concepts.",
-    confirm: true
   }
 });
 ```
@@ -184,5 +182,4 @@ graph LR
 
 **Function Call:**
 - [ ] Submit scenario via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

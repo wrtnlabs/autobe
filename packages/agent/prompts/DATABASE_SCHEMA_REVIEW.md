@@ -145,7 +145,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Corrections applied.",
-  request: { type: "complete", remind: "Submitted schema review — fixed snake_case oppositeName and other violations.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -166,7 +166,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. No corrections needed.",
-  request: { type: "complete", remind: "Submitted schema review — table complies with all rules, no modifications.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -208,5 +208,4 @@ process({
 - [ ] `review` lists all errors with resolutions applied
 - [ ] `content` contains corrected model (or `null` if no fixes needed)
 - [ ] Submit review via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

@@ -452,8 +452,6 @@ process({
   thinking: "Last write is correct. All DB properties covered.",
   request: {
     type: "complete",
-    remind: "Submitted refinements for IBbsArticle — 6 DTO properties enriched, 3 DB properties excluded.",
-    confirm: true
   }
 })
 ```
@@ -490,5 +488,4 @@ Before calling `complete`:
 - [ ] No imagination - verified against actual data
 - [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
 - [ ] Submit refinements via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

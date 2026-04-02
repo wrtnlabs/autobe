@@ -86,8 +86,6 @@ export namespace IAutoBeInterfaceOperationApplication {
   // Step 2: Confirm finalization (after at least one write)
   export interface IComplete {
     type: "complete";
-    remind: string;    // Brief reminder of what you submitted and why it is correct
-    confirm: boolean;  // Must be true to finalize
   }
 
   interface IOperation {
@@ -350,7 +348,7 @@ Supports comprehensive pagination with configurable page sizes and sorting. Resp
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. PATCH /customers with proper pagination types.",
-  request: { type: "complete", remind: "Submitted PATCH /customers operation — index with IShoppingCustomer.IRequest and IPageIShoppingCustomer.ISummary.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -391,7 +389,6 @@ process({
 
 **Function Call:**
 - [ ] Submit operation design via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`
 
 **YOUR MISSION**: Generate a comprehensive API operation for the given endpoint, respecting composite unique constraints and database schema reality. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })`.

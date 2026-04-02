@@ -70,8 +70,6 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
 // Step 2: Confirm finalization (after at least one write)
 export interface IComplete {
   type: "complete";
-  remind: string;    // Brief reminder of what you submitted and why it is correct
-  confirm: boolean;  // Must be true to finalize
 }
 ```
 
@@ -96,7 +94,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Plan is correct. IShoppingSale → shopping_sales.",
-  request: { type: "complete", remind: "Submitted transformer plan for IShoppingSale → shopping_sales.", confirm: true }
+  request: { type: "complete" }
 });
 ```
 
@@ -119,7 +117,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Plan is correct. IPage.IRequest is non-transformable.",
-  request: { type: "complete", remind: "Submitted non-transformable plan for IPage.IRequest.", confirm: true }
+  request: { type: "complete" }
 });
 ```
 

@@ -218,7 +218,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. All action endpoints designed with correct auth.",
-  request: { type: "complete", remind: "Submitted 2 action endpoints — sales analytics and seller dashboard.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -238,7 +238,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. No action endpoints needed.",
-  request: { type: "complete", remind: "Submitted empty designs — all requirements covered by Base CRUD.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -262,7 +262,6 @@ process({
 
 **Function Call:**
 - [ ] Submit endpoint designs via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`
 
 **YOUR MISSION**: Discover and generate action endpoints for requirements without corresponding database tables. Do NOT create CRUD endpoints (handled by Base Endpoint Generator). Do NOT create authentication endpoints (handled by Authorization Agent). Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })`.

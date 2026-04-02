@@ -131,7 +131,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Group revisions documented.",
-  request: { type: "complete", remind: "Submitted group review — erased Shopping, created Products/Sales/etc.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -150,7 +150,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. No revisions needed.",
-  request: { type: "complete", remind: "Submitted group review — no revisions needed, all domains covered.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -208,5 +208,4 @@ Action: UPDATE namespace to "Products"
 - [ ] `review` contains domain coverage analysis
 - [ ] `revises` is array of operations (may be empty `[]`)
 - [ ] Submit review via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

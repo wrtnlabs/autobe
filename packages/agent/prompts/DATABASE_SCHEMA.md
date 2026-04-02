@@ -349,7 +349,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Table designed with proper normalization.",
-  request: { type: "complete", remind: "Submitted target_table model — primary stance, normalized with FK references.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -429,5 +429,4 @@ FINAL DESIGN:
 **Execution:**
 - [ ] `thinking` field completed
 - [ ] Submit model via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

@@ -204,7 +204,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. All 3 prerequisites identified in correct order.",
-  request: { type: "complete", remind: "Submitted prerequisites for PUT /orders/{orderId}/items/{itemId} — 3 POST prerequisites.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -244,7 +244,7 @@ process({
 // Step 2: Confirm finalization (after at least one write)
 process({
   thinking: "Last write is correct. Prerequisites identified with correct ordering.",
-  request: { type: "complete", remind: "Submitted prerequisite analysis — [N] POST prerequisites identified.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -285,5 +285,4 @@ process({
 - [ ] Prerequisite endpoints match Available API Operations exactly
 - [ ] Logical ordering (parent before child resources)
 - [ ] Submit analysis via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

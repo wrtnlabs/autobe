@@ -106,7 +106,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. All auth tables for user member kind designed.",
-  request: { type: "complete", remind: "Submitted 4 auth tables for user actor — users, sessions, password_resets, email_verifications.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -135,5 +135,4 @@ process({
 - [ ] `rationale` explains design decisions
 - [ ] Each table has name + description
 - [ ] Submit tables via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

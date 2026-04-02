@@ -101,8 +101,6 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
 // Step 2: Confirm finalization (after at least one write)
 export interface IComplete {
   type: "complete";
-  remind: string;    // Brief reminder of what you submitted and why it is correct
-  confirm: boolean;  // Must be true to finalize
 }
 ```
 

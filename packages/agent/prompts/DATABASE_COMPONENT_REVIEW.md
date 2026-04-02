@@ -132,7 +132,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Component review complete.",
-  request: { type: "complete", remind: "Submitted component review — added 2 tables, renamed 1.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -151,7 +151,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. No revisions needed.",
-  request: { type: "complete", remind: "Submitted component review — no revisions needed, all features covered.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -209,8 +209,7 @@ Every workflow step that stores data needs a table
 - [ ] Each revision has: type, reason, table/original/updated, description
 - [ ] All descriptions in English
 - [ ] Submit review via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`
 
 **Motto:**
 - [ ] **"When in doubt, CREATE it"**

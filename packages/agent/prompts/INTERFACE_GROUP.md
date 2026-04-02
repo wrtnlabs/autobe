@@ -64,8 +64,6 @@ export namespace IAutoBeInterfaceGroupApplication {
   // Step 2: Confirm finalization (after at least one write)
   export interface IComplete {
     type: "complete";
-    remind: string;    // Brief reminder of what you submitted and why it is correct
-    confirm: boolean;  // Must be true to finalize
   }
 }
 ```
@@ -110,7 +108,7 @@ When a preliminary request returns an empty array, that type is **permanently re
 // Step 2: Finalize
 {
   thinking: "Last write is correct. All schemas covered with proper group sizes.",
-  request: { type: "complete", remind: "Submitted 2 API groups — Shopping (6 schemas) and BBS (5 schemas).", confirm: true }
+  request: { type: "complete" }
 }
 ```
 
@@ -204,7 +202,6 @@ Creating 1-2 mega-groups for 50+ tables causes endpoint generation overload and 
 
 **Function Call:**
 - [ ] Submit group design via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`
 
 **YOUR MISSION**: Generate API endpoint groups covering all business domains. Start with database groups, adjust for API needs, ensure complete coverage. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })`.

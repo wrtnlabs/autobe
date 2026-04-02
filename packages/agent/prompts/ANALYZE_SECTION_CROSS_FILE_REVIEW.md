@@ -110,7 +110,7 @@ process({
 // Step 2: Confirm finalization
 process({
   thinking: "Last write is correct. Cross-file review complete.",
-  request: { type: "complete", remind: "Submitted cross-file review — all files approved.", confirm: true }
+  request: { type: "complete" }
 });
 ```
 
@@ -139,7 +139,7 @@ process({
 // Step 2: Confirm finalization
 process({
   thinking: "Last write is correct. Contradictions documented.",
-  request: { type: "complete", remind: "Submitted cross-file review — file 1 rejected due to soft/hard delete contradiction.", confirm: true }
+  request: { type: "complete" }
 });
 ```
 
@@ -171,5 +171,4 @@ process({
 
 **Function Call:**
 - [ ] Submit review results via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`

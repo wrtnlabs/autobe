@@ -161,7 +161,7 @@ process({
 // Step 2: Confirm finalization (after at least one write)
 process({
   thinking: "Last write is correct. All endpoints reviewed.",
-  request: { type: "complete", remind: "Submitted endpoint review — [N] kept, [N] updated, [N] erased.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 

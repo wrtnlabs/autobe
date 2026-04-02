@@ -71,8 +71,6 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
 // Step 2: Confirm finalization (after at least one write)
 export interface IComplete {
   type: "complete";
-  remind: string;    // Brief reminder of what you submitted and why it is correct
-  confirm: boolean;  // Must be true to finalize
 }
 ```
 
@@ -165,7 +163,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Plan submitted. One entry for IShoppingSale.ICreate with correct table.",
-  request: { type: "complete", remind: "Submitted collector plan for IShoppingSale.ICreate → shopping_sales with seller refs.", confirm: true }
+  request: { type: "complete" }
 });
 ```
 

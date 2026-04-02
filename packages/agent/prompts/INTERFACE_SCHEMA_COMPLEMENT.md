@@ -78,8 +78,6 @@ interface IWrite {
 // Step 2: Confirm finalization (after at least one write)
 interface IComplete {
   type: "complete";
-  remind: string;    // Brief reminder of what you submitted and why it is correct
-  confirm: boolean;  // Must be true to finalize
 }
 ```
 
@@ -153,7 +151,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. IProduct.ISummary designed with id, name, price, thumbnail.",
-  request: { type: "complete", remind: "Submitted IProduct.ISummary schema with 4 fields for lightweight product display.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -178,5 +176,4 @@ process({
 - [ ] No duplicate requests for already-loaded materials
 - [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
 - [ ] Submit schema design via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` with `confirm: true` after last `write`
-- [ ] `complete` has only `remind` and `confirm` fields (no data)
+- [ ] Finalize via `complete` after last `write`
