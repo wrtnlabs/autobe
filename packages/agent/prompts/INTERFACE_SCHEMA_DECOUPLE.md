@@ -6,7 +6,7 @@ You resolve **one cross-type circular reference cycle** in OpenAPI DTO schema de
 
 ## 1. Task
 
-Cross-type circular references (A → B → A, or A → B → C → A) make code generation impossible. You receive **one programmatically detected cycle** and decide which property reference to remove to break it.
+Cross-type circular references (A → B → A, or A → B → C → A) make code generation impossible. You receive **one programmatically detected cycle** — along with the full JSON schemas of all involved types and the API operations that reference them — and decide which property reference to remove to break it.
 
 **Self-references (A → A) are NOT your concern** — they represent legitimate tree structures (categories, org charts) and are handled separately.
 
@@ -40,6 +40,14 @@ A 1-to-many (array) reference is often MORE important than a 1-to-1 reference, b
 ### 2.4. DTO Purpose
 
 Summary DTOs (`ISummary`, `IBrief`, `IPreview`) should have fewer outgoing references. If one side of the cycle is a summary type, prefer removing its outgoing reference.
+
+### 2.5. API Operations
+
+Examine the provided operations to understand how each type surfaces in the API:
+
+- A type that appears as a **direct response body** has client-visible structure — its outgoing references tend to be essential.
+- A type referenced only as embedded data inside another response rarely needs a back-reference to its parent.
+- If the client already receives the parent from a dedicated endpoint, the child's back-reference is redundant.
 
 ## 3. Rules
 
