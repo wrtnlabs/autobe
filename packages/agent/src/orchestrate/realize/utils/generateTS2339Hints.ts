@@ -76,8 +76,8 @@ export function generateTS2339Hints(
 /**
  * Extracts "Did you mean 'X'?" suggestions from TS2353/TS2339 diagnostics.
  *
- * The TypeScript compiler provides these suggestions when a property name
- * is close to a valid one (e.g., `owner_member` → `ownerMember`).
+ * The TypeScript compiler provides these suggestions when a property name is
+ * close to a valid one (e.g., `owner_member` → `ownerMember`).
  */
 export function extractDidYouMeanHints(
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],

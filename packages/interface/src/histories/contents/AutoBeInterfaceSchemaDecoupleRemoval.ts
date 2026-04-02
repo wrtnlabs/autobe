@@ -1,41 +1,44 @@
 /**
  * A property removal that breaks a circular reference cycle.
  *
- * Produced by the LLM Decouple agent after analyzing cross-type
- * circular references and choosing which edge to cut based on
- * semantic importance, reference direction, and DTO purpose.
+ * Produced by the LLM Decouple agent after analyzing cross-type circular
+ * references and choosing which edge to cut based on semantic importance,
+ * reference direction, and DTO purpose.
  *
- * After removing a property, the schema's `description` and
- * `x-autobe-specification` may become inconsistent. The agent
- * provides updated text to maintain accuracy.
+ * Fields are ordered for chain-of-thought generation:
+ *
+ * 1. `reason` — commit to WHY first
+ * 2. `typeName` / `propertyName` — then commit to WHAT
+ * 3. `description` / `specification` — finally update docs if needed
  *
  * @author Samchon
  */
 export interface AutoBeInterfaceSchemaDecoupleRemoval {
+  /**
+   * Reason for removing this specific edge.
+   *
+   * Written first so the LLM commits to the rationale before deciding which
+   * exact property to remove.
+   */
+  reason: string;
+
   /** Schema type that owns the property to remove. */
   typeName: string;
 
   /** Property name to delete from the schema. */
   propertyName: string;
 
-  /** Reason for removing this specific edge. */
-  reason: string;
+  /**
+   * Updated `description` for the schema identified by `typeName`, or `null` if
+   * the existing description does not reference the removed property and needs
+   * no change.
+   */
+  description: string | null;
 
   /**
-   * Updated description for the schema after property removal.
-   *
-   * The schema's `description` field may reference the removed property.
-   * Provide a corrected description that accurately reflects the schema
-   * WITHOUT the removed property. This text appears in Swagger UI.
+   * Updated `x-autobe-specification` for the schema identified by `typeName`,
+   * or `null` if the existing specification does not reference the removed
+   * property and needs no change.
    */
-  updatedDescription: string;
-
-  /**
-   * Updated specification for the schema after property removal.
-   *
-   * The schema's `x-autobe-specification` may reference the removed
-   * property. Provide corrected implementation guidance that does NOT
-   * mention the removed property. This text guides Realize/Test agents.
-   */
-  updatedSpecification: string;
+  specification: string | null;
 }

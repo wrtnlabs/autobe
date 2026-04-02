@@ -184,9 +184,10 @@ export const orchestrateInterfaceSchema = async (
       }),
     );
 
-  // DECOUPLE - break cross-type circular references (A→B→A)
+  // DECOUPLE - break cross-type circular references (A->B->C->A)
   await orchestrateInterfaceSchemaDecouple(ctx, {
     schemas: document.components.schemas,
+    operations: document.operations,
   });
 
   AutoBeJsonSchemaFactory.removeUnused({

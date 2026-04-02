@@ -1,9 +1,9 @@
 /**
  * A directed edge in the schema reference graph.
  *
- * Represents a property in `sourceType` that references `targetType`
- * via `$ref`. Self-references (sourceType === targetType) are excluded
- * from cycle detection — they represent legitimate tree structures.
+ * Represents a property in `sourceType` that references `targetType` via
+ * `$ref`. Self-references (sourceType === targetType) are excluded from cycle
+ * detection — they represent legitimate tree structures.
  *
  * @author Samchon
  */

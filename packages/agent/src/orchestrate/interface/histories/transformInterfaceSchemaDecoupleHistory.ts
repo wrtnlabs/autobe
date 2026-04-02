@@ -10,84 +10,88 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 
 export const transformInterfaceSchemaDecoupleHistory = (props: {
   schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  cycles: AutoBeInterfaceSchemaDecoupleCycle[];
-}): IAutoBeOrchestrateHistory => ({
-  histories: [
-    {
-      type: "systemMessage",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_DECOUPLE,
-    },
-    {
-      type: "assistantMessage",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      text: buildCycleContext(props),
-    },
-  ],
-  userMessage: StringUtil.trim`
-    Resolve ${props.cycles.length} cross-type circular reference
-    cycle(s) by choosing which property references to remove.
+  operations: AutoBeOpenApi.IOperation[];
+  cycle: AutoBeInterfaceSchemaDecoupleCycle;
+}): IAutoBeOrchestrateHistory => {
+  // filter schemas
+  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+  for (const key of props.cycle.types)
+    AutoBeOpenApiTypeChecker.visit({
+      components: { schemas: props.schemas, authorizations: [] },
+      schema: { $ref: `#/components/schemas/${key}` },
+      closure: (next) => {
+        if (AutoBeOpenApiTypeChecker.isReference(next) === false) return;
+        const name: string = next.$ref.split("/").at(-1)!;
+        const found: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
+          props.schemas[name];
+        if (found) schemas[name] = found;
+      },
+    });
 
-    Each cycle MUST have at least one of its edges removed.
-    Remove the minimum number of edges needed to break ALL cycles.
-  `,
-});
-
-const buildCycleContext = (props: {
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  cycles: AutoBeInterfaceSchemaDecoupleCycle[];
-}): string => {
-  const sections: string[] = [];
-
-  sections.push("## Detected Circular Reference Cycles\n");
-  sections.push(
-    `Found **${props.cycles.length}** cross-type circular reference cycle(s).\n`,
-  );
-
-  for (let i = 0; i < props.cycles.length; i++) {
-    const cycle = props.cycles[i]!;
-    sections.push(
-      `### Cycle ${i + 1}: ${cycle.types.join(" → ")} → ${cycle.types[0]}\n`,
-    );
-    sections.push("**Edges (each is a candidate for removal):**\n");
-    for (const edge of cycle.edges)
-      sections.push(
-        `- \`${edge.sourceType}.${edge.propertyName}\` → \`${edge.targetType}\``,
-      );
-    sections.push("");
+  // filter operations
+  const operations: AutoBeOpenApi.IOperation[] = [];
+  for (const op of props.operations) {
+    const predicate = (key: string): boolean => {
+      let matched: boolean = false;
+      AutoBeOpenApiTypeChecker.visit({
+        components: { schemas: props.schemas, authorizations: [] },
+        schema: { $ref: `#/components/schemas/${key}` },
+        closure: (next) => {
+          if (AutoBeOpenApiTypeChecker.isReference(next) === false) return;
+          else if (schemas[next.$ref.split("/").at(-1)!] !== undefined)
+            matched ||= true;
+        },
+      });
+      return matched;
+    };
+    if (
+      (op.requestBody && predicate(op.requestBody.typeName)) ||
+      (op.responseBody && predicate(op.responseBody.typeName))
+    )
+      operations.push(op);
   }
 
-  // Include schemas involved in cycles
-  const involvedTypes = new Set<string>();
-  for (const cycle of props.cycles)
-    for (const type of cycle.types) involvedTypes.add(type);
+  return {
+    histories: [
+      {
+        type: "systemMessage",
+        id: v7(),
+        created_at: new Date().toISOString(),
+        text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_DECOUPLE,
+      },
+      {
+        type: "assistantMessage",
+        id: v7(),
+        created_at: new Date().toISOString(),
+        text: StringUtil.trim`
+          ## Detected Circular Reference Cycle
 
-  sections.push("## Schemas Involved in Cycles\n");
-  for (const typeName of involvedTypes) {
-    const schema = props.schemas[typeName];
-    if (!schema || !AutoBeOpenApiTypeChecker.isObject(schema)) continue;
+          **Cycle**: ${props.cycle.types.join(" → ")} → ${props.cycle.types[0]}
 
-    sections.push(`### ${typeName}\n`);
-    sections.push(`**Description**: ${schema.description}\n`);
-    if (schema["x-autobe-specification"])
-      sections.push(
-        `**Specification**: ${schema["x-autobe-specification"]}\n`,
-      );
-    sections.push("**Properties:**\n");
-    for (const [propName, propSchema] of Object.entries(schema.properties)) {
-      const required = schema.required?.includes(propName) ? "required" : "optional";
-      const kind = AutoBeOpenApiTypeChecker.getKind(propSchema);
-      const desc =
-        "description" in propSchema &&
-        typeof propSchema.description === "string"
-          ? ` — ${propSchema.description}`
-          : "";
-      sections.push(`- \`${propName}\` (${kind}, ${required})${desc}`);
-    }
-    sections.push("");
-  }
+          **Edges (candidates for removal):**
 
-  return sections.join("\n");
+          ${props.cycle.edges
+            .map(
+              (e) =>
+                `- \`${e.sourceType}.${e.propertyName}\` → \`${e.targetType}\``,
+            )
+            .join("\n")}
+
+          ## Schemas Involved
+
+          \`\`\`json
+          ${JSON.stringify(schemas)}
+          \`\`\`
+
+          ## Operations Involved
+
+          ${JSON.stringify(operations)}
+        `,
+      },
+    ],
+    userMessage: StringUtil.trim`
+      Resolve this cross-type circular reference cycle by choosing
+      exactly one property reference to remove.
+    `,
+  };
 };

@@ -3,13 +3,16 @@ import {
   AutoBeEventSource,
   AutoBeInterfaceSchemaDecoupleCycle,
   AutoBeInterfaceSchemaDecoupleEvent,
+  AutoBeInterfaceSchemaDecoupleRemoval,
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { IPointer } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaDecoupleHistory } from "./histories/transformInterfaceSchemaDecoupleHistory";
 import { AutoBeInterfaceSchemaDecoupleProgrammer } from "./programmers/AutoBeInterfaceSchemaDecoupleProgrammer";
 import { IAutoBeInterfaceSchemaDecoupleApplication } from "./structures/IAutoBeInterfaceSchemaDecoupleApplication";
@@ -18,41 +21,83 @@ import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMe
 /**
  * Detect and resolve cross-type circular references in schemas.
  *
- * 1. Programmatically detect cycles using Tarjan's SCC algorithm
- * 2. If no cycles, return immediately (no LLM call)
- * 3. Call LLM to decide which edges to cut
- * 4. Execute removals by deleting properties from schemas
+ * Uses a while loop with parallel processing per round:
  *
- * Mutates `props.schemas` in-place.
+ * - Each round: detect remaining cycles → process ALL in parallel (one LLM call
+ *   per cycle) → re-detect → repeat until no cycles remain.
+ *
+ * WHY parallel within a round: Tarjan's SCCs are mathematically disjoint. Two
+ * detected SCCs share no nodes, so fixing SCC-A never creates or destroys edges
+ * in SCC-B. Parallel execution is safe.
+ *
+ * WHY while loop across rounds: a large SCC (3+ nodes with multiple independent
+ * internal cycles) may not be fully resolved in one pass — validate only
+ * requires "at least one edge removed" per SCC. After that partial fix, the SCC
+ * may split into smaller cycles that re-detect in the next round. Convergence
+ * is guaranteed: each round removes ≥1 edge, so the total cycle-edge count
+ * decreases monotonically to zero.
+ *
+ * Mutates `props.schemas` in-place. Dispatches one event per cycle.
  */
 export const orchestrateInterfaceSchemaDecouple = async (
   ctx: AutoBeContext,
   props: {
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    operations: AutoBeOpenApi.IOperation[];
   },
 ): Promise<void> => {
-  // 1. Detect cycles programmatically
-  const cycles: AutoBeInterfaceSchemaDecoupleCycle[] =
-    AutoBeInterfaceSchemaDecoupleProgrammer.detectCycles(props.schemas);
+  const progress: AutoBeProgressEventBase = {
+    total: 0,
+    completed: 0,
+  };
+  while (true) {
+    const cycles: AutoBeInterfaceSchemaDecoupleCycle[] =
+      AutoBeInterfaceSchemaDecoupleProgrammer.detectCycles(props.schemas);
+    if (cycles.length === 0) break;
 
-  // 2. No cycles → nothing to do
-  if (cycles.length === 0) return;
+    progress.total += cycles.length;
+    await executeCachedBatch(
+      ctx,
+      cycles.map(
+        (c) => (promptCacheKey) =>
+          process(ctx, {
+            schemas: props.schemas,
+            operations: props.operations,
+            cycle: c,
+            progress,
+            promptCacheKey,
+          }),
+      ),
+    );
+  }
+};
 
-  // 3. Call LLM to decide which edges to cut
-  const pointer: IPointer<IAutoBeInterfaceSchemaDecoupleApplication.IComplete | null> =
+async function process(
+  ctx: AutoBeContext,
+  props: {
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    operations: AutoBeOpenApi.IOperation[];
+    cycle: AutoBeInterfaceSchemaDecoupleCycle;
+    progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
+  },
+): Promise<void> {
+  const pointer: IPointer<IAutoBeInterfaceSchemaDecoupleApplication.IProps | null> =
     { value: null };
 
   const result: AutoBeContext.IResult = await ctx.conversate({
     source: SOURCE,
     controller: createController({
       schemas: props.schemas,
-      cycles,
+      cycle: props.cycle,
       pointer,
     }),
     enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
     ...transformInterfaceSchemaDecoupleHistory({
       schemas: props.schemas,
-      cycles,
+      operations: props.operations,
+      cycle: props.cycle,
     }),
   });
 
@@ -61,30 +106,34 @@ export const orchestrateInterfaceSchemaDecouple = async (
       "interfaceSchemaDecouple: agent failed to produce a result",
     );
 
-  // 4. Execute removals
-  AutoBeInterfaceSchemaDecoupleProgrammer.execute(
-    props.schemas,
-    pointer.value.removals,
-  );
+  // Apply removal decision to the schema
+  const removal: AutoBeInterfaceSchemaDecoupleRemoval =
+    pointer.value.final ?? pointer.value.draft;
+  AutoBeInterfaceSchemaDecoupleProgrammer.execute({
+    schemas: props.schemas,
+    removal,
+  });
 
-  // 5. Emit event
+  // Emit per-cycle event
   ctx.dispatch({
     type: SOURCE,
     id: v7(),
-    cycles,
-    removals: pointer.value.removals,
-    analysis: pointer.value.analysis,
+    cycle: props.cycle,
+    removal,
+    analysis: pointer.value.review,
     metric: result.metric,
     tokenUsage: result.tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
+    total: props.progress.total,
+    completed: ++props.progress.completed,
     created_at: new Date().toISOString(),
   } satisfies AutoBeInterfaceSchemaDecoupleEvent);
-};
+}
 
 function createController(props: {
   schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  cycles: AutoBeInterfaceSchemaDecoupleCycle[];
-  pointer: IPointer<IAutoBeInterfaceSchemaDecoupleApplication.IComplete | null>;
+  cycle: AutoBeInterfaceSchemaDecoupleCycle;
+  pointer: IPointer<IAutoBeInterfaceSchemaDecoupleApplication.IProps | null>;
 }): IAgenticaController.IClass {
   const validate: Validator = (next) => {
     const result =
@@ -97,10 +146,10 @@ function createController(props: {
     const errors: IValidation.IError[] = [];
     AutoBeInterfaceSchemaDecoupleProgrammer.validate({
       schemas: props.schemas,
-      cycles: props.cycles,
-      removals: result.data.request.removals,
+      cycle: props.cycle,
+      removal: result.data.final ?? result.data.draft,
       errors,
-      path: "$input.request",
+      path: "$input",
     });
 
     return errors.length
@@ -116,7 +165,7 @@ function createController(props: {
     });
   AutoBeInterfaceSchemaDecoupleProgrammer.fixApplication({
     application,
-    cycles: props.cycles,
+    cycle: props.cycle,
   });
 
   return {
@@ -125,8 +174,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        props.pointer.value = input;
       },
     } satisfies IAutoBeInterfaceSchemaDecoupleApplication,
   };

@@ -2,53 +2,57 @@ import { AutoBeInterfaceSchemaDecoupleCycle } from "../histories/contents/AutoBe
 import { AutoBeInterfaceSchemaDecoupleRemoval } from "../histories/contents/AutoBeInterfaceSchemaDecoupleRemoval";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired when the Interface agent detects and resolves cross-type
- * circular references in OpenAPI schema definitions.
+ * Event fired when the Interface agent resolves one cross-type circular
+ * reference cycle in OpenAPI schema definitions.
  *
- * Cross-type circular references (A → B → A, or A → B → C → A) make
- * code generation impossible because they create infinite type recursion.
- * The Decouple agent programmatically detects these cycles using graph
- * analysis, then uses LLM judgment to decide which property reference(s)
- * to remove to break each cycle while preserving semantic integrity.
+ * Each detected cycle is processed independently: one LLM call per cycle, one
+ * event dispatched per cycle. Multiple events may be emitted when multiple
+ * cycles are detected in the schema graph.
  *
- * Self-references (A → A) are NOT treated as circular references —
- * they represent legitimate tree structures (categories, org charts)
- * and are handled by the existing VariadicSingleton pattern in the
- * Realize phase.
+ * Cross-type circular references (A → B → A, or A → B → C → A) make code
+ * generation impossible because they create infinite type recursion. The
+ * Decouple agent programmatically detects these cycles using Tarjan's SCC
+ * algorithm, then uses LLM judgment to decide which property reference(s) to
+ * remove to break each cycle while preserving semantic integrity.
+ *
+ * Self-references (A → A) are NOT treated as circular references — they
+ * represent legitimate tree structures (categories, org charts) and are handled
+ * by the existing VariadicSingleton pattern in the Realize phase.
  *
  * @author Samchon
  */
 export interface AutoBeInterfaceSchemaDecoupleEvent
-  extends AutoBeEventBase<"interfaceSchemaDecouple">,
-    AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"interfaceSchemaDecouple">,
+    AutoBeAggregateEventBase,
+    AutoBeProgressEventBase {
   /**
-   * Cross-type circular reference cycles detected in the schema graph.
+   * The circular reference cycle resolved in this event.
    *
-   * Each cycle represents a strongly connected component of two or more
-   * types that reference each other, forming an irresolvable loop.
+   * Represents one strongly connected component of two or more types that
+   * reference each other, forming an irresolvable loop.
    */
-  cycles: AutoBeInterfaceSchemaDecoupleCycle[];
+  cycle: AutoBeInterfaceSchemaDecoupleCycle;
 
   /**
-   * Properties removed to break the detected cycles.
+   * The single property removal that broke this cycle.
    *
-   * Each removal specifies which property was deleted from which schema,
-   * along with the LLM's reasoning for choosing that particular edge.
+   * Specifies which property was deleted from which schema, along with the
+   * LLM's reasoning for choosing that particular edge.
    */
-  removals: AutoBeInterfaceSchemaDecoupleRemoval[];
+  removal: AutoBeInterfaceSchemaDecoupleRemoval;
 
   /**
-   * LLM analysis of the circular references and resolution decisions.
+   * LLM analysis of this cycle and the removal decision.
    *
-   * Documents the reasoning behind each removal decision, considering
-   * semantic importance, reference direction, and DTO purpose.
+   * Documents the reasoning behind each removal decision, considering semantic
+   * importance, reference direction, and DTO purpose.
    */
   analysis: string;
 
-  /**
-   * Current iteration number of the requirements analysis.
-   */
+  /** Current iteration number of the requirements analysis. */
   step: number;
 }

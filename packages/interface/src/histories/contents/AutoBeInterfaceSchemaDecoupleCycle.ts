@@ -3,9 +3,9 @@ import { AutoBeInterfaceSchemaDecoupleEdge } from "./AutoBeInterfaceSchemaDecoup
 /**
  * A group of mutually-reachable types forming a circular reference.
  *
- * Identified as a strongly connected component (SCC) in the schema
- * reference graph with two or more nodes. The LLM Decouple agent
- * receives these cycles and decides which edge(s) to cut.
+ * Identified as a strongly connected component (SCC) in the schema reference
+ * graph with two or more nodes. The LLM Decouple agent receives these cycles
+ * and decides which edge(s) to cut.
  *
  * @author Samchon
  */
