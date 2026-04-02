@@ -30,11 +30,6 @@ export const fixPreliminaryApplication = <
   application: ILlmApplication;
   enumerable: boolean;
 }): void => {
-  if (
-    props.preliminary.getKinds().some((k) => k.includes("previous")) === false
-  )
-    return;
-
   const func: ILlmFunction | undefined = props.application.functions.find(
     (f) => f.name === "process",
   );
@@ -62,28 +57,35 @@ export const fixPreliminaryApplication = <
   });
   if (eraseMetadata === null) return;
 
+  // Always erase previous kinds unavailable by state — must run even when
+  // getKinds() was already mutated by a prior call (e.g. cyclinic loops that
+  // call createController() fresh on every iteration).
+  if (props.state.previousAnalyze === null)
+    eraseMetadata("getPreviousAnalysisSections");
+  if (props.state.previousDatabase === null)
+    eraseMetadata("getPreviousDatabaseSchemas");
+  if (props.state.previousInterface === null) {
+    eraseMetadata("getPreviousInterfaceOperations");
+    eraseMetadata("getPreviousInterfaceSchemas");
+  }
+
+  // Also update controller state so orchestratePreliminary skips erased kinds.
   for (const kind of props.preliminary.getKinds().slice())
     if (kind === "previousAnalysisSections") {
-      if (props.state.previousAnalyze === null) {
-        eraseMetadata("getPreviousAnalysisSections");
-        eraseKind(kind);
-      }
+      if (props.state.previousAnalyze === null) eraseKind(kind);
     } else if (kind === "previousDatabaseSchemas") {
-      if (props.state.previousDatabase === null) {
-        eraseMetadata("getPreviousDatabaseSchemas");
-        eraseKind(kind);
-      }
+      if (props.state.previousDatabase === null) eraseKind(kind);
     } else if (kind === "previousInterfaceOperations") {
-      if (props.state.previousInterface === null) {
-        eraseMetadata("getPreviousInterfaceOperations");
-        eraseKind(kind);
-      }
+      if (props.state.previousInterface === null) eraseKind(kind);
     } else if (kind === "previousInterfaceSchemas") {
-      if (props.state.previousInterface === null) {
-        eraseMetadata("getPreviousInterfaceSchemas");
-        eraseKind(kind);
-      }
+      if (props.state.previousInterface === null) eraseKind(kind);
     }
+
+  // Skip description building if no previous kinds remain in the controller.
+  if (
+    props.preliminary.getKinds().some((k) => k.includes("previous")) === false
+  )
+    return;
 
   for (const kind of props.preliminary.getKinds()) {
     const accessor: Exclude<AutoBePreliminaryKind, `previous${string}`> = (
