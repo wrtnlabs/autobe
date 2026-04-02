@@ -50,8 +50,8 @@ export function fail(
 }
 
 /**
- * Run a scenario function with error isolation.
- * If the scenario throws, it returns a fail result instead of crashing the entire suite.
+ * Run a scenario function with error isolation. If the scenario throws, it
+ * returns a fail result instead of crashing the entire suite.
  */
 export async function safeScenario(
   id: number,
