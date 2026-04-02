@@ -1,5 +1,7 @@
 const DEFAULT_PORT = 37001;
 const REQUEST_TIMEOUT_MS = 15000;
+const MAX_RETRIES = 2;
+const RETRY_DELAY_MS = 500;
 
 export interface HttpResponse {
   status: number;
@@ -7,6 +9,8 @@ export interface HttpResponse {
   ok: boolean;
   /** Response time in milliseconds */
   durationMs: number;
+  /** Number of retry attempts (0 = first try succeeded) */
+  retries?: number;
 }
 
 export class HttpRunner {
@@ -71,38 +75,54 @@ export class HttpRunner {
     };
     if (useToken && this.token)
       headers["Authorization"] = `Bearer ${this.token}`;
-    const start = performance.now();
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-    try {
-      const res = await fetch(`${this.baseUrl}${url}`, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : undefined,
-        signal: controller.signal,
-      });
-      let responseBody: any = null;
-      const text = await res.text();
+
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      const start = performance.now();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
       try {
-        responseBody = JSON.parse(text);
+        const res = await fetch(`${this.baseUrl}${url}`, {
+          method,
+          headers,
+          body: body ? JSON.stringify(body) : undefined,
+          signal: controller.signal,
+        });
+        let responseBody: any = null;
+        const text = await res.text();
+        try {
+          responseBody = JSON.parse(text);
+        } catch {
+          responseBody = text;
+        }
+        return {
+          status: res.status,
+          body: responseBody,
+          ok: res.status >= 200 && res.status < 300,
+          durationMs: Math.round(performance.now() - start),
+          retries: attempt > 0 ? attempt : undefined,
+        };
       } catch {
-        responseBody = text;
+        clearTimeout(timeout);
+        // Retry on connection errors (status 0), not on server responses
+        if (attempt < MAX_RETRIES) {
+          await new Promise((r) =>
+            setTimeout(r, RETRY_DELAY_MS * (attempt + 1)),
+          );
+          continue;
+        }
+        return {
+          status: 0,
+          body: null,
+          ok: false,
+          durationMs: Math.round(performance.now() - start),
+          retries: attempt,
+        };
+      } finally {
+        clearTimeout(timeout);
       }
-      return {
-        status: res.status,
-        body: responseBody,
-        ok: res.status >= 200 && res.status < 300,
-        durationMs: Math.round(performance.now() - start),
-      };
-    } catch {
-      return {
-        status: 0,
-        body: null,
-        ok: false,
-        durationMs: Math.round(performance.now() - start),
-      };
-    } finally {
-      clearTimeout(timeout);
     }
+
+    // Unreachable, but TypeScript needs it
+    return { status: 0, body: null, ok: false, durationMs: 0 };
   }
 }
