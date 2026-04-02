@@ -90,7 +90,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
             realizeTransformers: props.transformers.filter(
               (t) =>
                 t.plan.dtoTypeName ===
-                scenario.operation.responseBody?.typeName,
+                scenario.operation.responseBody?.typeName.replace("IPage", ""),
             ),
           },
         });

@@ -123,7 +123,7 @@ const main = async (): Promise<void> => {
     });
 
   const specifiedVendors: string[] | null = TestGlobal.getArguments("vendor");
-  console.log(specifiedVendors);
+  const specifiedProjects: string[] | null = TestGlobal.getArguments("project");
 
   for (const x of await AutoBeExampleStorage.getVendorModels()) {
     if (
@@ -133,12 +133,18 @@ const main = async (): Promise<void> => {
       )
     )
       continue;
-    for (const project of typia.misc.literals<AutoBeExampleProject>())
+    for (const project of typia.misc.literals<AutoBeExampleProject>()) {
+      if (
+        specifiedProjects !== null &&
+        specifiedProjects.includes(project) === false
+      )
+        continue;
       await visit({
         dbms,
         vendor: x,
         project,
       });
+    }
   }
 };
 main().catch(console.error);
