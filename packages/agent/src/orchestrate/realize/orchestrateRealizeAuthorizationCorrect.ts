@@ -12,7 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeAuthorizationCorrectHistory } from "./histories/transformRealizeAuthorizationCorrectHistory";
 import { IAutoBeRealizeAuthorizationCorrectApplication } from "./structures/IAutoBeRealizeAuthorizationCorrectApplication";
 import { AuthorizationFileSystem } from "./utils/AuthorizationFileSystem";
@@ -25,235 +25,174 @@ export async function orchestrateRealizeAuthorizationCorrect(
     template: Record<string, string>;
     prismaClient: Record<string, string>;
   },
+  life: number = AutoBeConfigConstant.COMPILER_RETRY,
 ): Promise<AutoBeRealizeAuthorization> {
-  const compiler: IAutoBeCompiler = await ctx.compiler();
-
-  const compiled: IAutoBeTypeScriptCompileResult = await compileAuthorization(
-    compiler,
-    props.authorization,
-    props,
-  );
-
-  ctx.dispatch({
-    type: "realizeAuthorizationValidate",
-    id: v7(),
-    created_at: new Date().toISOString(),
-    authorization: props.authorization,
-    result: compiled,
-    step: ctx.state().test?.step ?? 0,
-  });
-
-  if (compiled.type === "success" || compiled.type === "exception") {
-    return props.authorization;
-  }
-
-  // Track mutable state across iterations
-  let currentDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
-    compiled.diagnostics;
-  let lastCorrect: AutoBeRealizeAuthorization | null = null;
-  let previousWrite: IAutoBeRealizeAuthorizationCorrectApplication.IWrite | null =
-    null;
-
-  const cyclinic = new AutoBeCyclinicController<"databaseSchemas">({
-    source: SOURCE,
-    application:
-      typia.json.application<IAutoBeRealizeAuthorizationCorrectApplication>(),
-    kinds: ["databaseSchemas"],
-    state: ctx.state(),
-    maxIterations: AutoBeConfigConstant.COMPILER_RETRY,
-  });
-
   try {
-    return await cyclinic.orchestrate(
-      ctx,
-      // PROCESS: LLM conversation → action
-      async (context) => {
-        const action: IPointer<
-          | {
-              type: "write";
-              data: IAutoBeRealizeAuthorizationCorrectApplication.IWrite;
-            }
-          | { type: "complete" }
-          | null
-        > = { value: null };
-
-        const result: AutoBeContext.IResult = await ctx.conversate({
-          source: SOURCE,
-          controller: createController({ cyclinic, action }),
-          enforceFunctionCall: true,
-          ...transformRealizeAuthorizationCorrectHistory({
-            authorization: props.authorization,
-            template: props.template,
-            diagnostics: currentDiagnostics,
-            preliminary: context.preliminary,
-            previousWrite,
-          }),
-        });
-
-        return { result, action: action.value };
-      },
-      // VALIDATE: compile the submitted write and track diagnostics
-      async (writeData) => {
-        previousWrite = writeData;
-        const correct = await buildCorrect(compiler, writeData, props);
-        const compileResult = await compileAuthorization(
-          compiler,
-          correct,
-          props,
-        );
-
-        ctx.dispatch({
-          type: "realizeAuthorizationValidate",
-          id: v7(),
-          created_at: new Date().toISOString(),
-          authorization: correct,
-          result: compileResult,
-          step: ctx.state().test?.step ?? 0,
-        });
-
-        if (compileResult.type === "success") {
-          lastCorrect = correct;
-          return { success: true };
-        }
-        if (compileResult.type === "failure") {
-          currentDiagnostics = compileResult.diagnostics;
-          return { success: false, diagnostics: compileResult.diagnostics };
-        }
-        // exception — treat as failure without updating diagnostics
-        return { success: false };
-      },
-      // FINALIZE: dispatch event and return corrected authorization
-      async (lastWrite, result) => {
-        const authorization: AutoBeRealizeAuthorization =
-          lastCorrect ?? (await buildCorrect(compiler, lastWrite, props));
-        if (result !== null)
-          ctx.dispatch({
-            type: "realizeAuthorizationCorrect",
-            id: v7(),
-            created_at: new Date().toISOString(),
-            authorization: authorization as AutoBeRealizeAuthorizationCorrect,
-            result: compiled as IAutoBeTypeScriptCompileResult.IFailure,
-            acquisition: cyclinic.getPreliminary().getAcquisition(),
-            metric: result.metric,
-            tokenUsage: result.tokenUsage,
-            step: ctx.state().test?.step ?? 0,
-          });
-        return authorization;
-      },
+    const compiler: IAutoBeCompiler = await ctx.compiler();
+    const providerContent: string = await compiler.typescript.beautify(
+      AutoBeRealizeAuthorizationReplaceImport.replaceProviderImport(
+        props.authorization.actor.name,
+        props.authorization.provider.content,
+      ),
     );
+    const decoratorContent: string = await compiler.typescript.beautify(
+      AutoBeRealizeAuthorizationReplaceImport.replaceDecoratorImport(
+        props.authorization.actor.name,
+        props.authorization.decorator.content,
+      ),
+    );
+
+    // Check Compile
+    const files: Record<string, string> = {
+      ...props.template,
+      ...props.prismaClient,
+      [AuthorizationFileSystem.decoratorPath(
+        props.authorization.decorator.name,
+      )]: decoratorContent,
+      [AuthorizationFileSystem.providerPath(props.authorization.provider.name)]:
+        providerContent,
+      [AuthorizationFileSystem.payloadPath(props.authorization.payload.name)]:
+        props.authorization.payload.content,
+    };
+
+    const compiled: IAutoBeTypeScriptCompileResult =
+      await compiler.typescript.compile({
+        files,
+      });
+
+    ctx.dispatch({
+      type: "realizeAuthorizationValidate",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      authorization: props.authorization,
+      result: compiled,
+      step: ctx.state().test?.step ?? 0,
+    });
+
+    if (compiled.type === "success") {
+      return props.authorization;
+    } else if (compiled.type === "exception" || life < 0) {
+      return props.authorization;
+    }
+
+    const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
+      new AutoBePreliminaryController({
+        source: SOURCE,
+        application:
+          typia.json.application<IAutoBeRealizeAuthorizationCorrectApplication>(),
+        kinds: ["databaseSchemas"],
+        state: ctx.state(),
+      });
+    return await preliminary.orchestrate(ctx, async (out) => {
+      const pointer: IPointer<IAutoBeRealizeAuthorizationCorrectApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: "realizeAuthorizationCorrect",
+        controller: createController({
+          build: (next) => {
+            pointer.value = next;
+          },
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        ...transformRealizeAuthorizationCorrectHistory({
+          authorization: props.authorization,
+          template: props.template,
+          diagnostics: compiled.diagnostics,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
+
+      const correct: AutoBeRealizeAuthorizationCorrect = {
+        ...pointer.value,
+        decorator: {
+          ...pointer.value.decorator,
+          location: AuthorizationFileSystem.decoratorPath(
+            pointer.value.decorator.name,
+          ),
+        },
+        provider: {
+          ...pointer.value.provider,
+          location: AuthorizationFileSystem.providerPath(
+            pointer.value.provider.name,
+          ),
+        },
+        payload: {
+          name: pointer.value.payload.name,
+          location: AuthorizationFileSystem.payloadPath(
+            pointer.value.payload.name,
+          ),
+          content: await compiler.typescript.beautify(
+            pointer.value.payload.content,
+          ),
+        },
+        actor: props.authorization.actor,
+      };
+
+      ctx.dispatch({
+        ...pointer.value,
+        type: "realizeAuthorizationCorrect",
+        id: v7(),
+        created_at: new Date().toISOString(),
+        authorization: correct,
+        result: compiled,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().test?.step ?? 0,
+      });
+      return out(result)(
+        await orchestrateRealizeAuthorizationCorrect(
+          ctx,
+          {
+            authorization: correct,
+            prismaClient: props.prismaClient,
+            template: props.template,
+          },
+          life - 1,
+        ),
+      );
+    });
   } catch {
-    return props.authorization;
+    return await orchestrateRealizeAuthorizationCorrect(ctx, props, life - 1);
   }
 }
-
-// ── Helpers ──
-
-async function buildCorrect(
-  compiler: IAutoBeCompiler,
-  write: IAutoBeRealizeAuthorizationCorrectApplication.IWrite,
-  props: {
-    authorization: AutoBeRealizeAuthorization;
-    template: Record<string, string>;
-    prismaClient: Record<string, string>;
-  },
-): Promise<AutoBeRealizeAuthorization> {
-  return {
-    actor: props.authorization.actor,
-    decorator: {
-      ...write.decorator,
-      location: AuthorizationFileSystem.decoratorPath(write.decorator.name),
-    },
-    provider: {
-      ...write.provider,
-      location: AuthorizationFileSystem.providerPath(write.provider.name),
-    },
-    payload: {
-      name: write.payload.name,
-      location: AuthorizationFileSystem.payloadPath(write.payload.name),
-      content: await compiler.typescript.beautify(write.payload.content),
-    },
-  };
-}
-
-async function compileAuthorization(
-  compiler: IAutoBeCompiler,
-  authorization: AutoBeRealizeAuthorization,
-  props: {
-    template: Record<string, string>;
-    prismaClient: Record<string, string>;
-  },
-): Promise<IAutoBeTypeScriptCompileResult> {
-  const providerContent: string = await compiler.typescript.beautify(
-    AutoBeRealizeAuthorizationReplaceImport.replaceProviderImport(
-      authorization.actor.name,
-      authorization.provider.content,
-    ),
-  );
-  const decoratorContent: string = await compiler.typescript.beautify(
-    AutoBeRealizeAuthorizationReplaceImport.replaceDecoratorImport(
-      authorization.actor.name,
-      authorization.decorator.content,
-    ),
-  );
-  const files: Record<string, string> = {
-    ...props.template,
-    ...props.prismaClient,
-    [AuthorizationFileSystem.decoratorPath(authorization.decorator.name)]:
-      decoratorContent,
-    [AuthorizationFileSystem.providerPath(authorization.provider.name)]:
-      providerContent,
-    [AuthorizationFileSystem.payloadPath(authorization.payload.name)]:
-      authorization.payload.content,
-  };
-  return compiler.typescript.compile({ files });
-}
-
-// ── Controller factory ──
 
 function createController(props: {
-  cyclinic: AutoBeCyclinicController<"databaseSchemas">;
-  action: IPointer<
-    | {
-        type: "write";
-        data: IAutoBeRealizeAuthorizationCorrectApplication.IWrite;
-      }
-    | { type: "complete" }
-    | null
-  >;
+  build: (next: IAutoBeRealizeAuthorizationCorrectApplication.IWrite) => void;
+  preliminary: AutoBePreliminaryController<"databaseSchemas">;
 }): IAgenticaController.IClass {
-  const preliminary = props.cyclinic.getPreliminary();
   const validate: Validator = (input) => {
-    const result =
+    const result: IValidation<IAutoBeRealizeAuthorizationCorrectApplication.IProps> =
       typia.validate<IAutoBeRealizeAuthorizationCorrectApplication.IProps>(
         input,
       );
-    if (result.success === false) return result;
-    const req = result.data.request;
-    if (req.type === "write" || req.type === "complete") return result;
-    return preliminary.validate({
+    if (result.success === false || result.data.request.type === "write")
+      return result;
+    return props.preliminary.validate({
       thinking: result.data.thinking,
-      request: req,
+      request: result.data.request,
     });
   };
 
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeRealizeAuthorizationCorrectApplication>({
-        validate: { process: validate },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeRealizeAuthorizationCorrectApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
 
   return {
     protocol: "class",
-    name: SOURCE satisfies AutoBeEventSource,
+    name: SOURCE,
     application,
     execute: {
-      process: (input) => {
-        if (input.request.type === "write")
-          props.action.value = { type: "write", data: input.request };
-        else if (input.request.type === "complete")
-          props.action.value = { type: "complete" };
+      process: (next) => {
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeRealizeAuthorizationCorrectApplication,
   };

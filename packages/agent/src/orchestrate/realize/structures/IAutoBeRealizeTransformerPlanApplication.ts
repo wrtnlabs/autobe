@@ -1,7 +1,7 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Plans whether a single DTO needs a transformer. Sets databaseSchemaName to
@@ -37,25 +37,21 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
     /**
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
-     *
-     * - `complete` is only available after at least one `write` submission.
      */
     request:
       | IWrite
-      | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
-      | IAutoBePreliminaryGetInterfaceSchemas;
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryComplete;
   }
 
   /**
-   * Submit the plan entry for the given DTO.
-   *
-   * This is an intermediate step — you can submit multiple times to refine. The
-   * last submitted plans will be used when you call `complete`.
+   * Generates exactly ONE plan entry indicating transformable (has DB schema
+   * name) or not (null).
    */
   export interface IWrite {
-    /** Type discriminator for write submission. */
+    /** Type discriminator for completion request. */
     type: "write";
 
     /**

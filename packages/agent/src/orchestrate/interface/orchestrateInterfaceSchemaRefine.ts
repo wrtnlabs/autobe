@@ -13,7 +13,6 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
 import { transformInterfaceSchemaRefineHistory } from "./histories/transformInterfaceSchemaRefineHistory";
@@ -91,7 +90,7 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
-  const cyclinic = new AutoBeCyclinicController<
+  const preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
@@ -100,7 +99,7 @@ async function process(
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
-  >({
+  > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceSchemaRefineApplication>(),
     source: SOURCE,
@@ -144,95 +143,63 @@ async function process(
       })(),
     },
   });
-
-  return cyclinic.orchestrate(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeInterfaceSchemaRefineApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
-
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController(ctx, {
-          typeName: props.typeName,
-          operations: props.document.operations,
-          schema: props.schema,
-          cyclinic,
-          action,
-        }),
-        enforceFunctionCall: true,
-        promptCacheKey: props.promptCacheKey,
-        ...transformInterfaceSchemaRefineHistory({
-          state: ctx.state(),
-          instruction: props.instruction,
-          typeName: props.typeName,
-          operations: props.operations,
-          schema: props.schema,
-          preliminary: context.preliminary,
-        }),
-      });
-      return { result, action: action.value };
-    },
-    // VALIDATE: run business logic validation
-    async (writeData) => {
-      const errors: IValidation.IError[] = [];
-      AutoBeInterfaceSchemaRefineProgrammer.validate({
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeInterfaceSchemaRefineApplication.IWrite | null> =
+      {
+        value: null,
+      };
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController(ctx, {
         typeName: props.typeName,
+        operations: props.document.operations,
         schema: props.schema,
-        everyModels:
-          ctx.state().database?.result.data.files.flatMap((f) => f.models) ??
-          [],
-        databaseSchema: writeData.databaseSchema,
-        excludes: writeData.excludes,
-        revises: writeData.revises,
-        errors,
-        path: `$input.request`,
+        preliminary,
+        pointer,
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfaceSchemaRefineHistory({
+        state: ctx.state(),
+        instruction: props.instruction,
+        typeName: props.typeName,
+        operations: props.operations,
+        schema: props.schema,
+        preliminary,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
+
+    // Apply refines to generate the enriched schema content
+    const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
+      AutoBeInterfaceSchemaRefineProgrammer.execute({
+        schema: props.schema,
+        databaseSchema: pointer.value.databaseSchema,
+        specification: pointer.value.specification,
+        description: pointer.value.description,
+        revises: pointer.value.revises,
       });
-      if (errors.length) {
-        return { success: false, diagnostics: errors };
-      }
-      return { success: true };
-    },
-    // FINALIZE: build refined schema, dispatch event, return
-    async (lastWrite, result) => {
-      const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
-        AutoBeInterfaceSchemaRefineProgrammer.execute({
-          schema: props.schema,
-          databaseSchema: lastWrite.databaseSchema,
-          specification: lastWrite.specification,
-          description: lastWrite.description,
-          revises: lastWrite.revises,
-        });
-      if (result !== null)
-        ctx.dispatch({
-          type: SOURCE,
-          id: v7(),
-          typeName: props.typeName,
-          schema: props.schema,
-          review: lastWrite.review,
-          databaseSchema: lastWrite.databaseSchema,
-          specification: lastWrite.specification,
-          description: lastWrite.description,
-          excludes: lastWrite.excludes,
-          revises: lastWrite.revises,
-          acquisition: cyclinic.getPreliminary().getAcquisition(),
-          metric: result.metric,
-          tokenUsage: result.tokenUsage,
-          step: ctx.state().analyze?.step ?? 0,
-          total: props.progress.total,
-          completed: ++props.progress.completed,
-          created_at: new Date().toISOString(),
-        } satisfies AutoBeInterfaceSchemaRefineEvent);
-      return content;
-    },
-  );
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      typeName: props.typeName,
+      schema: props.schema,
+      review: pointer.value.review,
+      databaseSchema: pointer.value.databaseSchema,
+      specification: pointer.value.specification,
+      description: pointer.value.description,
+      excludes: pointer.value.excludes,
+      revises: pointer.value.revises,
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+      total: props.progress.total,
+      completed: ++props.progress.completed,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeInterfaceSchemaRefineEvent);
+    return out(result)(content);
+  });
 }
 
 function createController(
@@ -241,15 +208,10 @@ function createController(
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchema.IObject;
     operations: AutoBeOpenApi.IOperation[];
-    action: IPointer<
-      | {
-          type: "write";
-          data: IAutoBeInterfaceSchemaRefineApplication.IWrite;
-        }
-      | { type: "complete" }
-      | null
+    pointer: IPointer<
+      IAutoBeInterfaceSchemaRefineApplication.IWrite | null | false
     >;
-    cyclinic: AutoBeCyclinicController<
+    preliminary: AutoBePreliminaryController<
       | "analysisSections"
       | "databaseSchemas"
       | "interfaceOperations"
@@ -261,40 +223,45 @@ function createController(
     >;
   },
 ): IAgenticaController.IClass {
-  const preliminary: AutoBePreliminaryController<
-    | "analysisSections"
-    | "databaseSchemas"
-    | "interfaceOperations"
-    | "interfaceSchemas"
-    | "previousAnalysisSections"
-    | "previousDatabaseSchemas"
-    | "previousInterfaceOperations"
-    | "previousInterfaceSchemas"
-  > = props.cyclinic.getPreliminary();
-
   const validate: Validator = (next) => {
     const result: IValidation<IAutoBeInterfaceSchemaRefineApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemaRefineApplication.IProps>(next);
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
-    }
-    const req = result.data.request;
-    if (req.type === "write" || req.type === "complete") return result;
-    return preliminary.validate({
-      thinking: result.data.thinking,
-      request: req,
+    } else if (result.data.request.type !== "write")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
+    const errors: IValidation.IError[] = [];
+    AutoBeInterfaceSchemaRefineProgrammer.validate({
+      typeName: props.typeName,
+      schema: props.schema,
+      everyModels:
+        ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [],
+      databaseSchema: result.data.request.databaseSchema,
+      excludes: result.data.request.excludes,
+      revises: result.data.request.revises,
+      errors,
+      path: `$input.request`,
     });
+    return errors.length
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
   };
 
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeInterfaceSchemaRefineApplication>({
-        validate: {
-          process: validate,
-        },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeInterfaceSchemaRefineApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   AutoBeInterfaceSchemaRefineProgrammer.fixApplication({
     everyModels:
@@ -310,10 +277,7 @@ function createController(
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "write")
-          props.action.value = { type: "write", data: input.request };
-        else if (input.request.type === "complete")
-          props.action.value = { type: "complete" };
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeInterfaceSchemaRefineApplication,
   };

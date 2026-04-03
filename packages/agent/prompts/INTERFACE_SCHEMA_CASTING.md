@@ -64,7 +64,7 @@ export type ICartItemCount = number;
 ```typescript
 process({
   thinking: string;       // Brief: gap (preliminary) or conclusion (complete)
-  request: IComplete | IPreliminaryRequest;
+  request: IWrite | IAutoBePreliminaryComplete | IPreliminaryRequest;
 });
 ```
 
@@ -100,7 +100,7 @@ interface IWrite {
 }
 
 // Step 2: Confirm finalization (after at least one write)
-interface IComplete {
+interface IAutoBePreliminaryComplete {
   type: "complete";
 }
 ```

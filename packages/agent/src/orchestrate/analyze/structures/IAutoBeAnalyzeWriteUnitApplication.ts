@@ -1,5 +1,5 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
-import { IComplete } from "../../common/structures/IComplete";
 
 /** Generates unit-level sections (##) within approved module structures. */
 export interface IAutoBeAnalyzeWriteUnitApplication {
@@ -12,15 +12,15 @@ export interface IAutoBeAnalyzeWriteUnitApplication {
 
 export interface IAutoBeAnalyzeWriteUnitApplicationProps {
   /**
-   * Reasoning about your current state: what's missing (preliminary) or what
-   * you accomplished (completion).
+   * Reasoning: what's missing (preliminary), what you're submitting (write), or
+   * why the last write is correct (complete).
    */
   thinking?: string | null;
 
   /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
     | IAutoBeAnalyzeWriteUnitApplicationWrite
-    | IComplete
+    | IAutoBePreliminaryComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 

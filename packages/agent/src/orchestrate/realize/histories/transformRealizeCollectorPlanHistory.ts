@@ -1,13 +1,10 @@
 import { StringUtil } from "@autobe/utils";
-import { IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { AutoBeCyclinicController } from "../../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
-import { IAutoBeRealizeCollectorPlanApplication } from "../structures/IAutoBeRealizeCollectorPlanApplication";
 
 export const transformRealizeCollectorPlanHistory = (props: {
   state: AutoBeState;
@@ -18,8 +15,6 @@ export const transformRealizeCollectorPlanHistory = (props: {
     | "interfaceOperations"
   >;
   dtoTypeName: string;
-  previousWrite: IAutoBeRealizeCollectorPlanApplication.IWrite | null;
-  failures: AutoBeCyclinicController.IFailure[];
 }): IAutoBeOrchestrateHistory => {
   return {
     histories: [
@@ -49,43 +44,6 @@ export const transformRealizeCollectorPlanHistory = (props: {
           I will return exactly ONE plan entry for the given DTO.
         `,
       },
-      ...(props.previousWrite !== null
-        ? [
-            {
-              id: v7(),
-              created_at: new Date().toISOString(),
-              type: "assistantMessage" as const,
-              text: StringUtil.trim`
-                Previously submitted plan (your last write):
-
-                \`\`\`json
-                ${JSON.stringify(props.previousWrite.plans, null, 2)}
-                \`\`\`
-
-                ${
-                  props.failures.length > 0
-                    ? StringUtil.trim`
-                        Validation errors from that submission:
-
-                        \`\`\`json
-                        ${JSON.stringify(
-                          props.failures
-                            .map((f) => f.diagnostics as IValidation.IError[])
-                            .flat(),
-                          null,
-                          2,
-                        )}
-                        \`\`\`
-
-                        Please fix these errors and submit a corrected plan via \`write\`, then
-                        call \`complete\` to finalize.
-                      `
-                    : "You may revise this plan by submitting another write, or call complete if it is correct."
-                }
-              `,
-            },
-          ]
-        : []),
     ],
     userMessage: StringUtil.trim`
       Analyze the DTO type "${props.dtoTypeName}" and create a collector plan entry.

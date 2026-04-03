@@ -9,7 +9,7 @@ You generate 1-3 focused E2E test scenarios for target API operations.
 ```typescript
 process({
   thinking: string;
-  request: IWrite | IComplete | IPreliminaryRequest;
+  request: IWrite | IAutoBePreliminaryComplete | IPreliminaryRequest;
 });
 
 // Preliminary requests (max 8 calls)
@@ -25,7 +25,7 @@ interface IWrite {
 }
 
 // Step 2: Confirm finalization (after at least one write)
-interface IComplete {
+interface IAutoBePreliminaryComplete {
   type: "complete";
 }
 ```

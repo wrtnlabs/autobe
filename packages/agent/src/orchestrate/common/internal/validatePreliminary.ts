@@ -6,6 +6,7 @@ import typia, { IValidation } from "typia";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
+import { IAutoBePreliminaryComplete } from "../structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -19,19 +20,93 @@ import { IAutoBePreliminaryGetRealizeTransformers } from "../structures/IAutoBeP
 
 export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   controller: AutoBePreliminaryController<Kind>,
-  data: IAutoBePreliminaryRequest<Kind>,
-): IValidation<IAutoBePreliminaryRequest<Kind>> => {
-  const type: Exclude<
-    IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
-    `getPrevious${string}`
-  > = (
+  data: IAutoBePreliminaryRequest<Kind, true>,
+): IValidation<IAutoBePreliminaryRequest<Kind, true>> => {
+  // discriminator
+  const type:
+    | Exclude<
+        IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
+        `getPrevious${string}`
+      >
+    | "complete" = (
     data.request.type.startsWith("getPrevious")
       ? data.request.type.replace("getPrevious", "get")
       : data.request.type
-  ) as Exclude<
-    IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
-    `getPrevious${string}`
-  >;
+  ) as
+    | Exclude<
+        IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
+        `getPrevious${string}`
+      >
+    | "complete";
+
+  // ---------------------------------------------------------------------------
+  // COMPLETE CASE
+  //
+  // Every IXApplication interface (e.g. IAutoBeRealizeCollectorWriteApplication,
+  // IAutoBeInterfaceEndpointWriteApplication, IAutoBeDatabaseSchemaApplication,
+  // etc.) exposes a single `process()` whose `request` parameter is a
+  // discriminated union:
+  //
+  //   request: IWrite                        — submit generated artifacts
+  //          | IAutoBePreliminaryGet*         — incremental RAG data loading
+  //          | IAutoBePreliminaryComplete     — finalize the loop
+  //
+  // The LLM sends `{ type: "complete", remind, confirm }` when it believes the
+  // cyclinic write → validate → correct loop is finished. However, LLMs
+  // frequently attempt to call complete() prematurely — before ever submitting
+  // a write — especially when the context window is thin or when exhausted
+  // preliminary types are removed from the union, leaving only `complete` as
+  // a seemingly valid choice.
+  //
+  // To guard against this, we check `controller.getPreviousWrite()`:
+  //
+  //   - Prior write EXISTS  → validate the `IAutoBePreliminaryComplete`
+  //     structure (remind + confirm fields) via typia and allow finalization.
+  //   - NO prior write      → reject with an explicit error instructing the
+  //     LLM to submit its write first before requesting completion.
+  //
+  // The `remind` field forces the LLM to recall what it submitted and why it
+  // considers the result correct — a self-check that reduces hallucinated
+  // completions. The `confirm` field must be explicitly `true` to proceed;
+  // `false` cancels the completion and continues the loop.
+  //
+  // @see IAutoBePreliminaryComplete       — shared completion request structure
+  // @see AutoBePreliminaryController      — orchestrate() loop that consumes
+  //                                         the completed flag
+  // @see orchestratePreliminary           — sets completed.value when
+  //                                         confirm === true
+  // ---------------------------------------------------------------------------
+  if (type === "complete") {
+    const previousWrite = controller.getPreviousWrite();
+    if (previousWrite === null)
+      return typia.validate<{
+        thinking: string;
+        complete: IAutoBePreliminaryComplete;
+      }>(data) as IValidation<IAutoBePreliminaryRequest<Kind, true>>;
+    return {
+      success: false,
+      data: data as any,
+      errors: [
+        {
+          path: "$input.request",
+          value: data.request,
+          expected: "IWrite",
+          description: StringUtil.trim`
+            You have not written anything yet, so you cannot request 
+            "complete" the task.
+
+            Please submit your write first by calling 
+            \`process({ request: { type: "write", ... } })\` 
+            with your write content, and then you can request "complete" 
+            after reviewing the content is correct and properly reflects 
+            your intentions.
+          `,
+        },
+      ],
+    };
+  }
+
+  // individual validation
   const func = PreliminaryApplicationValidator[type];
   // biome-ignore-start lint: intended
   return func(

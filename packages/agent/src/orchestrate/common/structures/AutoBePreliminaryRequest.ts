@@ -1,5 +1,6 @@
 import { AutoBePreliminaryKind } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "./IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "./IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "./IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "./IAutoBePreliminaryGetInterfaceOperations";
@@ -19,12 +20,17 @@ import { IAutoBePreliminaryGetRealizeTransformers } from "./IAutoBePreliminaryGe
  *
  * @author Samchon
  */
-export interface IAutoBePreliminaryRequest<Kind extends AutoBePreliminaryKind> {
+export interface IAutoBePreliminaryRequest<
+  Kind extends AutoBePreliminaryKind,
+  IncludeComplete extends boolean = false,
+> {
   /** LLM's reasoning about why this data is needed. */
   thinking: string;
 
   /** Actual request payload discriminated by `Kind`. */
-  request: Mapper[Kind];
+  request: IncludeComplete extends true
+    ? Mapper[Kind] | IAutoBePreliminaryComplete
+    : Mapper[Kind];
 }
 
 /** Maps preliminary `Kind` to corresponding request type. */
@@ -39,4 +45,5 @@ type Mapper = {
   previousDatabaseSchemas: IAutoBePreliminaryGetPreviousDatabaseSchemas;
   previousInterfaceSchemas: IAutoBePreliminaryGetPreviousInterfaceSchemas;
   previousInterfaceOperations: IAutoBePreliminaryGetPreviousInterfaceOperations;
+  complete: IAutoBePreliminaryComplete;
 };

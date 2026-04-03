@@ -1,81 +1,21 @@
-import { IComplete } from "../../common/structures/IComplete";
-
-/**
- * Function calling interface for generating resource generation functions.
- *
- * Guides the AI agent through creating generation functions that produce test
- * data resources for E2E testing. Each generation function uses prepare
- * functions to create valid test data and calls the appropriate API to create
- * actual resources.
- *
- * The generation follows a write-validate-correct workflow: code generation →
- * external TypeScript compilation → error feedback → correction → completion.
- */
 export interface IAutoBeTestGenerationWriteApplication {
   /**
-   * Submit resource generation function or confirm completion.
+   * Main entry point for AI Function Call - generates resource generation
+   * function.
    *
-   * Generates complete generation function through write-validate-correct loop.
-   * The submitted code is compiled externally; compilation failures produce
-   * diagnostic errors that feed back for correction.
+   * The AI executes this function to create a generation function that produces
+   * test data resources for E2E testing. The generation function uses prepare
+   * functions to create valid test data and calls the appropriate API to create
+   * actual resources.
    *
-   * @param props Request containing either code submission or completion
-   *   confirmation
+   * @param props Complete specification for generation function including
+   *   prepare function details, operation info, and implementation
    */
-  process(props: IAutoBeTestGenerationWriteApplication.IProps): void;
+  generate(props: IAutoBeTestGenerationWriteApplication.IProps): void;
 }
 
 export namespace IAutoBeTestGenerationWriteApplication {
   export interface IProps {
-    /**
-     * Think before you act.
-     *
-     * Before submitting code or confirming completion, reflect on your current
-     * state and explain your reasoning:
-     *
-     * For write submissions:
-     *
-     * - What resource type are you generating?
-     * - What SDK function and prepare function will you use?
-     * - If retrying after failure, what specific compilation errors are you
-     *   fixing?
-     *
-     * For completion:
-     *
-     * - What code did you submit?
-     * - Why did it pass compilation?
-     * - Summarize the key implementation decisions.
-     *
-     * This reflection helps you produce correct code and avoid repeated errors.
-     */
-    thinking: string;
-
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform:
-     *
-     * - "write": Submit generation function code for external compilation
-     *   validation
-     * - "complete": Confirm and finalize after successful compilation
-     *
-     * The "complete" option is only available after a write submission has
-     * passed TypeScript compilation. Before that, only "write" is available in
-     * the union.
-     */
-    request: IWrite | IComplete;
-  }
-
-  /**
-   * Submit generation function implementation for validation.
-   *
-   * The submitted code will be compiled externally. If compilation fails, you
-   * will receive diagnostic errors and should submit a corrected version.
-   */
-  export interface IWrite {
-    /** Type discriminator for write request. */
-    type: "write";
-
     /**
      * Step 1: Strategic analysis and planning.
      *

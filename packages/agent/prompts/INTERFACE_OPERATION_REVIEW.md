@@ -53,7 +53,7 @@ thinking: "Last write is correct. Review complete."
 export namespace IAutoBeInterfaceOperationReviewApplication {
   export interface IProps {
     thinking: string;
-    request: IWrite | IComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
+    request: IWrite | IAutoBePreliminaryComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
@@ -67,7 +67,7 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
   }
 
   // Step 2: Confirm finalization (after at least one write)
-  export interface IComplete {
+  export interface IAutoBePreliminaryComplete {
     type: "complete";
   }
 }

@@ -9,19 +9,18 @@ export interface IAutoBeAnalyzeExtractDecisionsApplication {
 
 export interface IAutoBeAnalyzeExtractDecisionsApplicationProps {
   /**
-   * Reasoning about your current state: what's missing (preliminary) or what
-   * you accomplished (completion).
+   * Reasoning: what decisions you extracted and why.
    */
   thinking?: string | null;
 
   /** Action to perform: submit extracted decisions. */
-  request: IAutoBeAnalyzeExtractDecisionsApplicationComplete;
+  request: IAutoBeAnalyzeExtractDecisionsApplicationWrite;
 }
 
-/** Request to complete the decision extraction. */
-export interface IAutoBeAnalyzeExtractDecisionsApplicationComplete {
-  /** Type discriminator for completion request. */
-  type: "complete";
+/** Submit extracted decisions. */
+export interface IAutoBeAnalyzeExtractDecisionsApplicationWrite {
+  /** Type discriminator for write submission. */
+  type: "write";
 
   /**
    * All binary/discrete decisions extracted from this file. Use normalized

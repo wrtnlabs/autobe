@@ -1,14 +1,19 @@
 import {
+  AutoBeEventSource,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestAuthorizeFunction,
 } from "@autobe/interface";
+import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrectCasting";
+import { orchestrateTestCorrectOverall } from "./internal/orchestrateTestCorrectOverall";
+// import { orchestrateTestCorrectRequest } from "./internal/orchestrateTestCorrectRequest";
 import { orchestrateTestAuthorizeWrite } from "./orchestrateTestAuthorizeWrite";
 import { AutoBeTestAuthorizeProgrammer } from "./programmers/AutoBeTestAuthorizeProgrammer";
 import { IAutoBeTestAuthorizeProcedure } from "./structures/IAutoBeTestAuthorizeWriteResult";
+import { IAutoBeTestCorrectOverallApplication } from "./structures/IAutoBeTestCorrectOverallApplication";
 
 export async function orchestrateTestAuthorize(
   ctx: AutoBeContext,
@@ -41,7 +46,6 @@ export async function orchestrateTestAuthorize(
       document: props.document,
       progress: props.writeProgress,
     });
-
   procedures = await orchestrateTestCorrectCasting(ctx, {
     programmer: {
       compile,
@@ -51,5 +55,71 @@ export async function orchestrateTestAuthorize(
     procedures,
     progress: props.validateProgress,
   });
+  // procedures = await orchestrateTestCorrectRequest(ctx, {
+  //   programmer: {
+  //     compile,
+  //     replaceImportStatements,
+  //   },
+  //   instruction: props.instruction,
+  //   procedures,
+  //   progress: props.correctProgress,
+  // });
+  procedures = await orchestrateTestCorrectOverall(ctx, {
+    programmer: {
+      compile,
+      replaceImportStatements,
+      controller: (next) => createCorrectOverallController(next),
+    },
+    instruction: props.instruction,
+    progress: props.validateProgress,
+    procedures,
+    discard: false,
+  });
   return procedures.map((p) => p.function);
 }
+
+function createCorrectOverallController(props: {
+  procedure: IAutoBeTestAuthorizeProcedure;
+  build: (next: IAutoBeTestCorrectOverallApplication.IProps) => void;
+}): ILlmController<IAutoBeTestCorrectOverallApplication> {
+  const validate: Validator = (input) => {
+    const result: IValidation<IAutoBeTestCorrectOverallApplication.IProps> =
+      typia.validate<IAutoBeTestCorrectOverallApplication.IProps>(input);
+    if (result.success === false) return result;
+    const errors: IValidation.IError[] = AutoBeTestAuthorizeProgrammer.validate(
+      {
+        procedure: props.procedure,
+        draft: result.data.draft,
+        revise: result.data.revise,
+      },
+    );
+    return errors.length
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
+  };
+
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeTestCorrectOverallApplication>({
+      validate: {
+        rewrite: validate,
+      },
+    });
+  return {
+    protocol: "class",
+    name: "testCorrect" satisfies AutoBeEventSource,
+    application,
+    execute: {
+      rewrite: (v) => {
+        props.build(v);
+      },
+    } satisfies IAutoBeTestCorrectOverallApplication,
+  };
+}
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeTestCorrectOverallApplication.IProps>;

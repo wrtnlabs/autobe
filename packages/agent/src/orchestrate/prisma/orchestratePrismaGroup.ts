@@ -5,7 +5,6 @@ import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaGroupHistory } from "./histories/transformPrismaGroupHistory";
 import { AutoBeDatabaseGroupProgrammer } from "./programmers/AutoBeDatabaseGroupProgrammer";
@@ -16,10 +15,9 @@ export async function orchestratePrismaGroup(
   instruction: string,
 ): Promise<AutoBeDatabaseGroup[]> {
   const start: Date = new Date();
-
-  const cyclinic = new AutoBeCyclinicController<
+  const preliminary: AutoBePreliminaryController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
-  >({
+  > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeDatabaseGroupApplication>(),
     source: SOURCE,
     kinds: [
@@ -29,85 +27,46 @@ export async function orchestratePrismaGroup(
     ],
     state: ctx.state(),
   });
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeDatabaseGroupApplication.IWrite | null> = {
+      value: null,
+    };
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController({
+        pointer,
+        preliminary,
+      }),
+      enforceFunctionCall: true,
+      ...transformPrismaGroupHistory(ctx.state(), {
+        instruction,
+        preliminary,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
 
-  return cyclinic.orchestrate<
-    IAutoBeDatabaseGroupApplication.IWrite,
-    AutoBeDatabaseGroup[]
-  >(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeDatabaseGroupApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
-
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController({
-          action,
-          cyclinic,
-        }),
-        enforceFunctionCall: true,
-        ...transformPrismaGroupHistory(ctx.state(), {
-          instruction,
-          preliminary: context.preliminary,
-        }),
-      });
-      return { result, action: action.value };
-    },
-    // VALIDATE: run business logic validation
-    async (writeData) => {
-      const errors: IValidation.IError[] = [];
-      AutoBeDatabaseGroupProgrammer.validate({
-        errors,
-        path: "$input.request.groups",
-        groups: writeData.groups,
-      });
-      if (errors.length > 0) return { success: false, diagnostics: errors };
-      return { success: true };
-    },
-    // FINALIZE: build result, dispatch event, return
-    async (lastWrite, result) => {
-      if (result !== null)
-        ctx.dispatch({
-          type: SOURCE,
-          id: v7(),
-          created_at: start.toISOString(),
-          analysis: lastWrite.analysis,
-          rationale: lastWrite.rationale,
-          groups: lastWrite.groups,
-          acquisition: cyclinic.getPreliminary().getAcquisition(),
-          metric: result.metric,
-          tokenUsage: result.tokenUsage,
-          step: ctx.state().analyze?.step ?? 0,
-        });
-      return lastWrite.groups;
-    },
-  );
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      created_at: start.toISOString(),
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      groups: pointer.value.groups,
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+    });
+    return out(result)(pointer.value.groups);
+  });
 }
 
 function createController(props: {
-  action: IPointer<
-    | {
-        type: "write";
-        data: IAutoBeDatabaseGroupApplication.IWrite;
-      }
-    | { type: "complete" }
-    | null
-  >;
-  cyclinic: AutoBeCyclinicController<
+  pointer: IPointer<IAutoBeDatabaseGroupApplication.IWrite | null>;
+  preliminary: AutoBePreliminaryController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
 }): IAgenticaController.IClass {
-  const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
-  > = props.cyclinic.getPreliminary();
-
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeDatabaseGroupApplication.IProps> => {
@@ -115,22 +74,35 @@ function createController(props: {
       typia.validate<IAutoBeDatabaseGroupApplication.IProps>(input);
     if (result.success === false) return result;
 
-    const req = result.data.request;
-    if (req.type === "write" || req.type === "complete") return result;
-    return preliminary.validate({
-      thinking: result.data.thinking,
-      request: req,
+    // Preliminary request validation
+    if (result.data.request.type !== "write")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
+    // Complete request validation - check group type counts
+    const errors: IValidation.IError[] = [];
+    AutoBeDatabaseGroupProgrammer.validate({
+      errors,
+      path: "$input.request.groups",
+      groups: result.data.request.groups,
     });
+    if (errors.length > 0)
+      return {
+        success: false,
+        errors,
+        data: result.data,
+      };
+    return result;
   };
 
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeDatabaseGroupApplication>({
-        validate: {
-          process: validate,
-        },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeDatabaseGroupApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   return {
     protocol: "class",
@@ -138,10 +110,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "write")
-          props.action.value = { type: "write", data: input.request };
-        else if (input.request.type === "complete")
-          props.action.value = { type: "complete" };
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeDatabaseGroupApplication,
   };

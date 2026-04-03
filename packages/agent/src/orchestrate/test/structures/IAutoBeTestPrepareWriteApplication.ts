@@ -1,7 +1,5 @@
 import { AutoBeTestPrepareMapping } from "@autobe/interface";
 
-import { IComplete } from "../../common/structures/IComplete";
-
 /**
  * Function calling interface for generating test data preparation functions.
  *
@@ -10,9 +8,9 @@ import { IComplete } from "../../common/structures/IComplete";
  * function handles DeepPartial input for test customization and RandomGenerator
  * utilities for realistic data generation.
  *
- * The generation follows a write-validate-correct workflow: code generation →
- * external TypeScript compilation → error feedback → correction → completion.
- * All necessary DTO type information is provided directly via the assistant
+ * The generation follows a structured workflow: narrative planning → property
+ * mappings (CoT mechanism) → code generation → review and refinement. All
+ * necessary DTO type information is provided directly via the assistant
  * message.
  *
  * @author Michael
@@ -20,71 +18,31 @@ import { IComplete } from "../../common/structures/IComplete";
  */
 export interface IAutoBeTestPrepareWriteApplication {
   /**
-   * Submit test data preparation function or confirm completion.
+   * Generate test data preparation function.
    *
-   * Generates complete prepare function through write-validate-correct loop.
-   * The submitted code is compiled externally; compilation failures produce
-   * diagnostic errors that feed back for correction.
+   * Executes three-phase generation to create complete prepare function with:
    *
-   * @param props Request containing either code submission or completion
-   *   confirmation
-   */
-  process(props: IAutoBeTestPrepareWriteApplication.IProps): void;
-}
-
-export namespace IAutoBeTestPrepareWriteApplication {
-  export interface IProps {
-    /**
-     * Think before you act.
-     *
-     * Before submitting code or confirming completion, reflect on your current
-     * state and explain your reasoning:
-     *
-     * For write submissions:
-     *
-     * - What DTO structure are you targeting?
-     * - What data generation strategy will you use?
-     * - If retrying after failure, what specific compilation errors are you
-     *   fixing?
-     *
-     * For completion:
-     *
-     * - What code did you submit?
-     * - Why did it pass compilation?
-     * - Summarize the key implementation decisions.
-     *
-     * This reflection helps you produce correct code and avoid repeated errors.
-     */
-    thinking: string;
-
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform:
-     *
-     * - "write": Submit prepare function code for external compilation validation
-     * - "complete": Confirm and finalize after successful compilation
-     *
-     * The "complete" option is only available after a write submission has
-     * passed TypeScript compilation. Before that, only "write" is available in
-     * the union.
-     */
-    request: IWrite | IComplete;
-  }
-
-  /**
-   * Submit prepare function implementation for validation.
-   *
-   * The submitted code will be compiled externally. If compilation fails, you
-   * will receive diagnostic errors and should submit a corrected version.
+   * - DeepPartial input for test-time customization
+   * - RandomGenerator utilities for realistic data generation
+   * - Proper handling of nested structures (objects and arrays)
+   * - Constraint compliance (validation rules)
    *
    * Follows plan → mappings → draft → revise pattern to ensure completeness and
    * correctness.
+   *
+   * @param props Request containing plan, mappings, and implementation phases
    */
-  export interface IWrite {
-    /** Type discriminator for write request. */
-    type: "write";
+  write(props: IAutoBeTestPrepareWriteApplication.IProps): void;
+}
 
+export namespace IAutoBeTestPrepareWriteApplication {
+  /**
+   * Properties for generating a test data preparation function.
+   *
+   * Contains the complete specification including narrative plan, property
+   * mappings, function name, draft implementation, and review/final phases.
+   */
+  export interface IProps {
     /**
      * Narrative plan and analysis strategy.
      *

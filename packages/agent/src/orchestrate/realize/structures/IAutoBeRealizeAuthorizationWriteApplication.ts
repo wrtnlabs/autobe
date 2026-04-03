@@ -1,7 +1,7 @@
 import { CamelCasePattern, PascalCasePattern } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Generates authentication components (provider, decorator, payload) for an
@@ -9,10 +9,10 @@ import { IComplete } from "../../common/structures/IComplete";
  */
 export interface IAutoBeRealizeAuthorizationWriteApplication {
   /**
-   * Process authentication generation task or preliminary data requests.
+   * Process authentication generation task.
    *
-   * @param next Request containing either preliminary data request or complete
-   *   task
+   * @param next Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(next: IAutoBeRealizeAuthorizationWriteApplication.IProps): void;
 }
@@ -24,25 +24,25 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
      *
      * For preliminary requests: what database schemas are missing and why?
      *
-     * For completion: what schemas did you acquire, what authentication
-     * patterns did you implement, why is it sufficient?
+     * For write: what authentication components you're submitting.
+     *
+     * For complete: confirm the last write is correct and why.
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
-     *
-     * - `complete` is only available after at least one `write` submission.
      */
-    request: IWrite | IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request:
+      | IWrite
+      | IAutoBePreliminaryGetDatabaseSchemas
+      | IAutoBePreliminaryComplete;
   }
 
   /**
-   * Submit authentication components (provider, decorator, payload).
-   *
-   * This is an intermediate step — you can submit multiple times to refine. The
-   * last submitted components will be used when you call `complete`.
+   * Request to generate authentication components (provider, decorator,
+   * payload).
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

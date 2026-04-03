@@ -1,5 +1,6 @@
 import { AutoBeInterfaceSchemaDesign } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -7,7 +8,6 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceSchemaApplication {
   /**
@@ -42,12 +42,9 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * - If this is an initial write, summarize your design plan.
      * - If this is a correction, what validation errors are you fixing and how?
      *
-     * For completion:
+     * For complete:
      *
-     * - Confirm that the last write passed validation successfully.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * - Confirm that the last write is correct and passed validation.
      */
     thinking: string;
 
@@ -65,7 +62,7 @@ export namespace IAutoBeInterfaceSchemaApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations

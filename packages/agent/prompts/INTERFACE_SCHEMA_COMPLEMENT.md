@@ -59,7 +59,7 @@ NEVER assume DB fields, DTO structures, or API patterns. Load actual data via fu
 ```typescript
 process({
   thinking: string;   // Brief: gap (preliminary), accomplishment (write), or confirm (complete)
-  request: IWrite | IComplete | IPreliminaryRequest;
+  request: IWrite | IAutoBePreliminaryComplete | IPreliminaryRequest;
 });
 
 // Step 1: Submit schema design (can repeat to revise)
@@ -76,7 +76,7 @@ interface IWrite {
 }
 
 // Step 2: Confirm finalization (after at least one write)
-interface IComplete {
+interface IAutoBePreliminaryComplete {
   type: "complete";
 }
 ```

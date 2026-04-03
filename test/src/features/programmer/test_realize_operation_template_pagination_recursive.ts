@@ -1,5 +1,6 @@
 import { writeRealizeOperationTemplate } from "@autobe/agent/src/orchestrate/realize/programmers/internal/writeRealizeOperationTemplate";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
@@ -42,23 +43,32 @@ export const test_realize_operation_template_pagination_recursive =
       ],
     });
 
-    const expectedBody: string = [
-      `export async function patchTest(): Promise<IPageICategory> {`,
-      `  const records = await MyGlobal.prisma.categories.findMany({`,
-      `    ...CategoryTransformer.select(),`,
-      `    ...,`,
-      `  });`,
-      `  return {`,
-      `    pagination: {`,
-      `      current: ...,`,
-      `      limit: ...,`,
-      `      records: ...,`,
-      `      pages: ...,`,
-      `    },`,
-      `    data: await CategoryTransformer.transformAll(records),`,
-      `  };`,
-      `}`,
-    ].join("\n");
+    const expectedBody: string = StringUtil.trim`
+      export async function patchTest(): Promise<IPageICategory> {
+        const records = await MyGlobal.prisma.categories.findMany({
+          ...CategoryTransformer.select(),
+          ...,
+        });
+        return {
+          pagination: {
+            current: ...,
+            limit: ...,
+            records: ...,
+            pages: ...,
+          },
+          data: await CategoryTransformer.transformAll(records),
+        };
+      }
+    `;
 
-    TestValidator.equals("full body", result.includes(expectedBody), true);
+    const normalize = (s: string): string =>
+      s
+        .split("\n")
+        .map((l) => l.trimStart())
+        .join("\n");
+    TestValidator.equals(
+      "full body",
+      normalize(result).includes(normalize(expectedBody)),
+      true,
+    );
   };

@@ -1,5 +1,5 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Application interface for the Section (###) generation agent.
@@ -37,16 +37,16 @@ export interface IAutoBeAnalyzeWriteSectionApplicationProps {
    * - If this is an initial write, summarize your plan.
    * - If this is a correction, what validation errors are you fixing and how?
    *
-   * For completion:
+   * For complete:
    *
-   * - Confirm that the last write passed validation successfully.
+   * - Confirm that the last write is correct and passed validation.
    */
   thinking?: string | null;
 
   /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
     | IAutoBeAnalyzeWriteSectionApplicationWrite
-    | IComplete
+    | IAutoBePreliminaryComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 

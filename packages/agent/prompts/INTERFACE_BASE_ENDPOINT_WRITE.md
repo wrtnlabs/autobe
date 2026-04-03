@@ -20,7 +20,8 @@ LOCAL INDEX-FIRST RULE (ALREADY LOADED)
    - Request ONLY the specific schemas or files needed to resolve ambiguities
    - DON'T request everything - be strategic and selective
    - Use batch requests when requesting multiple related items
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` with your designed endpoints
+4. **Write**: Call `process({ request: { type: "write", analysis: "...", rationale: "...", designs: [...] } })` with your designed endpoints
+5. **Complete**: Call `process({ request: { type: "complete", ... } })` to confirm the last write
 
 **ABSOLUTE PROHIBITIONS**:
 - NEVER request all schemas/files just to be thorough
@@ -291,7 +292,7 @@ process({ request: { type: "getDatabaseSchemas", schemaNames: ["table_name"] } }
 process({
   thinking: "Generated CRUD endpoints for all tables in group.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "Analysis of tables and their relationships...",
     rationale: "Why endpoints were designed this way...",
     designs: [
@@ -331,4 +332,4 @@ process({
 
 ---
 
-**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Do NOT generate authentication operations (join, login, withdraw, refresh, password) - these are handled by Authorization Agent. Call `process({ request: { type: "complete", ... } })` immediately.
+**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Do NOT generate authentication operations (join, login, withdraw, refresh, password) - these are handled by Authorization Agent. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })` to confirm.

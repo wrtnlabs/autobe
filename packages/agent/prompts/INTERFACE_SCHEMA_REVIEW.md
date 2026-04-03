@@ -451,7 +451,7 @@ Each entry has `databaseSchemaProperty` and `reason` — no `key` or `type` need
 process({
   thinking: "All 9 DTO properties reviewed (9 in revises). All 11 DB properties handled: 8 mapped in revises + 3 in excludes.",
   request: {
-    type: "complete",
+    type: "write",
     review: "author_id FK needs $ref transform. body has no DB mapping. Excluded: bbs_member_id (FK as object), comments/likes (aggregation).",
     excludes: [
       { databaseSchemaProperty: "bbs_member_id", reason: "FK exposed as author $ref object" },
@@ -508,7 +508,7 @@ process({
 process({
   thinking: "2 existing DTO properties reviewed, 4 session/password fields added. All 6 DB properties covered: 2 mapped in revises + 4 in excludes.",
   request: {
-    type: "complete",
+    type: "write",
     review: "password_hashed replaced with password. Added session context. Excluded internal fields.",
     excludes: [
       { databaseSchemaProperty: "id", reason: "Auto-generated PK" },

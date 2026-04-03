@@ -16,7 +16,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
@@ -105,7 +104,7 @@ Task: ${task}
       { log: false, logPrefix: "interfaceComplement" },
     );
 
-  const cyclinic = new AutoBeCyclinicController<
+  const preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
@@ -114,7 +113,7 @@ Task: ${task}
     | "previousDatabaseSchemas"
     | "previousInterfaceSchemas"
     | "previousInterfaceOperations"
-  >({
+  > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceSchemaComplementApplication>(),
     source: SOURCE,
@@ -163,79 +162,54 @@ Task: ${task}
         }),
     },
   });
-
-  return cyclinic.orchestrate(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeInterfaceSchemaComplementApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
-
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController(ctx, {
-          typeName: props.typeName,
-          operations: props.document.operations,
-          cyclinic,
-          action,
-        }),
-        promptCacheKey: props.promptCacheKey,
-        enforceFunctionCall: true,
-        ...transformInterfaceSchemaComplementHistory({
-          document: props.document,
-          instruction: props.instruction,
-          preliminary: context.preliminary,
-          typeName: props.typeName,
-        }),
-      });
-      return { result, action: action.value };
-    },
-    // VALIDATE: run business logic validation
-    async (writeData) => {
-      const everyModels: AutoBeDatabase.IModel[] =
-        ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
-      const errors: IValidation.IError[] = [];
-      AutoBeInterfaceSchemaProgrammer.validate({
-        path: "$input.request.design",
-        errors,
-        everyModels,
-        operations: props.document.operations,
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeInterfaceSchemaComplementApplication.IWrite | null> =
+      {
+        value: null,
+      };
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController(ctx, {
         typeName: props.typeName,
-        design: writeData.design,
-      });
-      if (errors.length !== 0) return { success: false, diagnostics: errors };
-      return { success: true };
-    },
-    // FINALIZE: build result, dispatch event, return
-    async (lastWrite, result) => {
-      const schema: AutoBeOpenApi.IJsonSchema =
-        AutoBeJsonSchemaFactory.fixDesign(lastWrite.design);
+        operations: props.document.operations,
+        build: (next) => {
+          pointer.value = next;
+        },
+        preliminary,
+      }),
+      promptCacheKey: props.promptCacheKey,
+      enforceFunctionCall: true,
+      ...transformInterfaceSchemaComplementHistory({
+        document: props.document,
+        instruction: props.instruction,
+        preliminary,
+        typeName: props.typeName,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
 
-      if (result !== null)
-        ctx.dispatch({
-          type: SOURCE,
-          id: v7(),
-          typeName: props.typeName,
-          analysis: lastWrite.analysis,
-          rationale: lastWrite.rationale,
-          schema,
-          acquisition: cyclinic.getPreliminary().getAcquisition(),
-          metric: result.metric,
-          tokenUsage: result.tokenUsage,
-          step: ctx.state().analyze?.step ?? 0,
-          completed: ++props.progress.completed,
-          total: props.progress.total,
-          created_at: new Date().toISOString(),
-        } satisfies AutoBeInterfaceSchemaComplementEvent);
-      return schema;
-    },
-  );
+    ++props.progress.completed;
+
+    const schema: AutoBeOpenApi.IJsonSchema = AutoBeJsonSchemaFactory.fixDesign(
+      pointer.value.design,
+    );
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      typeName: props.typeName,
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      schema,
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+      completed: props.progress.completed,
+      total: props.progress.total,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeInterfaceSchemaComplementEvent);
+    return out(result)(schema);
+  });
 }
 
 function createController(
@@ -243,15 +217,7 @@ function createController(
   props: {
     typeName: string;
     operations: AutoBeOpenApi.IOperation[];
-    action: IPointer<
-      | {
-          type: "write";
-          data: IAutoBeInterfaceSchemaComplementApplication.IWrite;
-        }
-      | { type: "complete" }
-      | null
-    >;
-    cyclinic: AutoBeCyclinicController<
+    preliminary: AutoBePreliminaryController<
       | "analysisSections"
       | "databaseSchemas"
       | "interfaceOperations"
@@ -261,19 +227,9 @@ function createController(
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"
     >;
+    build: (schema: IAutoBeInterfaceSchemaComplementApplication.IWrite) => void;
   },
 ): IAgenticaController.IClass {
-  const preliminary: AutoBePreliminaryController<
-    | "analysisSections"
-    | "databaseSchemas"
-    | "interfaceOperations"
-    | "interfaceSchemas"
-    | "previousAnalysisSections"
-    | "previousDatabaseSchemas"
-    | "previousInterfaceSchemas"
-    | "previousInterfaceOperations"
-  > = props.cyclinic.getPreliminary();
-
   const everyModels: AutoBeDatabase.IModel[] =
     ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
 
@@ -285,23 +241,36 @@ function createController(
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
-    }
-    const req = result.data.request;
-    if (req.type === "write" || req.type === "complete") return result;
-    return preliminary.validate({
-      thinking: result.data.thinking,
-      request: req,
+    } else if (result.data.request.type !== "write")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
+    const errors: IValidation.IError[] = [];
+    AutoBeInterfaceSchemaProgrammer.validate({
+      path: "$input.request.design",
+      errors,
+      everyModels,
+      operations: props.operations,
+      typeName: props.typeName,
+      design: result.data.request.design,
     });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
+    return result;
   };
 
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeInterfaceSchemaComplementApplication>({
-        validate: {
-          process: validate,
-        },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeInterfaceSchemaComplementApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   if (
     AutoBeJsonSchemaValidator.isObjectType({
@@ -326,11 +295,8 @@ function createController(
     name: SOURCE,
     application,
     execute: {
-      process: (input) => {
-        if (input.request.type === "write")
-          props.action.value = { type: "write", data: input.request };
-        else if (input.request.type === "complete")
-          props.action.value = { type: "complete" };
+      process: (next) => {
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeInterfaceSchemaComplementApplication,
   };

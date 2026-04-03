@@ -12,7 +12,6 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaSchemaReviewHistory } from "./histories/transformPrismaSchemaReviewHistory";
 import { AutoBeDatabaseSchemaProgrammer } from "./programmers/AutoBeDatabaseSchemaProgrammer";
@@ -81,13 +80,12 @@ async function step(
   },
 ): Promise<AutoBeDatabaseSchemaReviewEvent> {
   const start: Date = new Date();
-
-  const cyclinic = new AutoBeCyclinicController<
+  const preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
-  >({
+  > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeDatabaseSchemaReviewApplication>(),
     source: SOURCE,
@@ -108,144 +106,104 @@ async function step(
       database: "ast",
     },
   });
-
-  return cyclinic.orchestrate<
-    IAutoBeDatabaseSchemaReviewApplication.IWrite,
-    AutoBeDatabaseSchemaReviewEvent
-  >(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeDatabaseSchemaReviewApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
-
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController({
-          cyclinic,
-          action,
-          targetComponent: props.component,
-          model: props.model,
-          otherModels: props.otherModels,
-        }),
-        enforceFunctionCall: true,
-        promptCacheKey: props.promptCacheKey,
-        ...transformPrismaSchemaReviewHistory({
-          component: props.component,
-          model: props.model,
-          otherModels: props.otherModels,
-          preliminary: context.preliminary,
-        }),
-      });
-      return { result, action: action.value };
-    },
-    // VALIDATE: run business logic validation
-    async (writeData) => {
-      const errors: IValidation.IError[] = [];
-      if (writeData.content !== null)
-        AutoBeDatabaseSchemaProgrammer.validate({
-          path: "$input.request.content",
-          errors,
-          targetTable: props.model.name,
-          otherTables: props.otherModels.map((m) => m.name),
-          definition: writeData.content,
-        });
-      if (errors.length !== 0) return { success: false, diagnostics: errors };
-      return { success: true };
-    },
-    // FINALIZE: build result, dispatch event, return
-    async (lastWrite, result) => {
-      const event: AutoBeDatabaseSchemaReviewEvent = {
-        type: SOURCE,
-        id: v7(),
-        created_at: start.toISOString(),
-        namespace: props.component.namespace,
-        review: lastWrite.review,
-        plan: lastWrite.plan,
-        modelName: props.model.name,
-        content: lastWrite.content,
-        acquisition: cyclinic.getPreliminary().getAcquisition(),
-        metric: result?.metric ?? {
-          attempt: 0,
-          success: 0,
-          consent: 0,
-          validationFailure: 0,
-          invalidJson: 0,
-        },
-        tokenUsage: result?.tokenUsage ?? {
-          total: 0,
-          input: { total: 0, cached: 0 },
-          output: {
-            total: 0,
-            reasoning: 0,
-            accepted_prediction: 0,
-            rejected_prediction: 0,
-          },
-        },
-        completed: ++props.progress.completed,
-        total: props.progress.total,
-        step: ctx.state().analyze?.step ?? 0,
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeDatabaseSchemaReviewApplication.IWrite | null> =
+      {
+        value: null,
       };
-      if (result !== null) ctx.dispatch(event);
-      return event;
-    },
-  );
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController({
+        preliminary,
+        build: (next) => {
+          pointer.value = next;
+        },
+        targetComponent: props.component,
+        model: props.model,
+        otherModels: props.otherModels,
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformPrismaSchemaReviewHistory({
+        component: props.component,
+        model: props.model,
+        otherModels: props.otherModels,
+        preliminary,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
+
+    const event: AutoBeDatabaseSchemaReviewEvent = {
+      type: SOURCE,
+      id: v7(),
+      created_at: start.toISOString(),
+      namespace: props.component.namespace,
+      review: pointer.value.review,
+      plan: pointer.value.plan,
+      modelName: props.model.name,
+      content: pointer.value.content,
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
+      step: ctx.state().analyze?.step ?? 0,
+    };
+    ctx.dispatch(event);
+    return out(result)(event);
+  });
 }
 
 function createController(props: {
-  cyclinic: AutoBeCyclinicController<
+  preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;
-  action: IPointer<
-    | {
-        type: "write";
-        data: IAutoBeDatabaseSchemaReviewApplication.IWrite;
-      }
-    | { type: "complete" }
-    | null
-  >;
+  build: (next: IAutoBeDatabaseSchemaReviewApplication.IWrite) => void;
   targetComponent: AutoBeDatabaseComponent;
   model: AutoBeDatabase.IModel;
   otherModels: AutoBeDatabase.IModel[];
 }): IAgenticaController.IClass {
-  const preliminary: AutoBePreliminaryController<
-    | "analysisSections"
-    | "previousAnalysisSections"
-    | "databaseSchemas"
-    | "previousDatabaseSchemas"
-  > = props.cyclinic.getPreliminary();
-
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeDatabaseSchemaReviewApplication.IProps> => {
     const result: IValidation<IAutoBeDatabaseSchemaReviewApplication.IProps> =
       typia.validate<IAutoBeDatabaseSchemaReviewApplication.IProps>(input);
     if (result.success === false) return result;
-    const req = result.data.request;
-    if (req.type === "write" || req.type === "complete") return result;
-    return preliminary.validate({
-      thinking: result.data.thinking,
-      request: req,
-    });
+    else if (result.data.request.type !== "write")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+    else if (result.data.request.content === null) return result;
+
+    const errors: IValidation.IError[] = [];
+    if (result.data.request.content !== null)
+      AutoBeDatabaseSchemaProgrammer.validate({
+        path: "$input.request.content",
+        errors,
+        targetTable: props.model.name,
+        otherTables: props.otherModels.map((m) => m.name),
+        definition: result.data.request.content,
+      });
+
+    if (errors.length !== 0)
+      return {
+        success: false,
+        data: result.data,
+        errors,
+      };
+    return result;
   };
 
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeDatabaseSchemaReviewApplication>({
-        validate: {
-          process: validate,
-        },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeDatabaseSchemaReviewApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   return {
     protocol: "class",
@@ -253,10 +211,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "write")
-          props.action.value = { type: "write", data: next.request };
-        else if (next.request.type === "complete")
-          props.action.value = { type: "complete" };
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeDatabaseSchemaReviewApplication,
   };

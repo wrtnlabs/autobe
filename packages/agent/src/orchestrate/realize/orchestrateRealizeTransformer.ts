@@ -6,6 +6,7 @@ import {
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateRealizeTransformerCorrectCasting } from "./orchestrateRealizeTransformerCorrectCasting";
+import { orchestrateRealizeTransformerCorrectOverall } from "./orchestrateRealizeTransformerCorrectOverall";
 import { orchestrateRealizeTransformerPlan } from "./orchestrateRealizeTransformerPlan";
 import { orchestrateRealizeTransformerWrite } from "./orchestrateRealizeTransformerWrite";
 
@@ -29,6 +30,10 @@ export async function orchestrateRealizeTransformer(
   props.validateProgress.total += functions.length;
 
   functions = await orchestrateRealizeTransformerCorrectCasting(ctx, {
+    functions,
+    progress: props.validateProgress,
+  });
+  functions = await orchestrateRealizeTransformerCorrectOverall(ctx, {
     functions,
     progress: props.validateProgress,
   });

@@ -197,6 +197,17 @@ function writeBody(props: {
     `;
   }
 
+  // update void (PUT: manual update, void return)
+  if (props.method === "put") {
+    const table: string = transformer?.plan.databaseSchemaName ?? "...";
+    return StringUtil.trim`
+      await MyGlobal.prisma.${table}.update({
+        where: { ... },
+        data: { ... },
+      });
+    `;
+  }
+
   // delete (DELETE: simple delete, void return)
   if (props.method === "delete") {
     const table: string = transformer?.plan.databaseSchemaName ?? "...";
