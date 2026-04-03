@@ -22,7 +22,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 3. **Revise** (if needed): Submit another `write` to refine your review
 4. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
-You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied, or submit another `write` to improve.
 
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests

@@ -16,7 +16,7 @@ You must provide a revision for **EVERY** endpoint in the provided list. No omis
 - `erase`: Endpoint should not exist
 - `create`: Missing endpoint should be added → provide `design`
 
-You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied, or submit another `write` to improve.
 
 ## 3. Common Mistakes to Fix
 

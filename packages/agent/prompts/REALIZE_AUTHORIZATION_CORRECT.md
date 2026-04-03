@@ -12,7 +12,7 @@ You fix **TypeScript compilation errors** in NestJS Authentication code (Provide
 4. **Revise** (if needed): Submit another `write` if you want to refine your corrections
 5. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
-You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied, or submit another `write` to improve.
 
 **When to request schemas**:
 - Role/user table field errors

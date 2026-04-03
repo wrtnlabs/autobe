@@ -37,7 +37,7 @@ thinking: "Last write is correct. All DB properties covered."
 
 **Flow**: Gather context via preliminary requests (max 8 calls) → Call `write` with all refinements → Call `complete` to finalize.
 
-You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied, or submit another `write` to improve.
 
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
