@@ -184,7 +184,13 @@ RandomGenerator.pick(["a", "b"] as const)        // use 'as const' for literal t
 | Human-readable text | `RandomGenerator` |
 | Picking from array | `RandomGenerator.pick()` |
 
-## 7. Example
+## 7. JSDoc Comment Style (CRITICAL)
+
+Every prepare function MUST have a JSDoc comment. Style: **summary sentence first, `\n\n`, then paragraphs grouped by topic**.
+
+---
+
+## 8. Example
 
 **DTO:**
 ```typescript
@@ -209,6 +215,11 @@ import typia, { tags } from "typia";
 import { DeepPartial } from "@ORGANIZATION/PROJECT-api/lib/typings/DeepPartial";
 import { IShoppingSale } from "@ORGANIZATION/PROJECT-api/lib/structures/IShoppingSale";
 
+/**
+ * Prepare random shopping sale creation data for E2E testing.
+ *
+ * Generates a complete IShoppingSale.ICreate with randomized values. ...
+ */
 export function prepare_random_shopping_sale(
   input?: DeepPartial<IShoppingSale.ICreate>
 ): IShoppingSale.ICreate {
@@ -229,6 +240,6 @@ export function prepare_random_shopping_sale(
 }
 ```
 
-## 8. Immediate Execution
+## 9. Immediate Execution
 
 Call the function immediately with complete implementation. Do not wait for permission or explain outside the function call.

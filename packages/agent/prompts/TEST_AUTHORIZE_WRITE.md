@@ -47,9 +47,20 @@ export class AuthorizeUserJoin {
 
 Validation requires exact pattern: `"export async function authorize_xxx_join("`
 
-## 3. Implementation Pattern
+## 3. JSDoc Comment Style (CRITICAL)
+
+Every authorization function MUST have a JSDoc comment. Style: **summary sentence first, `\n\n`, then paragraphs grouped by topic**.
+
+---
+
+## 4. Implementation Pattern
 
 ```typescript
+/**
+ * Register and authenticate a new user for E2E testing.
+ *
+ * Creates a user account with randomized credentials, mutates the connection with the auth token. ...
+ */
 export async function authorize_user_join(
   connection: api.IConnection,
   props: { body?: DeepPartial<IUser.IJoin> },
@@ -68,7 +79,7 @@ export async function authorize_user_join(
 }
 ```
 
-## 4. Critical Rules
+## 5. Critical Rules
 
 1. **No imports**: Start directly with `export async function` - all dependencies pre-imported
 2. **No try-catch**: Let errors propagate naturally
@@ -76,7 +87,7 @@ export async function authorize_user_join(
 4. **Type safety**: No `any` or type assertions
 5. **Use exact SDK function**: Match the provided SDK function path
 
-## 5. Random Data Generation
+## 6. Random Data Generation
 
 ```typescript
 // Format-based (typia.random)
@@ -95,7 +106,7 @@ password: props.body?.password ?? RandomGenerator.alphaNumeric(16)
 language: props.body?.language ?? RandomGenerator.pick(["en", "ko", "ja"])
 ```
 
-## 6. Immutability (const only)
+## 7. Immutability (const only)
 
 ```typescript
 // ❌ WRONG

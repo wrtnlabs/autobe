@@ -132,16 +132,16 @@ process({
     design: {
       databaseSchema: "products",
       specification: "Lightweight product representation. Direct mappings: id from products.id, name from products.name, price from products.price, thumbnail from products.thumbnail_url (nullable).",
-      description: "Summary view of a product with essential display information.",
+      description: "<summary>.\n\n<detailed description>",
       schema: {
         type: "object",
         properties: {
-          id: { type: "string", description: "Unique product identifier." },
-          name: { type: "string", description: "Product display name." },
-          price: { type: "number", description: "Product price." },
+          id: { type: "string", description: "<description...>" },
+          name: { type: "string", description: "<description...>" },
+          price: { type: "number", description: "<description...>" },
           thumbnail: {
             oneOf: [{ type: "string" }, { type: "null" }],
-            description: "Product thumbnail URL. Null if not uploaded."
+            description: "<description...>"
           }
         },
         required: ["id", "name", "price", "thumbnail"]
@@ -158,6 +158,9 @@ process({
 ```
 
 ## 8. Checklist
+
+**Description Quality**:
+- [ ] All `description` fields follow: summary sentence first, `\n\n`, then paragraphs grouped by topic
 
 **Design**:
 - [ ] `databaseSchema` correct (table name or null)

@@ -147,14 +147,9 @@ export namespace IAutoBeInterfaceOperationApplication {
 
 The given endpoint's method or path may be changed when operation semantics require it (e.g., a list endpoint given as `GET` needs a request body → change to `PATCH`). Explain any such changes in `rationale`.
 
-### 5.4. Description Requirements
+### 5.4. Description Writing Style
 
-- **First line**: Brief summary sentence
-- **Multiple paragraphs**: Separate with blank lines
-- **Content**: Business purpose, features, security, related operations
-- **Language**: Always English
-- **DELETE operations**: State behavior directly ("permanently removes"), never compare to alternatives ("unlike soft-delete...")
-- **Reference**: Database schema entities and relationships
+Every `description` follows: **summary sentence first, `\n\n`, then paragraphs grouped by topic**. Parameter/requestBody/responseBody descriptions should also be meaningful.
 
 ### 5.5. Operation Design Philosophy
 
@@ -328,18 +323,14 @@ process({
 Apply search filters on name, email, status, registration date range.
 Join with shopping_orders for order statistics if requested.
 Return cursor-based pagination for large result sets.`,
-      description: `Retrieve a filtered and paginated list of shopping customer accounts.
-
-This operation provides advanced search capabilities including partial name matching, email domain filtering, registration date ranges, and account status filtering.
-
-Supports comprehensive pagination with configurable page sizes and sorting. Response includes customer summary information optimized for list displays.`,
+      description: "<summary>.\n\n<detailed description>",
       parameters: [],
       requestBody: {
-        description: "Search criteria and pagination parameters",
+        description: "Search criteria including name, email, status filters, date ranges, and pagination parameters.",
         typeName: "IShoppingCustomer.IRequest"
       },
       responseBody: {
-        description: "Paginated list of customer summaries",
+        description: "Paginated list of customer summary records optimized for administrative list displays.",
         typeName: "IPageIShoppingCustomer.ISummary"
       },
       name: "index"
@@ -360,7 +351,8 @@ process({
 - [ ] `path` based on given endpoint (adjusted if needed — explain in `rationale`)
 - [ ] `method` based on given endpoint (overridden if needed, e.g., `index` → PATCH — explain in `rationale`)
 - [ ] `specification` has implementation details for Realize Agent
-- [ ] `description` is multi-paragraph with business context
+- [ ] `description` follows: summary sentence first, then paragraphs grouped by topic (Section 5.4)
+- [ ] Parameter, requestBody, and responseBody descriptions are meaningful
 - [ ] `parameters` array defined (can be empty)
 - [ ] `requestBody` defined (object or null)
 - [ ] `responseBody` defined (object or null)

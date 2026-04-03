@@ -274,7 +274,7 @@ For column:
   reason: "DB column 'stock' exists but missing from IProduct",
   type: "create",
   specification: "Direct mapping from products.stock column. Integer inventory count.",
-  description: "Current inventory quantity.",
+  description: "<description...>",
   schema: { type: "integer" },
   required: true
 }
@@ -288,7 +288,7 @@ For relation (Read DTO):
   reason: "DB relation 'author' missing; FK should be exposed as $ref",
   type: "create",
   specification: "Join from articles.author_id to users.id. Returns ISummary.",
-  description: "Author who wrote this article.",
+  description: "<description...>",
   schema: { $ref: "#/components/schemas/IUser.ISummary" },
   required: true
 }
@@ -302,7 +302,7 @@ For security field (Actor request DTO):
   reason: "Login requires plaintext password field",
   type: "create",
   specification: "Plaintext password for auth. Server hashes and compares against DB.",
-  description: "User's password for authentication.",
+  description: "<description...>",
   schema: { type: "string" },
   required: true
 }
@@ -316,7 +316,7 @@ For session context:
   reason: "Session context required in IJoin/ILogin",
   type: "create",
   specification: "Current page URL at login time.",
-  description: "Page URL at login time.",
+  description: "<description...>",
   schema: { type: "string", format: "uri" },
   required: true
 }
@@ -333,7 +333,7 @@ FK transformation (Read DTO):
   type: "update",
   newKey: "author",
   specification: "Join via bbs_members using bbs_articles.bbs_member_id. Returns ISummary.",
-  description: "Author who wrote this article.",
+  description: "<description...>",
   schema: { $ref: "#/components/schemas/IBbsMember.ISummary" },
   required: true
 }
@@ -348,7 +348,7 @@ Wrong type:
   type: "update",
   newKey: null,
   specification: "Direct mapping from bbs_article_comments.score.",
-  description: "Rating score.",
+  description: "<description...>",
   schema: { type: "integer" },
   required: true
 }
@@ -362,7 +362,7 @@ Wrong type:
   reason: "Description inaccurate",
   type: "depict",
   specification: "Direct mapping from bbs_article_comments.content.",
-  description: "Comment text body."
+  description: "<description...>"
 }
 ```
 
@@ -376,7 +376,7 @@ Wrong type:
   nullable: true,
   required: true,
   specification: null,
-  description: "User's bio. Can be null if not provided."
+  description: "<description...>"
 }
 ```
 
@@ -522,16 +522,16 @@ process({
       { key: "email", databaseSchemaProperty: "email", type: "keep", reason: "Required identifier" },
       { key: "password_hashed", databaseSchemaProperty: "password_hashed", type: "erase", reason: "Clients must not send hashes" },
       { key: "password", databaseSchemaProperty: "password_hashed", type: "create", reason: "Login requires plaintext password",
-        specification: "Plaintext password. Server hashes and verifies.", description: "User's password.",
+        specification: "Plaintext password. Server hashes and verifies.", description: "<description...>",
         schema: { type: "string" }, required: true },
       { key: "href", databaseSchemaProperty: null, type: "create", reason: "Session context required for login",
-        specification: "Current page URL at login.", description: "Page URL at login time.",
+        specification: "Current page URL at login.", description: "<description...>",
         schema: { type: "string", format: "uri" }, required: true },
       { key: "referrer", databaseSchemaProperty: null, type: "create", reason: "Session context required for login",
-        specification: "Referrer URL at login.", description: "Referrer URL at login time.",
+        specification: "Referrer URL at login.", description: "<description...>",
         schema: { type: "string", format: "uri" }, required: true },
       { key: "ip", databaseSchemaProperty: null, type: "create", reason: "Session context — optional for SSR fallback",
-        specification: "Client IP. Optional: server uses body.ip ?? serverIp.", description: "Client IP address at login time.",
+        specification: "Client IP. Optional: server uses body.ip ?? serverIp.", description: "<description...>",
         schema: { type: "string", format: "ipv4" }, required: false }
     ]
   }
@@ -539,6 +539,9 @@ process({
 ```
 
 ## 12. Checklist
+
+**Description Quality**:
+- [ ] All `description` fields follow: summary sentence first, `\n\n`, then paragraphs grouped by topic
 
 **Coverage**:
 - [ ] Every DTO property has exactly one revision in `revises` (no missing, no duplicates)

@@ -252,27 +252,28 @@ mv_bbs_article_last_snapshots: {
 
 ---
 
-## 5. AST Structure
+## 5. Description Writing Style
 
-### 5.1. Model Structure
+Every `description` follows: **summary sentence first, `\n\n`, then paragraphs grouped by topic**. Use `{@link ModelName}` for cross-references.
+
+---
+
+## 6. AST Structure
+
+### 6.1. Model Structure
 ```typescript
 {
   name: "target_table_name",
-  description: `
-    Summary sentence.
-
-    Detailed explanation with proper line breaks.
-    Additional context and relationships.
-  `,
+  description: "<summary>.\n\n<detailed description>",
   material: false,
   stance: "primary" | "subsidiary" | "snapshot" | "actor" | "session",
-  
+
   primaryField: {
     name: "id",
     type: "uuid",
     description: "Primary Key."
   },
-  
+
   foreignFields: [{
     name: "{table}_id",
     type: "uuid",
@@ -283,23 +284,23 @@ mv_bbs_article_last_snapshots: {
     },
     unique: false,  // true for 1:1
     nullable: false,
-    description: "Description. {@link target_table.id}."
+    description: "<summary>.\n\n<detailed description>"
   }],
-  
+
   plainFields: [{
     name: "field_name",
     type: "string" | "int" | "double" | "boolean" | "datetime" | "uri" | "uuid",
     nullable: false,
-    description: "Business context."
+    description: "<summary>.\n\n<detailed description>"
   }],
-  
+
   uniqueIndexes: [{ fieldNames: ["field1", "field2"], unique: true }],
   plainIndexes: [{ fieldNames: ["field1", "field2"] }],  // Never single FK
   ginIndexes: [{ fieldName: "text_field" }]
 }
 ```
 
-### 5.2. Field Types
+### 6.2. Field Types
 
 | Type | Usage |
 |------|-------|
@@ -313,9 +314,9 @@ mv_bbs_article_last_snapshots: {
 
 ---
 
-## 6. Function Calling
+## 7. Function Calling
 
-### 6.1. Request Analysis Sections
+### 7.1. Request Analysis Sections
 
 ```typescript
 process({
@@ -324,7 +325,7 @@ process({
 })
 ```
 
-### 6.2. Write (MANDATORY)
+### 7.2. Write (MANDATORY)
 ```typescript
 // Step 1: Submit model design (can repeat to revise)
 process({
@@ -361,7 +362,7 @@ You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd writ
 
 ---
 
-## 7. Planning Template
+## 8. Planning Template
 ```
 ASSIGNMENT VALIDATION:
 - Target Table: [targetTable] - THE SINGLE TABLE I MUST CREATE
@@ -392,7 +393,7 @@ FINAL DESIGN:
 
 ---
 
-## 8. Final Checklist
+## 9. Final Checklist
 
 **Table Creation:**
 - [ ] EXACTLY ONE table named `targetTable`
@@ -423,7 +424,11 @@ FINAL DESIGN:
 - [ ] All oppositeName values are unique per target model
 - [ ] All foreignField types are `uuid` only
 
-**Quality:**
+**Description Quality (Section 5)**:
+- [ ] All descriptions follow: summary sentence first, then paragraphs grouped by topic
+- [ ] Uses `{@link entity_name}` for cross-references
+
+**General Quality:**
 - [ ] No duplicate fields or relations
 - [ ] No prefix duplication in table name
 - [ ] All descriptions in English

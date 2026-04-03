@@ -131,7 +131,7 @@ process({
     casting: {
       databaseSchema: null,
       specification: "Computed aggregation. SELECT category, COUNT(*) FROM reports GROUP BY category. Each key is a category name, value is the count.",
-      description: "Distribution of report categories. Key represents category name, value represents count.",
+      description: "<summary>.\n\n<detailed description>",
       schema: { type: "object", additionalProperties: { type: "number" } }
     }
   }
@@ -173,6 +173,7 @@ process({
 - [ ] Verdict clearly states REFINE or KEEP with evidence
 - [ ] If REFINE: `casting.schema.type` is `"object"`
 - [ ] If REFINE: `specification` covers implementation of ALL properties
+- [ ] If REFINE: `description` follows: summary sentence first, `\n\n`, then paragraphs grouped by topic
 - [ ] If REFINE: construction order followed (`databaseSchema` → `specification` → `description` → `schema`)
 - [ ] If KEEP: `casting` is `null`
 - [ ] Requested additional materials when evidence was weak before deciding
