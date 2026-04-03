@@ -144,12 +144,16 @@ export namespace AutoBeRealizeTransformerProgrammer {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
   }): string {
-    const recursive: string | null = getRecursiveProperty({
+    const relations = getRecursiveRelations({
       schemas: props.schemas,
       typeName: props.plan.dtoTypeName,
     });
-    return recursive !== null
-      ? writeRecursiveTemplate({ ...props, recursiveProperty: recursive })
+    return relations.parent !== null || relations.children !== null
+      ? writeRecursiveTemplate({
+          ...props,
+          parentProperty: relations.parent,
+          childrenProperty: relations.children,
+        })
       : writeNormalTemplate(props);
   }
 
@@ -186,16 +190,30 @@ ${properties}
   function writeRecursiveTemplate(props: {
     plan: AutoBeRealizeTransformerPlan;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-    recursiveProperty: string;
+    parentProperty: string | null;
+    childrenProperty: string | null;
+  }): string {
+    const { parentProperty: pp, childrenProperty: cp } = props;
+    if (pp !== null && cp !== null)
+      return writeBothRecursiveTemplate({ ...props, parentProperty: pp, childrenProperty: cp });
+    if (pp !== null)
+      return writeParentOnlyRecursiveTemplate({ ...props, parentProperty: pp });
+    return writeChildrenOnlyRecursiveTemplate({ ...props, childrenProperty: cp! });
+  }
+
+  function writeParentOnlyRecursiveTemplate(props: {
+    plan: AutoBeRealizeTransformerPlan;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    parentProperty: string;
   }): string {
     const name: string = getName(props.plan.dtoTypeName);
     const dto: string = props.plan.dtoTypeName;
     const table: string = props.plan.databaseSchemaName;
-    const rp: string = props.recursiveProperty;
-    const fk: string = `${rp}_id`;
+    const pp: string = props.parentProperty;
+    const fk: string = `${pp}_id`;
     const properties: string = Object.keys(props.schema.properties)
       .map((k) =>
-        k === rp
+        k === pp
           ? `  ${k}: input.${fk} ? await cache.get(input.${fk}) : null,`
           : `  ${k}: ...,`,
       )
@@ -210,14 +228,14 @@ ${properties}
             select: {
               ...
               ${fk}: true,
-              ${rp}: undefined, // DO NOT select recursive relation
+              ${pp}: undefined, // DO NOT select recursive relation
             },
           } satisfies Prisma.${table}FindManyArgs;
         }
 
         export async function transform(
           input: Payload,
-          cache: VariadicSingleton<Promise<${dto}>, [string]> = createCache(),
+          cache: VariadicSingleton<Promise<${dto}>, [string]> = createParentCache(),
         ): Promise<${dto}> {
           return {
 ${properties}
@@ -227,11 +245,11 @@ ${properties}
         export async function transformAll(
           inputs: Payload[],
         ): Promise<${dto}[]> {
-          const cache = createCache();
+          const cache = createParentCache();
           return await ArrayUtil.asyncMap(inputs, (x) => transform(x, cache));
         }
 
-        function createCache() {
+        function createParentCache() {
           const cache = new VariadicSingleton(
             async (id: string): Promise<${dto}> => {
               const record =
@@ -240,6 +258,191 @@ ${properties}
                   where: { id },
                 });
               return transform(record, cache);
+            },
+          );
+          return cache;
+        }
+      }
+    `;
+  }
+
+  function writeChildrenOnlyRecursiveTemplate(props: {
+    plan: AutoBeRealizeTransformerPlan;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    childrenProperty: string;
+  }): string {
+    const name: string = getName(props.plan.dtoTypeName);
+    const dto: string = props.plan.dtoTypeName;
+    const table: string = props.plan.databaseSchemaName;
+    const cp: string = props.childrenProperty;
+    const properties: string = Object.keys(props.schema.properties)
+      .map((k) =>
+        k === cp
+          ? `  ${k}: await cache.get(input.id),`
+          : `  ${k}: ...,`,
+      )
+      .join("\n");
+    return StringUtil.trim`
+      export namespace ${name} {
+        export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
+
+        export function select() {
+          // implicit return type for better type inference
+          return {
+            select: {
+              ...
+              id: true, // required for children cache key
+              ${cp}: undefined, // DO NOT select recursive relation
+            },
+          } satisfies Prisma.${table}FindManyArgs;
+        }
+
+        export async function transform(
+          input: Payload,
+          cache: VariadicSingleton<Promise<${dto}[]>, [string]> = createChildrenCache(),
+        ): Promise<${dto}> {
+          return {
+${properties}
+          };
+        }
+
+        export async function transformAll(
+          inputs: Payload[],
+        ): Promise<${dto}[]> {
+          const cache = createChildrenCache();
+          return await ArrayUtil.asyncMap(inputs, (x) => transform(x, cache));
+        }
+
+        function createChildrenCache() {
+          const cache = new VariadicSingleton(
+            async (parentId: string): Promise<${dto}[]> => {
+              const records =
+                await MyGlobal.prisma.${table}.findMany({
+                  ...select(),
+                  where: { parent_id: parentId }, // Adjust FK column based on actual schema
+                });
+              return await ArrayUtil.asyncMap(records, (r) => transform(r, cache));
+            },
+          );
+          return cache;
+        }
+      }
+    `;
+  }
+
+  function writeBothRecursiveTemplate(props: {
+    plan: AutoBeRealizeTransformerPlan;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    parentProperty: string;
+    childrenProperty: string;
+  }): string {
+    const name: string = getName(props.plan.dtoTypeName);
+    const dto: string = props.plan.dtoTypeName;
+    const table: string = props.plan.databaseSchemaName;
+    const pp: string = props.parentProperty;
+    const cp: string = props.childrenProperty;
+    const fk: string = `${pp}_id`;
+    const properties: string = Object.keys(props.schema.properties)
+      .map((k) => {
+        if (k === pp)
+          return `  ${k}: input.${fk} ? await parentCache.get(input.${fk}) : null,`;
+        if (k === cp)
+          return `  ${k}: await childrenCache.get(input.id),`;
+        return `  ${k}: ...,`;
+      })
+      .join("\n");
+    return StringUtil.trim`
+      export namespace ${name} {
+        export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
+
+        export function select() {
+          // implicit return type for better type inference
+          return {
+            select: {
+              ...
+              id: true, // required for children cache key
+              ${fk}: true,
+              ${pp}: undefined, // DO NOT select recursive relation
+              ${cp}: undefined, // DO NOT select recursive relation
+            },
+          } satisfies Prisma.${table}FindManyArgs;
+        }
+
+        export async function transform(
+          input: Payload,
+          parentCache: VariadicSingleton<Promise<${dto}>, [string]> = createParentCache(),
+          childrenCache: VariadicSingleton<Promise<${dto}[]>, [string]> = createChildrenCache(),
+        ): Promise<${dto}> {
+          return {
+${properties}
+          };
+        }
+
+        export async function transformAll(
+          inputs: Payload[],
+        ): Promise<${dto}[]> {
+          // Create mutually-referencing caches so the entire tree shares
+          // one deduplication scope across both parent and children lookups.
+          // Use definite assignment assertions (!) so TypeScript does not
+          // flag the cross-references as "used before assigned" — the async
+          // callbacks only execute after both variables are fully initialised.
+          let parentCache!: VariadicSingleton<Promise<${dto}>, [string]>;
+          let childrenCache!: VariadicSingleton<Promise<${dto}[]>, [string]>;
+          parentCache = new VariadicSingleton(
+            async (id: string): Promise<${dto}> => {
+              const record =
+                await MyGlobal.prisma.${table}.findFirstOrThrow({
+                  ...select(),
+                  where: { id },
+                });
+              return transform(record, parentCache, childrenCache);
+            },
+          );
+          childrenCache = new VariadicSingleton(
+            async (parentId: string): Promise<${dto}[]> => {
+              const records =
+                await MyGlobal.prisma.${table}.findMany({
+                  ...select(),
+                  where: { ${fk}: parentId },
+                });
+              return await ArrayUtil.asyncMap(records, (r) =>
+                transform(r, parentCache, childrenCache),
+              );
+            },
+          );
+          return await ArrayUtil.asyncMap(inputs, (x) =>
+            transform(x, parentCache, childrenCache),
+          );
+        }
+
+        function createParentCache() {
+          const cache = new VariadicSingleton(
+            async (id: string): Promise<${dto}> => {
+              const record =
+                await MyGlobal.prisma.${table}.findFirstOrThrow({
+                  ...select(),
+                  where: { id },
+                });
+              return transform(record, cache);
+            },
+          );
+          return cache;
+        }
+
+        function createChildrenCache() {
+          const cache = new VariadicSingleton(
+            async (parentId: string): Promise<${dto}[]> => {
+              const records =
+                await MyGlobal.prisma.${table}.findMany({
+                  ...select(),
+                  where: { ${fk}: parentId },
+                });
+              // createParentCache() is called once per batch so all siblings
+              // in the same children list share one parent-deduplication scope.
+              const parentCache = createParentCache();
+              return await ArrayUtil.asyncMap(records, (r) =>
+                transform(r, parentCache, cache),
+              );
             },
           );
           return cache;
@@ -578,14 +781,14 @@ ${properties}
         });
   }
 
-  export function getRecursiveProperty(props: {
+  export function getRecursiveRelations(props: {
     schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
     typeName: string;
-  }): string | null {
+  }): { parent: string | null; children: string | null } {
     const schema: AutoBeOpenApi.IJsonSchema | undefined =
       props.schemas[props.typeName];
     if (schema === undefined || !AutoBeOpenApiTypeChecker.isObject(schema))
-      return null;
+      return { parent: null, children: null };
 
     const selfRef: string = `#/components/schemas/${props.typeName}`;
     const hasSelfRef = (s: AutoBeOpenApi.IJsonSchema): boolean => {
@@ -594,9 +797,30 @@ ${properties}
         return s.oneOf.some((sub) => hasSelfRef(sub));
       return false;
     };
-    for (const [key, value] of Object.entries(schema.properties))
-      if (value && hasSelfRef(value)) return key;
-    return null;
+    const hasSelfRefArray = (s: AutoBeOpenApi.IJsonSchema): boolean => {
+      const a = s as any;
+      if (a.type === "array" && a.items != null) return hasSelfRef(a.items);
+      if (AutoBeOpenApiTypeChecker.isOneOf(s))
+        return s.oneOf.some((sub) => hasSelfRefArray(sub));
+      return false;
+    };
+
+    let parent: string | null = null;
+    let children: string | null = null;
+    for (const [key, value] of Object.entries(schema.properties)) {
+      if (!value) continue;
+      if (hasSelfRef(value)) parent = key;
+      else if (hasSelfRefArray(value)) children = key;
+    }
+    return { parent, children };
+  }
+
+  export function getRecursiveProperty(props: {
+    schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
+    typeName: string;
+  }): string | null {
+    const { parent, children } = getRecursiveRelations(props);
+    return parent ?? children;
   }
 
   export const fixApplication = (props: {

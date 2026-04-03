@@ -8,24 +8,31 @@ import { createMockOperation } from "./internal/createMockOperation";
 import { createMockScenario } from "./internal/createMockScenario";
 import { createMockTransformer } from "./internal/createMockTransformer";
 
-interface ICategory {
+/**
+ * A DTO with both a nullable N:1 self-reference (parent) and a 1:N
+ * self-reference (children) — the bidirectional tree node.
+ * The pagination operation template must use transformAll() rather than
+ * ArrayUtil.asyncMap() because the DTO is recursive in both directions.
+ */
+interface INode {
   id: string & tags.Format<"uuid">;
   name: string;
-  parent: ICategory | null;
+  parent: INode | null;
+  children: INode[];
 }
 
-export const test_realize_operation_template_pagination_recursive =
+export const test_realize_operation_template_pagination_recursive_both =
   (): void => {
     const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      typia.json.schemas<[ICategory]>().components.schemas as Record<
+      typia.json.schemas<[INode]>().components.schemas as Record<
         string,
         AutoBeOpenApi.IJsonSchemaDescriptive
       >;
 
     const operation: AutoBeOpenApi.IOperation = createMockOperation({
-      method: "patch",
-      path: "/categories",
-      responseBody: { typeName: "IPageICategory" },
+      method: "get",
+      path: "/nodes",
+      responseBody: { typeName: "IPageINode" },
     });
 
     const result: string = writeRealizeOperationTemplate({
@@ -37,16 +44,16 @@ export const test_realize_operation_template_pagination_recursive =
       collectors: [],
       transformers: [
         createMockTransformer({
-          dtoTypeName: "ICategory",
-          databaseSchemaName: "categories",
+          dtoTypeName: "INode",
+          databaseSchemaName: "nodes",
         }),
       ],
     });
 
     const expectedBody: string = StringUtil.trim`
-      export async function patchTest(): Promise<IPageICategory> {
-        const records = await MyGlobal.prisma.categories.findMany({
-          ...CategoryTransformer.select(),
+      export async function getTest(): Promise<IPageINode> {
+        const records = await MyGlobal.prisma.nodes.findMany({
+          ...NodeTransformer.select(),
           ...,
         });
         return {
@@ -56,7 +63,7 @@ export const test_realize_operation_template_pagination_recursive =
             records: ...,
             pages: ...,
           },
-          data: await CategoryTransformer.transformAll(records),
+          data: await NodeTransformer.transformAll(records),
         };
       }
     `;

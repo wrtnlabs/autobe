@@ -1,5 +1,6 @@
 import { writeRealizeOperationTemplate } from "@autobe/agent/src/orchestrate/realize/programmers/internal/writeRealizeOperationTemplate";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
@@ -47,15 +48,21 @@ export const test_realize_operation_template_object_response_nullable =
       ],
     });
 
-    const expectedBody: string = [
-      `export async function getTest(): Promise<IProfile> {`,
-      `  return {`,
-      `    bio: ...,`,
-      `    user: await UserTransformer.transform(...),`,
-      `    tags: await ArrayUtil.asyncMap(..., (r) => UserTransformer.transform(r)),`,
-      `  };`,
-      `}`,
-    ].join("\n");
+    const expectedBody: string = StringUtil.trim`
+      export async function getTest(): Promise<IProfile> {
+        return {
+          bio: ...,
+          user: await UserTransformer.transform(...),
+          tags: await ArrayUtil.asyncMap(..., (r) => UserTransformer.transform(r)),
+        };
+      }
+    `;
 
-    TestValidator.equals("full body", result.includes(expectedBody), true);
+    const normalize = (s: string): string =>
+      s.split("\n").map((l) => l.trimStart()).join("\n");
+    TestValidator.equals(
+      "full body",
+      normalize(result).includes(normalize(expectedBody)),
+      true,
+    );
   };

@@ -6,14 +6,13 @@ import typia, { tags } from "typia";
 
 import { createMockOperation } from "./internal/createMockOperation";
 import { createMockScenario } from "./internal/createMockScenario";
-import { createMockTransformer } from "./internal/createMockTransformer";
 
 interface IArticle {
   id: string & tags.Format<"uuid">;
   title: string;
 }
 
-export const test_realize_operation_template_pagination = (): void => {
+export const test_realize_operation_template_delete = (): void => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     typia.json.schemas<[IArticle]>().components.schemas as Record<
       string,
@@ -21,9 +20,15 @@ export const test_realize_operation_template_pagination = (): void => {
     >;
 
   const operation: AutoBeOpenApi.IOperation = createMockOperation({
-    method: "patch",
-    path: "/articles",
-    responseBody: { typeName: "IPageIArticle" },
+    method: "delete",
+    path: "/articles/{id}",
+    parameters: [
+      {
+        name: "id" as AutoBeOpenApi.IParameter["name"],
+        description: "Article ID",
+        schema: { type: "string", format: "uuid" },
+      },
+    ],
   });
 
   const result: string = writeRealizeOperationTemplate({
@@ -33,29 +38,16 @@ export const test_realize_operation_template_pagination = (): void => {
     authorization: null,
     schemas,
     collectors: [],
-    transformers: [
-      createMockTransformer({
-        dtoTypeName: "IArticle",
-        databaseSchemaName: "articles",
-      }),
-    ],
+    transformers: [],
   });
 
   const expectedBody: string = StringUtil.trim`
-    export async function patchTest(): Promise<IPageIArticle> {
-      const records = await MyGlobal.prisma.articles.findMany({
-        ...ArticleTransformer.select(),
-        ...,
+    export async function deleteTest(props: {
+      id: string & tags.Format<"uuid">;
+    }): Promise<void> {
+      await MyGlobal.prisma.....delete({
+        where: { ... },
       });
-      return {
-        pagination: {
-          current: ...,
-          limit: ...,
-          records: ...,
-          pages: ...,
-        },
-        data: await ArrayUtil.asyncMap(records, ArticleTransformer.transform),
-      };
     }
   `;
 

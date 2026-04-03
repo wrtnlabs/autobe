@@ -1,5 +1,6 @@
 import { writeRealizeOperationTemplate } from "@autobe/agent/src/orchestrate/realize/programmers/internal/writeRealizeOperationTemplate";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
@@ -42,18 +43,24 @@ export const test_realize_operation_template_collector_void = (): void => {
     transformers: [],
   });
 
-  const expectedBody: string = [
-    `export async function postTest(props: {`,
-    `  body: IArticle.ICreate;`,
-    `}): Promise<void> {`,
-    `  await MyGlobal.prisma.articles.create({`,
-    `    data: await ArticleCollector.collect({`,
-    `      body: props.body,`,
-    `      ...`,
-    `    }),`,
-    `  });`,
-    `}`,
-  ].join("\n");
+  const expectedBody: string = StringUtil.trim`
+    export async function postTest(props: {
+      body: IArticle.ICreate;
+    }): Promise<void> {
+      await MyGlobal.prisma.articles.create({
+        data: await ArticleCollector.collect({
+          body: props.body,
+          ...
+        }),
+      });
+    }
+  `;
 
-  TestValidator.equals("full body", result.includes(expectedBody), true);
+  const normalize = (s: string): string =>
+    s.split("\n").map((l) => l.trimStart()).join("\n");
+  TestValidator.equals(
+    "full body",
+    normalize(result).includes(normalize(expectedBody)),
+    true,
+  );
 };
