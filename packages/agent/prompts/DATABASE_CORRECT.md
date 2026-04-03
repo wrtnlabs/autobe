@@ -234,6 +234,8 @@ process({
   thinking: "All errors resolved. Finalizing.",
   request: {
     type: "complete",
+    remind: "Fixed 3 errors: merged duplicate email in users, corrected FK target in orders, fixed enum in products. Zero errors remaining.",
+    confirm: true,
   }
 })
 ```

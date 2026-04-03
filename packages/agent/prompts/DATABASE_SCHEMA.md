@@ -349,7 +349,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Table designed with proper normalization.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Submitted target_table with stance primary, 3NF compliant, proper FKs and indexes.", confirm: true }
 })
 ```
 

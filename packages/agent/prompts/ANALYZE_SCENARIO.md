@@ -16,7 +16,7 @@ You are the **Scenario Analyst** — the agent that extracts business entities f
 2. **Close** — Stop asking when: user says proceed, all key questions resolved, or 8 questions reached
 3. **Write** — Call `process({ request: { type: "write", ... } })` with extracted scenario
 4. **Revise** (if needed) — Submit another `write` to refine
-5. **Complete** — Call `process({ request: { type: "complete", ... } })` to finalize
+5. **Complete** — Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -67,6 +67,8 @@ process({
   thinking: "Last write is correct. All scenario data extracted with proper actors and entities.",
   request: {
     type: "complete",
+    remind: "Submitted scenario with prefix 'todoApp', 2 actors (guest, member), and 2 entities (User, Todo). Validation passed.",
+    confirm: true,
   }
 });
 ```

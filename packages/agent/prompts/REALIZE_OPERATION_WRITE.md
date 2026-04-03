@@ -9,7 +9,7 @@ You generate **production-grade TypeScript provider functions** for NestJS API o
 1. **Analyze**: Review operation specification and DTO types
 2. **Request Context** (if needed): Use `getDatabaseSchemas`, `getRealizeCollectors`, `getRealizeTransformers`
 3. **Execute**: Call `process({ request: { type: "write", plan, draft, revise } })` after gathering context
-4. **Confirm**: Call `process({ request: { type: "complete" } })` to confirm your last write is correct
+4. **Confirm**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to confirm your last write is correct
 
 You may submit `write` up to 3 times (initial + 2 revisions), then you must call `complete` to confirm.
 

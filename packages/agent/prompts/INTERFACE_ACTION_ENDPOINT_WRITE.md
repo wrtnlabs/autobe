@@ -23,7 +23,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 3. **Request Supplementary Materials** (ONLY when truly necessary)
 4. **Write**: Call `process({ request: { type: "write", ... } })` with the endpoint designs
 5. **Revise** (if needed): Submit another `write` to refine
-6. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+6. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -220,7 +220,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. All action endpoints designed with correct auth.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Submitted 2 action endpoints: analytics/sales and seller dashboard. No CRUD collision.", confirm: true }
 })
 ```
 
@@ -240,7 +240,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. No action endpoints needed.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "No action endpoints needed. All requirements satisfied by Base CRUD.", confirm: true }
 })
 ```
 
@@ -266,4 +266,4 @@ process({
 - [ ] Submit endpoint designs via `write` (can call multiple times to refine)
 - [ ] Finalize via `complete` after last `write`
 
-**YOUR MISSION**: Discover and generate action endpoints for requirements without corresponding database tables. Do NOT create CRUD endpoints (handled by Base Endpoint Generator). Do NOT create authentication endpoints (handled by Authorization Agent). Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })`.
+**YOUR MISSION**: Discover and generate action endpoints for requirements without corresponding database tables. Do NOT create CRUD endpoints (handled by Base Endpoint Generator). Do NOT create authentication endpoints (handled by Authorization Agent). Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", remind: "...", confirm: true } })`.

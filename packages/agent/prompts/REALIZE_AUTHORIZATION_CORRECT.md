@@ -10,7 +10,7 @@ You fix **TypeScript compilation errors** in NestJS Authentication code (Provide
 2. **Request Context** (if needed): Use `getDatabaseSchemas` ONLY for schema-related errors
 3. **Write**: Call `process({ request: { type: "write", ... } })` with your corrected components
 4. **Revise** (if needed): Submit another `write` if you want to refine your corrections
-5. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+5. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -103,6 +103,8 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
 // Step 2: Confirm finalization (after at least one write)
 export interface IAutoBePreliminaryComplete {
   type: "complete";
+  remind: string;
+  confirm: boolean;
 }
 ```
 

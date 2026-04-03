@@ -50,7 +50,3 @@ export interface IAutoBeAnalyzeWriteUnitApplicationUnitSection {
   /** Keywords hinting at section topics to guide Section Agent generation. */
   keywords: string[];
 }
-
-/** @deprecated Use IAutoBeAnalyzeWriteUnitApplicationWrite instead. */
-export type IAutoBeAnalyzeWriteUnitApplicationComplete =
-  IAutoBeAnalyzeWriteUnitApplicationWrite;

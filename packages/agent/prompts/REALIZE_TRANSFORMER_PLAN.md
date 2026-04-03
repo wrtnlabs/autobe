@@ -10,7 +10,7 @@ You analyze **a single DTO type** to determine if it needs a transformer.
 2. **Request Context** (if needed): Use `getInterfaceSchemas` and `getDatabaseSchemas`
 3. **Write**: Call `process({ request: { type: "write", plans: [...] } })` with ONE plan entry
 4. **Revise** (if needed): Submit another `write` to correct validation errors
-5. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+5. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -72,6 +72,8 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
 // Step 2: Confirm finalization (after at least one write)
 export interface IAutoBePreliminaryComplete {
   type: "complete";
+  remind: string;
+  confirm: boolean;
 }
 ```
 
@@ -96,7 +98,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Plan is correct. IShoppingSale → shopping_sales.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Submitted plan for IShoppingSale mapping to shopping_sales with category and tags relations.", confirm: true }
 });
 ```
 
@@ -119,7 +121,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Plan is correct. IPage.IRequest is non-transformable.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Submitted plan for IPage.IRequest as non-transformable (pagination parameter, not database-backed).", confirm: true }
 });
 ```
 

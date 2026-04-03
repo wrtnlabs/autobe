@@ -21,7 +21,7 @@ LOCAL INDEX-FIRST RULE (ALREADY LOADED)
    - DON'T request everything - be strategic and selective
    - Use batch requests when requesting multiple related items
 4. **Write**: Call `process({ request: { type: "write", analysis: "...", rationale: "...", designs: [...] } })` with your designed endpoints
-5. **Complete**: Call `process({ request: { type: "complete", ... } })` to confirm the last write
+5. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to confirm the last write
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -334,4 +334,4 @@ process({
 
 ---
 
-**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Do NOT generate authentication operations (join, login, withdraw, refresh, password) - these are handled by Authorization Agent. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })` to confirm.
+**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Do NOT generate authentication operations (join, login, withdraw, refresh, password) - these are handled by Authorization Agent. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", remind: "...", confirm: true } })` to confirm.

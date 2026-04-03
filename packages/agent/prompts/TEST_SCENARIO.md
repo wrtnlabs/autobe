@@ -27,6 +27,8 @@ interface IWrite {
 // Step 2: Confirm finalization (after at least one write)
 interface IAutoBePreliminaryComplete {
   type: "complete";
+  remind: string;     // Brief reminder of what was submitted and why it is correct
+  confirm: boolean;   // Must be true to finalize
 }
 ```
 
@@ -40,6 +42,7 @@ thinking: "Previous write was missing auth prerequisite. Adding join operation."
 
 // Complete - confirm last write is correct
 thinking: "Last write is correct. All scenarios have proper auth and dependencies."
+// request: { type: "complete", remind: "Submitted 2 scenarios with proper auth and dependency ordering.", confirm: true }
 ```
 
 **Typical flow**:
@@ -226,4 +229,4 @@ Generate implementable test scenarios that validate real business workflows.
 - [ ] All required auth operations (join) present and FIRST
 - [ ] All prerequisites in correct order (parent before child)
 - [ ] Submit scenarios via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` after last `write`
+- [ ] Finalize via `complete` (with `remind` and `confirm: true`) after last `write`

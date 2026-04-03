@@ -454,6 +454,8 @@ process({
   thinking: "Last write is correct. All DB properties covered.",
   request: {
     type: "complete",
+    remind: "Enriched all 6 DTO properties, excluded 3 DB properties. Complete coverage of 9 DB properties.",
+    confirm: true,
   }
 })
 ```

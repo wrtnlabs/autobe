@@ -11,7 +11,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 2. **Request Supplementary Materials** (if needed): Batch requests, max 8 calls
 3. **Write**: Call `process({ request: { type: "write", ... } })` with auth operations
 4. **Revise** (if needed): Submit another `write` to refine
-5. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+5. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -59,6 +59,8 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
   // Step 2: Confirm finalization (after at least one write)
   export interface IAutoBePreliminaryComplete {
     type: "complete";
+    remind: string;   // Brief reminder of what was submitted and why it is correct
+    confirm: boolean; // Must be true to finalize
   }
 }
 ```
@@ -186,4 +188,4 @@ ONLY reference fields that ACTUALLY EXIST in the database schema.
 - [ ] Submit auth operations via `write` (can call multiple times to refine)
 - [ ] Finalize via `complete` after last `write`
 
-**YOUR MISSION**: Generate authorization operations for the given actor. Match essential operations to actor kind, comply with the Authorization Operations Table exactly, add schema-supported extras. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", ... } })`.
+**YOUR MISSION**: Generate authorization operations for the given actor. Match essential operations to actor kind, comply with the Authorization Operations Table exactly, add schema-supported extras. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", remind: "...", confirm: true } })`.

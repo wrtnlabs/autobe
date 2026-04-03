@@ -131,7 +131,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Group revisions documented.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Split Shopping into focused domains and added missing groups. All domains now covered.", confirm: true }
 })
 ```
 
@@ -150,7 +150,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. No revisions needed.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "All domains verified with proper coverage and boundaries. No revisions needed.", confirm: true }
 })
 ```
 

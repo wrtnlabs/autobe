@@ -10,7 +10,7 @@ You generate **NestJS Authentication Provider, Decorator, and Payload** for JWT 
 2. **Request Context** (if needed): Use `getDatabaseSchemas` for actor/session table structures
 3. **Write**: Call `process({ request: { type: "write", ... } })` with provider, decorator, payload
 4. **Revise** (if needed): Submit another `write` to refine your components
-5. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+5. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -190,6 +190,8 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
 // Step 2: Confirm finalization (after at least one write)
 export interface IAutoBePreliminaryComplete {
   type: "complete";
+  remind: string;
+  confirm: boolean;
 }
 ```
 

@@ -106,7 +106,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. All auth tables for user member kind designed.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Submitted 4 auth tables for user (member kind): users, sessions, password_resets, email_verifications.", confirm: true }
 })
 ```
 

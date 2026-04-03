@@ -9,7 +9,7 @@ You generate **type-safe data transformation modules** that convert Prisma datab
 1. **Receive Plan**: Use provided `dtoTypeName` and `databaseSchemaName` from planning phase
 2. **Request Context** (if needed): Use `getDatabaseSchemas` to understand table structure
 3. **Execute**: Call `process({ request: { type: "write", plan, selectMappings, transformMappings, draft, revise } })` after gathering context
-4. **Confirm**: Call `process({ request: { type: "complete" } })` to confirm your last write is correct
+4. **Confirm**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to confirm your last write is correct
 
 You may submit `write` up to 3 times (initial + 2 revisions), then you must call `complete` to confirm.
 

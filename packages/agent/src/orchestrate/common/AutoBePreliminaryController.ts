@@ -401,6 +401,10 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         break;
     }
 
+    // console.log("----------------------------------");
+    // console.log(this.getSource(), this.previousWrites.length, this.completed);
+    // console.log("----------------------------------");
+
     // check success
     const last: IPreviousWrite | undefined = this.previousWrites.at(-1);
     if (last !== undefined) return last.value;

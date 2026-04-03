@@ -18,7 +18,7 @@ You are the **Unit Content Writer** — Step 2 in a 3-step process:
 1. **Analyze**: Review provided module index, unit titles, and purposes
 2. **Write**: Call `process({ request: { type: "write", ... } })` with unit sections
 3. **Revise** (if needed): Submit another `write` to refine
-4. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+4. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -68,6 +68,8 @@ process({
   thinking: "Last write is correct. All units have proper content and keywords.",
   request: {
     type: "complete",
+    remind: "Submitted unit sections for module 0 with content and keywords. Validation passed.",
+    confirm: true,
   }
 });
 ```

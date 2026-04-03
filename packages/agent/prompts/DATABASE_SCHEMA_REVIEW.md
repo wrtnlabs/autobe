@@ -145,7 +145,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Corrections applied.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Fixed snake_case oppositeName to camelCase. Corrected model submitted.", confirm: true }
 })
 ```
 
@@ -166,7 +166,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. No corrections needed.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Table complies with all DATABASE_SCHEMA.md rules. No modifications needed.", confirm: true }
 })
 ```
 

@@ -121,7 +121,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Missing auth tables identified.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Created admin session table and customer password_resets. All actors now have full auth coverage.", confirm: true }
 })
 ```
 
@@ -140,7 +140,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. No changes needed.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "All actors verified with proper auth tables. No revisions needed.", confirm: true }
 })
 ```
 

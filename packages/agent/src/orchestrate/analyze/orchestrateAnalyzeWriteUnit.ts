@@ -17,8 +17,8 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformAnalyzeWriteUnitHistory } from "./histories/transformAnalyzeWriteUnitHistory";
 import {
   IAutoBeAnalyzeWriteUnitApplication,
-  IAutoBeAnalyzeWriteUnitApplicationComplete,
   IAutoBeAnalyzeWriteUnitApplicationProps,
+  IAutoBeAnalyzeWriteUnitApplicationWrite,
 } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
 import {
   isRecord,
@@ -47,10 +47,9 @@ export const orchestrateAnalyzeWriteUnit = async (
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationComplete | null> =
-      {
-        value: null,
-      };
+    const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationWrite | null> = {
+      value: null,
+    };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -90,7 +89,7 @@ export const orchestrateAnalyzeWriteUnit = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationWrite | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
 }): IAgenticaController.IClass {
   const validate = (

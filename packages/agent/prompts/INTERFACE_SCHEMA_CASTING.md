@@ -81,7 +81,7 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 1. Gather context via preliminary requests (if needed)
 2. **Write**: Call `process({ request: { type: "write", ... } })` with your analysis
 3. **Revise** (if needed): Submit another `write` to refine
-4. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
+4. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -104,6 +104,8 @@ interface IWrite {
 // Step 2: Confirm finalization (after at least one write)
 interface IAutoBePreliminaryComplete {
   type: "complete";
+  remind: string;   // Brief reminder of what was submitted and why it is correct
+  confirm: boolean; // Must be true to finalize
 }
 ```
 
@@ -140,7 +142,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. REFINE verdict with Record<string, number> casting.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "REFINE: degenerate number → Record<string, number> for category distribution.", confirm: true }
 })
 ```
 
@@ -162,7 +164,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. KEEP verdict.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "KEEP: IUserId is a valid semantic alias for UUID string.", confirm: true }
 })
 ```
 

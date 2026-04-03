@@ -27,6 +27,8 @@ interface IWrite {
 // Step 2: Confirm finalization (after at least one write)
 interface IAutoBePreliminaryComplete {
   type: "complete";
+  remind: string;     // Brief reminder of what was submitted and why it is correct
+  confirm: boolean;   // Must be true to finalize
 }
 ```
 
@@ -40,6 +42,7 @@ thinking: "Previous write had wrong order. Moving auth before prerequisites."
 
 // Complete - confirm last write is correct
 thinking: "Last write is correct. Review complete."
+// request: { type: "complete", remind: "Review verified auth, dependencies, and order.", confirm: true }
 ```
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
@@ -70,7 +73,7 @@ Scenario tests input validation errors instead of business logic.
 // Step 2: Finalize
 {
   thinking: "Last write is correct. Scenario erased.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Erased scenario that tested input validation errors.", confirm: true }
 }
 ```
 
@@ -100,7 +103,7 @@ Scenario tests business logic but has auth/dependency/order problems.
 // Step 2: Finalize
 {
   thinking: "Last write is correct. Auth added and order verified.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Added missing user join auth and verified execution order.", confirm: true }
 }
 ```
 
@@ -122,7 +125,7 @@ Scenario is correct as-is.
 // Step 2: Finalize
 {
   thinking: "Last write is correct. No changes needed.",
-  request: { type: "complete" }
+  request: { type: "complete", remind: "Scenario verified correct as-is, no changes needed.", confirm: true }
 }
 ```
 
@@ -246,4 +249,4 @@ Ensure scenarios are correct and implementable, or properly removed if they test
 ## 8. Final Checklist
 
 - [ ] Submit review results via `write` (can call multiple times to refine)
-- [ ] Finalize via `complete` after last `write`
+- [ ] Finalize via `complete` (with `remind` and `confirm: true`) after last `write`
