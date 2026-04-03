@@ -37,7 +37,7 @@ export async function orchestratePrismaGroupReview(
   });
 
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseGroupReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeDatabaseGroupReviewApplication.IWrite | null> =
       { value: null };
 
     const result: AutoBeContext.IResult = await ctx.conversate({
@@ -81,7 +81,7 @@ export async function orchestratePrismaGroupReview(
 }
 
 function createController(props: {
-  pointer: IPointer<IAutoBeDatabaseGroupReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeDatabaseGroupReviewApplication.IWrite | null>;
   preliminary: AutoBePreliminaryController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
@@ -95,7 +95,7 @@ function createController(props: {
     if (result.success === false) return result;
 
     // Preliminary request validation
-    if (result.data.request.type !== "complete")
+    if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -131,8 +131,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeDatabaseGroupReviewApplication,
   };

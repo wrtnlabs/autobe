@@ -41,10 +41,9 @@ export async function orchestrateInterfaceGroup(
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null> =
-      {
-        value: null,
-      };
+    const pointer: IPointer<IAutoBeInterfaceGroupApplication.IWrite | null> = {
+      value: null,
+    };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -85,7 +84,7 @@ export async function orchestrateInterfaceGroup(
 }
 
 function createController(props: {
-  pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeInterfaceGroupApplication.IWrite | null>;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
@@ -103,7 +102,7 @@ function createController(props: {
     if (result.success === false) return result;
 
     // Preliminary request validation
-    if (result.data.request.type !== "complete")
+    if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -156,8 +155,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeInterfaceGroupApplication,
   };

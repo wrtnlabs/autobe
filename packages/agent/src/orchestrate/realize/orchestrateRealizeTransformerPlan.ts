@@ -117,7 +117,7 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeTransformerPlanApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeRealizeTransformerPlanApplication.IWrite | null> =
       {
         value: null,
       };
@@ -169,7 +169,7 @@ async function process(
 function createController(props: {
   prismaSchemaNames: Set<string>;
   dtoTypeName: string;
-  build: (next: IAutoBeRealizeTransformerPlanApplication.IComplete) => void;
+  build: (next: IAutoBeRealizeTransformerPlanApplication.IWrite) => void;
   preliminary: AutoBePreliminaryController<
     "analysisSections" | "databaseSchemas" | "interfaceSchemas"
   >;
@@ -178,7 +178,7 @@ function createController(props: {
     const result: IValidation<IAutoBeRealizeTransformerPlanApplication.IProps> =
       typia.validate<IAutoBeRealizeTransformerPlanApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -241,7 +241,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeRealizeTransformerPlanApplication,
   };

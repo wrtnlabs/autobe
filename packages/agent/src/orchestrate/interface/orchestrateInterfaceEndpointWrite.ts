@@ -103,7 +103,7 @@ export const orchestrateInterfaceEndpointWrite = async (
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceEndpointWriteApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfaceEndpointWriteApplication.IWrite | null> =
       {
         value: null,
       };
@@ -174,7 +174,7 @@ const createController = (props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
-  build: (next: IAutoBeInterfaceEndpointWriteApplication.IComplete) => void;
+  build: (next: IAutoBeInterfaceEndpointWriteApplication.IWrite) => void;
 }): ILlmController => {
   const validate = (
     input: unknown,
@@ -182,7 +182,7 @@ const createController = (props: {
     const result: IValidation<IAutoBeInterfaceEndpointWriteApplication.IProps> =
       typia.validate<IAutoBeInterfaceEndpointWriteApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -227,7 +227,7 @@ const createController = (props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeInterfaceEndpointWriteApplication,
   };

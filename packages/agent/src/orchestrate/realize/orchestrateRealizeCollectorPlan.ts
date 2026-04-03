@@ -123,7 +123,7 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeCollectorPlanApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeRealizeCollectorPlanApplication.IWrite | null> =
       {
         value: null,
       };
@@ -176,7 +176,7 @@ async function process(
 function createController(props: {
   prismaSchemaNames: Set<string>;
   dtoTypeName: string;
-  build: (next: IAutoBeRealizeCollectorPlanApplication.IComplete) => void;
+  build: (next: IAutoBeRealizeCollectorPlanApplication.IWrite) => void;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
@@ -188,7 +188,7 @@ function createController(props: {
     const result: IValidation<IAutoBeRealizeCollectorPlanApplication.IProps> =
       typia.validate<IAutoBeRealizeCollectorPlanApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -251,7 +251,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeRealizeCollectorPlanApplication,
   };

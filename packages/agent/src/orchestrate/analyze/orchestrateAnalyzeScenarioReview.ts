@@ -112,8 +112,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeAnalyzeScenarioReviewApplication,
   };

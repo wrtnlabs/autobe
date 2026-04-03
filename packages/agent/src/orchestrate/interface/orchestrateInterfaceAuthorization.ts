@@ -77,7 +77,7 @@ async function process(
     state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceAuthorizationApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfaceAuthorizationApplication.IWrite | null> =
       {
         value: null,
       };
@@ -134,7 +134,7 @@ function createController(props: {
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;
-  build: (next: IAutoBeInterfaceAuthorizationApplication.IComplete) => void;
+  build: (next: IAutoBeInterfaceAuthorizationApplication.IWrite) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -142,7 +142,7 @@ function createController(props: {
     const result: IValidation<IAutoBeInterfaceAuthorizationApplication.IProps> =
       typia.validate<IAutoBeInterfaceAuthorizationApplication.IProps>(next);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -187,7 +187,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") {
+        if (next.request.type === "write") {
           for (const o of next.request.operations)
             for (const p of o.parameters)
               AutoBeJsonSchemaFactory.fixSchema(p.schema);

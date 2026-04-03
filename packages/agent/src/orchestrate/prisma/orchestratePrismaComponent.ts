@@ -101,7 +101,7 @@ async function process(
   });
 
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseComponentApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeDatabaseComponentApplication.IWrite | null> =
       {
         value: null,
       };
@@ -147,7 +147,7 @@ async function process(
 }
 
 function createController(props: {
-  pointer: IPointer<IAutoBeDatabaseComponentApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeDatabaseComponentApplication.IWrite | null>;
   preliminary: AutoBePreliminaryController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
@@ -157,7 +157,7 @@ function createController(props: {
     const result: IValidation<IAutoBeDatabaseComponentApplication.IProps> =
       typia.validate<IAutoBeDatabaseComponentApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -191,8 +191,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeDatabaseComponentApplication,
   };

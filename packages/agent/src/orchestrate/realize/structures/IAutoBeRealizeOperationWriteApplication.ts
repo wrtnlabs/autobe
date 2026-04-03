@@ -5,30 +5,15 @@ import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/
 import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
 
 /**
- * Function calling interface for the cyclinic write-compile-correct loop of API
- * operation implementation.
- *
- * Combines preliminary context loading, code submission with compiler
- * validation, and iterative correction into a single unified loop.
- *
- * The agent can:
- *
- * - Request context data (getAnalysisSections, getDatabaseSchemas, etc.)
- * - Submit code via `write` for external TypeScript compilation validation
- * - Finalize via `complete` after a successful write validation
+ * Generates provider functions implementing business logic for API endpoints
+ * via plan/draft/revise workflow.
  */
 export interface IAutoBeRealizeOperationWriteApplication {
   /**
-   * Process operation function implementation, correction, or preliminary data
-   * requests.
+   * Process operation function generation task or preliminary data requests.
    *
-   * Generates complete operation function implementation through structured
-   * workflow. Submits code via `write` for external validation (compilation).
-   * If validation fails, diagnostics are provided and you should correct and
-   * resubmit. Call `complete` only after a successful write validation.
-   *
-   * @param props Request containing preliminary data request, write submission,
-   *   or completion confirmation
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
   process(props: IAutoBeRealizeOperationWriteApplication.IProps): void;
 }
@@ -38,97 +23,48 @@ export namespace IAutoBeRealizeOperationWriteApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data, submitting code, or completing your
-     * task, reflect on your current state and explain your reasoning:
+     * For preliminary requests: what critical information is missing and why?
      *
-     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For write submissions:
-     *
-     * - If this is an initial write, summarize your implementation plan.
-     * - If this is a correction, what errors are you fixing and how?
-     *
-     * For completion:
-     *
-     * - Confirm that the last write passed validation successfully.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * For completion: what key assets did you acquire, what did you accomplish,
+     * why is it sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform:
-     *
-     * - Preliminary types: Load context data incrementally
-     * - `write`: Submit code for external validation (TypeScript compilation)
-     * - `complete`: Finalize after successful write validation
-     *
-     * When preliminary returns empty array, that type is removed from the
+     * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
      */
     request:
       | IWrite
-      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetRealizeCollectors
-      | IAutoBePreliminaryGetRealizeTransformers;
+      | IAutoBePreliminaryGetRealizeTransformers
+      | IAutoBePreliminaryComplete;
   }
 
-  /**
-   * Submit operation function code for external validation.
-   *
-   * The submitted code will be compiled by the TypeScript compiler. If
-   * compilation fails, you will receive diagnostics in the next iteration and
-   * should submit corrected code.
-   *
-   * Follows plan → draft → revise pattern to ensure type safety, proper
-   * database query patterns, and API contract compliance.
-   */
+  /** Generate operation implementation via plan/draft/revise. */
   export interface IWrite {
-    /** Type discriminator for write submission. */
+    /** Type discriminator for completion request. */
     type: "write";
 
     /**
-     * Operation implementation plan and strategy.
-     *
-     * For initial writes: analyze requirements and outline the implementation
-     * approach including schema validation and API contract verification.
-     *
-     * For corrections: identify error patterns, root causes, and the correction
-     * strategy.
+     * Operation implementation plan. Analyze requirements, identify related
+     * database schemas, and outline implementation approach including schema
+     * validation and API contract verification.
      */
     plan: string;
 
-    /**
-     * Initial implementation draft.
-     *
-     * The first complete implementation attempt based on the plan. May contain
-     * areas that need refinement in the review phase.
-     */
+    /** First complete implementation attempt based on the plan. */
     draft: string;
 
-    /**
-     * Revision and finalization phase.
-     *
-     * Reviews the draft implementation and produces the final code with all
-     * improvements and corrections applied.
-     */
+    /** Reviews draft and produces final code. */
     revise: IReviseProps;
   }
 
   export interface IReviseProps {
     /**
-     * Review and improvement suggestions.
-     *
-     * Identifies areas for improvement in the draft code, including:
+     * Identify improvements:
      *
      * - Type safety enhancements
      * - Database query optimizations
@@ -139,12 +75,8 @@ export namespace IAutoBeRealizeOperationWriteApplication {
     review: string;
 
     /**
-     * Final operation function code.
-     *
-     * The complete, production-ready implementation with all review suggestions
-     * applied.
-     *
-     * Returns `null` if the draft is already perfect and needs no changes.
+     * Final operation function code with all review improvements applied, or
+     * null if draft needs no changes.
      */
     final: string | null;
   }

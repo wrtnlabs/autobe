@@ -94,7 +94,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
               input,
             );
           if (result.success === false) return result;
-          else if (result.data.request.type !== "complete")
+          else if (result.data.request.type !== "write")
             return next.preliminary.validate({
               thinking: result.data.thinking,
               request: result.data.request,
@@ -141,7 +141,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
           application,
           execute: {
             process: (v) => {
-              if (v.request.type === "complete") next.build(v.request);
+              if (v.request.type === "write") next.build(v.request);
             },
           } satisfies IAutoBeRealizeCollectorCorrectApplication,
         };

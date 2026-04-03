@@ -87,7 +87,7 @@ async function process(
   });
 
   return preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseComponentReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeDatabaseComponentReviewApplication.IWrite | null> =
       { value: null };
 
     const result: AutoBeContext.IResult = await ctx.conversate({
@@ -149,7 +149,7 @@ function createController(props: {
   component: AutoBeDatabaseComponent;
   otherTables: AutoBeDatabaseComponentTableDesign[];
   prefix: string | null;
-  build: (next: IAutoBeDatabaseComponentReviewApplication.IComplete) => void;
+  build: (next: IAutoBeDatabaseComponentReviewApplication.IWrite) => void;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
@@ -158,7 +158,7 @@ function createController(props: {
       typia.validate<IAutoBeDatabaseComponentReviewApplication.IProps>(input);
     if (result.success === false) return result;
 
-    if (result.data.request.type !== "complete")
+    if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -196,7 +196,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeDatabaseComponentReviewApplication,
   };

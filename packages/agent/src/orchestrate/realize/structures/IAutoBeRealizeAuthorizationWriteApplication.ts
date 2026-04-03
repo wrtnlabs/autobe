@@ -32,23 +32,19 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
     /**
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
-     *
-     * - `complete` is only available after at least one `write` submission.
      */
     request:
       | IWrite
-      | IAutoBePreliminaryComplete
-      | IAutoBePreliminaryGetDatabaseSchemas;
+      | IAutoBePreliminaryGetDatabaseSchemas
+      | IAutoBePreliminaryComplete;
   }
 
   /**
-   * Submit authentication components (provider, decorator, payload).
-   *
-   * This is an intermediate step — you can submit multiple times to refine. The
-   * last submitted components will be used when you call `complete`.
+   * Request to generate authentication components (provider, decorator,
+   * payload).
    */
   export interface IWrite {
-    /** Type discriminator for write submission. */
+    /** Type discriminator for completion request. */
     type: "write";
 
     /**

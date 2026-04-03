@@ -134,7 +134,7 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IWrite | null> =
       {
         value: null,
       };
@@ -203,7 +203,7 @@ async function process(
 
 function createController(props: {
   functionName: string;
-  build: (next: IAutoBeRealizeOperationWriteApplication.IComplete) => void;
+  build: (next: IAutoBeRealizeOperationWriteApplication.IWrite) => void;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
@@ -215,7 +215,7 @@ function createController(props: {
     const result: IValidation<IAutoBeRealizeOperationWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -251,7 +251,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeRealizeOperationWriteApplication,
   };

@@ -11,8 +11,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { transformAnalyzeExtractDecisionsHistory } from "./histories/transformAnalyzeExtractDecisionsHistory";
 import {
   IAutoBeAnalyzeExtractDecisionsApplication,
-  IAutoBeAnalyzeExtractDecisionsApplicationComplete,
   IAutoBeAnalyzeExtractDecisionsApplicationProps,
+  IAutoBeAnalyzeExtractDecisionsApplicationWrite,
 } from "./structures/IAutoBeAnalyzeExtractDecisionsApplication";
 import { IFileDecisions } from "./utils/detectDecisionConflicts";
 import { isRecord, tryParseStringAsRecord } from "./utils/repairUtils";
@@ -34,7 +34,7 @@ export const orchestrateAnalyzeExtractDecisions = async (
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   },
 ): Promise<IFileDecisions> => {
-  const pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplicationComplete | null> =
+  const pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplicationWrite | null> =
     {
       value: null,
     };
@@ -61,7 +61,7 @@ export const orchestrateAnalyzeExtractDecisions = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplicationComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplicationWrite | null>;
 }): IAgenticaController.IClass {
   const application: ILlmApplication =
     typia.llm.application<IAutoBeAnalyzeExtractDecisionsApplication>({
@@ -87,8 +87,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeAnalyzeExtractDecisionsApplication,
   };

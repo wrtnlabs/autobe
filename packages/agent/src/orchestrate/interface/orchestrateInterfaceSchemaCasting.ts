@@ -132,7 +132,7 @@ async function process(
   const value = await preliminary.orchestrate<
     AutoBeOpenApi.IJsonSchemaDescriptive.IObject | false
   >(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IWrite | null> =
       {
         value: null,
       };
@@ -195,7 +195,7 @@ function createController(
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchema;
     operations: AutoBeOpenApi.IOperation[];
-    pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IComplete | null>;
+    pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IWrite | null>;
     preliminary: AutoBePreliminaryController<
       | "analysisSections"
       | "databaseSchemas"
@@ -217,7 +217,7 @@ function createController(
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
-    } else if (result.data.request.type !== "complete")
+    } else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -260,8 +260,7 @@ function createController(
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeInterfaceSchemaCastingApplication,
   };

@@ -107,7 +107,7 @@ async function step(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseSchemaReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeDatabaseSchemaReviewApplication.IWrite | null> =
       {
         value: null,
       };
@@ -161,7 +161,7 @@ function createController(props: {
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;
-  build: (next: IAutoBeDatabaseSchemaReviewApplication.IComplete) => void;
+  build: (next: IAutoBeDatabaseSchemaReviewApplication.IWrite) => void;
   targetComponent: AutoBeDatabaseComponent;
   model: AutoBeDatabase.IModel;
   otherModels: AutoBeDatabase.IModel[];
@@ -172,7 +172,7 @@ function createController(props: {
     const result: IValidation<IAutoBeDatabaseSchemaReviewApplication.IProps> =
       typia.validate<IAutoBeDatabaseSchemaReviewApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -211,7 +211,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeDatabaseSchemaReviewApplication,
   };

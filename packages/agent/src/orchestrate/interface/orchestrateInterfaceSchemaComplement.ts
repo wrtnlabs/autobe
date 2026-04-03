@@ -163,7 +163,7 @@ Task: ${task}
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaComplementApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfaceSchemaComplementApplication.IWrite | null> =
       {
         value: null,
       };
@@ -227,9 +227,7 @@ function createController(
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"
     >;
-    build: (
-      schema: IAutoBeInterfaceSchemaComplementApplication.IComplete,
-    ) => void;
+    build: (schema: IAutoBeInterfaceSchemaComplementApplication.IWrite) => void;
   },
 ): IAgenticaController.IClass {
   const everyModels: AutoBeDatabase.IModel[] =
@@ -243,7 +241,7 @@ function createController(
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
-    } else if (result.data.request.type !== "complete")
+    } else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -298,7 +296,7 @@ function createController(
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeInterfaceSchemaComplementApplication,
   };

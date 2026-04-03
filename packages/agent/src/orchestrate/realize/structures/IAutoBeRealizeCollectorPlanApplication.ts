@@ -40,26 +40,22 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
     /**
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
-     *
-     * - `complete` is only available after at least one `write` submission.
      */
     request:
       | IWrite
-      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetInterfaceOperations
-      | IAutoBePreliminaryGetInterfaceSchemas;
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryComplete;
   }
 
   /**
-   * Submit the plan entry for the given DTO.
-   *
-   * This is an intermediate step — you can submit multiple times to refine. The
-   * last submitted plans will be used when you call `complete`.
+   * Generates exactly ONE plan entry indicating collectable (has DB schema
+   * name) or not (null).
    */
   export interface IWrite {
-    /** Type discriminator for write submission. */
+    /** Type discriminator for completion request. */
     type: "write";
 
     /**

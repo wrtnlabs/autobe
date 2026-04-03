@@ -18,8 +18,8 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformAnalyzeWriteSectionPatchHistory } from "./histories/transformAnalyzeWriteSectionPatchHistory";
 import {
   IAutoBeAnalyzeWriteSectionApplication,
-  IAutoBeAnalyzeWriteSectionApplicationComplete,
   IAutoBeAnalyzeWriteSectionApplicationProps,
+  IAutoBeAnalyzeWriteSectionApplicationWrite,
 } from "./structures/IAutoBeAnalyzeWriteSectionApplication";
 import { detectTechLockin } from "./utils/buildHardValidators";
 import { detectInventedEntities } from "./utils/detectInventedEntities";
@@ -56,7 +56,7 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteSectionApplicationComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeWriteSectionApplicationWrite | null> =
       {
         value: null,
       };
@@ -122,7 +122,7 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteSectionApplicationComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteSectionApplicationWrite | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
   scenarioEntityNames?: string[];
 }): IAgenticaController.IClass {
@@ -135,7 +135,7 @@ function createController(props: {
     if (result.success === false) return result;
 
     // Validate English-only content for complete requests
-    if (result.data.request.type === "complete") {
+    if (result.data.request.type === "write") {
       const englishValidation = validateSectionSectionContent(
         result.data.request.sectionSections,
       );
@@ -208,8 +208,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeAnalyzeWriteSectionApplication,
   };

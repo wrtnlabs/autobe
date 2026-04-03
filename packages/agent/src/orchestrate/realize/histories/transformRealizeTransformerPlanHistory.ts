@@ -1,13 +1,10 @@
 import { StringUtil } from "@autobe/utils";
-import { IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { AutoBeCyclinicController } from "../../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
-import { IAutoBeRealizeTransformerPlanApplication } from "../structures/IAutoBeRealizeTransformerPlanApplication";
 
 export const transformRealizeTransformerPlanHistory = (props: {
   state: AutoBeState;
@@ -15,8 +12,6 @@ export const transformRealizeTransformerPlanHistory = (props: {
     "analysisSections" | "databaseSchemas" | "interfaceSchemas"
   >;
   dtoTypeName: string;
-  previousWrite: IAutoBeRealizeTransformerPlanApplication.IWrite | null;
-  failures: AutoBeCyclinicController.IFailure[];
 }): IAutoBeOrchestrateHistory => {
   return {
     histories: [
@@ -46,43 +41,6 @@ export const transformRealizeTransformerPlanHistory = (props: {
           I will return exactly ONE plan entry for the given DTO.
         `,
       },
-      ...(props.previousWrite !== null
-        ? [
-            {
-              id: v7(),
-              created_at: new Date().toISOString(),
-              type: "assistantMessage" as const,
-              text: StringUtil.trim`
-                Previously submitted plan (your last write):
-
-                \`\`\`json
-                ${JSON.stringify(props.previousWrite.plans, null, 2)}
-                \`\`\`
-
-                ${
-                  props.failures.length > 0
-                    ? StringUtil.trim`
-                        Validation errors from that submission:
-
-                        \`\`\`json
-                        ${JSON.stringify(
-                          props.failures
-                            .map((f) => f.diagnostics as IValidation.IError[])
-                            .flat(),
-                          null,
-                          2,
-                        )}
-                        \`\`\`
-
-                        Please fix these errors and submit a corrected plan via \`write\`, then
-                        call \`complete\` to finalize.
-                      `
-                    : "You may revise this plan by submitting another write, or call complete if it is correct."
-                }
-              `,
-            },
-          ]
-        : []),
     ],
     userMessage: StringUtil.trim`
       Analyze the DTO type "${props.dtoTypeName}" and create a transformer plan entry.

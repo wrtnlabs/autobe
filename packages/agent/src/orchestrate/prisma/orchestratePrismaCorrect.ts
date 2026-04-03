@@ -111,7 +111,7 @@ async function process(
     else failure = result;
   }
   return {
-    type: "complete",
+    type: "write",
     planning: plannings.join("\n\n"),
     models: Object.values(models),
     correction,
@@ -157,10 +157,9 @@ async function execute(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseCorrectApplication.IComplete | null> =
-      {
-        value: null,
-      };
+    const pointer: IPointer<IAutoBeDatabaseCorrectApplication.IWrite | null> = {
+      value: null,
+    };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -209,7 +208,7 @@ async function execute(
   });
 }
 
-interface IExecutionResult extends IAutoBeDatabaseCorrectApplication.IComplete {
+interface IExecutionResult extends IAutoBeDatabaseCorrectApplication.IWrite {
   correction: AutoBeDatabase.IApplication;
 }
 
@@ -227,12 +226,12 @@ function createController(props: {
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;
-  build: (next: IAutoBeDatabaseCorrectApplication.IComplete) => void;
+  build: (next: IAutoBeDatabaseCorrectApplication.IWrite) => void;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {
     const result =
       typia.validate<IAutoBeDatabaseCorrectApplication.IProps>(input);
-    if (result.success === false || result.data.request.type === "complete")
+    if (result.success === false || result.data.request.type === "write")
       return result;
     return props.preliminary.validate({
       thinking: result.data.thinking,
@@ -252,7 +251,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeDatabaseCorrectApplication,
   };

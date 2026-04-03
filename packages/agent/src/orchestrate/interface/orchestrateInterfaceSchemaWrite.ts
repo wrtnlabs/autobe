@@ -142,10 +142,9 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaApplication.IComplete | null> =
-      {
-        value: null,
-      };
+    const pointer: IPointer<IAutoBeInterfaceSchemaApplication.IWrite | null> = {
+      value: null,
+    };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController(ctx, {
@@ -193,7 +192,7 @@ async function process(
 function createController(
   ctx: AutoBeContext,
   props: {
-    build: (next: IAutoBeInterfaceSchemaApplication.IComplete) => Promise<void>;
+    build: (next: IAutoBeInterfaceSchemaApplication.IWrite) => Promise<void>;
     preliminary: AutoBePreliminaryController<
       | "analysisSections"
       | "databaseSchemas"
@@ -218,7 +217,7 @@ function createController(
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
-    } else if (result.data.request.type !== "complete")
+    } else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -274,7 +273,7 @@ function createController(
     application,
     execute: {
       process: async (next) => {
-        if (next.request.type === "complete") await props.build(next.request);
+        if (next.request.type === "write") await props.build(next.request);
       },
     } satisfies IAutoBeInterfaceSchemaApplication,
   };

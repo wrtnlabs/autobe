@@ -125,7 +125,7 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IWrite | null> =
       {
         value: null,
       };
@@ -135,7 +135,7 @@ async function process(
         preliminary,
         databaseSchemas: files,
         operation: props.operation,
-        build: (next: IAutoBeInterfaceOperationReviewApplication.IComplete) => {
+        build: (next: IAutoBeInterfaceOperationReviewApplication.IWrite) => {
           pointer.value = next;
         },
       }),
@@ -186,9 +186,7 @@ function createReviewController(props: {
   >;
   databaseSchemas: AutoBeDatabase.IFile[];
   operation: AutoBeOpenApi.IOperation;
-  build: (
-    reviews: IAutoBeInterfaceOperationReviewApplication.IComplete,
-  ) => void;
+  build: (reviews: IAutoBeInterfaceOperationReviewApplication.IWrite) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -196,7 +194,7 @@ function createReviewController(props: {
     const result: IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> =
       typia.validate<IAutoBeInterfaceOperationReviewApplication.IProps>(next);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -236,7 +234,7 @@ function createReviewController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeInterfaceOperationReviewApplication,
   };

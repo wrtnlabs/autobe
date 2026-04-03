@@ -195,7 +195,7 @@ function createController(props: {
 
     // Preliminary request (getAnalysisSections, getInterfaceOperations, getInterfaceSchemas)
     // Delegate validation to preliminary controller
-    if (result.data.request.type !== "complete") {
+    if (result.data.request.type !== "write") {
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -239,7 +239,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") {
+        if (next.request.type === "write") {
           // Fulfill missing authentication dependencies if content is not null
           if (
             next.request.content !== null &&

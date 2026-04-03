@@ -1,3 +1,4 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
@@ -30,17 +31,18 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
      * union, physically preventing repeated calls.
      */
     request:
-      | IComplete
+      | IWrite
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetRealizeCollectors
-      | IAutoBePreliminaryGetRealizeTransformers;
+      | IAutoBePreliminaryGetRealizeTransformers
+      | IAutoBePreliminaryComplete;
   }
 
   /** Correct provider compilation errors via think/draft/revise. */
-  export interface IComplete {
+  export interface IWrite {
     /** Type discriminator for completion request. */
-    type: "complete";
+    type: "write";
 
     /**
      * Error analysis and correction strategy. Understand:

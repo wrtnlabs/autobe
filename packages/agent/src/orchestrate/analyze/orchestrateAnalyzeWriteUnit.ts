@@ -102,7 +102,7 @@ function createController(props: {
     if (result.success === false) return result;
 
     // Validate English-only content for complete requests
-    if (result.data.request.type === "complete") {
+    if (result.data.request.type === "write") {
       const englishValidation = validateUnitSectionContent(
         result.data.request.unitSections,
       );
@@ -138,8 +138,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeAnalyzeWriteUnitApplication,
   };

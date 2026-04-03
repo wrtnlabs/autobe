@@ -61,7 +61,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
       kinds: ["previousAnalysisSections"],
       state: ctx.state(),
     });
-  return await preliminary.orchestrate(ctx, async (out, previousWrite) => {
+  return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite | null> =
       {
         value: null,
@@ -80,7 +80,6 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
         mechanicalViolationSummary: props.mechanicalViolationSummary,
         fileDecisions: props.fileDecisions,
         preliminary,
-        previousWrite,
       }),
     });
     if (pointer.value === null) return out(result)(null);

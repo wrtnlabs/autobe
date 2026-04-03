@@ -125,7 +125,7 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfacePrerequisiteApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfacePrerequisiteApplication.IWrite | null> =
       {
         value: null,
       };
@@ -187,7 +187,7 @@ function createController(props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceSchemas"
   >;
-  build: (next: IAutoBeInterfacePrerequisiteApplication.IComplete) => void;
+  build: (next: IAutoBeInterfacePrerequisiteApplication.IWrite) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -195,7 +195,7 @@ function createController(props: {
     const result: IValidation<IAutoBeInterfacePrerequisiteApplication.IProps> =
       typia.validate<IAutoBeInterfacePrerequisiteApplication.IProps>(next);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -231,7 +231,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeInterfacePrerequisiteApplication,
   };

@@ -92,7 +92,7 @@ async function process(
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeAuthorizationWriteApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeRealizeAuthorizationWriteApplication.IWrite | null> =
       {
         value: null,
       };
@@ -168,13 +168,13 @@ async function process(
 }
 
 function createController(props: {
-  build: (next: IAutoBeRealizeAuthorizationWriteApplication.IComplete) => void;
+  build: (next: IAutoBeRealizeAuthorizationWriteApplication.IWrite) => void;
   preliminary: AutoBePreliminaryController<"databaseSchemas">;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeAuthorizationWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeAuthorizationWriteApplication.IProps>(input);
-    if (result.success === false || result.data.request.type === "complete")
+    if (result.success === false || result.data.request.type === "write")
       return result;
     return props.preliminary.validate({
       thinking: result.data.thinking,
@@ -196,7 +196,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeRealizeAuthorizationWriteApplication,
   };

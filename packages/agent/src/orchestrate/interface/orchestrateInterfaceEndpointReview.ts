@@ -67,7 +67,7 @@ export const orchestrateInterfaceEndpointReview = async (
       { log: false, logPrefix: "interfaceEndpointReview" },
     );
 
-  const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IComplete | null> =
+  const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IWrite | null> =
     { value: null };
   const preliminary: AutoBePreliminaryController<
     | "analysisSections"
@@ -154,7 +154,7 @@ const createController = (props: {
     | "previousInterfaceOperations"
   >;
   designs: AutoBeInterfaceEndpointDesign[];
-  build: (next: IAutoBeInterfaceEndpointReviewApplication.IComplete) => void;
+  build: (next: IAutoBeInterfaceEndpointReviewApplication.IWrite) => void;
 }): ILlmController => {
   const validate = (
     input: unknown,
@@ -162,7 +162,7 @@ const createController = (props: {
     const result =
       typia.validate<IAutoBeInterfaceEndpointReviewApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -203,7 +203,7 @@ const createController = (props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeInterfaceEndpointReviewApplication,
   };

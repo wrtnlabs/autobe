@@ -41,10 +41,7 @@ export const orchestrateAnalyzeScenario = async (
         preliminary,
       }),
       enforceFunctionCall: false,
-      ...transformAnalyzeScenarioHistory(ctx, {
-        preliminary,
-        feedback: props?.feedback,
-      }),
+      ...transformAnalyzeScenarioHistory(ctx, preliminary, props?.feedback),
     });
     if (result.histories.at(-1)?.type === "assistantMessage")
       return out(result)({
@@ -92,7 +89,8 @@ function createController(props: {
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type === "write") return result;
+
+    if (result.data.request.type === "write") return result;
 
     return props.preliminary.validate({
       thinking: result.data.thinking ?? "",
@@ -161,7 +159,7 @@ const repairMissingRequestType = (input: unknown): unknown => {
       ...root,
       request: {
         ...request,
-        type: "request",
+        type: "complete",
       },
     };
   }
@@ -175,7 +173,7 @@ const repairFlattenedRequestPayload = (
 
   const completeLike =
     typeof input.type === "string" &&
-    input.type === "request" &&
+    input.type === "complete" &&
     typeof input.reason === "string" &&
     typeof input.prefix === "string";
   if (completeLike) {

@@ -15,13 +15,13 @@ export interface IAutoBeAnalyzeExtractDecisionsApplicationProps {
   thinking?: string | null;
 
   /** Action to perform: submit extracted decisions. */
-  request: IAutoBeAnalyzeExtractDecisionsApplicationComplete;
+  request: IAutoBeAnalyzeExtractDecisionsApplicationWrite;
 }
 
 /** Request to complete the decision extraction. */
-export interface IAutoBeAnalyzeExtractDecisionsApplicationComplete {
+export interface IAutoBeAnalyzeExtractDecisionsApplicationWrite {
   /** Type discriminator for completion request. */
-  type: "complete";
+  type: "write";
 
   /**
    * All binary/discrete decisions extracted from this file. Use normalized
