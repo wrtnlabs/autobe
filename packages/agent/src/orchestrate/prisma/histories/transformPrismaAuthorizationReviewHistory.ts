@@ -97,7 +97,7 @@ export const transformPrismaAuthorizationReviewHistory = (props: {
       - **Update**: Rename tables with naming convention issues
       - **Erase**: Remove tables that are not related to authentication/authorization
 
-      When ready, call \`process({ request: { type: "complete", revises: [...] } })\` with your revisions.
+      When ready, call \`process({ request: { type: "write", revises: [...] } })\` with your revisions.
       If no changes are needed, return an empty revises array.
     `,
   };

@@ -138,7 +138,7 @@ export const transformPrismaAuthorizationHistory = (props: {
       ${mandatoryOutput}
       - Plus any additional auth support tables based on requirements
 
-      When ready, call \`process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })\` with complete tables for ALL actors.
+      When ready, call \`process({ request: { type: "write", analysis: "...", rationale: "...", tables: [...] } })\` with complete tables for ALL actors.
     `,
   };
 };

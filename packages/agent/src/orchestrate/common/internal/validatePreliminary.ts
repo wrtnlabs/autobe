@@ -72,6 +72,33 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   //                                         confirm === true
   // ---------------------------------------------------------------------------
   if (type === "complete") {
+    // Detect write-fields-with-complete-type confusion:
+    // The LLM filled in IWrite properties (e.g. moduleIndex, unitSections,
+    // tables, definition, plan, ...) but set type to "complete" instead of
+    // "write". Redirect it to fix the type discriminator.
+    const extraKeys = Object.keys(data.request).filter((k) => k !== "type");
+    if (extraKeys.length > 0)
+      return {
+        success: false,
+        data: data as any,
+        errors: [
+          {
+            path: "$input.request.type",
+            value: "complete",
+            expected: "write",
+            description: StringUtil.trim`
+              Your request contains fields [${extraKeys.join(", ")}] which
+              belong to the IWrite type, but you set type to "complete".
+
+              It looks like you confused IWrite with IComplete. Please change
+              \`type: "complete"\` to \`type: "write"\` and resubmit the same
+              request — your data is correct, only the type discriminator
+              needs to be fixed.
+            `,
+          },
+        ],
+      };
+
     const previousWrite: Record<string, unknown> | null =
       controller.getPreviousWrite();
     if (previousWrite !== null)
@@ -88,13 +115,13 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
           value: data.request,
           expected: "IWrite",
           description: StringUtil.trim`
-            You have not written anything yet, so you cannot request 
+            You have not written anything yet, so you cannot request
             "complete" the task.
 
-            Please submit your write first by calling 
-            \`process({ request: { type: "write", ... } })\` 
-            with your write content, and then you can request "complete" 
-            after reviewing the content is correct and properly reflects 
+            Please submit your write first by calling
+            \`process({ request: { type: "write", ... } })\`
+            with your write content, and then you can request "complete"
+            after reviewing the content is correct and properly reflects
             your intentions.
           `,
         },

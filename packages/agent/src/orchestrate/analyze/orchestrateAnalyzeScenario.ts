@@ -162,7 +162,7 @@ const repairMissingRequestType = (input: unknown): unknown => {
       ...root,
       request: {
         ...request,
-        type: "complete",
+        type: "write",
       },
     };
   }
@@ -176,7 +176,7 @@ const repairFlattenedRequestPayload = (
 
   const completeLike =
     typeof input.type === "string" &&
-    input.type === "complete" &&
+    input.type === "write" &&
     typeof input.reason === "string" &&
     typeof input.prefix === "string";
   if (completeLike) {

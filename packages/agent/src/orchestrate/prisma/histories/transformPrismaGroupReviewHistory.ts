@@ -67,7 +67,7 @@ export const transformPrismaGroupReviewHistory = (props: {
     1. Understand business requirements and identify all business domains
     2. Verify every business domain has a corresponding domain group
     3. Check domain group boundaries and naming conventions (skip authorization group)
-    4. Call \`process({ request: { type: "complete", review: "...", revises: [...] } })\`
+    4. Call \`process({ request: { type: "write", review: "...", revises: [...] } })\`
 
     **Revisions (domain groups only):**
     - **Create**: Add domain groups for missing business domains (\`kind: "domain"\` only)

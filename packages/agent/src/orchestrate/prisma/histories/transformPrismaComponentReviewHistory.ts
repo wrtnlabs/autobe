@@ -90,7 +90,7 @@ export const transformPrismaComponentReviewHistory = (props: {
 
     ## Submit
 
-    Call \`process({ request: { type: "complete", review: "...", revises: [...] } })\`
+    Call \`process({ request: { type: "write", review: "...", revises: [...] } })\`
 
     If no changes needed, submit empty revises array: \`revises: []\`
   `,

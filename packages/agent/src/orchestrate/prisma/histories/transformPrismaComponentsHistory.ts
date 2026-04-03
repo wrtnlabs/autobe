@@ -102,7 +102,7 @@ export const transformPrismaComponentsHistory = (
                   - NEVER create the actor table itself
 
                   **If you receive an "Actors" component skeleton**, return an EMPTY tables array:
-                  \`{ type: "complete", analysis: "Actors handled by Authorization Agent", rationale: "Skipped", tables: [] }\`
+                  \`{ type: "write", analysis: "Actors handled by Authorization Agent", rationale: "Skipped", tables: [] }\`
                 `
               : ""
           }
@@ -130,7 +130,7 @@ export const transformPrismaComponentsHistory = (
 
       Identify all entities belonging to this component's domain and generate complete table definitions covering them.
 
-      When ready, call \`process({ request: { type: "complete", ... } })\` with the table definitions.
+      When ready, call \`process({ request: { type: "write", ... } })\` with the table definitions.
     `,
   };
 };

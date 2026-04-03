@@ -57,7 +57,7 @@ export const transformPrismaGroupHistory = (
 
       Identify all business domains from the requirements and generate complete component groups covering them.
 
-      When ready, call \`process({ request: { type: "complete", ... } })\` with the group definitions.
+      When ready, call \`process({ request: { type: "write", ... } })\` with the group definitions.
     `,
   };
 };

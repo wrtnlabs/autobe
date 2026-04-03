@@ -215,7 +215,7 @@ const repairFlattenedPayload = (
     Array.isArray(input.sectionSections) || Array.isArray(input.sections);
   const completeLike =
     hasSectionSections &&
-    (input.type === "complete" ||
+    (input.type === "write" ||
       input.type === "" ||
       input.type === undefined ||
       input.type === null);
@@ -234,7 +234,7 @@ const repairFlattenedPayload = (
       ...rest,
       ...(thinking !== undefined ? { thinking } : {}),
       request: {
-        type: "complete",
+        type: "write",
         moduleIndex,
         unitIndex,
         sectionSections: sectionSections ?? sections,
@@ -263,13 +263,13 @@ const repairRequestType = (
   request: Record<string, unknown>,
 ): Record<string, unknown> => {
   const t = request.type;
-  if (t === "complete" || t === "getPreviousAnalysisSections") return request;
+  if (t === "write" || t === "getPreviousAnalysisSections") return request;
 
   if (
     Array.isArray(request.sectionSections) ||
     Array.isArray(request.sections)
   ) {
-    return { ...request, type: "complete" };
+    return { ...request, type: "write" };
   }
 
   if (Array.isArray(request.sectionIds) && request.sectionIds.length > 0) {
@@ -277,7 +277,7 @@ const repairRequestType = (
   }
 
   if (typeof t === "string" || t === null || t === undefined) {
-    return { ...request, type: "complete" };
+    return { ...request, type: "write" };
   }
 
   return request;

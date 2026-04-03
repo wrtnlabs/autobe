@@ -65,7 +65,7 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
         ${JSON.stringify(props.designs)}
         \`\`\`
 
-        Review according to the criteria in the system prompt. Call \`process()\` with \`type: "complete"\` containing all \`revises\`.
+        Review according to the criteria in the system prompt. Call \`process()\` with \`type: "write"\` containing all \`revises\`.
       `,
       created_at: new Date().toISOString(),
     },

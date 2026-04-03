@@ -35,7 +35,7 @@ export const repairSectionReviewInput = (input: unknown): unknown => {
     const { thinking, fileResults, type, ...rest } = root;
     return {
       thinking,
-      request: { type: type ?? "complete", fileResults },
+      request: { type: type ?? "write", fileResults },
       ...rest,
     };
   }
@@ -57,14 +57,14 @@ export const repairSectionReviewInput = (input: unknown): unknown => {
 
   // Gap 3: heuristic type detection
   if (
-    request.type !== "complete" &&
+    request.type !== "write" &&
     request.type !== "getPreviousAnalysisSections"
   ) {
     if (
       Array.isArray(request.fileResults) ||
       typeof request.fileResults === "string"
     ) {
-      request.type = "complete";
+      request.type = "write";
     } else if (
       Array.isArray(request.sectionIds) &&
       (request.sectionIds as unknown[]).length > 0
@@ -75,7 +75,7 @@ export const repairSectionReviewInput = (input: unknown): unknown => {
       request.type === null ||
       request.type === undefined
     ) {
-      request.type = "complete";
+      request.type = "write";
     }
   }
 
