@@ -6,7 +6,8 @@ import typia, { tags } from "typia";
 
 /**
  * A plain DTO with no self-referencing properties. writeTemplate must produce
- * the normal (non-recursive) skeleton with no transformAll, no cache functions.
+ * the normal (non-recursive) skeleton with no transformAll, no cache
+ * functions.
  */
 interface IArticle {
   id: string & tags.Format<"uuid">;
@@ -55,7 +56,10 @@ export const test_realize_transformer_template_normal = (): void => {
   `;
 
   const normalize = (s: string): string =>
-    s.split("\n").map((l) => l.trimStart()).join("\n");
+    s
+      .split("\n")
+      .map((l) => l.trimStart())
+      .join("\n");
   TestValidator.equals(
     "full body",
     normalize(result).includes(normalize(expectedBody)),

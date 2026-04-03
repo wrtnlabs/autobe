@@ -66,7 +66,10 @@ export const test_realize_operation_template_object_response_properties =
     `;
 
     const normalize = (s: string): string =>
-      s.split("\n").map((l) => l.trimStart()).join("\n");
+      s
+        .split("\n")
+        .map((l) => l.trimStart())
+        .join("\n");
     TestValidator.equals(
       "full body",
       normalize(result).includes(normalize(expectedBody)),
