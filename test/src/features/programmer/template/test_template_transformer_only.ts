@@ -1,0 +1,65 @@
+import { writeRealizeOperationTemplate } from "@autobe/agent/src/orchestrate/realize/programmers/internal/writeRealizeOperationTemplate";
+import { AutoBeOpenApi } from "@autobe/interface";
+import { TestValidator } from "@nestia/e2e";
+import typia, { tags } from "typia";
+
+import { createMockOperation } from "./internal/createMockOperation";
+import { createMockScenario } from "./internal/createMockScenario";
+import { createMockTransformer } from "./internal/createMockTransformer";
+
+interface IArticle {
+  id: string & tags.Format<"uuid">;
+  title: string;
+  body: string;
+  created_at: string & tags.Format<"date-time">;
+}
+
+export const test_template_transformer_only = (): void => {
+  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    typia.json.schemas<[IArticle]>().components.schemas as Record<
+      string,
+      AutoBeOpenApi.IJsonSchemaDescriptive
+    >;
+
+  const operation: AutoBeOpenApi.IOperation = createMockOperation({
+    method: "get",
+    path: "/articles/{id}",
+    parameters: [
+      {
+        name: "id" as AutoBeOpenApi.IParameter["name"],
+        description: "Article ID",
+        schema: { type: "string", format: "uuid" },
+      },
+    ],
+    responseBody: { typeName: "IArticle" },
+  });
+
+  const result: string = writeRealizeOperationTemplate({
+    scenario: createMockScenario(operation),
+    operation,
+    imports: [],
+    authorization: null,
+    schemas,
+    collectors: [],
+    transformers: [
+      createMockTransformer({
+        dtoTypeName: "IArticle",
+        databaseSchemaName: "articles",
+      }),
+    ],
+  });
+
+  const expectedBody: string = [
+    `export async function getTest(props: {`,
+    `  id: string & tags.Format<"uuid">;`,
+    `}): Promise<IArticle> {`,
+    `  const record = await MyGlobal.prisma.articles.findFirstOrThrow({`,
+    `    ...ArticleTransformer.select(),`,
+    `    where: { ... },`,
+    `  });`,
+    `  return await ArticleTransformer.transform(record);`,
+    `}`,
+  ].join("\n");
+
+  TestValidator.equals("full body", result.includes(expectedBody), true);
+};

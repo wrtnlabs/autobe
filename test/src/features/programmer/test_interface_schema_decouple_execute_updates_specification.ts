@@ -1,11 +1,10 @@
 import { AutoBeInterfaceSchemaDecoupleProgrammer } from "@autobe/agent/src/orchestrate/interface/programmers/AutoBeInterfaceSchemaDecoupleProgrammer";
 import {
-  AutoBeInterfaceSchemaDecoupleCycle,
   AutoBeInterfaceSchemaDecoupleRemoval,
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import typia, { IValidation } from "typia";
+import typia from "typia";
 
 interface ICartItem {
   cart: ICart;
@@ -15,38 +14,33 @@ interface ICart {
   items: ICartItem[];
 }
 
-export const test_decouple_validate_valid_edge = () => {
+export const test_interface_schema_decouple_execute_updates_specification = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     typia.json.schemas<[ICartItem, ICart]>().components
       .schemas as unknown as Record<
       string,
       AutoBeOpenApi.IJsonSchemaDescriptive
     >;
-
-  const cycle: AutoBeInterfaceSchemaDecoupleCycle = {
-    types: ["ICart", "ICartItem"],
-    edges: [
-      { sourceType: "ICart", propertyName: "items", targetType: "ICartItem" },
-      { sourceType: "ICartItem", propertyName: "cart", targetType: "ICart" },
-    ],
-  };
+  (schemas["ICartItem"] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject)[
+    "x-autobe-specification"
+  ] = "Fetch by joining cart_items with carts table using cart_id";
 
   const removal: AutoBeInterfaceSchemaDecoupleRemoval = {
-    reason: "Back-reference to parent cart",
+    reason: "Back-reference removed",
     typeName: "ICartItem",
     propertyName: "cart",
     description: null,
-    specification: null,
+    specification: "Fetch by selecting from cart_items table",
   };
 
-  const errors: IValidation.IError[] = [];
-  AutoBeInterfaceSchemaDecoupleProgrammer.validate({
-    schemas,
-    cycle,
-    removal,
-    errors,
-    path: "$input",
-  });
+  AutoBeInterfaceSchemaDecoupleProgrammer.execute({ schemas, removal });
 
-  TestValidator.equals("errors", errors, []);
+  const item: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = schemas[
+    "ICartItem"
+  ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+  TestValidator.equals(
+    "specification",
+    item["x-autobe-specification"],
+    "Fetch by selecting from cart_items table",
+  );
 };

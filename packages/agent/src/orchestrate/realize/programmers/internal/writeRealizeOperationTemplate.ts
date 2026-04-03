@@ -4,17 +4,23 @@ import {
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 
 import { IAutoBeRealizeScenarioResult } from "../../structures/IAutoBeRealizeScenarioResult";
 import { AutoBeRealizeCollectorProgrammer } from "../AutoBeRealizeCollectorProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "../AutoBeRealizeTransformerProgrammer";
+
+interface IResolvedTransformer {
+  transformer: AutoBeRealizeTransformerFunction;
+  isArray: boolean;
+}
 
 export function writeRealizeOperationTemplate(props: {
   scenario: IAutoBeRealizeScenarioResult;
   operation: AutoBeOpenApi.IOperation;
   imports: string[];
   authorization: AutoBeRealizeAuthorization | null;
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   collectors: AutoBeRealizeCollectorFunction[];
   transformers: AutoBeRealizeTransformerFunction[];
 }): string {
@@ -28,7 +34,8 @@ export function writeRealizeOperationTemplate(props: {
 
   functionParameters.push(
     ...props.operation.parameters.map(
-      (param) => `${param.name}: ${writeParameterType(param.schema)}`,
+      (param: AutoBeOpenApi.IParameter): string =>
+        `${param.name}: ${writeParameterType(param.schema)}`,
     ),
   );
 
@@ -42,20 +49,22 @@ export function writeRealizeOperationTemplate(props: {
     functionParameters.push(`body: ${props.operation.requestBody.typeName}`);
   }
 
-  const hasParameters = functionParameters.length > 0;
+  const hasParameters: boolean = functionParameters.length > 0;
   const formattedSignature: string = hasParameters
-    ? `props: {\n${functionParameters.map((p) => `  ${p}`).join(";\n")};\n}`
+    ? `props: {\n${functionParameters.map((p: string): string => `  ${p}`).join(";\n")};\n}`
     : "";
 
-  const returnType = props.operation.responseBody?.typeName ?? "void";
+  const returnType: string =
+    props.operation.responseBody?.typeName ?? "void";
   const body: string = writeBody({
     operation: props.operation,
+    schemas: props.schemas,
     collectors: props.collectors,
     transformers: props.transformers,
   });
   const indentedBody: string = body
     .split("\n")
-    .map((line) => (line.length > 0 ? `  ${line}` : line))
+    .map((line: string): string => (line.length > 0 ? `  ${line}` : line))
     .join("\n");
 
   return StringUtil.trim`
@@ -75,13 +84,15 @@ export function writeRealizeOperationTemplate(props: {
 
 function writeBody(props: {
   operation: AutoBeOpenApi.IOperation;
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   collectors: AutoBeRealizeCollectorFunction[];
   transformers: AutoBeRealizeTransformerFunction[];
 }): string {
   const collector: AutoBeRealizeCollectorFunction | undefined =
     props.operation.requestBody?.typeName
       ? props.collectors.find(
-          (c) => c.plan.dtoTypeName === props.operation.requestBody!.typeName,
+          (c: AutoBeRealizeCollectorFunction): boolean =>
+            c.plan.dtoTypeName === props.operation.requestBody!.typeName,
         )
       : undefined;
   const responseTypeName: string | undefined =
@@ -92,7 +103,10 @@ function writeBody(props: {
     : responseTypeName;
   const transformer: AutoBeRealizeTransformerFunction | undefined =
     innerTypeName
-      ? props.transformers.find((t) => t.plan.dtoTypeName === innerTypeName)
+      ? props.transformers.find(
+          (t: AutoBeRealizeTransformerFunction): boolean =>
+            t.plan.dtoTypeName === innerTypeName,
+        )
       : undefined;
 
   // pagination (collector 와 동시에 올 수 없음)
@@ -170,7 +184,108 @@ function writeBody(props: {
     `;
   }
 
+  // object response with transformer-backed properties
+  if (responseTypeName) {
+    const objectBody: string | null = writeObjectBody({
+      responseTypeName,
+      schemas: props.schemas,
+      transformers: props.transformers,
+    });
+    if (objectBody !== null) return objectBody;
+  }
+
   return "...";
+}
+
+function writeObjectBody(props: {
+  responseTypeName: string;
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+  transformers: AutoBeRealizeTransformerFunction[];
+}): string | null {
+  const schema: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
+    props.schemas[props.responseTypeName];
+  if (!schema || !AutoBeOpenApiTypeChecker.isObject(schema)) return null;
+
+  const lines: string[] = [];
+  let hasMatch: boolean = false;
+
+  for (const [key, prop] of Object.entries(schema.properties) as Array<
+    [string, AutoBeOpenApi.IJsonSchemaProperty]
+  >) {
+    const match: IResolvedTransformer | null = resolvePropertyTransformer({
+      schema: prop,
+      transformers: props.transformers,
+    });
+    if (match) {
+      hasMatch = true;
+      const tName: string = AutoBeRealizeTransformerProgrammer.getName(
+        match.transformer.plan.dtoTypeName,
+      );
+      lines.push(
+        match.isArray
+          ? `  ${key}: await ArrayUtil.asyncMap(..., (r) => ${tName}.transform(r)),`
+          : `  ${key}: await ${tName}.transform(...),`,
+      );
+    } else {
+      lines.push(`  ${key}: ...,`);
+    }
+  }
+
+  if (!hasMatch) return null;
+
+  return StringUtil.trim`
+    return {
+    ${lines.join("\n")}
+    };
+  `;
+}
+
+function resolvePropertyTransformer(props: {
+  schema: AutoBeOpenApi.IJsonSchemaProperty;
+  transformers: AutoBeRealizeTransformerFunction[];
+}): IResolvedTransformer | null {
+  // direct reference → single transform
+  if (AutoBeOpenApiTypeChecker.isReference(props.schema)) {
+    const typeName: string = props.schema.$ref.split("/").pop()!;
+    const transformer: AutoBeRealizeTransformerFunction | undefined =
+      props.transformers.find(
+        (t: AutoBeRealizeTransformerFunction): boolean =>
+          t.plan.dtoTypeName === typeName,
+      );
+    if (transformer) return { transformer, isArray: false };
+  }
+
+  // array of references → asyncMap transform
+  if (AutoBeOpenApiTypeChecker.isArray(props.schema)) {
+    const items: Exclude<
+      AutoBeOpenApi.IJsonSchema,
+      AutoBeOpenApi.IJsonSchema.IObject
+    > = props.schema.items;
+    if (AutoBeOpenApiTypeChecker.isReference(items)) {
+      const typeName: string = items.$ref.split("/").pop()!;
+      const transformer: AutoBeRealizeTransformerFunction | undefined =
+        props.transformers.find(
+          (t: AutoBeRealizeTransformerFunction): boolean =>
+            t.plan.dtoTypeName === typeName,
+        );
+      if (transformer) return { transformer, isArray: true };
+    }
+  }
+
+  // oneOf (nullable reference) → unwrap non-null variant
+  if (AutoBeOpenApiTypeChecker.isOneOf(props.schema)) {
+    for (const variant of props.schema.oneOf) {
+      if (AutoBeOpenApiTypeChecker.isNull(variant)) continue;
+      const result: IResolvedTransformer | null =
+        resolvePropertyTransformer({
+          schema: variant as AutoBeOpenApi.IJsonSchemaProperty,
+          transformers: props.transformers,
+        });
+      if (result) return result;
+    }
+  }
+
+  return null;
 }
 
 function writeParameterType(

@@ -6,7 +6,6 @@ import {
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
-/** A cart item with a reference to its parent cart and name */
 interface ICartItem {
   cart: ICart;
   name: string;
@@ -15,7 +14,7 @@ interface ICart {
   items: ICartItem[];
 }
 
-export const test_decouple_execute_updates_description = () => {
+export const test_interface_schema_decouple_execute_removes_from_required = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     typia.json.schemas<[ICartItem, ICart]>().components
       .schemas as unknown as Record<
@@ -24,10 +23,10 @@ export const test_decouple_execute_updates_description = () => {
     >;
 
   const removal: AutoBeInterfaceSchemaDecoupleRemoval = {
-    reason: "Back-reference removed",
+    reason: "Back-reference to parent cart is redundant",
     typeName: "ICartItem",
     propertyName: "cart",
-    description: "A cart item identified by its name",
+    description: null,
     specification: null,
   };
 
@@ -36,9 +35,5 @@ export const test_decouple_execute_updates_description = () => {
   const item: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = schemas[
     "ICartItem"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-  TestValidator.equals(
-    "description",
-    item.description,
-    "A cart item identified by its name",
-  );
+  TestValidator.equals("required", item.required?.slice().sort(), ["name"]);
 };

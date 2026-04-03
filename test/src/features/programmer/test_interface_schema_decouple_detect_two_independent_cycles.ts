@@ -19,7 +19,7 @@ interface IReview {
   product: IProduct;
 }
 
-export const test_decouple_detect_two_independent_cycles = () => {
+export const test_interface_schema_decouple_detect_two_independent_cycles = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchema> = typia.json.schemas<
     [IAuthor, IPost, IProduct, IReview]
   >().components.schemas as Record<string, AutoBeOpenApi.IJsonSchema>;

@@ -5,7 +5,7 @@ import {
 } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 
-export const test_decouple_detect_empty_schemas = () => {
+export const test_interface_schema_decouple_detect_empty_schemas = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchema> = {};
 
   const cycles: AutoBeInterfaceSchemaDecoupleCycle[] =

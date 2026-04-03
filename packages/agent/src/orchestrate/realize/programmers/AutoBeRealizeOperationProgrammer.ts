@@ -154,6 +154,7 @@ export namespace AutoBeRealizeOperationProgrammer {
       operation: props.operation,
       imports: writeImportStatements(props),
       authorization,
+      schemas: props.schemas,
       collectors: props.collectors,
       transformers: props.transformers,
     });

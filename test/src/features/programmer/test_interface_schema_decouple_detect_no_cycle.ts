@@ -13,7 +13,7 @@ interface IChild {
   name: string;
 }
 
-export const test_decouple_detect_no_cycle = () => {
+export const test_interface_schema_decouple_detect_no_cycle = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchema> = typia.json.schemas<
     [IParent, IChild]
   >().components.schemas as Record<string, AutoBeOpenApi.IJsonSchema>;

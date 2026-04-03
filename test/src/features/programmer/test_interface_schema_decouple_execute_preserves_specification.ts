@@ -14,7 +14,7 @@ interface ICart {
   items: ICartItem[];
 }
 
-export const test_decouple_execute_updates_specification = () => {
+export const test_interface_schema_decouple_execute_preserves_specification = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     typia.json.schemas<[ICartItem, ICart]>().components
       .schemas as unknown as Record<
@@ -23,14 +23,14 @@ export const test_decouple_execute_updates_specification = () => {
     >;
   (schemas["ICartItem"] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject)[
     "x-autobe-specification"
-  ] = "Fetch by joining cart_items with carts table using cart_id";
+  ] = "Fetch by selecting from cart_items table";
 
   const removal: AutoBeInterfaceSchemaDecoupleRemoval = {
     reason: "Back-reference removed",
     typeName: "ICartItem",
     propertyName: "cart",
     description: null,
-    specification: "Fetch by selecting from cart_items table",
+    specification: null,
   };
 
   AutoBeInterfaceSchemaDecoupleProgrammer.execute({ schemas, removal });

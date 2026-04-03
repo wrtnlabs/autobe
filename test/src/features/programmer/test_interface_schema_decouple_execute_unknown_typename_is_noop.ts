@@ -7,25 +7,20 @@ import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 interface ICartItem {
-  cart: ICart;
   name: string;
 }
-interface ICart {
-  items: ICartItem[];
-}
 
-export const test_decouple_execute_removes_from_required = () => {
+export const test_interface_schema_decouple_execute_unknown_typename_is_noop = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    typia.json.schemas<[ICartItem, ICart]>().components
-      .schemas as unknown as Record<
+    typia.json.schemas<[ICartItem]>().components.schemas as unknown as Record<
       string,
       AutoBeOpenApi.IJsonSchemaDescriptive
     >;
 
   const removal: AutoBeInterfaceSchemaDecoupleRemoval = {
-    reason: "Back-reference to parent cart is redundant",
-    typeName: "ICartItem",
-    propertyName: "cart",
+    reason: "Targeting a non-existent type",
+    typeName: "NonExistent",
+    propertyName: "name",
     description: null,
     specification: null,
   };
@@ -35,5 +30,12 @@ export const test_decouple_execute_removes_from_required = () => {
   const item: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = schemas[
     "ICartItem"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-  TestValidator.equals("required", item.required?.slice().sort(), ["name"]);
+  TestValidator.equals("schema keys", Object.keys(schemas).slice().sort(), [
+    "ICartItem",
+  ]);
+  TestValidator.equals(
+    "properties",
+    Object.keys(item.properties).slice().sort(),
+    ["name"],
+  );
 };

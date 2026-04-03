@@ -9,12 +9,13 @@ import typia, { IValidation } from "typia";
 
 interface ICartItem {
   cart: ICart;
+  name: string;
 }
 interface ICart {
   items: ICartItem[];
 }
 
-export const test_decouple_validate_unknown_typename = () => {
+export const test_interface_schema_decouple_validate_valid_edge = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     typia.json.schemas<[ICartItem, ICart]>().components
       .schemas as unknown as Record<
@@ -25,13 +26,14 @@ export const test_decouple_validate_unknown_typename = () => {
   const cycle: AutoBeInterfaceSchemaDecoupleCycle = {
     types: ["ICart", "ICartItem"],
     edges: [
+      { sourceType: "ICart", propertyName: "items", targetType: "ICartItem" },
       { sourceType: "ICartItem", propertyName: "cart", targetType: "ICart" },
     ],
   };
 
   const removal: AutoBeInterfaceSchemaDecoupleRemoval = {
-    reason: "Hallucinated type name",
-    typeName: "INonExistent",
+    reason: "Back-reference to parent cart",
+    typeName: "ICartItem",
     propertyName: "cart",
     description: null,
     specification: null,
@@ -46,11 +48,5 @@ export const test_decouple_validate_unknown_typename = () => {
     path: "$input",
   });
 
-  TestValidator.equals("errors", errors, [
-    {
-      path: "$input.removal.typeName",
-      expected: "one of the existing schema type names",
-      value: "INonExistent",
-    },
-  ]);
+  TestValidator.equals("errors", errors, []);
 };

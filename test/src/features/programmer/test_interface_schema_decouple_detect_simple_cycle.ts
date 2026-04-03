@@ -6,19 +6,17 @@ import {
 import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
-interface IUser {
-  team: ITeam;
+interface IOrder {
+  parent?: IOrder | null | undefined;
+  items?: IOrderItem[] | null | undefined;
 }
-interface ITeam {
-  org: IOrganization;
-}
-interface IOrganization {
-  admin: IUser;
+interface IOrderItem {
+  order?: IOrder | null | undefined;
 }
 
-export const test_decouple_detect_three_node_cycle = () => {
+export const test_interface_schema_decouple_detect_simple_cycle = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchema> = typia.json.schemas<
-    [IUser, ITeam, IOrganization]
+    [IOrder, IOrderItem]
   >().components.schemas as Record<string, AutoBeOpenApi.IJsonSchema>;
 
   const cycles: AutoBeInterfaceSchemaDecoupleCycle[] =
@@ -27,25 +25,23 @@ export const test_decouple_detect_three_node_cycle = () => {
 
   const top: AutoBeInterfaceSchemaDecoupleCycle = cycles[0]!;
   TestValidator.equals("types", top.types.slice().sort(), [
-    "IOrganization",
-    "ITeam",
-    "IUser",
+    "IOrder",
+    "IOrderItem",
   ]);
   TestValidator.equals(
     "edges",
     top.edges.slice().sort((a, b) => a.sourceType.localeCompare(b.sourceType)),
     [
       {
-        sourceType: "IOrganization",
-        propertyName: "admin",
-        targetType: "IUser",
+        sourceType: "IOrder",
+        propertyName: "items",
+        targetType: "IOrderItem",
       },
       {
-        sourceType: "ITeam",
-        propertyName: "org",
-        targetType: "IOrganization",
+        sourceType: "IOrderItem",
+        propertyName: "order",
+        targetType: "IOrder",
       },
-      { sourceType: "IUser", propertyName: "team", targetType: "ITeam" },
     ],
   );
 };

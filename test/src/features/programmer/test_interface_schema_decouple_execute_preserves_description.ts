@@ -15,7 +15,7 @@ interface ICart {
   items: ICartItem[];
 }
 
-export const test_decouple_execute_preserves_description = () => {
+export const test_interface_schema_decouple_execute_preserves_description = () => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     typia.json.schemas<[ICartItem, ICart]>().components
       .schemas as unknown as Record<
