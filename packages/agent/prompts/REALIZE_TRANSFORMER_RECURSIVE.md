@@ -46,7 +46,7 @@ The `transformAll` pattern with mutually-referencing `let` variables is **mandat
 export async function transformAll(inputs: Payload[]): Promise<DTO[]> {
   // Use definite assignment assertions (!) so TypeScript does not flag the
   // cross-references as "used before assigned". The async callbacks only
-  // execute after both variables are fully initialised.
+  // execute after both variables are fully initialized.
   let parentCache!: VariadicSingleton<Promise<DTO>, [string]>;
   let childrenCache!: VariadicSingleton<Promise<DTO[]>, [string]>;
   parentCache = new VariadicSingleton(async (id) => {

@@ -9,10 +9,10 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  */
 export interface IAutoBeRealizeCollectorWriteApplication {
   /**
-   * Process collector generation task or preliminary data requests.
+   * Process collector generation task.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeRealizeCollectorWriteApplication.IProps): void;
 }
@@ -24,9 +24,9 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      *
      * For preliminary requests: what database schemas are missing and why?
      *
-     * For completion: what schemas did you acquire, what patterns did you
-     * implement, and why is it sufficient? Summarize — don't enumerate every
-     * field.
+     * For write: what you're submitting and key mapping decisions.
+     *
+     * For complete: confirm the last write is correct and why.
      *
      * Note: All DTO type information is available transitively from the plan's
      * DTO type names. You only need to request database schemas.
@@ -45,7 +45,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
 
   /** Generate collector module via plan/draft/revise. */
   export interface IWrite {
-    /** Type discriminator for completion request. */
+    /** Type discriminator for write submission. */
     type: "write";
 
     /**

@@ -48,7 +48,7 @@ thinking: "Last write is correct. All business domains covered with appropriate 
 export namespace IAutoBeInterfaceGroupApplication {
   export interface IProps {
     thinking: string;
-    request: IWrite | IComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
+    request: IWrite | IAutoBePreliminaryComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
@@ -62,7 +62,7 @@ export namespace IAutoBeInterfaceGroupApplication {
   }
 
   // Step 2: Confirm finalization (after at least one write)
-  export interface IComplete {
+  export interface IAutoBePreliminaryComplete {
     type: "complete";
   }
 }

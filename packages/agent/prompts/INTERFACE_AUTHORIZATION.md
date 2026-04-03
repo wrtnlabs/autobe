@@ -42,7 +42,7 @@ thinking: "Last write is correct. All auth operations designed with proper types
 export namespace IAutoBeInterfaceAuthorizationApplication {
   export interface IProps {
     thinking: string;
-    request: IWrite | IComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
+    request: IWrite | IAutoBePreliminaryComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
@@ -55,7 +55,7 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
   }
 
   // Step 2: Confirm finalization (after at least one write)
-  export interface IComplete {
+  export interface IAutoBePreliminaryComplete {
     type: "complete";
   }
 }

@@ -195,10 +195,17 @@ ${properties}
   }): string {
     const { parentProperty: pp, childrenProperty: cp } = props;
     if (pp !== null && cp !== null)
-      return writeBothRecursiveTemplate({ ...props, parentProperty: pp, childrenProperty: cp });
+      return writeBothRecursiveTemplate({
+        ...props,
+        parentProperty: pp,
+        childrenProperty: cp,
+      });
     if (pp !== null)
       return writeParentOnlyRecursiveTemplate({ ...props, parentProperty: pp });
-    return writeChildrenOnlyRecursiveTemplate({ ...props, childrenProperty: cp! });
+    return writeChildrenOnlyRecursiveTemplate({
+      ...props,
+      childrenProperty: cp!,
+    });
   }
 
   function writeParentOnlyRecursiveTemplate(props: {
@@ -277,9 +284,7 @@ ${properties}
     const cp: string = props.childrenProperty;
     const properties: string = Object.keys(props.schema.properties)
       .map((k) =>
-        k === cp
-          ? `  ${k}: await cache.get(input.id),`
-          : `  ${k}: ...,`,
+        k === cp ? `  ${k}: await cache.get(input.id),` : `  ${k}: ...,`,
       )
       .join("\n");
     return StringUtil.trim`
@@ -346,8 +351,7 @@ ${properties}
       .map((k) => {
         if (k === pp)
           return `  ${k}: input.${fk} ? await parentCache.get(input.${fk}) : null,`;
-        if (k === cp)
-          return `  ${k}: await childrenCache.get(input.id),`;
+        if (k === cp) return `  ${k}: await childrenCache.get(input.id),`;
         return `  ${k}: ...,`;
       })
       .join("\n");
@@ -385,7 +389,7 @@ ${properties}
           // one deduplication scope across both parent and children lookups.
           // Use definite assignment assertions (!) so TypeScript does not
           // flag the cross-references as "used before assigned" — the async
-          // callbacks only execute after both variables are fully initialised.
+          // callbacks only execute after both variables are fully initialized.
           let parentCache!: VariadicSingleton<Promise<${dto}>, [string]>;
           let childrenCache!: VariadicSingleton<Promise<${dto}[]>, [string]>;
           parentCache = new VariadicSingleton(

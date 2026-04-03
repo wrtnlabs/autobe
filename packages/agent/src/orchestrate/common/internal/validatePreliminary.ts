@@ -22,7 +22,7 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   controller: AutoBePreliminaryController<Kind>,
   data: IAutoBePreliminaryRequest<Kind, true>,
 ): IValidation<IAutoBePreliminaryRequest<Kind, true>> => {
-  // disciminator
+  // discriminator
   const type:
     | Exclude<
         IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],

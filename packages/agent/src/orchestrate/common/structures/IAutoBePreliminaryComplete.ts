@@ -1,9 +1,9 @@
 /**
- * Shared completion request for cyclinic write-validate-correct loops.
+ * Shared completion request for cyclic write → validate → correct loops.
  *
- * Used across all phases that employ the write → validate → correct pattern.
- * Only available after a write submission has passed external validation (union
- * narrowing removes this type until then).
+ * The agent may call `write` up to 3 times (initial + revisions). After the
+ * 3rd write, completion is forced. Only valid after at least one `write`
+ * submission — rejected otherwise.
  *
  * The `remind` field forces the LLM to recall what it submitted and why it
  * considers the result correct before confirming — reducing premature or

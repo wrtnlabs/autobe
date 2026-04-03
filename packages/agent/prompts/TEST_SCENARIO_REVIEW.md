@@ -8,7 +8,7 @@ You review a **single test scenario** focusing on authentication, dependencies, 
 ```typescript
 process({
   thinking: string;
-  request: IWrite | IComplete | IPreliminaryRequest;
+  request: IWrite | IAutoBePreliminaryComplete | IPreliminaryRequest;
 });
 
 // Preliminary requests (max 8 calls)
@@ -25,7 +25,7 @@ interface IWrite {
 }
 
 // Step 2: Confirm finalization (after at least one write)
-interface IComplete {
+interface IAutoBePreliminaryComplete {
   type: "complete";
 }
 ```

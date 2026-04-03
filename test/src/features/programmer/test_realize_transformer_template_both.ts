@@ -6,10 +6,10 @@ import typia, { tags } from "typia";
 
 /**
  * A DTO with both a nullable N:1 self-reference (parent) and a 1:N
- * self-reference (children) — the bidirectional tree node.
- * writeTemplate must produce the full bidirectional skeleton with
- * createParentCache, createChildrenCache, mutually-referencing transformAll,
- * and createChildrenCache calling createParentCache() once per batch.
+ * self-reference (children) — the bidirectional tree node. writeTemplate must
+ * produce the full bidirectional skeleton with createParentCache,
+ * createChildrenCache, mutually-referencing transformAll, and
+ * createChildrenCache calling createParentCache() once per batch.
  */
 interface INode {
   id: string & tags.Format<"uuid">;
@@ -73,7 +73,7 @@ export const test_realize_transformer_template_both = (): void => {
         // one deduplication scope across both parent and children lookups.
         // Use definite assignment assertions (!) so TypeScript does not
         // flag the cross-references as "used before assigned" — the async
-        // callbacks only execute after both variables are fully initialised.
+        // callbacks only execute after both variables are fully initialized.
         let parentCache!: VariadicSingleton<Promise<INode>, [string]>;
         let childrenCache!: VariadicSingleton<Promise<INode[]>, [string]>;
         parentCache = new VariadicSingleton(
@@ -139,7 +139,10 @@ export const test_realize_transformer_template_both = (): void => {
   `;
 
   const normalize = (s: string): string =>
-    s.split("\n").map((l) => l.trimStart()).join("\n");
+    s
+      .split("\n")
+      .map((l) => l.trimStart())
+      .join("\n");
   TestValidator.equals(
     "full body",
     normalize(result).includes(normalize(expectedBody)),

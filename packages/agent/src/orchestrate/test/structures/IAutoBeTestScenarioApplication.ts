@@ -13,8 +13,8 @@ export interface IAutoBeTestScenarioApplication {
    * retrieving necessary interface operations via RAG (Retrieval-Augmented
    * Generation) and generating detailed test drafts with dependencies.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeTestScenarioApplication.IProps): void;
 }
@@ -27,18 +27,11 @@ export namespace IAutoBeTestScenarioApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
+     * For preliminary requests: what information is missing and why?
      *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
+     * For write: what scenarios you're submitting and key decisions.
      *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
+     * For complete: confirm the last write is correct and why.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -48,11 +41,9 @@ export namespace IAutoBeTestScenarioApplication {
     /**
      * Type discriminator for the request.
      *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getInterfaceOperations, getInterfaceSchemas) or
-     * final test scenario generation (complete). When preliminary returns empty
-     * array, that type is removed from the union, physically preventing
-     * repeated calls.
+     * Determines which action to perform: preliminary data retrieval,
+     * write submission, or completion confirmation. Exhausted preliminary
+     * types are removed from the union, physically preventing repeated calls.
      */
     request:
       | IWrite

@@ -12,8 +12,8 @@ export interface IAutoBeAnalyzeWriteUnitApplication {
 
 export interface IAutoBeAnalyzeWriteUnitApplicationProps {
   /**
-   * Reasoning about your current state: what's missing (preliminary) or what
-   * you accomplished (completion).
+   * Reasoning: what's missing (preliminary), what you're submitting (write),
+   * or why the last write is correct (complete).
    */
   thinking?: string | null;
 

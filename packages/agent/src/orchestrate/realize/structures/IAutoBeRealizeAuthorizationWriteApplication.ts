@@ -9,10 +9,10 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  */
 export interface IAutoBeRealizeAuthorizationWriteApplication {
   /**
-   * Process authentication generation task or preliminary data requests.
+   * Process authentication generation task.
    *
-   * @param next Request containing either preliminary data request or complete
-   *   task
+   * @param next Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(next: IAutoBeRealizeAuthorizationWriteApplication.IProps): void;
 }
@@ -24,8 +24,9 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
      *
      * For preliminary requests: what database schemas are missing and why?
      *
-     * For completion: what schemas did you acquire, what authentication
-     * patterns did you implement, why is it sufficient?
+     * For write: what authentication components you're submitting.
+     *
+     * For complete: confirm the last write is correct and why.
      */
     thinking: string;
 
@@ -44,7 +45,7 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
    * payload).
    */
   export interface IWrite {
-    /** Type discriminator for completion request. */
+    /** Type discriminator for write submission. */
     type: "write";
 
     /**

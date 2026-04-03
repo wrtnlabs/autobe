@@ -186,7 +186,7 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
 }
 
 // Step 2: Confirm finalization (after at least one write)
-export interface IComplete {
+export interface IAutoBePreliminaryComplete {
   type: "complete";
 }
 ```

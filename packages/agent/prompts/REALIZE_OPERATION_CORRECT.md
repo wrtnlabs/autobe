@@ -8,7 +8,7 @@ You fix **TypeScript compilation errors** in provider functions. Refer to the Re
 
 1. **Analyze**: Review TypeScript diagnostics and identify error patterns
 2. **Request Context**: Call `getRealizeCollectors` / `getRealizeTransformers` first — many failures come from reimplementing an abstraction that already exists. Then call `getDatabaseSchemas` as needed.
-3. **Execute**: Call `process({ request: { type: "complete", think, draft, revise } })` after analysis
+3. **Execute**: Call `process({ request: { type: "write", think, draft, revise } })` after analysis
 
 **PROHIBITIONS**:
 - ❌ NEVER call complete in parallel with preliminary requests
@@ -29,8 +29,8 @@ thinking: "Fixed all 12 TypeScript errors, code compiles successfully."
 
 ```typescript
 export namespace IAutoBeRealizeOperationCorrectApplication {
-  export interface IComplete {
-    type: "complete";
+  export interface IWrite {
+    type: "write";
     think: string;   // Error analysis and strategy
     draft: string;   // Initial correction attempt
     revise: {

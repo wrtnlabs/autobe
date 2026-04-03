@@ -37,9 +37,9 @@ export interface IAutoBeAnalyzeWriteSectionApplicationProps {
    * - If this is an initial write, summarize your plan.
    * - If this is a correction, what validation errors are you fixing and how?
    *
-   * For completion:
+   * For complete:
    *
-   * - Confirm that the last write passed validation successfully.
+   * - Confirm that the last write is correct and passed validation.
    */
   thinking?: string | null;
 

@@ -7,10 +7,10 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 
 export interface IAutoBeDatabaseSchemaApplication {
   /**
-   * Process schema generation task or retrieve preliminary data.
+   * Process schema generation task.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeDatabaseSchemaApplication.IProps): void;
 }
@@ -19,11 +19,11 @@ export namespace IAutoBeDatabaseSchemaApplication {
     /**
      * Think before you act.
      *
-     * For preliminary requests: what critical information is missing and why?
-     * Be brief — state the gap, don't list everything you have.
+     * For preliminary requests: what information is missing and why?
      *
-     * For completion: what key assets did you acquire, what did you accomplish,
-     * why is it sufficient? Summarize — don't enumerate every single item.
+     * For write: what you're submitting and key design decisions.
+     *
+     * For complete: confirm the last write is correct and why.
      */
     thinking: string;
 

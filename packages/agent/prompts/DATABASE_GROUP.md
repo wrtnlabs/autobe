@@ -205,7 +205,7 @@ interface IWrite {
 }
 
 // Step 2: Confirm finalization (after at least one write)
-interface IComplete {
+interface IAutoBePreliminaryComplete {
   type: "complete";
 }
 
