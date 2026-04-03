@@ -9,8 +9,7 @@ export interface IAutoBeAnalyzeExtractDecisionsApplication {
 
 export interface IAutoBeAnalyzeExtractDecisionsApplicationProps {
   /**
-   * Reasoning about your current state: what's missing (preliminary) or what
-   * you accomplished (completion).
+   * Reasoning: what decisions you extracted and why.
    */
   thinking?: string | null;
 
@@ -18,9 +17,9 @@ export interface IAutoBeAnalyzeExtractDecisionsApplicationProps {
   request: IAutoBeAnalyzeExtractDecisionsApplicationWrite;
 }
 
-/** Request to complete the decision extraction. */
+/** Submit extracted decisions. */
 export interface IAutoBeAnalyzeExtractDecisionsApplicationWrite {
-  /** Type discriminator for completion request. */
+  /** Type discriminator for write submission. */
   type: "write";
 
   /**
