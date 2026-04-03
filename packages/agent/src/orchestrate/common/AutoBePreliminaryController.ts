@@ -138,6 +138,11 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     });
   }
 
+  // public restart(): void {
+  //   this.previousWrites = [];
+  //   this.completed.value = false;
+  // }
+
   /**
    * Validates request for duplicates and non-existent items.
    *
@@ -343,9 +348,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       ) => (value: T | null) => IAutoBeOrchestrateResult<T>,
     ) => Promise<IAutoBeOrchestrateResult<T>>,
   ): Promise<T | never> {
-    this.completed.value = false satisfies boolean as boolean;
-    this.previousWrites = [];
-
     try {
       for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
         const result: IAutoBeOrchestrateResult<T> = await process(

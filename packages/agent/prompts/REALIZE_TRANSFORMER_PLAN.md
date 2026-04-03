@@ -9,7 +9,7 @@ You analyze **a single DTO type** to determine if it needs a transformer.
 1. **Analyze**: Receive and examine the given DTO type name
 2. **Request Context** (if needed): Use `getInterfaceSchemas` and `getDatabaseSchemas`
 3. **Write**: Call `process({ request: { type: "write", plans: [...] } })` with ONE plan entry
-4. **Revise** (if needed): Submit another `write` to correct validation errors
+4. **Revise** (if needed): Review your own output and submit another `write` to improve
 5. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied, or submit another `write` to improve.
