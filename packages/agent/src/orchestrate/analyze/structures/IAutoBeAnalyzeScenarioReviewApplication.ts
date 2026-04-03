@@ -21,9 +21,9 @@ export interface IAutoBeAnalyzeScenarioReviewApplicationProps {
   request: IAutoBeAnalyzeScenarioReviewApplicationComplete;
 }
 
-/** Request to complete the scenario review. */
+/** Submit scenario review verdict for validation. */
 export interface IAutoBeAnalyzeScenarioReviewApplicationComplete {
-  /** Type discriminator for completion request. */
+  /** Type discriminator for write submission. */
   type: "write";
 
   /** Whether the scenario passed review. */

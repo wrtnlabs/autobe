@@ -13,8 +13,8 @@ export interface IAutoBeTestScenarioReviewApplication {
    * correctness, and business logic coverage, producing necessary improvements
    * via RAG-based context retrieval.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeTestScenarioReviewApplication.IProps): void;
 }
@@ -33,12 +33,14 @@ export namespace IAutoBeTestScenarioReviewApplication {
      * - Why do you need it specifically right now?
      * - Be brief - state the gap, don't list everything you have.
      *
-     * For completion (complete):
+     * For write submissions:
      *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
+     * - What review findings are you submitting?
+     * - What corrections or deletions are you applying?
+     *
+     * For complete:
+     *
+     * - Confirm the last write is correct and why.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -48,11 +50,10 @@ export namespace IAutoBeTestScenarioReviewApplication {
     /**
      * Type discriminator for the request.
      *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getInterfaceOperations, getInterfaceSchemas) or
-     * final test scenario review (complete). When preliminary returns empty
-     * array, that type is removed from the union, physically preventing
-     * repeated calls.
+     * Determines which action to perform: preliminary data retrieval,
+     * write submission, or completion confirmation. Exhausted preliminary
+     * types are removed from the union, physically preventing repeated
+     * calls.
      */
     request:
       | IWrite
