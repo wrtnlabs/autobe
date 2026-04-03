@@ -23,45 +23,46 @@ interface IDashboard {
   totalCount: number;
 }
 
-export const test_realize_operation_template_object_response_properties = (): void => {
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    typia.json.schemas<[IDashboard, IArticle, IUser]>().components
-      .schemas as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+export const test_realize_operation_template_object_response_properties =
+  (): void => {
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+      typia.json.schemas<[IDashboard, IArticle, IUser]>().components
+        .schemas as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
 
-  const operation: AutoBeOpenApi.IOperation = createMockOperation({
-    method: "get",
-    path: "/dashboard",
-    responseBody: { typeName: "IDashboard" },
-  });
+    const operation: AutoBeOpenApi.IOperation = createMockOperation({
+      method: "get",
+      path: "/dashboard",
+      responseBody: { typeName: "IDashboard" },
+    });
 
-  const result: string = writeRealizeOperationTemplate({
-    scenario: createMockScenario(operation),
-    operation,
-    imports: [],
-    authorization: null,
-    schemas,
-    collectors: [],
-    transformers: [
-      createMockTransformer({
-        dtoTypeName: "IArticle",
-        databaseSchemaName: "articles",
-      }),
-      createMockTransformer({
-        dtoTypeName: "IUser",
-        databaseSchemaName: "users",
-      }),
-    ],
-  });
+    const result: string = writeRealizeOperationTemplate({
+      scenario: createMockScenario(operation),
+      operation,
+      imports: [],
+      authorization: null,
+      schemas,
+      collectors: [],
+      transformers: [
+        createMockTransformer({
+          dtoTypeName: "IArticle",
+          databaseSchemaName: "articles",
+        }),
+        createMockTransformer({
+          dtoTypeName: "IUser",
+          databaseSchemaName: "users",
+        }),
+      ],
+    });
 
-  const expectedBody: string = [
-    `export async function getTest(): Promise<IDashboard> {`,
-    `  return {`,
-    `    articles: await ArrayUtil.asyncMap(..., (r) => ArticleTransformer.transform(r)),`,
-    `    owner: await UserTransformer.transform(...),`,
-    `    totalCount: ...,`,
-    `  };`,
-    `}`,
-  ].join("\n");
+    const expectedBody: string = [
+      `export async function getTest(): Promise<IDashboard> {`,
+      `  return {`,
+      `    articles: await ArrayUtil.asyncMap(..., (r) => ArticleTransformer.transform(r)),`,
+      `    owner: await UserTransformer.transform(...),`,
+      `    totalCount: ...,`,
+      `  };`,
+      `}`,
+    ].join("\n");
 
-  TestValidator.equals("full body", result.includes(expectedBody), true);
-};
+    TestValidator.equals("full body", result.includes(expectedBody), true);
+  };

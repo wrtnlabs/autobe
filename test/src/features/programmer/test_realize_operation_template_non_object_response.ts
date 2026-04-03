@@ -37,7 +37,19 @@ export const test_realize_operation_template_non_object_response = (): void => {
     `}`,
   ].join("\n");
 
-  TestValidator.equals("falls through to ellipsis", result.includes(expectedBody), true);
-  TestValidator.equals("no Transformer reference", result.includes("Transformer"), false);
-  TestValidator.equals("no Collector reference", result.includes("Collector"), false);
+  TestValidator.equals(
+    "falls through to ellipsis",
+    result.includes(expectedBody),
+    true,
+  );
+  TestValidator.equals(
+    "no Transformer reference",
+    result.includes("Transformer"),
+    false,
+  );
+  TestValidator.equals(
+    "no Collector reference",
+    result.includes("Collector"),
+    false,
+  );
 };

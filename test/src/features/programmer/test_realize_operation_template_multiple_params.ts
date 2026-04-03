@@ -44,9 +44,5 @@ export const test_realize_operation_template_multiple_params = (): void => {
     result.includes(`articleId: number & tags.Type<"int32">`),
     true,
   );
-  TestValidator.equals(
-    "has props wrapper",
-    result.includes("props: {"),
-    true,
-  );
+  TestValidator.equals("has props wrapper", result.includes("props: {"), true);
 };

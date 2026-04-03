@@ -18,43 +18,44 @@ interface IProfile {
   tags: Array<IUser> | null;
 }
 
-export const test_realize_operation_template_object_response_nullable = (): void => {
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    typia.json.schemas<[IProfile, IUser]>().components.schemas as Record<
-      string,
-      AutoBeOpenApi.IJsonSchemaDescriptive
-    >;
+export const test_realize_operation_template_object_response_nullable =
+  (): void => {
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+      typia.json.schemas<[IProfile, IUser]>().components.schemas as Record<
+        string,
+        AutoBeOpenApi.IJsonSchemaDescriptive
+      >;
 
-  const operation: AutoBeOpenApi.IOperation = createMockOperation({
-    method: "get",
-    path: "/profile",
-    responseBody: { typeName: "IProfile" },
-  });
+    const operation: AutoBeOpenApi.IOperation = createMockOperation({
+      method: "get",
+      path: "/profile",
+      responseBody: { typeName: "IProfile" },
+    });
 
-  const result: string = writeRealizeOperationTemplate({
-    scenario: createMockScenario(operation),
-    operation,
-    imports: [],
-    authorization: null,
-    schemas,
-    collectors: [],
-    transformers: [
-      createMockTransformer({
-        dtoTypeName: "IUser",
-        databaseSchemaName: "users",
-      }),
-    ],
-  });
+    const result: string = writeRealizeOperationTemplate({
+      scenario: createMockScenario(operation),
+      operation,
+      imports: [],
+      authorization: null,
+      schemas,
+      collectors: [],
+      transformers: [
+        createMockTransformer({
+          dtoTypeName: "IUser",
+          databaseSchemaName: "users",
+        }),
+      ],
+    });
 
-  const expectedBody: string = [
-    `export async function getTest(): Promise<IProfile> {`,
-    `  return {`,
-    `    bio: ...,`,
-    `    user: await UserTransformer.transform(...),`,
-    `    tags: await ArrayUtil.asyncMap(..., (r) => UserTransformer.transform(r)),`,
-    `  };`,
-    `}`,
-  ].join("\n");
+    const expectedBody: string = [
+      `export async function getTest(): Promise<IProfile> {`,
+      `  return {`,
+      `    bio: ...,`,
+      `    user: await UserTransformer.transform(...),`,
+      `    tags: await ArrayUtil.asyncMap(..., (r) => UserTransformer.transform(r)),`,
+      `  };`,
+      `}`,
+    ].join("\n");
 
-  TestValidator.equals("full body", result.includes(expectedBody), true);
-};
+    TestValidator.equals("full body", result.includes(expectedBody), true);
+  };

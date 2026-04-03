@@ -41,6 +41,14 @@ export const test_template_no_match_fallback = (): void => {
   ].join("\n");
 
   TestValidator.equals("full body", result.includes(expectedBody), true);
-  TestValidator.equals("no Transformer reference", result.includes("Transformer"), false);
-  TestValidator.equals("no Collector reference", result.includes("Collector"), false);
+  TestValidator.equals(
+    "no Transformer reference",
+    result.includes("Transformer"),
+    false,
+  );
+  TestValidator.equals(
+    "no Collector reference",
+    result.includes("Collector"),
+    false,
+  );
 };

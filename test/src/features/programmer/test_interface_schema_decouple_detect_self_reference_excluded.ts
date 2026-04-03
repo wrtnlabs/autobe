@@ -11,12 +11,15 @@ interface ICategory {
   name: string;
 }
 
-export const test_interface_schema_decouple_detect_self_reference_excluded = () => {
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchema> = typia.json.schemas<
-    [ICategory]
-  >().components.schemas as Record<string, AutoBeOpenApi.IJsonSchema>;
+export const test_interface_schema_decouple_detect_self_reference_excluded =
+  () => {
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchema> =
+      typia.json.schemas<[ICategory]>().components.schemas as Record<
+        string,
+        AutoBeOpenApi.IJsonSchema
+      >;
 
-  const cycles: AutoBeInterfaceSchemaDecoupleCycle[] =
-    AutoBeInterfaceSchemaDecoupleProgrammer.detectCycles(schemas);
-  TestValidator.equals("self-reference is not a cycle", 0, cycles.length);
-};
+    const cycles: AutoBeInterfaceSchemaDecoupleCycle[] =
+      AutoBeInterfaceSchemaDecoupleProgrammer.detectCycles(schemas);
+    TestValidator.equals("self-reference is not a cycle", 0, cycles.length);
+  };

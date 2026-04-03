@@ -268,7 +268,6 @@ function getFunctionName(operation: AutoBeOpenApi.IOperation): string {
   return functionName;
 }
 
-
 const description = (func: string): string => StringUtil.trim`
   The function ${func} does not exist in the provided code snippet.
 

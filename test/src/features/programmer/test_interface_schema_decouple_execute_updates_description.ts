@@ -15,30 +15,31 @@ interface ICart {
   items: ICartItem[];
 }
 
-export const test_interface_schema_decouple_execute_updates_description = () => {
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    typia.json.schemas<[ICartItem, ICart]>().components
-      .schemas as unknown as Record<
-      string,
-      AutoBeOpenApi.IJsonSchemaDescriptive
-    >;
+export const test_interface_schema_decouple_execute_updates_description =
+  () => {
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+      typia.json.schemas<[ICartItem, ICart]>().components
+        .schemas as unknown as Record<
+        string,
+        AutoBeOpenApi.IJsonSchemaDescriptive
+      >;
 
-  const removal: AutoBeInterfaceSchemaDecoupleRemoval = {
-    reason: "Back-reference removed",
-    typeName: "ICartItem",
-    propertyName: "cart",
-    description: "A cart item identified by its name",
-    specification: null,
+    const removal: AutoBeInterfaceSchemaDecoupleRemoval = {
+      reason: "Back-reference removed",
+      typeName: "ICartItem",
+      propertyName: "cart",
+      description: "A cart item identified by its name",
+      specification: null,
+    };
+
+    AutoBeInterfaceSchemaDecoupleProgrammer.execute({ schemas, removal });
+
+    const item: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = schemas[
+      "ICartItem"
+    ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    TestValidator.equals(
+      "description",
+      item.description,
+      "A cart item identified by its name",
+    );
   };
-
-  AutoBeInterfaceSchemaDecoupleProgrammer.execute({ schemas, removal });
-
-  const item: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = schemas[
-    "ICartItem"
-  ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-  TestValidator.equals(
-    "description",
-    item.description,
-    "A cart item identified by its name",
-  );
-};

@@ -54,8 +54,7 @@ export function writeRealizeOperationTemplate(props: {
     ? `props: {\n${functionParameters.map((p: string): string => `  ${p}`).join(";\n")};\n}`
     : "";
 
-  const returnType: string =
-    props.operation.responseBody?.typeName ?? "void";
+  const returnType: string = props.operation.responseBody?.typeName ?? "void";
   const body: string = writeBody({
     operation: props.operation,
     schemas: props.schemas,
@@ -88,13 +87,13 @@ function writeBody(props: {
   collectors: AutoBeRealizeCollectorFunction[];
   transformers: AutoBeRealizeTransformerFunction[];
 }): string {
-  const collector: AutoBeRealizeCollectorFunction | undefined =
-    props.operation.requestBody?.typeName
-      ? props.collectors.find(
-          (c: AutoBeRealizeCollectorFunction): boolean =>
-            c.plan.dtoTypeName === props.operation.requestBody!.typeName,
-        )
-      : undefined;
+  const collector: AutoBeRealizeCollectorFunction | undefined = props.operation
+    .requestBody?.typeName
+    ? props.collectors.find(
+        (c: AutoBeRealizeCollectorFunction): boolean =>
+          c.plan.dtoTypeName === props.operation.requestBody!.typeName,
+      )
+    : undefined;
   const responseTypeName: string | undefined =
     props.operation.responseBody?.typeName;
   const isPageType: boolean = !!responseTypeName?.startsWith("IPage");
@@ -276,11 +275,10 @@ function resolvePropertyTransformer(props: {
   if (AutoBeOpenApiTypeChecker.isOneOf(props.schema)) {
     for (const variant of props.schema.oneOf) {
       if (AutoBeOpenApiTypeChecker.isNull(variant)) continue;
-      const result: IResolvedTransformer | null =
-        resolvePropertyTransformer({
-          schema: variant as AutoBeOpenApi.IJsonSchemaProperty,
-          transformers: props.transformers,
-        });
+      const result: IResolvedTransformer | null = resolvePropertyTransformer({
+        schema: variant as AutoBeOpenApi.IJsonSchemaProperty,
+        transformers: props.transformers,
+      });
       if (result) return result;
     }
   }
