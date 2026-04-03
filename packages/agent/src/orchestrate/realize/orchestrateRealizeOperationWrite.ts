@@ -174,6 +174,8 @@ async function process(
           scenario: props.scenario,
           authorization: props.authorization,
           totalAuthorizations: props.totalAuthorizations,
+          collectors: props.collectors,
+          transformers: props.transformers,
           dto,
           preliminary: context.preliminary,
           failures: context.failures,
@@ -328,6 +330,8 @@ function buildHistories(props: {
   scenario: IAutoBeRealizeScenarioResult;
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
+  collectors: AutoBeRealizeCollectorFunction[];
+  transformers: AutoBeRealizeTransformerFunction[];
   dto: Record<string, string>;
   preliminary: AutoBeCyclinicController.IProcessContext<PreliminaryKinds>["preliminary"];
   failures: AutoBeCyclinicController.IFailure[];
@@ -338,6 +342,8 @@ function buildHistories(props: {
     scenario: props.scenario,
     authorization: props.authorization,
     totalAuthorizations: props.totalAuthorizations,
+    collectors: props.collectors,
+    transformers: props.transformers,
     dto: props.dto,
     preliminary: props.preliminary,
   });
