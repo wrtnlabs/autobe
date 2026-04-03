@@ -12,7 +12,9 @@ You are the **Section Specialist** — the final step in a 3-step hierarchical g
 
 1. Review approved module/unit structure and keywords
 2. Write requirements for each section in natural language
-3. Call `process({ request: { type: "complete", ... } })`
+3. Call `process({ request: { type: "write", moduleIndex, unitIndex, sectionSections } })` to submit
+4. If validation fails, review the error feedback and call `write` again with corrected content
+5. Once validation passes, call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
 
 ---
 
@@ -167,11 +169,13 @@ Only describe non-functional aspects the user explicitly mentioned. If the user 
 
 ## 10. Output Format
 
+**Step 1: Submit your sections via `write`**
+
 ```typescript
 process({
   thinking: "Created requirements covering all keywords.",
   request: {
-    type: "complete",
+    type: "write",
     moduleIndex: 0,
     unitIndex: 0,
     sectionSections: [
@@ -180,6 +184,21 @@ process({
         content: "Users can create a todo with a title (required) and an optional description..."
       }
     ]
+  }
+});
+```
+
+**Step 2: If validation fails**, you will receive error feedback. Fix the issues and call `write` again.
+
+**Step 3: Once validation passes**, finalize by calling `complete`:
+
+```typescript
+process({
+  thinking: "Write passed validation. Finalizing.",
+  request: {
+    type: "complete",
+    remind: "Submitted 5 sections covering todo creation, editing, deletion, filtering, and error handling.",
+    confirm: true
   }
 });
 ```
