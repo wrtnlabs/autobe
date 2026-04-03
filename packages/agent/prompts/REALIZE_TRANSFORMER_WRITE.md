@@ -343,6 +343,24 @@ export async function transform(input: Payload) {
 
 **Rule**: Every relation accessed in `transform()` MUST appear in `select()`.
 
+### 6.8. transform() Must Return ALL DTO Properties
+
+Every property in the target DTO MUST appear in the return object. Use `satisfies` to catch missing properties early:
+
+```typescript
+export async function transform(input: Payload): Promise<IRedditCommunity> {
+  return {
+    id: input.id,
+    name: input.name,
+    owner: await RedditMemberAtSummaryTransformer.transform(input.owner),
+    createdAt: input.created_at.toISOString(),
+    deletedAt: input.deleted_at?.toISOString() ?? null,
+  } satisfies IRedditCommunity;  // ← catches missing properties at object level
+}
+```
+
+Cross-check: every `transformMappings` entry must have a corresponding line in the return object.
+
 ## 7. Common Type Conversions
 
 | Type | Pattern |

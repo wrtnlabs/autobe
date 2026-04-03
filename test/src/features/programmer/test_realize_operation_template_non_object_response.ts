@@ -31,25 +31,14 @@ export const test_realize_operation_template_non_object_response = (): void => {
     transformers: [],
   });
 
-  const expectedBody: string = [
-    `export async function getTest(): Promise<StringArray> {`,
-    `  ...`,
-    `}`,
-  ].join("\n");
-
   TestValidator.equals(
-    "falls through to ellipsis",
-    result.includes(expectedBody),
+    "falls through to fallback",
+    result.includes("export async function getTest(): Promise<StringArray> {"),
     true,
   );
   TestValidator.equals(
-    "no Transformer reference",
-    result.includes("Transformer"),
-    false,
-  );
-  TestValidator.equals(
-    "no Collector reference",
-    result.includes("Collector"),
-    false,
+    "fallback comment",
+    result.includes("No matching Collector/Transformer found"),
+    true,
   );
 };

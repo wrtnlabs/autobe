@@ -34,21 +34,19 @@ export const test_realize_operation_template_no_match_fallback = (): void => {
     transformers: [],
   });
 
-  const expectedBody: string = [
-    `export async function getTest(): Promise<ISomething> {`,
-    `  ...`,
-    `}`,
-  ].join("\n");
-
-  TestValidator.equals("full body", result.includes(expectedBody), true);
   TestValidator.equals(
-    "no Transformer reference",
-    result.includes("Transformer"),
-    false,
+    "full body",
+    result.includes("export async function getTest(): Promise<ISomething> {"),
+    true,
   );
   TestValidator.equals(
-    "no Collector reference",
-    result.includes("Collector"),
-    false,
+    "fallback comment",
+    result.includes("No matching Collector/Transformer found"),
+    true,
+  );
+  TestValidator.equals(
+    "getDatabaseSchemas hint",
+    result.includes("getDatabaseSchemas"),
+    true,
   );
 };

@@ -53,7 +53,7 @@ export const test_realize_operation_template_pagination = (): void => {
     `      records: ...,`,
     `      pages: ...,`,
     `    },`,
-    `    data: await ArticleTransformer.transformAll(records),`,
+    `    data: await ArrayUtil.asyncMap(records, ArticleTransformer.transform),`,
     `  };`,
     `}`,
   ].join("\n");

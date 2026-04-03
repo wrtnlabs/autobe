@@ -35,21 +35,14 @@ export const test_realize_operation_template_object_no_property_match =
       transformers: [],
     });
 
-    const expectedBody: string = [
-      `export async function getTest(): Promise<IStats> {`,
-      `  ...`,
-      `}`,
-    ].join("\n");
-
-    TestValidator.equals("full body", result.includes(expectedBody), true);
     TestValidator.equals(
-      "no Transformer reference",
-      result.includes("Transformer"),
-      false,
+      "full body",
+      result.includes("export async function getTest(): Promise<IStats> {"),
+      true,
     );
     TestValidator.equals(
-      "no Collector reference",
-      result.includes("Collector"),
-      false,
+      "fallback comment",
+      result.includes("No matching Collector/Transformer found"),
+      true,
     );
   };

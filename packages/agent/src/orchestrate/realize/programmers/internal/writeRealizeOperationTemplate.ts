@@ -56,6 +56,7 @@ export function writeRealizeOperationTemplate(props: {
 
   const returnType: string = props.operation.responseBody?.typeName ?? "void";
   const body: string = writeBody({
+    method: props.operation.method,
     operation: props.operation,
     schemas: props.schemas,
     collectors: props.collectors,
@@ -82,6 +83,7 @@ export function writeRealizeOperationTemplate(props: {
 }
 
 function writeBody(props: {
+  method: string;
   operation: AutoBeOpenApi.IOperation;
   schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   collectors: AutoBeRealizeCollectorFunction[];
@@ -114,6 +116,14 @@ function writeBody(props: {
       transformer.plan.dtoTypeName,
     );
     const table: string = transformer.plan.databaseSchemaName;
+    const isRecursive: boolean =
+      AutoBeRealizeTransformerProgrammer.getRecursiveProperty({
+        schemas: props.schemas as Record<string, AutoBeOpenApi.IJsonSchema>,
+        typeName: transformer.plan.dtoTypeName,
+      }) !== null;
+    const dataLine: string = isRecursive
+      ? `data: await ${tName}.transformAll(records),`
+      : `data: await ArrayUtil.asyncMap(records, ${tName}.transform),`;
     return StringUtil.trim`
       const records = await MyGlobal.prisma.${table}.findMany({
         ...${tName}.select(),
@@ -126,7 +136,7 @@ function writeBody(props: {
           records: ...,
           pages: ...,
         },
-        data: await ${tName}.transformAll(records),
+        ${dataLine}
       };
     `;
   }
@@ -168,7 +178,36 @@ function writeBody(props: {
     `;
   }
 
-  // transformer only (read single)
+  // update + transformer (PUT: manual update, re-fetch, transform)
+  if (props.method === "put" && transformer) {
+    const tName: string = AutoBeRealizeTransformerProgrammer.getName(
+      transformer.plan.dtoTypeName,
+    );
+    const table: string = transformer.plan.databaseSchemaName;
+    return StringUtil.trim`
+      await MyGlobal.prisma.${table}.update({
+        where: { ... },
+        data: { ... },
+      });
+      const updated = await MyGlobal.prisma.${table}.findUniqueOrThrow({
+        where: { ... },
+        ...${tName}.select(),
+      });
+      return await ${tName}.transform(updated);
+    `;
+  }
+
+  // delete (DELETE: simple delete, void return)
+  if (props.method === "delete") {
+    const table: string = transformer?.plan.databaseSchemaName ?? "...";
+    return StringUtil.trim`
+      await MyGlobal.prisma.${table}.delete({
+        where: { ... },
+      });
+    `;
+  }
+
+  // transformer only (read single or other non-PUT/DELETE)
   if (transformer) {
     const tName: string = AutoBeRealizeTransformerProgrammer.getName(
       transformer.plan.dtoTypeName,
@@ -193,7 +232,12 @@ function writeBody(props: {
     if (objectBody !== null) return objectBody;
   }
 
-  return "...";
+  return [
+    "// No matching Collector/Transformer found for this operation.",
+    "// You MUST call getDatabaseSchemas first to get exact relation property names.",
+    "// NEVER guess relation names from table names — always verify against the schema.",
+    "...",
+  ].join("\n  ");
 }
 
 function writeObjectBody(props: {
