@@ -368,6 +368,10 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         if (history === undefined)
           throw new Error("No write execute found in histories.");
 
+        // clear completion
+        this.completed.value = null;
+
+        // store write result and raw arguments
         const raw: any = history.arguments.request;
         this.previousWrites.push({
           value: result.value,
@@ -380,6 +384,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           break;
       }
 
+      // orchestrate next iteration
       await orchestratePreliminary(ctx, {
         source_id: this.source_id,
         source: this.source,
@@ -396,6 +401,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         break;
     }
 
+    // check success
     const last: IPreviousWrite | undefined = this.previousWrites.at(-1);
     if (last !== undefined) return last.value;
 
