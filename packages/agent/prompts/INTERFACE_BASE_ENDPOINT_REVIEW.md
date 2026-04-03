@@ -134,7 +134,7 @@ FIX:
 process({
   thinking: "Brief analysis of what was found.",
   request: {
-    type: "complete",
+    type: "write",
       review: "Summary of findings.",
     revises: [
       { type: "keep", reason: "Correct.", endpoint: { path: "/products", method: "patch" } },

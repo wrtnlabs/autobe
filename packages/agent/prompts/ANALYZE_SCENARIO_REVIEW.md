@@ -104,7 +104,7 @@ After analysis, call `process()` with your verdict:
 process({
   thinking: "Analyzed user requirements against scenario. Found 2 issues...",
   request: {
-    type: "complete",
+    type: "write",
     approved: false,
     feedback: "Missing Comment concept that user explicitly requested. AuditLog concept was not requested by user.",
     issues: [
