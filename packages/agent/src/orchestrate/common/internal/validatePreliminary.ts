@@ -658,13 +658,24 @@ const nonExisting = <Kind extends AutoBePreliminaryKind>(
         ⛔ NEVER request "${kind}" again - it is NOT available in this context!
         ⛔ NEVER assume data types that are not in the list below!
         ⛔ NEVER repeat the same invalid request type!
-        ⛔ You MUST choose ONLY from the available kinds listed below!
 
-        Available preliminary data kinds you can request:
-        ${controller
-          .getKinds()
-          .map((k) => `- ${k}`)
-          .join("\n")}
+        ${
+          controller.getKinds().length === 0
+            ? StringUtil.trim`
+              ⛔ NO preliminary data is available at all in this context.
+              ✅ You MUST call process({ request: { type: "write", ... } }) RIGHT NOW.
+              ✅ Stop requesting preliminary data and submit your write immediately.
+            `
+            : StringUtil.trim`
+              ⛔ You MUST choose ONLY from the available kinds listed below!
+
+              Available preliminary data kinds you can request:
+              ${controller
+                .getKinds()
+                .map((k) => `- ${k}`)
+                .join("\n")}
+            `
+        }
       `,
     },
   ],
