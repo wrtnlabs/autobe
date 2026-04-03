@@ -60,7 +60,10 @@ export const test_realize_operation_template_pagination = (): void => {
   `;
 
   const normalize = (s: string): string =>
-    s.split("\n").map((l) => l.trimStart()).join("\n");
+    s
+      .split("\n")
+      .map((l) => l.trimStart())
+      .join("\n");
   TestValidator.equals(
     "full body",
     normalize(result).includes(normalize(expectedBody)),

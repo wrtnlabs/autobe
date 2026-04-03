@@ -11,7 +11,8 @@ import { createMockTransformer } from "./internal/createMockTransformer";
 /**
  * A DTO with only a 1:N self-reference (children array, no parent property).
  * The pagination operation template must still use transformAll() rather than
- * ArrayUtil.asyncMap(), because the DTO is recursive in the children direction.
+ * ArrayUtil.asyncMap(), because the DTO is recursive in the children
+ * direction.
  */
 interface IFolder {
   id: string & tags.Format<"uuid">;
@@ -67,7 +68,10 @@ export const test_realize_operation_template_pagination_recursive_children =
     `;
 
     const normalize = (s: string): string =>
-      s.split("\n").map((l) => l.trimStart()).join("\n");
+      s
+        .split("\n")
+        .map((l) => l.trimStart())
+        .join("\n");
     TestValidator.equals(
       "full body",
       normalize(result).includes(normalize(expectedBody)),

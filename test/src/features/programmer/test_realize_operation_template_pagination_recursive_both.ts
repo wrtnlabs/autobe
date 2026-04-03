@@ -10,9 +10,9 @@ import { createMockTransformer } from "./internal/createMockTransformer";
 
 /**
  * A DTO with both a nullable N:1 self-reference (parent) and a 1:N
- * self-reference (children) — the bidirectional tree node.
- * The pagination operation template must use transformAll() rather than
- * ArrayUtil.asyncMap() because the DTO is recursive in both directions.
+ * self-reference (children) — the bidirectional tree node. The pagination
+ * operation template must use transformAll() rather than ArrayUtil.asyncMap()
+ * because the DTO is recursive in both directions.
  */
 interface INode {
   id: string & tags.Format<"uuid">;
@@ -69,7 +69,10 @@ export const test_realize_operation_template_pagination_recursive_both =
     `;
 
     const normalize = (s: string): string =>
-      s.split("\n").map((l) => l.trimStart()).join("\n");
+      s
+        .split("\n")
+        .map((l) => l.trimStart())
+        .join("\n");
     TestValidator.equals(
       "full body",
       normalize(result).includes(normalize(expectedBody)),

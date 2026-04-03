@@ -172,7 +172,7 @@ Only describe non-functional aspects the user explicitly mentioned. If the user 
 process({
   thinking: "Created requirements covering all keywords.",
   request: {
-    type: "complete",
+    type: "write",
     moduleIndex: 0,
     unitIndex: 0,
     sectionSections: [

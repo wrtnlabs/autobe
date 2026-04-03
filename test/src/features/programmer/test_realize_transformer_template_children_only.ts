@@ -7,7 +7,8 @@ import typia, { tags } from "typia";
 /**
  * A DTO with a 1:N self-reference (children array) but no parent property.
  * writeTemplate must produce the children-only recursive skeleton with
- * createChildrenCache, selecting id for the cache key and suppressing children.
+ * createChildrenCache, selecting id for the cache key and suppressing
+ * children.
  */
 interface IFolder {
   id: string & tags.Format<"uuid">;
@@ -15,26 +16,25 @@ interface IFolder {
   children: IFolder[];
 }
 
-export const test_realize_transformer_template_children_only =
-  (): void => {
-    const raw = typia.json.schemas<[IFolder]>().components;
-    const schemas = raw.schemas as Record<string, AutoBeOpenApi.IJsonSchema>;
-    const schema = schemas[
-      "IFolder"
-    ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+export const test_realize_transformer_template_children_only = (): void => {
+  const raw = typia.json.schemas<[IFolder]>().components;
+  const schemas = raw.schemas as Record<string, AutoBeOpenApi.IJsonSchema>;
+  const schema = schemas[
+    "IFolder"
+  ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
-    const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
-      plan: {
-        type: "transformer",
-        dtoTypeName: "IFolder",
-        thinking: "test",
-        databaseSchemaName: "folders",
-      },
-      schema,
-      schemas,
-    });
+  const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
+    plan: {
+      type: "transformer",
+      dtoTypeName: "IFolder",
+      thinking: "test",
+      databaseSchemaName: "folders",
+    },
+    schema,
+    schemas,
+  });
 
-    const expectedBody: string = StringUtil.trim`
+  const expectedBody: string = StringUtil.trim`
       export namespace FolderTransformer {
         export type Payload = Prisma.foldersGetPayload<ReturnType<typeof select>>;
 
@@ -83,11 +83,14 @@ export const test_realize_transformer_template_children_only =
       }
     `;
 
-    const normalize = (s: string): string =>
-      s.split("\n").map((l) => l.trimStart()).join("\n");
-    TestValidator.equals(
-      "full body",
-      normalize(result).includes(normalize(expectedBody)),
-      true,
-    );
-  };
+  const normalize = (s: string): string =>
+    s
+      .split("\n")
+      .map((l) => l.trimStart())
+      .join("\n");
+  TestValidator.equals(
+    "full body",
+    normalize(result).includes(normalize(expectedBody)),
+    true,
+  );
+};

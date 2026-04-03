@@ -9,12 +9,12 @@ import { createMockScenario } from "./internal/createMockScenario";
 import { createMockTransformer } from "./internal/createMockTransformer";
 
 /**
- * An object response type (not IPage*) that contains a property typed as
- * an array of a recursive DTO (children-only self-reference).
+ * An object response type (not IPage*) that contains a property typed as an
+ * array of a recursive DTO (children-only self-reference).
  *
  * The writeObjectBody path must detect the recursive DTO and emit
- * `FolderTransformer.transformAll(...)` instead of
- * `ArrayUtil.asyncMap(..., (r) => FolderTransformer.transform(r))`.
+ * `FolderTransformer.transformAll(...)` instead of `ArrayUtil.asyncMap(..., (r)
+ * => FolderTransformer.transform(r))`.
  */
 interface IFolder {
   id: string & tags.Format<"uuid">;
@@ -66,7 +66,10 @@ export const test_realize_operation_template_object_response_recursive_array =
     `;
 
     const normalize = (s: string): string =>
-      s.split("\n").map((l) => l.trimStart()).join("\n");
+      s
+        .split("\n")
+        .map((l) => l.trimStart())
+        .join("\n");
     TestValidator.equals(
       "full body",
       normalize(result).includes(normalize(expectedBody)),
