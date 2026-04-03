@@ -47,7 +47,8 @@ export namespace IAutoBeTestAuthorizationWriteApplication {
      * return required authentication data, and include comprehensive error
      * handling with fallback logic where needed.
      *
-     * Critical: NO import statements, start directly with 'export const'
+     * Critical: NO import statements, start directly with 'export async
+     * function'
      */
     draft: string;
 

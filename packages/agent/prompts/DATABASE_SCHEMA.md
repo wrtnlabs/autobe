@@ -332,7 +332,7 @@ process({
   request: {
     type: "write",
     plan: "Strategic analysis for [targetTable]...",
-    model: {
+    definition: {
       name: "target_table",
       stance: "primary",
       description: "...",

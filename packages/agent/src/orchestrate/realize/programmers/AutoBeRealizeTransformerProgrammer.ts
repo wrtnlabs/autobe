@@ -389,7 +389,7 @@ ${properties}
           // one deduplication scope across both parent and children lookups.
           // Use definite assignment assertions (!) so TypeScript does not
           // flag the cross-references as "used before assigned" — the async
-          // callbacks only execute after both variables are fully initialized.
+          // callbacks only execute after both variables are fully initialised.
           let parentCache!: VariadicSingleton<Promise<${dto}>, [string]>;
           let childrenCache!: VariadicSingleton<Promise<${dto}[]>, [string]>;
           parentCache = new VariadicSingleton(

@@ -5,9 +5,14 @@ import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
 /**
- * A plain DTO with no self-referencing properties. writeTemplate must produce
- * the normal (non-recursive) skeleton with no transformAll, no cache
- * functions.
+ * # A plain DTO with no self-referencing properties. writeTemplate must produce
+ *
+ * <<<<<<< HEAD the normal (non-recursive) skeleton with no transformAll, no
+ * cache functions.
+ *
+ * The normal (non-recursive) skeleton with no transformAll, no cache functions.
+ *
+ * > > > > > > > 1579336277e8e2b58d4c1858e485a486078ba1cc
  */
 interface IArticle {
   id: string & tags.Format<"uuid">;
