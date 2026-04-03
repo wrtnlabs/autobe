@@ -38,8 +38,12 @@ export namespace AutoBeDatabase {
     name: string & SnakeCasePattern;
 
     /**
-     * Business purpose of this model. MUST be written in English. Reference
-     * related entities using "{@\link ModelName}" syntax.
+     * Business purpose of this model.
+     *
+     * Format: summary sentence first, `\n\n`, then paragraphs grouped by topic.
+     * Use `{@\link ModelName}` for cross-references.
+     *
+     * > MUST be written in English.
      */
     description: string;
 
@@ -115,7 +119,14 @@ export namespace AutoBeDatabase {
 
     type: "uuid";
 
-    /** Use format: "Target's {@\link ModelName.id}". MUST be written in English. */
+    /**
+     * Describe the relationship purpose and semantics of this foreign key.
+     *
+     * Format: summary sentence first, `\n\n`, then paragraphs grouped by topic.
+     * Use `{@\link ModelName}` for cross-references.
+     *
+     * > MUST be written in English.
+     */
     description: string;
 
     /** Prisma relation configuration. */
@@ -162,7 +173,14 @@ export namespace AutoBeDatabase {
      */
     type: "boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime";
 
-    /** Business purpose of this field. MUST be written in English. */
+    /**
+     * Business purpose of this field.
+     *
+     * Format: summary sentence first, `\n\n`, then paragraphs grouped by topic.
+     * Use `{@\link ModelName}` for cross-references.
+     *
+     * > MUST be written in English.
+     */
     description: string;
 
     /** Whether this field can be null. */

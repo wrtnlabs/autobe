@@ -40,9 +40,10 @@ export interface AutoBeInterfaceSchemaPropertyDepict {
   specification: string;
 
   /**
-   * API documentation for consumers (Swagger UI).
+   * API documentation for consumers (Swagger UI). Explain what the property
+   * represents. No implementation details.
    *
-   * Explain what the property represents. No implementation details.
+   * Format: summary sentence first, `\n\n`, then paragraphs grouped by topic.
    */
   description: string;
 }
