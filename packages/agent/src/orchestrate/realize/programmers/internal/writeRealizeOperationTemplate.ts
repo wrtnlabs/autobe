@@ -264,11 +264,20 @@ function writeObjectBody(props: {
       const tName: string = AutoBeRealizeTransformerProgrammer.getName(
         match.transformer.plan.dtoTypeName,
       );
-      lines.push(
-        match.isArray
-          ? `  ${key}: await ArrayUtil.asyncMap(..., (r) => ${tName}.transform(r)),`
-          : `  ${key}: await ${tName}.transform(...),`,
-      );
+      if (match.isArray) {
+        const isRecursive: boolean =
+          AutoBeRealizeTransformerProgrammer.getRecursiveProperty({
+            schemas: props.schemas as Record<string, AutoBeOpenApi.IJsonSchema>,
+            typeName: match.transformer.plan.dtoTypeName,
+          }) !== null;
+        lines.push(
+          isRecursive
+            ? `  ${key}: await ${tName}.transformAll(...),`
+            : `  ${key}: await ArrayUtil.asyncMap(..., (r) => ${tName}.transform(r)),`,
+        );
+      } else {
+        lines.push(`  ${key}: await ${tName}.transform(...),`);
+      }
     } else {
       lines.push(`  ${key}: ...,`);
     }
