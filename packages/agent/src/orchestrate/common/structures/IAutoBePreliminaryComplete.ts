@@ -1,13 +1,12 @@
 /**
- * Shared completion request for cyclic write → validate → correct loops.
+ * Finalize the write loop by accepting your most recent `write` as-is.
  *
- * The agent may call `write` up to 3 times (initial + revisions). After the 3rd
- * write, completion is forced. Only valid after at least one `write` submission
- * — rejected otherwise.
+ * After submitting a `write`, review it yourself. If you are satisfied, call
+ * `complete` to finalize. If you want to improve it, submit another `write`
+ * instead. You have a maximum of 3 write attempts, but this is a safety cap —
+ * not a target to fill.
  *
- * When `type` is `"complete"`, the loop terminates immediately. No additional
- * fields are required — the single discriminator is sufficient to signal that
- * the agent considers its last write final.
+ * Only valid after at least one `write` submission — rejected otherwise.
  *
  * @author Samchon
  */

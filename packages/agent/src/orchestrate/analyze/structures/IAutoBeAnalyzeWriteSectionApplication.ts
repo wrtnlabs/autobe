@@ -4,16 +4,16 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 /**
  * Application interface for the Section (###) generation agent.
  *
- * Combines preliminary context loading, section submission with external
- * validation, and iterative correction into a single unified loop.
+ * Combines preliminary context loading, section submission, and iterative
+ * correction into a single unified loop.
  */
 export interface IAutoBeAnalyzeWriteSectionApplication {
   /**
    * Process section generation, write submission, or preliminary data requests.
    *
-   * Submit section content via `write` for external validation. If validation
-   * fails or you are unsatisfied, correct and resubmit (up to 3 writes). Call
-   * `complete` to finalize when satisfied.
+   * Submit section content via `write`, then review your own output. Call
+   * `complete` if satisfied, or submit another `write` to improve (3 writes
+   * maximum).
    *
    * @param props Request containing preliminary data request, write submission,
    *   or completion signal
@@ -35,7 +35,7 @@ export interface IAutoBeAnalyzeWriteSectionApplicationProps {
    * For write submissions:
    *
    * - If this is an initial write, summarize your plan.
-   * - If this is a correction, what validation errors are you fixing and how?
+   * - If this is a revision, what issues are you improving and how?
    *
    * For complete:
    *
@@ -51,10 +51,10 @@ export interface IAutoBeAnalyzeWriteSectionApplicationProps {
 }
 
 /**
- * Submit section content for external validation.
+ * Submit section content for review.
  *
- * The submitted content will be validated for English-only text,
- * technology-neutral language, and entity correctness.
+ * The submitted content should use English-only text, technology-neutral
+ * language, and correct entity references.
  */
 export interface IAutoBeAnalyzeWriteSectionApplicationWrite {
   /** Type discriminator for write submission. */

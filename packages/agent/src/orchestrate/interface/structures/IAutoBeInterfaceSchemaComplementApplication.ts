@@ -41,8 +41,8 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
   }
 
   /**
-   * Submit a missing schema definition referenced by $ref in components.schemas
-   * for validation.
+   * Submit a missing schema definition referenced by $ref in
+   * components.schemas.
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

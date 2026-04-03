@@ -46,7 +46,7 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit authorization table design for validation. */
+  /** Submit authorization table design. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

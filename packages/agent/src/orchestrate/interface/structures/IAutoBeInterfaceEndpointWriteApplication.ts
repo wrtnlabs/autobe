@@ -34,7 +34,7 @@ export namespace IAutoBeInterfaceEndpointWriteApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /** Submit endpoint designs for validation. */
+  /** Submit endpoint designs. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

@@ -63,19 +63,14 @@ export namespace IAutoBeTestScenarioReviewApplication {
   }
 
   /**
-   * Submit a test scenario review for validation.
+   * Submit a test scenario review.
    *
    * Submits comprehensive scenario review to validate implementability,
    * dependency correctness, authentication flows, and business logic coverage,
    * producing refined scenario ready for test implementation.
    */
   export interface IWrite {
-    /**
-     * Type discriminator for the request.
-     *
-     * Value "write" indicates this is a write submission for external
-     * validation.
-     */
+    /** Type discriminator for write submission. */
     type: "write";
 
     /**

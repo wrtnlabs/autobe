@@ -43,7 +43,7 @@ export namespace IAutoBeInterfaceOperationApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /** Submit a detailed API operation for validation. */
+  /** Submit a detailed API operation. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

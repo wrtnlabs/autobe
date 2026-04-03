@@ -47,7 +47,7 @@ export namespace IAutoBeInterfaceSchemaCastingApplication {
 
   /**
    * Submit schema casting analysis via Chain-of-Thought (observation,
-   * reasoning, verdict) for validation.
+   * reasoning, verdict).
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

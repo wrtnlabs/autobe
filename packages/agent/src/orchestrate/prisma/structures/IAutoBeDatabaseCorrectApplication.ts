@@ -53,7 +53,7 @@ export namespace IAutoBeDatabaseCorrectApplication {
   }
 
   /**
-   * Submit corrected models for validation errors.
+   * Submit corrected models.
    *
    * This is an intermediate step — you can submit multiple times to refine your
    * corrections. The last submitted models will be used when you call

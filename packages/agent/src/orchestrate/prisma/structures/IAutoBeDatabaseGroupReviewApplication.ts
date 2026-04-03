@@ -30,7 +30,7 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit group revisions for validation. */
+  /** Submit group revisions. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

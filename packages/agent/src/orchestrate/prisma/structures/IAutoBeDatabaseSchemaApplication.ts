@@ -39,7 +39,7 @@ export namespace IAutoBeDatabaseSchemaApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit production-ready database schema models for validation. */
+  /** Submit production-ready database schema models. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

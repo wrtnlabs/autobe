@@ -39,7 +39,7 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
 
   /**
    * Submit endpoint review with revision decisions (keep/create/update/erase)
-   * for ALL endpoints for validation.
+   * for ALL endpoints.
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

@@ -33,7 +33,7 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit authorization operations for validation. */
+  /** Submit authorization operations. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

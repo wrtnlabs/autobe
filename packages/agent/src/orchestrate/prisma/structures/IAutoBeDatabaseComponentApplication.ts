@@ -30,7 +30,7 @@ export namespace IAutoBeDatabaseComponentApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit database component table designs for validation. */
+  /** Submit database component table designs. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

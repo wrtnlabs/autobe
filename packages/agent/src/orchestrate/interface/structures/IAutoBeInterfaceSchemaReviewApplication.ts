@@ -44,7 +44,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      *
      * - What issues did you find in the schema?
      * - What property changes are you proposing?
-     * - If this is a correction, what validation errors are you fixing?
+     * - If this is a revision, what issues are you improving?
      *
      * For completion:
      *
@@ -61,7 +61,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Determines which action to perform:
      *
      * - Preliminary types: Load context data incrementally
-     * - `write`: Submit schema review for external validation
+     * - `write`: Submit schema review
      * - `complete`: Finalize when satisfied with last write
      *
      * When preliminary returns empty array, that type is removed from the
@@ -81,11 +81,10 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
   }
 
   /**
-   * Submit schema review with property-level revisions for validation.
+   * Submit schema review with property-level revisions.
    *
-   * The submitted review will be validated externally. If validation fails, you
-   * will receive diagnostics in the next iteration and should correct and
-   * resubmit. You can submit up to 3 times.
+   * After submitting, review your own output. Call `complete` if satisfied, or
+   * submit another `write` to improve (3 writes maximum).
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

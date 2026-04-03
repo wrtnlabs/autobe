@@ -31,7 +31,7 @@ export namespace IAutoBeDatabaseSchemaReviewApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit database schema review for validation. */
+  /** Submit database schema review. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

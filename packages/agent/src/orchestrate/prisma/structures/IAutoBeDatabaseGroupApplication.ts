@@ -31,7 +31,7 @@ export namespace IAutoBeDatabaseGroupApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit database component groups for validation. */
+  /** Submit database component groups. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

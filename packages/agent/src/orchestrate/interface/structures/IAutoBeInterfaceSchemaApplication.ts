@@ -13,9 +13,9 @@ export interface IAutoBeInterfaceSchemaApplication {
   /**
    * Process schema generation, write submission, or preliminary data requests.
    *
-   * Submit schema designs via `write` for external validation. If validation
-   * fails or you are unsatisfied, correct and resubmit (up to 3 writes). Call
-   * `complete` to finalize when satisfied.
+   * Submit schema designs via `write`, then review your own output. Call
+   * `complete` if satisfied, or submit another `write` to improve (3 writes
+   * maximum).
    *
    * @param props Request containing preliminary data request, write submission,
    *   or completion signal
@@ -40,7 +40,7 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * For write submissions:
      *
      * - If this is an initial write, summarize your design plan.
-     * - If this is a correction, what validation errors are you fixing and how?
+     * - If this is a revision, what issues are you improving and how?
      *
      * For complete:
      *
@@ -54,7 +54,7 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * Determines which action to perform:
      *
      * - Preliminary types: Load context data incrementally
-     * - `write`: Submit schema design for external validation
+     * - `write`: Submit schema design
      * - `complete`: Finalize when satisfied with last write
      *
      * When preliminary returns empty array, that type is removed from the
@@ -73,10 +73,10 @@ export namespace IAutoBeInterfaceSchemaApplication {
   }
 
   /**
-   * Submit schema design for external validation.
+   * Submit schema design for review.
    *
-   * The submitted design will be validated against the database schema,
-   * operation requirements, and JSON schema structure rules.
+   * The submitted design should conform to the database schema, operation
+   * requirements, and JSON schema structure rules.
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

@@ -18,9 +18,9 @@ export interface IAutoBeAnalyzeSectionCrossFileReviewApplicationProps {
   thinking?: string | null;
 
   /**
-   * Action to perform. Write can be called up to 3 times; after the 3rd write,
-   * completion is forced. Exhausted preliminary types are removed from the
-   * union.
+   * Action to perform. Review your own write output — call `complete` if
+   * satisfied, or submit another `write` to improve (3 writes maximum).
+   * Exhausted preliminary types are removed from the union.
    */
   request:
     | IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite

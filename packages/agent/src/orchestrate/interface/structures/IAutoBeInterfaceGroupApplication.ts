@@ -35,7 +35,7 @@ export namespace IAutoBeInterfaceGroupApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /** Submit API endpoint groups for validation. */
+  /** Submit API endpoint groups. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

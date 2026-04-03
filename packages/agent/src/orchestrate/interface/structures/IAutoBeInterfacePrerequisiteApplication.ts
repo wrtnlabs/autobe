@@ -40,7 +40,7 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /** Submit API operation prerequisites for validation. */
+  /** Submit API operation prerequisites. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

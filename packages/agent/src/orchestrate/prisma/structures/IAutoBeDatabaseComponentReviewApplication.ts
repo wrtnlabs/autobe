@@ -30,7 +30,7 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit table revisions for validation. */
+  /** Submit table revisions. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";
