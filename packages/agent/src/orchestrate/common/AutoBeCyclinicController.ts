@@ -1,6 +1,5 @@
 import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
-import { LlmTypeChecker } from "@typia/utils";
-import { ILlmApplication, ILlmSchema } from "typia";
+import { ILlmApplication } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
@@ -62,46 +61,18 @@ export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
   // ── Schema manipulation ──
 
   /**
-   * Removes `IComplete` from the request union when no write has succeeded.
+   * No-op: `complete` is kept in the schema at all times.
    *
-   * Same schema mutation pattern as
-   * {@link AutoBePreliminaryController.fixApplication}.
+   * Premature `complete` calls (before any successful write) are handled
+   * inside {@link orchestrate} by pushing an explicit failure message and
+   * continuing, rather than by removing the action from the schema.
+   *
+   * Schema-removal caused LLMs to hallucinate `complete` anyway, resulting
+   * in silent typia validation failures and wasted iterations.
    */
   public fixCompleteAvailability(
     application: ILlmApplication,
   ): ILlmApplication {
-    if (this.writeSucceeded) return application;
-
-    const func = application.functions.find((f) => f.name === "process");
-    if (func === undefined) return application;
-
-    const request: ILlmSchema | undefined = func.parameters.properties.request;
-    if (request === undefined) return application;
-    if (LlmTypeChecker.isAnyOf(request) === false) return application;
-
-    // biome-ignore lint: type narrowing insufficient after isAnyOf guard
-    const anyOfSchema = request as ILlmSchema.IAnyOf;
-    const children = anyOfSchema.anyOf as ILlmSchema.IReference[];
-    // biome-ignore lint: x-discriminator is a runtime extension property
-    const mapping: Record<string, string> =
-      (anyOfSchema as unknown as Record<string, unknown>)["x-discriminator"] !=
-      null
-        ? ((
-            (anyOfSchema as unknown as Record<string, unknown>)[
-              "x-discriminator"
-            ] as Record<string, Record<string, string>>
-          ).mapping ?? {})
-        : {};
-
-    // Remove IComplete from anyOf
-    const completeIdx = children.findIndex(
-      (c) => c.$ref.endsWith("/IComplete") || c.$ref.endsWith(".IComplete"),
-    );
-    if (completeIdx !== -1) children.splice(completeIdx, 1);
-
-    // Remove from discriminator mapping
-    delete mapping["complete"];
-
     return application;
   }
 
@@ -184,7 +155,19 @@ export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
 
       // COMPLETE → finalize (pass result for event dispatch with metrics)
       if (action.type === "complete") {
-        if (lastWrite === null) continue; // safety: should not happen via union narrowing
+        if (lastWrite === null) {
+          // LLM called complete() before any successful write.
+          // Give explicit feedback so the next iteration's history instructs
+          // the LLM to submit a write instead.
+          this.failures.push({
+            diagnostics:
+              "You called complete() but have not submitted a successful write yet. " +
+              "You MUST call process({ request: { type: \"write\", ... } }) first, " +
+              "then call complete() after the write passes validation.",
+            iteration: i,
+          });
+          continue;
+        }
         return await finalize(lastWrite, result);
       }
     }
