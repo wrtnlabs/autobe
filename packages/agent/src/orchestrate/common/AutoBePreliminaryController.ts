@@ -138,10 +138,10 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     });
   }
 
-  // public restart(): void {
-  //   this.previousWrites = [];
-  //   this.completed.value = false;
-  // }
+  public reset(): void {
+    this.previousWrites = [];
+    this.completed.value = false;
+  }
 
   /**
    * Validates request for duplicates and non-existent items.

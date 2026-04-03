@@ -397,6 +397,7 @@ const process = async <
     progress: AutoBeProgressEventBase;
   },
 ): Promise<ICorrectionResult<RealizeFunction>> => {
+  props.preliminary.reset();
   return await props.preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<Complete | null> = {
       value: null,
