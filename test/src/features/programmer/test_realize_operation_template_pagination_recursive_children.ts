@@ -8,24 +8,29 @@ import { createMockOperation } from "./internal/createMockOperation";
 import { createMockScenario } from "./internal/createMockScenario";
 import { createMockTransformer } from "./internal/createMockTransformer";
 
-interface ICategory {
+/**
+ * A DTO with only a 1:N self-reference (children array, no parent property).
+ * The pagination operation template must still use transformAll() rather than
+ * ArrayUtil.asyncMap(), because the DTO is recursive in the children direction.
+ */
+interface IFolder {
   id: string & tags.Format<"uuid">;
   name: string;
-  parent: ICategory | null;
+  children: IFolder[];
 }
 
-export const test_realize_operation_template_pagination_recursive =
+export const test_realize_operation_template_pagination_recursive_children =
   (): void => {
     const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      typia.json.schemas<[ICategory]>().components.schemas as Record<
+      typia.json.schemas<[IFolder]>().components.schemas as Record<
         string,
         AutoBeOpenApi.IJsonSchemaDescriptive
       >;
 
     const operation: AutoBeOpenApi.IOperation = createMockOperation({
-      method: "patch",
-      path: "/categories",
-      responseBody: { typeName: "IPageICategory" },
+      method: "get",
+      path: "/folders",
+      responseBody: { typeName: "IPageIFolder" },
     });
 
     const result: string = writeRealizeOperationTemplate({
@@ -37,16 +42,16 @@ export const test_realize_operation_template_pagination_recursive =
       collectors: [],
       transformers: [
         createMockTransformer({
-          dtoTypeName: "ICategory",
-          databaseSchemaName: "categories",
+          dtoTypeName: "IFolder",
+          databaseSchemaName: "folders",
         }),
       ],
     });
 
     const expectedBody: string = StringUtil.trim`
-      export async function patchTest(): Promise<IPageICategory> {
-        const records = await MyGlobal.prisma.categories.findMany({
-          ...CategoryTransformer.select(),
+      export async function getTest(): Promise<IPageIFolder> {
+        const records = await MyGlobal.prisma.folders.findMany({
+          ...FolderTransformer.select(),
           ...,
         });
         return {
@@ -56,7 +61,7 @@ export const test_realize_operation_template_pagination_recursive =
             records: ...,
             pages: ...,
           },
-          data: await CategoryTransformer.transformAll(records),
+          data: await FolderTransformer.transformAll(records),
         };
       }
     `;

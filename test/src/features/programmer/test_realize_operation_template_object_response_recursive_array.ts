@@ -8,24 +8,37 @@ import { createMockOperation } from "./internal/createMockOperation";
 import { createMockScenario } from "./internal/createMockScenario";
 import { createMockTransformer } from "./internal/createMockTransformer";
 
-interface ICategory {
+/**
+ * An object response type (not IPage*) that contains a property typed as
+ * an array of a recursive DTO (children-only self-reference).
+ *
+ * The writeObjectBody path must detect the recursive DTO and emit
+ * `FolderTransformer.transformAll(...)` instead of
+ * `ArrayUtil.asyncMap(..., (r) => FolderTransformer.transform(r))`.
+ */
+interface IFolder {
   id: string & tags.Format<"uuid">;
   name: string;
-  parent: ICategory | null;
+  children: IFolder[];
 }
 
-export const test_realize_operation_template_pagination_recursive =
+interface ITreeView {
+  total: number;
+  items: IFolder[];
+}
+
+export const test_realize_operation_template_object_response_recursive_array =
   (): void => {
     const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      typia.json.schemas<[ICategory]>().components.schemas as Record<
+      typia.json.schemas<[IFolder, ITreeView]>().components.schemas as Record<
         string,
         AutoBeOpenApi.IJsonSchemaDescriptive
       >;
 
     const operation: AutoBeOpenApi.IOperation = createMockOperation({
-      method: "patch",
-      path: "/categories",
-      responseBody: { typeName: "IPageICategory" },
+      method: "get",
+      path: "/tree",
+      responseBody: { typeName: "ITreeView" },
     });
 
     const result: string = writeRealizeOperationTemplate({
@@ -37,26 +50,17 @@ export const test_realize_operation_template_pagination_recursive =
       collectors: [],
       transformers: [
         createMockTransformer({
-          dtoTypeName: "ICategory",
-          databaseSchemaName: "categories",
+          dtoTypeName: "IFolder",
+          databaseSchemaName: "folders",
         }),
       ],
     });
 
     const expectedBody: string = StringUtil.trim`
-      export async function patchTest(): Promise<IPageICategory> {
-        const records = await MyGlobal.prisma.categories.findMany({
-          ...CategoryTransformer.select(),
-          ...,
-        });
+      export async function getTest(): Promise<ITreeView> {
         return {
-          pagination: {
-            current: ...,
-            limit: ...,
-            records: ...,
-            pages: ...,
-          },
-          data: await CategoryTransformer.transformAll(records),
+          total: ...,
+          items: await FolderTransformer.transformAll(...),
         };
       }
     `;

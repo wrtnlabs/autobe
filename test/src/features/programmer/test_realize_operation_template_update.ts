@@ -11,19 +11,31 @@ import { createMockTransformer } from "./internal/createMockTransformer";
 interface IArticle {
   id: string & tags.Format<"uuid">;
   title: string;
+  body: string;
+}
+namespace IArticle {
+  export interface IUpdate {
+    title: string;
+  }
 }
 
-export const test_realize_operation_template_pagination = (): void => {
+export const test_realize_operation_template_update = (): void => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    typia.json.schemas<[IArticle]>().components.schemas as Record<
-      string,
-      AutoBeOpenApi.IJsonSchemaDescriptive
-    >;
+    typia.json.schemas<[IArticle, IArticle.IUpdate]>().components
+      .schemas as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
 
   const operation: AutoBeOpenApi.IOperation = createMockOperation({
-    method: "patch",
-    path: "/articles",
-    responseBody: { typeName: "IPageIArticle" },
+    method: "put",
+    path: "/articles/{id}",
+    parameters: [
+      {
+        name: "id" as AutoBeOpenApi.IParameter["name"],
+        description: "Article ID",
+        schema: { type: "string", format: "uuid" },
+      },
+    ],
+    requestBody: { typeName: "IArticle.IUpdate" },
+    responseBody: { typeName: "IArticle" },
   });
 
   const result: string = writeRealizeOperationTemplate({
@@ -42,20 +54,19 @@ export const test_realize_operation_template_pagination = (): void => {
   });
 
   const expectedBody: string = StringUtil.trim`
-    export async function patchTest(): Promise<IPageIArticle> {
-      const records = await MyGlobal.prisma.articles.findMany({
-        ...ArticleTransformer.select(),
-        ...,
+    export async function putTest(props: {
+      id: string & tags.Format<"uuid">;
+      body: IArticle.IUpdate;
+    }): Promise<IArticle> {
+      await MyGlobal.prisma.articles.update({
+        where: { ... },
+        data: { ... },
       });
-      return {
-        pagination: {
-          current: ...,
-          limit: ...,
-          records: ...,
-          pages: ...,
-        },
-        data: await ArrayUtil.asyncMap(records, ArticleTransformer.transform),
-      };
+      const updated = await MyGlobal.prisma.articles.findUniqueOrThrow({
+        where: { ... },
+        ...ArticleTransformer.select(),
+      });
+      return await ArticleTransformer.transform(updated);
     }
   `;
 
