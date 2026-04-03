@@ -23,6 +23,8 @@ LOCAL INDEX-FIRST RULE (ALREADY LOADED)
 4. **Write**: Call `process({ request: { type: "write", analysis: "...", rationale: "...", designs: [...] } })` with your designed endpoints
 5. **Complete**: Call `process({ request: { type: "complete", ... } })` to confirm the last write
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 **ABSOLUTE PROHIBITIONS**:
 - NEVER request all schemas/files just to be thorough
 - NEVER request schemas for tables you won't create endpoints for

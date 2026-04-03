@@ -42,6 +42,8 @@ thinking: "Previous write had wrong order. Moving auth before prerequisites."
 thinking: "Last write is correct. Review complete."
 ```
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
 - ❌ NEVER call `complete` before submitting at least one `write`

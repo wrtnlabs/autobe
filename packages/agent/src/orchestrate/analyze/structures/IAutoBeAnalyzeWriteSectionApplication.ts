@@ -12,8 +12,8 @@ export interface IAutoBeAnalyzeWriteSectionApplication {
    * Process section generation, write submission, or preliminary data requests.
    *
    * Submit section content via `write` for external validation. If validation
-   * fails, diagnostics are provided and you should correct and resubmit. Call
-   * `complete` only after a successful write validation.
+   * fails or you are unsatisfied, correct and resubmit (up to 3 writes). Call
+   * `complete` to finalize when satisfied.
    *
    * @param props Request containing preliminary data request, write submission,
    *   or completion confirmation

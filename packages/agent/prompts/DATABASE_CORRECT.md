@@ -238,6 +238,8 @@ process({
 })
 ```
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 ---
 
 ## 5. Output Scope Examples

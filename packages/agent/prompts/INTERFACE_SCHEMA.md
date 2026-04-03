@@ -49,6 +49,8 @@ interface IAutoBePreliminaryComplete {
 | Empty = Removed | When preliminary returns `[]`, that type is removed from union |
 | Write Last      | NEVER call `write` in parallel with preliminary requests       |
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 **Prohibitions**:
 - ❌ NEVER work from imagination - load actual data first
 - ❌ NEVER re-request materials shown in "Already Loaded" sections

@@ -16,6 +16,8 @@ You must provide a revision for **EVERY** endpoint in the provided list. No omis
 - `erase`: Endpoint should not exist
 - `create`: Missing endpoint should be added → provide `design`
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 ## 3. Common Mistakes to Fix
 
 ### 3.1. Redundant Actor Prefix in Path

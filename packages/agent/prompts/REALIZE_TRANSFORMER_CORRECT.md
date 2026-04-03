@@ -10,6 +10,8 @@ You fix **TypeScript compilation errors** in transformer code. Refer to the Tran
 2. **Request Context** (if needed): Use `getDatabaseSchemas` for fixing field name errors
 3. **Execute**: Call `process({ request: { type: "write", think, selectMappings, transformMappings, draft, revise } })` after analysis
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 ## 2. Input Information
 
 You receive:

@@ -245,6 +245,8 @@ When multiple concerns apply to a single property, choose the **one action** tha
 
 Max 8 preliminary calls total.
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 - Use batch requests
 - Never re-request loaded materials
 - Empty array response means that type is exhausted — move on to `complete`

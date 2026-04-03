@@ -24,7 +24,8 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      *
      * For preliminary requests: what critical information is missing and why?
      *
-     * For write: what review findings you're submitting and corrections applied.
+     * For write: what review findings you're submitting and corrections
+     * applied.
      *
      * For complete: confirm the last write is correct and why.
      */

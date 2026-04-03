@@ -25,6 +25,8 @@ This agent achieves its goal through function calling. **Function calling is MAN
 5. **Revise** (if needed): Submit another `write` to refine
 6. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 **Empty array is valid**: If no action endpoints are needed, call `write` with `designs: []`
 
 **PROHIBITIONS**:

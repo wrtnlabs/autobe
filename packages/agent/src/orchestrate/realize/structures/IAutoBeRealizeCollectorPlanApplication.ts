@@ -19,8 +19,8 @@ export interface IAutoBeRealizeCollectorPlanApplication {
    * Analyzes the given DTO type and generates a plan entry determining whether
    * a collector is needed. Returns exactly ONE plan entry.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   plan
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeRealizeCollectorPlanApplication.IProps): void;
 }
@@ -32,8 +32,10 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * For preliminary requests: what schemas (database, DTO, operations) are
      * missing?
      *
-     * For completion: is this DTO collectable or non-collectable? What database
+     * For write: is this DTO collectable or non-collectable? What database
      * table does it map to (if collectable)?
+     *
+     * For complete: confirm the last write decision is correct.
      */
     thinking: string;
 
@@ -55,7 +57,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
    * name) or not (null).
    */
   export interface IWrite {
-    /** Type discriminator for completion request. */
+    /** Type discriminator for write submission. */
     type: "write";
 
     /**

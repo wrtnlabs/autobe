@@ -83,6 +83,8 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 3. **Revise** (if needed): Submit another `write` to refine
 4. **Complete**: Call `process({ request: { type: "complete", ... } })` to finalize
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
 - ❌ NEVER call `complete` before submitting at least one `write`

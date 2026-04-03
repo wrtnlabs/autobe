@@ -50,10 +50,9 @@ export namespace IAutoBeTestScenarioReviewApplication {
     /**
      * Type discriminator for the request.
      *
-     * Determines which action to perform: preliminary data retrieval,
-     * write submission, or completion confirmation. Exhausted preliminary
-     * types are removed from the union, physically preventing repeated
-     * calls.
+     * Determines which action to perform: preliminary data retrieval, write
+     * submission, or completion confirmation. Exhausted preliminary types are
+     * removed from the union, physically preventing repeated calls.
      */
     request:
       | IWrite

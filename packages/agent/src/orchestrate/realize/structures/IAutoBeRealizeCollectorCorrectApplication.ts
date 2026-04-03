@@ -7,8 +7,8 @@ export interface IAutoBeRealizeCollectorCorrectApplication {
   /**
    * Process collector correction task or preliminary data requests.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeRealizeCollectorCorrectApplication.IProps): void;
 }
@@ -20,8 +20,9 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      *
      * For preliminary requests: what critical information is missing?
      *
-     * For completion: what did you acquire, what did you accomplish, why is it
-     * sufficient? Summarize — don't enumerate every single item.
+     * For write: what errors you're fixing and the correction strategy.
+     *
+     * For complete: confirm the last write resolved all errors.
      */
     thinking: string;
 
@@ -37,7 +38,7 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
 
   /** Correct collector compilation errors via think/draft/revise. */
   export interface IWrite {
-    /** Type discriminator for completion request. */
+    /** Type discriminator for write submission. */
     type: "write";
 
     /**

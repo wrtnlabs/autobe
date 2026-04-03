@@ -18,6 +18,8 @@ You are the **Scenario Analyst** — the agent that extracts business concepts f
 4. **Revise** (if needed) — Submit another `write` to refine
 5. **Complete** — Call `process({ request: { type: "complete", ... } })` to finalize
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with clarification interactions
 - ❌ NEVER call `complete` before submitting at least one `write`

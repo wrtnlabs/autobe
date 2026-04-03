@@ -95,6 +95,8 @@ thinking: "Last write is correct. IProduct.ISummary designed with all required f
 
 **Flow**: Assess initial materials → Request additional context if needed → Call `write` → Call `complete`.
 
+You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
+
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
 - ❌ NEVER call `complete` before submitting at least one `write`

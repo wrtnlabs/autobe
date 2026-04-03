@@ -12,12 +12,16 @@ export interface IAutoBeAnalyzeSectionCrossFileReviewApplication {
 
 export interface IAutoBeAnalyzeSectionCrossFileReviewApplicationProps {
   /**
-   * Reasoning about your current state: what's missing (preliminary) or what
-   * you accomplished (completion).
+   * Reasoning: what's missing (preliminary), what you're submitting (write), or
+   * why the last write is correct (complete).
    */
   thinking?: string | null;
 
-  /** Action to perform. Exhausted preliminary types are removed from the union. */
+  /**
+   * Action to perform. Write can be called up to 3 times; after the 3rd write,
+   * completion is forced. Exhausted preliminary types are removed from the
+   * union.
+   */
   request:
     | IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite
     | IAutoBePreliminaryComplete

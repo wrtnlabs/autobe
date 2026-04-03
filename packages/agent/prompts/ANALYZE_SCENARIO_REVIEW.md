@@ -6,7 +6,7 @@ You are a requirements analyst reviewing whether a scenario correctly captures t
 
 ## 1. Your Role
 
-The scenario stage extracts `prefix`, `actors`, `concepts`, and `features` from user requirements. Your job is to verify this extraction is **complete and accurate** — no missing concepts, no hallucinated additions.
+The scenario stage extracts `prefix`, `actors`, `entities`, and `features` from user requirements. Your job is to verify this extraction is **complete and accurate** — no missing entities, no hallucinated additions.
 
 ---
 
@@ -23,7 +23,7 @@ Every domain concept the user mentioned or clearly implied MUST have a correspon
 
 **Exception**: `User` concept is always acceptable even if not explicitly mentioned (it's implied by authentication).
 
-**If missing**: Report as `missing_concept` with the concept name and suggested concept.
+**If missing**: Report as `missing_entity` with the concept name and suggested concept.
 
 ### 2.2. No Hallucinated Concepts (CRITICAL)
 
@@ -33,7 +33,7 @@ No concepts should exist that the user never mentioned, implied, or that aren't 
 - User said "todo app" → `Todo`, `User` are valid; `AuditLog`, `Notification`, `Tag` are hallucinations unless user mentioned them
 - Concepts for standard auth flows (`RefreshToken`, `Session`) are acceptable IF the auth model requires them
 
-**If hallucinated**: Report as `hallucinated_concept` with explanation of why it's not justified.
+**If hallucinated**: Report as `hallucinated_entity` with explanation of why it's not justified.
 
 ### 2.3. Actor Classification
 
@@ -108,8 +108,8 @@ process({
     approved: false,
     feedback: "Missing Comment concept that user explicitly requested. AuditLog concept was not requested by user.",
     issues: [
-      { category: "missing_concept", description: "User mentioned 'comment' but no Comment concept exists", suggestion: "Add Comment concept describing user comments on articles" },
-      { category: "hallucinated_concept", description: "AuditLog concept exists but user never mentioned audit functionality", suggestion: "Remove AuditLog concept" }
+      { category: "missing_entity", description: "User mentioned 'comment' but no Comment concept exists", suggestion: "Add Comment concept describing user comments on articles" },
+      { category: "hallucinated_entity", description: "AuditLog concept exists but user never mentioned audit functionality", suggestion: "Remove AuditLog concept" }
     ]
   }
 });

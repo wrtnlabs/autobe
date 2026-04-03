@@ -11,10 +11,7 @@ export interface IAutoBeAnalyzeScenarioReviewApplication {
 }
 
 export interface IAutoBeAnalyzeScenarioReviewApplicationProps {
-  /**
-   * Reasoning about your current state: what's missing (preliminary) or what
-   * you accomplished (completion).
-   */
+  /** Reasoning about the review verdict and key findings. */
   thinking?: string | null;
 
   /** Action to perform: submit review verdict. */

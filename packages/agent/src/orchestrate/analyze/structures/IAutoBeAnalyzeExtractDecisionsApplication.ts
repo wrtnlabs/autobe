@@ -8,9 +8,7 @@ export interface IAutoBeAnalyzeExtractDecisionsApplication {
 }
 
 export interface IAutoBeAnalyzeExtractDecisionsApplicationProps {
-  /**
-   * Reasoning: what decisions you extracted and why.
-   */
+  /** Reasoning: what decisions you extracted and why. */
   thinking?: string | null;
 
   /** Action to perform: submit extracted decisions. */

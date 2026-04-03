@@ -17,8 +17,8 @@ export interface IAutoBeRealizeTransformerPlanApplication {
    * Analyzes the given DTO type and generates a plan entry determining whether
    * a transformer is needed. Returns exactly ONE plan entry.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   plan
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeRealizeTransformerPlanApplication.IProps): void;
 }
@@ -29,8 +29,10 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      *
      * For preliminary requests: what schemas (database or DTO) are missing?
      *
-     * For completion: is this DTO transformable or non-transformable? What
-     * database table does it map to (if transformable)?
+     * For write: is this DTO transformable or non-transformable? What database
+     * table does it map to (if transformable)?
+     *
+     * For complete: confirm the last write decision is correct.
      */
     thinking: string;
 
@@ -51,7 +53,7 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
    * name) or not (null).
    */
   export interface IWrite {
-    /** Type discriminator for completion request. */
+    /** Type discriminator for write submission. */
     type: "write";
 
     /**

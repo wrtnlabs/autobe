@@ -6,8 +6,8 @@ export interface IAutoBeRealizeAuthorizationCorrectApplication {
   /**
    * Process authentication correction task or preliminary data requests.
    *
-   * @param next Request containing either preliminary data request or complete
-   *   task
+   * @param next Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(next: IAutoBeRealizeAuthorizationCorrectApplication.IProps): void;
 }
@@ -19,8 +19,9 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
      *
      * For preliminary requests: what critical information is missing?
      *
-     * For completion: what did you acquire, what did you accomplish, why is it
-     * sufficient?
+     * For write: what errors you're fixing and the correction strategy.
+     *
+     * For complete: confirm the last write resolved all errors.
      */
     thinking: string;
 
@@ -36,7 +37,7 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
 
   /** Request to fix authentication component compilation errors. */
   export interface IWrite {
-    /** Type discriminator for completion request. */
+    /** Type discriminator for write submission. */
     type: "write";
 
     /**

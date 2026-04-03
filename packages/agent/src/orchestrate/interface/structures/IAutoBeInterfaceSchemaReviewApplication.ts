@@ -62,7 +62,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      *
      * - Preliminary types: Load context data incrementally
      * - `write`: Submit schema review for external validation
-     * - `complete`: Finalize after successful write validation
+     * - `complete`: Finalize when satisfied with last write
      *
      * When preliminary returns empty array, that type is removed from the
      * union, physically preventing repeated calls.
