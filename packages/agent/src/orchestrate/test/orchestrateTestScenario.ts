@@ -16,7 +16,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
@@ -96,7 +95,7 @@ export const orchestrateTestScenario = async (
  *
  * Following InterfacePrerequisite pattern:
  *
- * - CyclinicController wrapper
+ * - Preliminary.orchestrate wrapper
  * - Conversate with controller
  * - Dispatch event
  * - Return scenario
@@ -136,10 +135,9 @@ async function process(
 
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
-
-  const cyclinic = new AutoBeCyclinicController<
+  const preliminary: AutoBePreliminaryController<
     "analysisSections" | "interfaceOperations" | "interfaceSchemas"
-  >({
+  > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeTestScenarioApplication>(),
     source: SOURCE,
     kinds: ["analysisSections", "interfaceOperations", "interfaceSchemas"],
@@ -168,131 +166,102 @@ async function process(
     },
   });
 
-  return cyclinic.orchestrate<
-    IAutoBeTestScenarioApplication.IWrite,
-    AutoBeTestScenario[]
-  >(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeTestScenarioApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<AutoBeTestScenario[] | null> = {
+      value: null,
+    };
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController({
+        dict: props.dict,
+        operation: props.operation,
+        authorizations,
+        preliminary,
+        build: (scenarios) => {
+          // Normalize function name to snake_case
+          for (const s of scenarios)
+            s.functionName = NamingConvention.snake(s.functionName);
+          pointer.value ??= [];
+          pointer.value.push(...scenarios);
+        },
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformTestScenarioHistory({
+        state: ctx.state(),
+        operation: props.operation,
+        instruction: props.instruction,
+        preliminary,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
 
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController({
-          dict: props.dict,
-          operation: props.operation,
-          authorizations,
-          cyclinic,
-          action,
-        }),
-        enforceFunctionCall: true,
-        promptCacheKey: props.promptCacheKey,
-        ...transformTestScenarioHistory({
-          state: ctx.state(),
-          operation: props.operation,
-          instruction: props.instruction,
-          preliminary: context.preliminary,
-        }),
-      });
-      return { result, action: action.value };
-    },
-    // VALIDATE: run business logic validation
-    async (writeData) => {
-      const errors: IValidation.IError[] = [];
-      writeData.scenarios.forEach((scenario, i) =>
-        AutoBeTestScenarioProgrammer.validate({
-          errors,
-          dict: props.dict,
-          operation: props.operation,
-          scenario,
-          accessor: `$input.request.scenarios[${i}]`,
-        }),
-      );
-      if (errors.length !== 0) return { success: false, diagnostics: errors };
-      return { success: true };
-    },
-    // FINALIZE: build result, dispatch event, return
-    async (lastWrite, result) => {
-      // Normalize function names to snake_case and fulfill auth dependencies
-      for (const s of lastWrite.scenarios) {
-        s.functionName = NamingConvention.snake(s.functionName);
-        AutoBeTestScenarioProgrammer.fulfill({
-          dict: props.dict,
-          authorizations,
-          operation: props.operation,
-          scenario: s,
-        });
-      }
-      const scenarios = lastWrite.scenarios.slice(0, 3);
+    pointer.value.splice(3);
 
-      if (result !== null)
-        ctx.dispatch({
-          type: SOURCE,
-          id: v7(),
-          metric: result.metric,
-          tokenUsage: result.tokenUsage,
-          scenarios,
-          acquisition: cyclinic.getPreliminary().getAcquisition(),
-          total: props.progress.total,
-          completed: ++props.progress.completed,
-          step: ctx.state().interface?.step ?? 0,
-          created_at: new Date().toISOString(),
-        });
-      return scenarios;
-    },
-  );
+    // Dispatch event
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      scenarios: pointer.value,
+      acquisition: preliminary.getAcquisition(),
+      total: props.progress.total,
+      completed: ++props.progress.completed,
+      step: ctx.state().interface?.step ?? 0,
+      created_at: new Date().toISOString(),
+    });
+    return out(result)(pointer.value);
+  });
 }
 
 function createController(props: {
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   authorizations: AutoBeInterfaceAuthorization[];
   operation: AutoBeOpenApi.IOperation;
-  action: IPointer<
-    | {
-        type: "write";
-        data: IAutoBeTestScenarioApplication.IWrite;
-      }
-    | { type: "complete" }
-    | null
-  >;
-  cyclinic: AutoBeCyclinicController<
+  build: (scenarios: AutoBeTestScenario[]) => void;
+  preliminary: AutoBePreliminaryController<
     "analysisSections" | "interfaceOperations" | "interfaceSchemas"
   >;
 }): IAgenticaController.IClass {
-  const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
-  > = props.cyclinic.getPreliminary();
-
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeTestScenarioApplication.IProps> => {
     const result: IValidation<IAutoBeTestScenarioApplication.IProps> =
       typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
     if (result.success === false) return result;
-    const req = result.data.request;
-    if (req.type === "write" || req.type === "complete") return result;
-    return preliminary.validate({
-      thinking: result.data.thinking,
-      request: req,
-    });
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
+    const errors: IValidation.IError[] = [];
+    result.data.request.scenarios.forEach((scenario, i) =>
+      AutoBeTestScenarioProgrammer.validate({
+        errors,
+        dict: props.dict,
+        operation: props.operation,
+        scenario,
+        accessor: `$input.request.scenarios[${i}]`,
+      }),
+    );
+
+    return errors.length === 0
+      ? result
+      : {
+          success: false,
+          data: result.data,
+          errors,
+        };
   };
 
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeTestScenarioApplication>({
-        validate: {
-          process: validate,
-        },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeTestScenarioApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
 
   return {
@@ -301,10 +270,18 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "write")
-          props.action.value = { type: "write", data: next.request };
-        else if (next.request.type === "complete")
-          props.action.value = { type: "complete" };
+        if (next.request.type === "complete") {
+          // Fulfill missing authentication dependencies for each scenario
+          for (const scenario of next.request.scenarios) {
+            AutoBeTestScenarioProgrammer.fulfill({
+              dict: props.dict,
+              authorizations: props.authorizations,
+              operation: props.operation,
+              scenario,
+            });
+          }
+          props.build(next.request.scenarios);
+        }
       },
     } satisfies IAutoBeTestScenarioApplication,
   };

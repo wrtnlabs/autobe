@@ -14,7 +14,6 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceAuthorizationHistory } from "./histories/transformInterfaceAuthorizationHistory";
 import { AutoBeInterfaceAuthorizationProgrammer } from "./programmers/AutoBeInterfaceAuthorizationProgrammer";
@@ -60,13 +59,12 @@ async function process(
   },
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
-
-  const cyclinic = new AutoBeCyclinicController<
+  const preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
-  >({
+  > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceAuthorizationApplication>(),
     source: SOURCE,
@@ -78,164 +76,110 @@ async function process(
     ],
     state: ctx.state(),
   });
-
-  return cyclinic.orchestrate<
-    IAutoBeInterfaceAuthorizationApplication.IWrite,
-    AutoBeInterfaceAuthorizationEvent
-  >(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeInterfaceAuthorizationApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
-
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController({
-          actor: props.actor,
-          action,
-          cyclinic,
-          prefix,
-        }),
-        enforceFunctionCall: true,
-        promptCacheKey: props.promptCacheKey,
-        ...transformInterfaceAuthorizationHistory({
-          state: ctx.state(),
-          prefix,
-          instruction: props.instruction,
-          actor: props.actor,
-          preliminary: context.preliminary,
-        }),
-      });
-      return { result, action: action.value };
-    },
-    // VALIDATE: run business logic validation
-    async (writeData) => {
-      const errors: IValidation.IError[] = [];
-      AutoBeInterfaceAuthorizationProgrammer.validateAuthorizationTypes({
-        errors,
-        actor: props.actor,
-        operations: writeData.operations,
-        accessor: "$input.request.operations",
-      });
-      writeData.operations.forEach((operation, index) =>
-        AutoBeInterfaceAuthorizationProgrammer.validateOperation({
-          errors,
-          prefix,
-          actor: props.actor,
-          operation,
-          accessor: `$input.request.operations[${index}]`,
-        }),
-      );
-      if (errors.length !== 0) return { success: false, diagnostics: errors };
-      return { success: true };
-    },
-    // FINALIZE: build result, dispatch event, return
-    async (lastWrite, result) => {
-      // Apply fixes from execute.process logic
-      for (const o of lastWrite.operations)
-        for (const p of o.parameters)
-          AutoBeJsonSchemaFactory.fixSchema(p.schema);
-      const filteredOperations: AutoBeOpenApi.IOperation[] =
-        lastWrite.operations.filter((operation) =>
-          AutoBeInterfaceAuthorizationProgrammer.filter({
-            actor: props.actor.kind,
-            operation,
-          }),
-        );
-      const operations: AutoBeOpenApi.IOperation[] =
-        AutoBeInterfaceAuthorizationProgrammer.fixOperations({
-          operations: filteredOperations,
-          prefix,
-        });
-
-      const event: AutoBeInterfaceAuthorizationEvent = {
-        type: SOURCE,
-        id: v7(),
-        analysis: lastWrite.analysis,
-        rationale: lastWrite.rationale,
-        operations,
-        acquisition: cyclinic.getPreliminary().getAcquisition(),
-        metric: result?.metric ?? {
-          attempt: 0,
-          success: 0,
-          consent: 0,
-          validationFailure: 0,
-          invalidJson: 0,
-        },
-        tokenUsage: result?.tokenUsage ?? {
-          total: 0,
-          input: { total: 0, cached: 0 },
-          output: {
-            total: 0,
-            reasoning: 0,
-            accepted_prediction: 0,
-            rejected_prediction: 0,
-          },
-        },
-        created_at: new Date().toISOString(),
-        step: ctx.state().analyze?.step ?? 0,
-        total: props.progress.total,
-        completed: ++props.progress.completed,
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeInterfaceAuthorizationApplication.IComplete | null> =
+      {
+        value: null,
       };
-      return event;
-    },
-  );
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController({
+        actor: props.actor,
+        build: (next) => {
+          pointer.value = next;
+        },
+        preliminary,
+        prefix,
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfaceAuthorizationHistory({
+        state: ctx.state(),
+        prefix,
+        instruction: props.instruction,
+        actor: props.actor,
+        preliminary,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
+
+    const operations: AutoBeOpenApi.IOperation[] =
+      AutoBeInterfaceAuthorizationProgrammer.fixOperations({
+        operations: pointer.value?.operations ?? [],
+        prefix,
+      });
+    return out(result)({
+      type: SOURCE,
+      id: v7(),
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      operations,
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      created_at: new Date().toISOString(),
+      step: ctx.state().analyze?.step ?? 0,
+      total: props.progress.total,
+      completed: ++props.progress.completed,
+    } satisfies AutoBeInterfaceAuthorizationEvent);
+  });
 }
 
 function createController(props: {
   prefix: string | null;
   actor: AutoBeAnalyze.IActor;
-  action: IPointer<
-    | {
-        type: "write";
-        data: IAutoBeInterfaceAuthorizationApplication.IWrite;
-      }
-    | { type: "complete" }
-    | null
-  >;
-  cyclinic: AutoBeCyclinicController<
+  preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;
+  build: (next: IAutoBeInterfaceAuthorizationApplication.IComplete) => void;
 }): IAgenticaController.IClass {
-  const preliminary: AutoBePreliminaryController<
-    | "analysisSections"
-    | "previousAnalysisSections"
-    | "databaseSchemas"
-    | "previousDatabaseSchemas"
-  > = props.cyclinic.getPreliminary();
-
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceAuthorizationApplication.IProps> => {
     const result: IValidation<IAutoBeInterfaceAuthorizationApplication.IProps> =
       typia.validate<IAutoBeInterfaceAuthorizationApplication.IProps>(next);
     if (result.success === false) return result;
-    const req = result.data.request;
-    if (req.type === "write" || req.type === "complete") return result;
-    return preliminary.validate({
-      thinking: result.data.thinking,
-      request: req,
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
+    const errors: IValidation.IError[] = [];
+    AutoBeInterfaceAuthorizationProgrammer.validateAuthorizationTypes({
+      errors,
+      actor: props.actor,
+      operations: result.data.request.operations,
+      accessor: "$input.request.operations",
     });
+    result.data.request.operations.forEach((operation, index) =>
+      AutoBeInterfaceAuthorizationProgrammer.validateOperation({
+        errors,
+        prefix: props.prefix,
+        actor: props.actor,
+        operation,
+        accessor: `$input.request.operations[${index}]`,
+      }),
+    );
+    if (errors.length !== 0) {
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
+    }
+    return result;
   };
 
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeInterfaceAuthorizationApplication>({
-        validate: {
-          process: validate,
-        },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeInterfaceAuthorizationApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   return {
     protocol: "class",
@@ -243,10 +187,19 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "write")
-          props.action.value = { type: "write", data: next.request };
-        else if (next.request.type === "complete")
-          props.action.value = { type: "complete" };
+        if (next.request.type === "complete") {
+          for (const o of next.request.operations)
+            for (const p of o.parameters)
+              AutoBeJsonSchemaFactory.fixSchema(p.schema);
+          next.request.operations = next.request.operations.filter(
+            (operation) =>
+              AutoBeInterfaceAuthorizationProgrammer.filter({
+                actor: props.actor.kind,
+                operation,
+              }),
+          );
+          props.build(next.request);
+        }
       },
     } satisfies IAutoBeInterfaceAuthorizationApplication,
   };

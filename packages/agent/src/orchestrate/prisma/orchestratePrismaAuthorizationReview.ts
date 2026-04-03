@@ -10,7 +10,6 @@ import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaAuthorizationReviewHistory } from "./histories/transformPrismaAuthorizationReviewHistory";
 import { AutoBeDatabaseAuthorizationReviewProgrammer } from "./programmers/AutoBeDatabaseAuthorizationReviewProgrammer";
@@ -46,9 +45,9 @@ async function process(
     prefix: string | null;
   },
 ): Promise<AutoBeDatabaseAuthorizationReviewEvent> {
-  const cyclinic = new AutoBeCyclinicController<
+  const preliminary: AutoBePreliminaryController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
-  >({
+  > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeDatabaseAuthorizationReviewApplication>(),
     source: SOURCE,
@@ -60,127 +59,75 @@ async function process(
     state: ctx.state(),
   });
 
-  return cyclinic.orchestrate<
-    IAutoBeDatabaseAuthorizationReviewApplication.IWrite,
-    AutoBeDatabaseAuthorizationReviewEvent
-  >(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeDatabaseAuthorizationReviewApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
+  return preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeDatabaseAuthorizationReviewApplication.IComplete | null> =
+      { value: null };
 
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController({
-          cyclinic,
-          action,
-          prefix: props.prefix,
-          actors: props.actors,
-          component: props.component,
-        }),
-        enforceFunctionCall: true,
-        ...transformPrismaAuthorizationReviewHistory({
-          component: props.component,
-          actors: props.actors,
-          instruction: props.instruction,
-          prefix: props.prefix,
-          preliminary: context.preliminary,
-        }),
-      });
-      return { result, action: action.value };
-    },
-    // VALIDATE: run business logic validation
-    async (writeData) => {
-      const errors: IValidation.IError[] = [];
-      AutoBeDatabaseAuthorizationReviewProgrammer.validate({
-        errors,
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController({
+        preliminary,
         prefix: props.prefix,
-        revises: writeData.revises,
-        path: "$input.request.revises",
+        actors: props.actors,
+        component: props.component,
+        build: (next) => {
+          pointer.value = next;
+        },
+      }),
+      enforceFunctionCall: true,
+      ...transformPrismaAuthorizationReviewHistory({
         component: props.component,
         actors: props.actors,
-      });
-      if (errors.length > 0) return { success: false, diagnostics: errors };
-      return { success: true };
-    },
-    // FINALIZE: build result, dispatch event, return
-    async (lastWrite, result) => {
-      const component: AutoBeDatabaseComponent = {
-        kind: props.component.kind,
-        filename: props.component.filename,
-        namespace: props.component.namespace,
-        thinking: props.component.thinking,
-        review: lastWrite.review,
-        rationale: props.component.rationale,
-        tables: AutoBeDatabaseAuthorizationReviewProgrammer.execute({
-          component: props.component,
-          revises: lastWrite.revises,
-          actors: props.actors,
-          prefix: props.prefix,
-        }),
-      };
-      const [modification] =
-        AutoBeDatabaseComponentProgrammer.removeDuplicatedTable([component]);
+        instruction: props.instruction,
+        prefix: props.prefix,
+        preliminary,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
 
-      const event: AutoBeDatabaseAuthorizationReviewEvent = {
-        type: SOURCE,
-        id: v7(),
-        created_at: new Date().toISOString(),
-        review: modification.review,
-        revises: lastWrite.revises,
-        modification,
-        acquisition: cyclinic.getPreliminary().getAcquisition(),
-        metric: result?.metric ?? {
-          attempt: 0,
-          success: 0,
-          consent: 0,
-          validationFailure: 0,
-          invalidJson: 0,
-        },
-        tokenUsage: result?.tokenUsage ?? {
-          total: 0,
-          input: { total: 0, cached: 0 },
-          output: {
-            total: 0,
-            reasoning: 0,
-            accepted_prediction: 0,
-            rejected_prediction: 0,
-          },
-        },
-        step: ctx.state().analyze?.step ?? 0,
-      };
-      return event;
-    },
-  );
+    const component: AutoBeDatabaseComponent = {
+      kind: props.component.kind,
+      filename: props.component.filename,
+      namespace: props.component.namespace,
+      thinking: props.component.thinking,
+      review: pointer.value.review,
+      rationale: props.component.rationale,
+      tables: AutoBeDatabaseAuthorizationReviewProgrammer.execute({
+        component: props.component,
+        revises: pointer.value.revises,
+        actors: props.actors,
+        prefix: props.prefix,
+      }),
+    };
+    const [modification] =
+      AutoBeDatabaseComponentProgrammer.removeDuplicatedTable([component]);
+
+    return out(result)({
+      type: SOURCE,
+      id: v7(),
+      created_at: new Date().toISOString(),
+      review: modification.review,
+      revises: pointer.value.revises,
+      modification,
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+    });
+  });
 }
 
 function createController(props: {
-  cyclinic: AutoBeCyclinicController<
+  preliminary: AutoBePreliminaryController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
-  >;
-  action: IPointer<
-    | {
-        type: "write";
-        data: IAutoBeDatabaseAuthorizationReviewApplication.IWrite;
-      }
-    | { type: "complete" }
-    | null
   >;
   prefix: string | null;
   actors: AutoBeAnalyze.IActor[];
   component: AutoBeDatabaseComponent;
+  build: (
+    next: IAutoBeDatabaseAuthorizationReviewApplication.IComplete,
+  ) => void;
 }): IAgenticaController.IClass {
-  const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
-  > = props.cyclinic.getPreliminary();
-
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeDatabaseAuthorizationReviewApplication.IProps> => {
@@ -189,22 +136,36 @@ function createController(props: {
         input,
       );
     if (result.success === false) return result;
-    const req = result.data.request;
-    if (req.type === "write" || req.type === "complete") return result;
-    return preliminary.validate({
-      thinking: result.data.thinking,
-      request: req,
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
+    const errors: IValidation.IError[] = [];
+    AutoBeDatabaseAuthorizationReviewProgrammer.validate({
+      errors,
+      prefix: props.prefix,
+      revises: result.data.request.revises,
+      path: "$input.request.revises",
+      component: props.component,
+      actors: props.actors,
     });
+    if (errors.length > 0)
+      return {
+        success: false,
+        data: result.data,
+        errors,
+      };
+    return result;
   };
 
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeDatabaseAuthorizationReviewApplication>({
-        validate: {
-          process: validate,
-        },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeDatabaseAuthorizationReviewApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
 
   return {
@@ -213,10 +174,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "write")
-          props.action.value = { type: "write", data: next.request };
-        else if (next.request.type === "complete")
-          props.action.value = { type: "complete" };
+        if (next.request.type === "complete") props.build(next.request);
       },
     } satisfies IAutoBeDatabaseAuthorizationReviewApplication,
   };

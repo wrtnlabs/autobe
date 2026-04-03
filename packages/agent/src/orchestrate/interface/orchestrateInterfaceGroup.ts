@@ -10,7 +10,6 @@ import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceGroupHistory } from "./histories/transformInterfaceGroupHistory";
 import { IAutoBeInterfaceGroupApplication } from "./structures/IAutoBeInterfaceGroupApplication";
@@ -23,14 +22,13 @@ export async function orchestrateInterfaceGroup(
 ): Promise<AutoBeInterfaceGroupEvent> {
   const start: Date = new Date();
   const prisma: AutoBeDatabaseHistory | null = ctx.state().database;
-
-  const cyclinic = new AutoBeCyclinicController<
+  const preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
-  >({
+  > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceGroupApplication>(),
     source: SOURCE,
     kinds: [
@@ -42,95 +40,53 @@ export async function orchestrateInterfaceGroup(
     ],
     state: ctx.state(),
   });
-
-  return cyclinic.orchestrate<
-    IAutoBeInterfaceGroupApplication.IWrite,
-    AutoBeInterfaceGroupEvent
-  >(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeInterfaceGroupApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
-
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController({
-          action,
-          cyclinic,
-          databaseSchemas: new Set(
-            prisma !== null
-              ? prisma.result.data.files
-                  .map((f) => f.models)
-                  .flat()
-                  .map((m) => m.name)
-              : [],
-          ),
-        }),
-        enforceFunctionCall: true,
-        ...transformInterfaceGroupHistory({
-          state: ctx.state(),
-          instruction: props.instruction,
-          preliminary: context.preliminary,
-        }),
-      });
-      return { result, action: action.value };
-    },
-    // VALIDATE: run business logic validation
-    async (_writeData) => {
-      return { success: true };
-    },
-    // FINALIZE: build result, dispatch event, return
-    async (lastWrite, result) => {
-      const event: AutoBeInterfaceGroupEvent = {
-        type: SOURCE,
-        id: v7(),
-        analysis: lastWrite.analysis,
-        rationale: lastWrite.rationale,
-        created_at: start.toISOString(),
-        groups: lastWrite.groups,
-        acquisition: cyclinic.getPreliminary().getAcquisition(),
-        metric: result?.metric ?? {
-          attempt: 0,
-          success: 0,
-          consent: 0,
-          validationFailure: 0,
-          invalidJson: 0,
-        },
-        tokenUsage: result?.tokenUsage ?? {
-          total: 0,
-          input: { total: 0, cached: 0 },
-          output: {
-            total: 0,
-            reasoning: 0,
-            accepted_prediction: 0,
-            rejected_prediction: 0,
-          },
-        },
-        step: ctx.state().analyze?.step ?? 0,
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null> =
+      {
+        value: null,
       };
-      if (result !== null) ctx.dispatch(event);
-      return event;
-    },
-  );
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController({
+        pointer,
+        preliminary,
+        databaseSchemas: new Set(
+          prisma !== null
+            ? prisma.result.data.files
+                .map((f) => f.models)
+                .flat()
+                .map((m) => m.name)
+            : [],
+        ),
+      }),
+      enforceFunctionCall: true,
+      ...transformInterfaceGroupHistory({
+        state: ctx.state(),
+        instruction: props.instruction,
+        preliminary,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
+
+    const event: AutoBeInterfaceGroupEvent = {
+      type: SOURCE,
+      id: v7(),
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      created_at: start.toISOString(),
+      groups: pointer.value.groups,
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: ctx.state().analyze?.step ?? 0,
+    };
+    return out(result)(event);
+  });
 }
 
 function createController(props: {
-  action: IPointer<
-    | {
-        type: "write";
-        data: IAutoBeInterfaceGroupApplication.IWrite;
-      }
-    | { type: "complete" }
-    | null
-  >;
-  cyclinic: AutoBeCyclinicController<
+  pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null>;
+  preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
     | "previousAnalysisSections"
@@ -139,14 +95,6 @@ function createController(props: {
   >;
   databaseSchemas: Set<string>;
 }): IAgenticaController.IClass {
-  const preliminary: AutoBePreliminaryController<
-    | "analysisSections"
-    | "databaseSchemas"
-    | "previousAnalysisSections"
-    | "previousDatabaseSchemas"
-    | "previousInterfaceOperations"
-  > = props.cyclinic.getPreliminary();
-
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeInterfaceGroupApplication.IProps> => {
@@ -154,17 +102,16 @@ function createController(props: {
       typia.validate<IAutoBeInterfaceGroupApplication.IProps>(input);
     if (result.success === false) return result;
 
-    const req = result.data.request;
-    if (req.type === "complete") return result;
-    if (req.type !== "write")
-      return preliminary.validate({
+    // Preliminary request validation
+    if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
         thinking: result.data.thinking,
-        request: req,
+        request: result.data.request,
       });
 
     // Complete request validation - check databaseSchemas
     const errors: IValidation.IError[] = [];
-    req.groups.forEach((group, i) => {
+    result.data.request.groups.forEach((group, i) => {
       group.databaseSchemas.forEach((key, j) => {
         if (props.databaseSchemas.has(key) === false)
           errors.push({
@@ -196,14 +143,12 @@ function createController(props: {
         };
   };
 
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeInterfaceGroupApplication>({
-        validate: {
-          process: validate,
-        },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeInterfaceGroupApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   return {
     protocol: "class",
@@ -211,10 +156,8 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "write")
-          props.action.value = { type: "write", data: input.request };
-        else if (input.request.type === "complete")
-          props.action.value = { type: "complete" };
+        if (input.request.type === "complete")
+          props.pointer.value = input.request;
       },
     } satisfies IAutoBeInterfaceGroupApplication,
   };

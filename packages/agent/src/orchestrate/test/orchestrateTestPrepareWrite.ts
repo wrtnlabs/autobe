@@ -3,23 +3,20 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestPrepareFunction,
-  AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
-  IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
 import {
   AutoBeFunctionCallingMetricFactory,
   AutoBeOpenApiTypeChecker,
 } from "@autobe/utils";
 import { IPointer } from "tstl";
-import typia, { IValidation } from "typia";
+import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeTokenUsageComponent } from "../../context/AutoBeTokenUsageComponent";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { transformTestPrepareWriteHistory } from "./histories/transformTestPrepareWriteHistory";
 import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
 import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
@@ -28,8 +25,20 @@ import { IAutoBeTestPrepareWriteApplication } from "./structures/IAutoBeTestPrep
 /**
  * Orchestrates the generation of test data preparation functions.
  *
- * Uses a write-validate-correct loop to ensure TypeScript compilation
- * correctness. Non-property types are generated directly without LLM.
+ * This orchestrator analyzes all ICreate DTOs from OpenAPI operations and
+ * generates intelligent test data preparation functions that:
+ *
+ * - Create mock data respecting validation constraints
+ * - Exclude sensitive/system-managed properties from input parameters
+ * - Generate realistic test data using @nestia/e2e utilities
+ * - Support partial input overrides for test customization
+ *
+ * The prepare functions enable consistent, maintainable test data generation
+ * across the entire E2E test suite.
+ *
+ * @param ctx AutoBE context containing OpenAPI document and LLM access
+ * @param instruction User instructions for test data generation context
+ * @returns Array of generated prepare function definitions
  */
 export const orchestrateTestPrepareWrite = async (
   ctx: AutoBeContext,
@@ -54,32 +63,41 @@ export const orchestrateTestPrepareWrite = async (
         value,
       });
 
+  // Generate prepare functions using LLM in parallel with prompt caching
   const result: Array<IAutoBeTestPrepareProcedure | null> =
     await executeCachedBatch(
       ctx,
       createTypes.map((entry) => async (promptCacheKey) => {
         try {
-          return await forceRetry(() =>
-            process(ctx, {
-              document: props.document,
-              typeName: entry.key,
-              schema: entry.value,
-              instruction: props.instruction,
-              promptCacheKey,
-              progress: props.progress,
-            }),
-          );
+          const event: AutoBeTestWriteEvent<AutoBeTestPrepareFunction> =
+            await forceRetry(() =>
+              process(ctx, {
+                document: props.document,
+                typeName: entry.key,
+                schema: entry.value,
+                instruction: props.instruction,
+                promptCacheKey,
+                progress: props.progress,
+              }),
+            );
+          ctx.dispatch(event);
+          return {
+            type: "prepare",
+            typeName: entry.key,
+            schema: entry.value,
+            function: event.function,
+          };
         } catch {
           return null;
         }
       }),
     );
 
+  // Filter out null results and return successful generations
   return result.filter((r) => r !== null);
 };
 
-// ── Main process ──
-
+/** Processes the generation of a single prepare function using LLM. */
 async function process(
   ctx: AutoBeContext,
   props: {
@@ -90,8 +108,7 @@ async function process(
     progress: AutoBeProgressEventBase;
     instruction: string;
   },
-): Promise<IAutoBeTestPrepareProcedure> {
-  // Non-property types — direct code generation without LLM
+): Promise<AutoBeTestWriteEvent<AutoBeTestPrepareFunction>> {
   if (
     !!props.schema.additionalProperties === false &&
     Object.keys(props.schema.properties).length === 0
@@ -99,282 +116,149 @@ async function process(
     const functionName: string = AutoBeTestPrepareProgrammer.getFunctionName(
       props.typeName,
     );
-    const content: string =
-      await AutoBeTestPrepareProgrammer.replaceImportStatements({
-        compiler: await ctx.compiler(),
-        typeName: props.typeName,
-        schemas: props.document.components.schemas,
-        content: AutoBeTestPrepareProgrammer.writeNonPropertyCode({
-          typeName: props.typeName,
-          schema: props.schema,
-        }),
-      });
-    const func: AutoBeTestPrepareFunction = {
-      type: "prepare",
-      location: `test/prepare/${functionName}.ts`,
-      content,
-      typeName: props.typeName,
-      name: functionName,
-    };
-    ctx.dispatch({
+    return {
       id: v7(),
       type: "testWrite",
-      function: func,
+      function: {
+        type: "prepare",
+        location: `test/prepare/${functionName}.ts`,
+        content: await AutoBeTestPrepareProgrammer.replaceImportStatements({
+          compiler: await ctx.compiler(),
+          typeName: props.typeName,
+          schemas: props.document.components.schemas,
+          content: AutoBeTestPrepareProgrammer.writeNonPropertyCode({
+            typeName: props.typeName,
+            schema: props.schema,
+          }),
+        }),
+        typeName: props.typeName,
+        name: functionName,
+      },
       completed: ++props.progress.completed,
       total: props.progress.total,
       step: ctx.state().interface?.step ?? 0,
       tokenUsage: new AutoBeTokenUsageComponent(),
       metric: AutoBeFunctionCallingMetricFactory.create(),
       created_at: new Date().toISOString(),
-    } satisfies AutoBeTestWriteEvent<AutoBeTestPrepareFunction>);
-    return {
-      type: "prepare",
-      typeName: props.typeName,
-      schema: props.schema,
-      function: func,
     };
   }
 
-  // LLM write-validate-correct loop
+  const pointer: IPointer<IAutoBeTestPrepareWriteApplication.IProps | null> = {
+    value: null,
+  };
+  // Execute LLM conversation with function calling
+  const { metric, tokenUsage } = await ctx.conversate({
+    source: "testWrite",
+    controller: createController({
+      dtoTypeName: props.typeName,
+      schema: props.schema,
+      build: (app) => {
+        pointer.value = app;
+      },
+    }),
+    enforceFunctionCall: true,
+    promptCacheKey: props.promptCacheKey,
+    ...(await transformTestPrepareWriteHistory(ctx, props)),
+  });
+  // Validate LLM response
+  if (pointer.value === null) {
+    ++props.progress.completed;
+    throw new Error(
+      `Failed to generate prepare function for ${props.typeName}`,
+    );
+  }
+
   const functionName: string = AutoBeTestPrepareProgrammer.getFunctionName(
     props.typeName,
   );
-  const location: string = `test/prepare/${functionName}.ts`;
-
-  const cyclinic = new AutoBeCyclinicController<never>({
-    application: typia.json.application<IAutoBeTestPrepareWriteApplication>(),
-    source: "testWrite",
-    kinds: [],
-    state: ctx.state(),
-  });
-
-  return await cyclinic.orchestrate(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | { type: "write"; data: IAutoBeTestPrepareWriteApplication.IWrite }
-        | { type: "complete" }
-        | null
-      > = { value: null };
-
-      const result = await ctx.conversate({
-        source: "testWrite",
-        controller: createController({
-          dtoTypeName: props.typeName,
-          schema: props.schema,
-          cyclinic,
-          action,
-        }),
-        enforceFunctionCall: true,
-        promptCacheKey: props.promptCacheKey,
-        ...(await buildHistories(ctx, {
-          typeName: props.typeName,
-          schema: props.schema,
-          document: props.document,
-          instruction: props.instruction,
-          failures: context.failures,
-          writeSucceeded: context.writeSucceeded,
-        })),
-      });
-
-      return { result, action: action.value };
+  const event: AutoBeTestWriteEvent<AutoBeTestPrepareFunction> = {
+    id: v7(),
+    type: "testWrite",
+    function: {
+      type: "prepare",
+      location: `test/prepare/${functionName}.ts`,
+      content: await AutoBeTestPrepareProgrammer.replaceImportStatements({
+        compiler: await ctx.compiler(),
+        typeName: props.typeName,
+        schemas: props.document.components.schemas,
+        content: pointer.value.revise.final ?? pointer.value.draft,
+      }),
+      typeName: props.typeName,
+      name: functionName,
     },
-    // VALIDATE: TypeScript compilation
-    async (writeData) => {
-      const dummyProgress: AutoBeProgressEventBase = { completed: 0, total: 0 };
-      const code: string =
-        await AutoBeTestPrepareProgrammer.replaceImportStatements({
-          compiler: await ctx.compiler(),
-          typeName: props.typeName,
-          schemas: props.document.components.schemas,
-          content: writeData.revise.final ?? writeData.draft,
-        });
-
-      const func: AutoBeTestPrepareFunction = {
-        type: "prepare",
-        location,
-        content: code,
-        typeName: props.typeName,
-        name: functionName,
-      };
-      const procedure: IAutoBeTestPrepareProcedure = {
-        type: "prepare",
-        typeName: props.typeName,
-        schema: props.schema,
-        function: func,
-      };
-
-      const compileEvent: AutoBeTestValidateEvent<AutoBeTestPrepareFunction> =
-        await AutoBeTestPrepareProgrammer.compile({
-          compiler: await ctx.compiler(),
-          document: props.document,
-          procedure,
-          progress: dummyProgress,
-          step: ctx.state().analyze?.step ?? 0,
-        });
-
-      const diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
-        compileEvent.result.type === "failure"
-          ? compileEvent.result.diagnostics.filter(
-              (d) => d.file === func.location,
-            )
-          : [];
-
-      return { success: diagnostics.length === 0, diagnostics };
-    },
-    // FINALIZE: dispatch event and return procedure
-    async (lastWrite, result) => {
-      const code: string =
-        await AutoBeTestPrepareProgrammer.replaceImportStatements({
-          compiler: await ctx.compiler(),
-          typeName: props.typeName,
-          schemas: props.document.components.schemas,
-          content: lastWrite.revise.final ?? lastWrite.draft,
-        });
-      const func: AutoBeTestPrepareFunction = {
-        type: "prepare",
-        location,
-        content: code,
-        typeName: props.typeName,
-        name: functionName,
-      };
-      if (result !== null)
-        ctx.dispatch({
-          id: v7(),
-          type: "testWrite",
-          function: func,
-          completed: ++props.progress.completed,
-          total: props.progress.total,
-          step: ctx.state().interface?.step ?? 0,
-          tokenUsage: result.tokenUsage,
-          metric: result.metric,
-          created_at: new Date().toISOString(),
-        } satisfies AutoBeTestWriteEvent<AutoBeTestPrepareFunction>);
-      return {
-        type: "prepare",
-        typeName: props.typeName,
-        schema: props.schema,
-        function: func,
-      };
-    },
-  );
+    completed: ++props.progress.completed,
+    total: props.progress.total,
+    step: ctx.state().interface?.step ?? 0,
+    tokenUsage,
+    metric,
+    created_at: new Date().toISOString(),
+  };
+  return event;
 }
 
-// ── Controller factory ──
-
+/** Creates LLM controller for function calling. */
 function createController(props: {
   dtoTypeName: string;
   schema: AutoBeOpenApi.IJsonSchema.IObject;
-  cyclinic: AutoBeCyclinicController<never>;
-  action: IPointer<
-    | { type: "write"; data: IAutoBeTestPrepareWriteApplication.IWrite }
-    | { type: "complete" }
-    | null
-  >;
+  build: (app: IAutoBeTestPrepareWriteApplication.IProps) => void;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeTestPrepareWriteApplication.IProps> => {
+    // Basic typia validation
     const result: IValidation<IAutoBeTestPrepareWriteApplication.IProps> =
       typia.validate<IAutoBeTestPrepareWriteApplication.IProps>(input);
     if (result.success === false) return result;
 
-    const req = result.data.request;
-    if (req.type === "write") {
-      const errors: IValidation.IError[] = AutoBeTestPrepareProgrammer.validate(
-        {
-          typeName: props.dtoTypeName,
-          schema: props.schema,
-          mappings: req.mappings,
-          draft: req.draft,
-          revise: req.revise,
-        },
-      );
-      return errors.length
-        ? { success: false, errors, data: result.data }
-        : result;
-    }
-    return result;
+    // Custom business logic validation
+    const errors: IValidation.IError[] = AutoBeTestPrepareProgrammer.validate({
+      typeName: props.dtoTypeName,
+      schema: props.schema,
+      mappings: result.data.mappings,
+      draft: result.data.draft,
+      revise: result.data.revise,
+    });
+
+    // // Incorrect template literal syntax validation
+    // const backtickRegex: RegExp = /`/g;
+    // const count: number = (
+    //   (result.data.revise.final ?? result.data.draft).match(backtickRegex) ?? []
+    // ).length;
+
+    // if (count % 2 !== 0)
+    //   errors.push({
+    //     path: result.data.revise.final
+    //       ? "$input.request.revise.final"
+    //       : "$input.request.draft",
+    //     expected: "even number of backticks",
+    //     value: count,
+    //     description: "Unmatched backtick in template literal",
+    //   });
+
+    return errors.length > 0
+      ? {
+          success: false,
+          errors,
+          data: result.data,
+        }
+      : result;
   };
 
-  const application = props.cyclinic.fixCompleteAvailability(
+  const application: ILlmApplication =
     typia.llm.application<IAutoBeTestPrepareWriteApplication>({
-      validate: { process: validate },
-    }),
-  );
+      validate: {
+        write: validate,
+      },
+    });
 
   return {
     protocol: "class",
     name: "testPrepareWrite",
     application,
     execute: {
-      process: (input) => {
-        if (input.request.type === "write")
-          props.action.value = { type: "write", data: input.request };
-        else if (input.request.type === "complete")
-          props.action.value = { type: "complete" };
+      write: (next) => {
+        props.build(next);
       },
     } satisfies IAutoBeTestPrepareWriteApplication,
-  };
-}
-
-// ── History builder ──
-
-async function buildHistories(
-  ctx: AutoBeContext,
-  props: {
-    typeName: string;
-    schema: AutoBeOpenApi.IJsonSchema.IObject;
-    document: AutoBeOpenApi.IDocument;
-    instruction: string;
-    failures: AutoBeCyclinicController.IFailure[];
-    writeSucceeded: boolean;
-  },
-) {
-  const base = await transformTestPrepareWriteHistory(ctx, {
-    typeName: props.typeName,
-    schema: props.schema,
-    document: props.document,
-    instruction: props.instruction,
-  });
-
-  if (props.failures.length === 0 && !props.writeSucceeded) return base;
-
-  const failureEntries = props.failures.map((f) => {
-    const text =
-      typeof f.diagnostics === "string"
-        ? `[Iteration ${f.iteration + 1}] ${f.diagnostics}`
-        : `[Write attempt ${f.iteration + 1} FAILED] TypeScript compilation errors:\n` +
-          (f.diagnostics as IAutoBeTypeScriptCompileResult.IDiagnostic[])
-            .map(
-              (d) =>
-                `  - ${d.file ?? "unknown"} ${d.category} TS${d.code}: ${d.messageText}`,
-            )
-            .join("\n");
-    return {
-      id: v7(),
-      type: "systemMessage" as const,
-      text,
-      created_at: new Date().toISOString(),
-    };
-  });
-
-  const successEntries = props.writeSucceeded
-    ? [
-        {
-          id: v7(),
-          type: "systemMessage" as const,
-          text:
-            "Your last write attempt passed TypeScript compilation successfully. " +
-            "You may now call complete(confirm: true) to finalize.",
-          created_at: new Date().toISOString(),
-        },
-      ]
-    : [];
-
-  return {
-    ...base,
-    histories: [...base.histories, ...failureEntries, ...successEntries],
   };
 }

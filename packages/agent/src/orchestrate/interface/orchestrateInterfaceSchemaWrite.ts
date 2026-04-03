@@ -8,13 +8,12 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { IPointer } from "tstl";
-import typia, { ILlmSchema, IValidation } from "typia";
+import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { forceRetry } from "../../utils/forceRetry";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
+import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaWriteHistory } from "./histories/transformInterfaceSchemaWriteHistory";
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
@@ -67,16 +66,14 @@ export async function orchestrateInterfaceSchemaWrite(
           (op.responseBody && predicate(op.responseBody.typeName)),
       );
       try {
-        const row: AutoBeOpenApi.IJsonSchema = await forceRetry(() =>
-          process(ctx, {
-            operations,
-            progress,
-            otherTypeNames: typeNames.filter((k) => k !== it),
-            promptCacheKey,
-            typeName: it,
-            instruction: props.instruction,
-          }),
-        );
+        const row: AutoBeOpenApi.IJsonSchema = await process(ctx, {
+          operations,
+          progress,
+          otherTypeNames: typeNames.filter((k) => k !== it),
+          promptCacheKey,
+          typeName: it,
+          instruction: props.instruction,
+        });
         x[it] = row;
       } catch (error) {
         --progress.total;
@@ -86,19 +83,6 @@ export async function orchestrateInterfaceSchemaWrite(
   );
   return x;
 }
-
-// ── Types ──
-
-type PreliminaryKinds =
-  | "analysisSections"
-  | "databaseSchemas"
-  | "interfaceOperations"
-  | "previousAnalysisSections"
-  | "previousDatabaseSchemas"
-  | "previousInterfaceOperations"
-  | "previousInterfaceSchemas";
-
-// ── Main process ──
 
 async function process(
   ctx: AutoBeContext,
@@ -111,10 +95,15 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchema> {
-  const everyModels: AutoBeDatabase.IModel[] =
-    ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
-
-  const cyclinic = new AutoBeCyclinicController<PreliminaryKinds>({
+  const preliminary: AutoBePreliminaryController<
+    | "analysisSections"
+    | "databaseSchemas"
+    | "interfaceOperations"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "previousInterfaceOperations"
+    | "previousInterfaceSchemas"
+  > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceSchemaApplication>(),
     source: SOURCE,
     kinds: [
@@ -152,114 +141,113 @@ async function process(
         }),
     },
   });
-
-  return await cyclinic.orchestrate(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | { type: "write"; data: IAutoBeInterfaceSchemaApplication.IWrite }
-        | { type: "complete" }
-        | null
-      > = { value: null };
-
-      const result = await ctx.conversate({
-        source: SOURCE,
-        controller: createController({
-          everyModels,
-          cyclinic,
-          action,
-          operations: props.operations,
-          typeName: props.typeName,
-        }),
-        enforceFunctionCall: true,
-        promptCacheKey: props.promptCacheKey,
-        ...buildHistories({
-          operations: props.operations,
-          typeName: props.typeName,
-          otherTypeNames: props.otherTypeNames,
-          preliminary: context.preliminary,
-          instruction: props.instruction,
-          failures: context.failures,
-          writeSucceeded: context.writeSucceeded,
-        }),
-      });
-
-      return { result, action: action.value };
-    },
-    // VALIDATE: schema validation
-    async (writeData) => {
-      const errors: IValidation.IError[] = [];
-      AutoBeInterfaceSchemaProgrammer.validate({
-        path: "$input.request.design",
-        errors,
-        operations: props.operations,
-        everyModels,
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeInterfaceSchemaApplication.IComplete | null> =
+      {
+        value: null,
+      };
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController(ctx, {
+        build: async (next) => {
+          pointer.value = next;
+        },
+        preliminary,
         typeName: props.typeName,
-        design: writeData.design,
-      });
-      return { success: errors.length === 0, diagnostics: errors };
-    },
-    // FINALIZE: dispatch event and return schema
-    (lastWrite, result) => {
-      const schema: AutoBeOpenApi.IJsonSchema =
-        AutoBeJsonSchemaFactory.fixDesign(lastWrite.design);
-      if (result !== null)
-        ctx.dispatch({
-          type: SOURCE,
-          id: v7(),
-          typeName: props.typeName,
-          analysis: lastWrite.analysis,
-          rationale: lastWrite.rationale,
-          schema,
-          acquisition: cyclinic.getPreliminary().getAcquisition(),
-          metric: result.metric,
-          tokenUsage: result.tokenUsage,
-          completed: ++props.progress.completed,
-          total: props.progress.total,
-          step: ctx.state().database?.step ?? 0,
-          created_at: new Date().toISOString(),
-        } satisfies AutoBeInterfaceSchemaEvent);
-      return schema;
-    },
-  );
+        operations: props.operations,
+      }),
+      enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
+      ...transformInterfaceSchemaWriteHistory({
+        preliminary,
+        operations: props.operations,
+        instruction: props.instruction,
+        typeName: props.typeName,
+        otherTypeNames: props.otherTypeNames,
+      }),
+    });
+    if (pointer.value === null) return out(result)(null);
+
+    const schema: AutoBeOpenApi.IJsonSchema = AutoBeJsonSchemaFactory.fixDesign(
+      pointer.value.design,
+    );
+    ctx.dispatch({
+      type: SOURCE,
+      id: v7(),
+      typeName: props.typeName,
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      schema,
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
+      step: ctx.state().database?.step ?? 0,
+      created_at: new Date().toISOString(),
+    } satisfies AutoBeInterfaceSchemaEvent);
+    return out(result)(schema);
+  });
 }
 
-// ── Controller factory ──
+function createController(
+  ctx: AutoBeContext,
+  props: {
+    build: (next: IAutoBeInterfaceSchemaApplication.IComplete) => Promise<void>;
+    preliminary: AutoBePreliminaryController<
+      | "analysisSections"
+      | "databaseSchemas"
+      | "interfaceOperations"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceOperations"
+      | "previousInterfaceSchemas"
+    >;
+    operations: AutoBeOpenApi.IOperation[];
+    typeName: string;
+  },
+): IAgenticaController.IClass {
+  const everyModels: AutoBeDatabase.IModel[] =
+    ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
 
-function createController(props: {
-  everyModels: AutoBeDatabase.IModel[];
-  cyclinic: AutoBeCyclinicController<PreliminaryKinds>;
-  action: IPointer<
-    | { type: "write"; data: IAutoBeInterfaceSchemaApplication.IWrite }
-    | { type: "complete" }
-    | null
-  >;
-  operations: AutoBeOpenApi.IOperation[];
-  typeName: string;
-}): IAgenticaController.IClass {
-  const preliminary = props.cyclinic.getPreliminary();
   const validate = (
-    input: unknown,
+    next: unknown,
   ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
     const result: IValidation<IAutoBeInterfaceSchemaApplication.IProps> =
-      typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(input);
+      typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
-    }
-    const req = result.data.request;
-    if (req.type !== "write" && req.type !== "complete")
-      return preliminary.validate({
+    } else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
         thinking: result.data.thinking,
-        request: req,
+        request: result.data.request,
       });
+
+    // Check all IAuthorized types
+    const errors: IValidation.IError[] = [];
+    AutoBeInterfaceSchemaProgrammer.validate({
+      path: "$input.request.design",
+      errors,
+      operations: props.operations,
+      everyModels,
+      typeName: props.typeName,
+      design: result.data.request.design,
+    });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
     return result;
   };
 
-  let application = preliminary.fixApplication(
+  const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeInterfaceSchemaApplication>({
-      validate: { process: validate },
+      validate: {
+        process: validate,
+      },
     }),
   );
   if (
@@ -277,81 +265,18 @@ function createController(props: {
     ).$ref = "AutoBeOpenApi.IJsonSchema.IObject";
   AutoBeInterfaceSchemaProgrammer.fixApplication({
     application,
-    everyModels: props.everyModels,
+    everyModels,
   });
-  application = props.cyclinic.fixCompleteAvailability(application);
 
   return {
     protocol: "class",
     name: SOURCE,
     application,
     execute: {
-      process: (input) => {
-        if (input.request.type === "write")
-          props.action.value = { type: "write", data: input.request };
-        else if (input.request.type === "complete")
-          props.action.value = { type: "complete" };
+      process: async (next) => {
+        if (next.request.type === "complete") await props.build(next.request);
       },
     } satisfies IAutoBeInterfaceSchemaApplication,
-  };
-}
-
-// ── History builder ──
-
-function buildHistories(props: {
-  operations: AutoBeOpenApi.IOperation[];
-  typeName: string;
-  otherTypeNames: string[];
-  preliminary: AutoBeCyclinicController.IProcessContext<PreliminaryKinds>["preliminary"];
-  instruction: string;
-  failures: AutoBeCyclinicController.IFailure[];
-  writeSucceeded: boolean;
-}) {
-  const base = transformInterfaceSchemaWriteHistory({
-    preliminary: props.preliminary,
-    operations: props.operations,
-    instruction: props.instruction,
-    typeName: props.typeName,
-    otherTypeNames: props.otherTypeNames,
-  });
-
-  if (props.failures.length === 0 && !props.writeSucceeded) return base;
-
-  const failureEntries = props.failures.map((f) => {
-    const text =
-      typeof f.diagnostics === "string"
-        ? `[Iteration ${f.iteration + 1}] ${f.diagnostics}`
-        : `[Write attempt ${f.iteration + 1} FAILED] Schema validation errors:\n` +
-          (f.diagnostics as IValidation.IError[])
-            .map(
-              (e) =>
-                `  - ${e.path}: expected ${e.expected}, got ${JSON.stringify(e.value)}${e.description ? ` \u2014 ${e.description}` : ""}`,
-            )
-            .join("\n");
-    return {
-      id: v7(),
-      type: "systemMessage" as const,
-      text,
-      created_at: new Date().toISOString(),
-    };
-  });
-
-  const successEntries = props.writeSucceeded
-    ? [
-        {
-          id: v7(),
-          type: "systemMessage" as const,
-          text:
-            "Your last write attempt passed schema validation successfully. " +
-            "You may now call complete(confirm: true) to finalize.",
-          created_at: new Date().toISOString(),
-        },
-      ]
-    : [];
-
-  return {
-    ...base,
-    histories: [...base.histories, ...failureEntries, ...successEntries],
   };
 }
 
