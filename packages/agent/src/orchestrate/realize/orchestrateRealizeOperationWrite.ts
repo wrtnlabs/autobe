@@ -128,7 +128,7 @@ async function process(
       realizeTransformers: props.transformers.filter(
         (t) =>
           t.plan.dtoTypeName ===
-          props.scenario.operation.responseBody?.typeName.replace("IPage", ""),
+          props.scenario.operation.responseBody?.typeName.replace(/^IPage/, ""),
       ),
       analysisSections: ragSections,
     },
@@ -159,6 +159,8 @@ async function process(
         scenario: props.scenario,
         authorization: props.authorization,
         totalAuthorizations: props.totalAuthorizations,
+        collectors: props.collectors,
+        transformers: props.transformers,
         dto,
         preliminary,
       }),

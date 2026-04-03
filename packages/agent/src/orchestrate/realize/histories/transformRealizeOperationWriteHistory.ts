@@ -1,5 +1,10 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeOpenApi, AutoBeRealizeAuthorization } from "@autobe/interface";
+import {
+  AutoBeOpenApi,
+  AutoBeRealizeAuthorization,
+  AutoBeRealizeCollectorFunction,
+  AutoBeRealizeTransformerFunction,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -18,6 +23,8 @@ export const transformRealizeOperationWriteHistory = (props: {
   scenario: IAutoBeRealizeScenarioResult;
   authorization: AutoBeRealizeAuthorization | null;
   totalAuthorizations: AutoBeRealizeAuthorization[];
+  collectors: AutoBeRealizeCollectorFunction[];
+  transformers: AutoBeRealizeTransformerFunction[];
   dto: Record<string, string>;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
@@ -71,6 +78,8 @@ export const transformRealizeOperationWriteHistory = (props: {
           authorizations: props.totalAuthorizations,
           schemas: document.components.schemas,
           operation,
+          collectors: props.collectors,
+          transformers: props.transformers,
         }),
       },
       {

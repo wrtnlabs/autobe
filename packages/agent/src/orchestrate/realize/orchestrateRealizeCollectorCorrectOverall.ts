@@ -8,8 +8,8 @@ import typia, { ILlmApplication, IValidation } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { orchestrateRealizeCorrectOverall } from "./correct/orchestrateRealizeCorrectOverall";
 import { transformRealizeCollectorCorrectHistory } from "./histories/transformRealizeCollectorCorrectHistory";
-import { orchestrateRealizeCorrectOverall } from "./internal/orchestrateRealizeCorrectOverall";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
 import { IAutoBeRealizeCollectorCorrectApplication } from "./structures/IAutoBeRealizeCollectorCorrectApplication";
 

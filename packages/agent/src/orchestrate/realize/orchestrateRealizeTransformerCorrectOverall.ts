@@ -9,8 +9,8 @@ import typia, { ILlmApplication, IValidation } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { orchestrateRealizeCorrectOverall } from "./correct/orchestrateRealizeCorrectOverall";
 import { transformRealizeTransformerCorrectHistory } from "./histories/transformRealizeTransformerCorrectHistory";
-import { orchestrateRealizeCorrectOverall } from "./internal/orchestrateRealizeCorrectOverall";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 import { IAutoBeRealizeTransformerCorrectApplication } from "./structures/IAutoBeRealizeTransformerCorrectApplication";
 

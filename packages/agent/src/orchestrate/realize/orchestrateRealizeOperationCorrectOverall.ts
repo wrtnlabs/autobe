@@ -11,8 +11,8 @@ import typia, { ILlmApplication, IValidation } from "typia";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { orchestrateRealizeCorrectOverall } from "./correct/orchestrateRealizeCorrectOverall";
 import { transformRealizeOperationCorrectHistory } from "./histories/transformRealizeOperationCorrectHistory";
-import { orchestrateRealizeCorrectOverall } from "./internal/orchestrateRealizeCorrectOverall";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeOperationCorrectApplication } from "./structures/IAutoBeRealizeOperationCorrectApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
@@ -90,7 +90,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
             realizeTransformers: props.transformers.filter(
               (t) =>
                 t.plan.dtoTypeName ===
-                scenario.operation.responseBody?.typeName.replace("IPage", ""),
+                scenario.operation.responseBody?.typeName.replace(/^IPage/, ""),
             ),
           },
         });
@@ -109,6 +109,8 @@ export const orchestrateRealizeOperationCorrectOverall = async (
         return transformRealizeOperationCorrectHistory({
           state: ctx.state(),
           authorizations: props.authorizations,
+          collectors: props.collectors,
+          transformers: props.transformers,
           function: next.function,
           preliminary: next.preliminary,
           dto,
