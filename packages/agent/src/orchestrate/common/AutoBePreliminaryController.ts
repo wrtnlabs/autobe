@@ -29,7 +29,6 @@ import { orchestratePreliminary } from "./orchestratePreliminary";
 import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
 import { IAutoBeOrchestrateResult } from "./structures/IAutoBeOrchestrateResult";
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
-import { IAutoBePreliminaryComplete } from "./structures/IAutoBePreliminaryComplete";
 
 /**
  * RAG controller for incremental context loading.
@@ -59,8 +58,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   // PAGINATION
   private analysisPageOffset: number = 0;
   private previousWrites: IPreviousWrite[] = [];
-  private completed: IPointer<IAutoBePreliminaryComplete | null> = {
-    value: null,
+  private completed: IPointer<boolean> = {
+    value: false,
   };
 
   /**
@@ -292,10 +291,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     return this.previousWrites.at(-1)?.raw ?? null;
   }
 
-  public getCompleted(): IAutoBePreliminaryComplete | null {
-    return this.completed.value;
-  }
-
   /** Advances analysis section metadata page by PAGE_SIZE. */
   public advanceAnalysisPage(): void {
     this.analysisPageOffset += AutoBeConfigConstant.ANALYSIS_PAGE_SIZE;
@@ -348,7 +343,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       ) => (value: T | null) => IAutoBeOrchestrateResult<T>,
     ) => Promise<IAutoBeOrchestrateResult<T>>,
   ): Promise<T | never> {
-    this.completed.value = null as any;
+    this.completed.value = false satisfies boolean as boolean;
     this.previousWrites = [];
 
     for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
@@ -369,7 +364,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           throw new Error("No write execute found in histories.");
 
         // clear completion
-        this.completed.value = null;
+        this.completed.value = false;
 
         // store write result and raw arguments
         const raw: any = history.arguments.request;
@@ -393,11 +388,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         histories: result.histories,
         completed: this.completed,
       });
-      if (
-        this.completed.value !== null &&
-        this.completed.value.confirm === true &&
-        this.previousWrites.length !== 0
-      )
+      if (this.completed.value === true && this.previousWrites.length !== 0)
         break;
     }
 

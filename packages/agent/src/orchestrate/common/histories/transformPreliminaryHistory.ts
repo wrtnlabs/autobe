@@ -27,7 +27,6 @@ import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
 import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
-import { IAutoBePreliminaryComplete } from "../structures/IAutoBePreliminaryComplete";
 
 export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
   preliminary: AutoBePreliminaryController<Kind>,
@@ -62,7 +61,7 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
   const others = histories.filter((h) => h.type !== "systemMessage");
   const messages = [...systems, ...others];
 
-  // previous written value that is not completed yet
+  // previous written value
   const previousWrite: Record<string, any> | null =
     preliminary.getPreviousWrite();
   if (previousWrite !== null)
@@ -76,20 +75,6 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
         },
       }),
     );
-  const completed: IAutoBePreliminaryComplete | null =
-    preliminary.getCompleted();
-  if (completed !== null)
-    messages.push(
-      createFunctionCallingMessage({
-        controller: preliminary.getSource(),
-        kind: "complete" as any,
-        arguments: {
-          thinking: "determine whether to confirm or not.",
-          request: completed,
-        },
-      }),
-    );
-
   return messages;
 };
 

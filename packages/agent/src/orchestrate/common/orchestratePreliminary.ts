@@ -29,7 +29,7 @@ export const orchestratePreliminary = async <
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     histories: MicroAgenticaHistory[];
     preliminary: AutoBePreliminaryController<Kind>;
-    completed: IPointer<IAutoBePreliminaryComplete | null>;
+    completed: IPointer<boolean>;
     trial: number;
   },
 ): Promise<void> => {
@@ -47,7 +47,7 @@ export const orchestratePreliminary = async <
   for (const exec of executes) {
     // COMPLETE
     if (typia.is<{ request: IAutoBePreliminaryComplete }>(exec.arguments)) {
-      props.completed.value = exec.arguments.request;
+      props.completed.value ||= true;
     }
     // ANALYSIS
     else if (isAnalysisSections(props.preliminary, exec.arguments)) {
