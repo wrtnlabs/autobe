@@ -88,14 +88,11 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
           value: data.request,
           expected: "IWrite",
           description: StringUtil.trim`
-            You have not written anything yet, so you cannot request 
-            "complete" the task.
-
-            Please submit your write first by calling 
-            \`process({ request: { type: "write", ... } })\` 
-            with your write content, and then you can request "complete" 
-            after reviewing the content is correct and properly reflects 
-            your intentions.
+            No write has been submitted yet. 
+            
+            Please call \`process({ request: { type: "write", ... } })\`
+            with your content first, then call "complete" once you are
+            satisfied with the result.
           `,
         },
       ],

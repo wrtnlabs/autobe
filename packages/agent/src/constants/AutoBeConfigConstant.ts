@@ -154,8 +154,8 @@ export const enum AutoBeConfigConstant {
    * Maximum number of `write` submissions per cyclinic write → validate →
    * correct loop.
    *
-   * Enforced by `AutoBePreliminaryController`. The agent may call `write` up
-   * to this many times (initial submission + revisions). After the final write,
+   * Enforced by `AutoBePreliminaryController`. The agent may call `write` up to
+   * this many times (initial submission + revisions). After the final write,
    * completion is forced — the agent can no longer revise.
    *
    * Value of 3 gives the agent one initial attempt plus two revision
