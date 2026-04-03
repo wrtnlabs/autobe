@@ -72,7 +72,8 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   //                                         confirm === true
   // ---------------------------------------------------------------------------
   if (type === "complete") {
-    const previousWrite = controller.getPreviousWrite();
+    const previousWrite: Record<string, unknown> | null =
+      controller.getPreviousWrite();
     if (previousWrite !== null)
       return typia.validate<{
         thinking: string;

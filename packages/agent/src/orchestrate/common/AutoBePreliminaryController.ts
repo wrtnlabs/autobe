@@ -287,7 +287,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     return this.analysisPageOffset;
   }
 
-  public getPreviousWrite(): Record<string, any> | null {
+  public getPreviousWrite(): Record<string, unknown> | null {
     return this.previousWrites.at(-1)?.raw ?? null;
   }
 
