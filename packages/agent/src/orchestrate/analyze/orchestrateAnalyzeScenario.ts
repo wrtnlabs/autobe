@@ -1,4 +1,7 @@
-import { IAgenticaController } from "@agentica/core";
+import {
+  AgenticaAssistantMessageHistory,
+  IAgenticaController,
+} from "@agentica/core";
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAssistantMessageHistory,
@@ -9,7 +12,6 @@ import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeScenarioHistory } from "./histories/transformAnalyzeScenarioHistory";
 import { buildFixedAnalyzeScenarioFiles } from "./structures/FixedAnalyzeTemplate";
@@ -21,102 +23,68 @@ export const orchestrateAnalyzeScenario = async (
   props?: { feedback?: string },
 ): Promise<AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory> => {
   const start: Date = new Date();
-  const cyclinic = new AutoBeCyclinicController<"previousAnalysisSections">({
-    application: typia.json.application<IAutoBeAnalyzeScenarioApplication>(),
-    source: SOURCE,
-    kinds: ["previousAnalysisSections"],
-    state: ctx.state(),
-  });
-
-  return cyclinic.orchestrate(
-    ctx,
-    // PROCESS: LLM conversation → action
-    async (context) => {
-      const action: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeAnalyzeScenarioApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
-
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: SOURCE,
-        controller: createController({
-          cyclinic,
-          action,
-        }),
-        enforceFunctionCall: true,
-        ...transformAnalyzeScenarioHistory(
-          ctx,
-          context.preliminary,
-          props?.feedback,
-        ),
-      });
-      return { result, action: action.value };
-    },
-    // VALIDATE: no external compilation — always succeeds
-    async (_writeData) => {
-      return { success: true };
-    },
-    // FINALIZE: build scenario event
-    async (lastWrite, result) => {
-      const features = lastWrite.features ?? [];
-      const event: AutoBeAnalyzeScenarioEvent = {
-        type: SOURCE,
-        id: v7(),
-        prefix: lastWrite.prefix,
-        language: lastWrite.language,
-        actors: lastWrite.actors,
-        entities: lastWrite.entities,
-        features: features.map((f) => ({
-          id: f.id,
-          ...(f.providers ? { providers: f.providers } : {}),
-        })),
-        files: buildFixedAnalyzeScenarioFiles(
-          lastWrite.prefix,
-          features,
-        ) as AutoBeAnalyzeScenarioEvent["files"],
-        acquisition: cyclinic.getPreliminary().getAcquisition(),
-        metric: result?.metric ?? {
-          attempt: 0,
-          success: 0,
-          consent: 0,
-          validationFailure: 0,
-          invalidJson: 0,
-        },
-        tokenUsage: result?.tokenUsage ?? {
-          total: 0,
-          input: { total: 0, cached: 0 },
-          output: {
-            total: 0,
-            reasoning: 0,
-            accepted_prediction: 0,
-            rejected_prediction: 0,
-          },
-        },
-        step: (ctx.state().analyze?.step ?? -1) + 1,
+  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
+    new AutoBePreliminaryController({
+      application: typia.json.application<IAutoBeAnalyzeScenarioApplication>(),
+      source: SOURCE,
+      kinds: ["previousAnalysisSections"],
+      state: ctx.state(),
+    });
+  return await preliminary.orchestrate(ctx, async (out) => {
+    const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IWrite | null> = {
+      value: null,
+    };
+    const result: AutoBeContext.IResult = await ctx.conversate({
+      source: SOURCE,
+      controller: createController({
+        pointer,
+        preliminary,
+      }),
+      enforceFunctionCall: false,
+      ...transformAnalyzeScenarioHistory(ctx, {
+        preliminary,
+        feedback: props?.feedback,
+      }),
+    });
+    if (result.histories.at(-1)?.type === "assistantMessage")
+      return out(result)({
+        ...(result.histories.at(-1)! as AgenticaAssistantMessageHistory),
         created_at: start.toISOString(),
-      };
-      return event;
-    },
-  ) as Promise<AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory>;
+        completed_at: new Date().toISOString(),
+        id: v7(),
+      } satisfies AutoBeAssistantMessageHistory);
+    else if (pointer.value === null) return out(result)(null);
+
+    const features = pointer.value.features ?? [];
+    const event: AutoBeAnalyzeScenarioEvent = {
+      type: SOURCE,
+      id: v7(),
+      prefix: pointer.value.prefix,
+      language: pointer.value.language,
+      actors: pointer.value.actors,
+      entities: pointer.value.entities,
+      features: features.map((f) => ({
+        id: f.id,
+        ...(f.providers ? { providers: f.providers } : {}),
+      })),
+      files: buildFixedAnalyzeScenarioFiles(
+        pointer.value.prefix,
+        features,
+      ) as AutoBeAnalyzeScenarioEvent["files"],
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      step: (ctx.state().analyze?.step ?? -1) + 1,
+      created_at: start.toISOString(),
+    };
+    return out(result)(event);
+  });
 };
 
 function createController(props: {
-  cyclinic: AutoBeCyclinicController<"previousAnalysisSections">;
-  action: IPointer<
-    | {
-        type: "write";
-        data: IAutoBeAnalyzeScenarioApplication.IWrite;
-      }
-    | { type: "complete" }
-    | null
-  >;
+  pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IWrite | null>;
+  preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
 }): IAgenticaController.IClass {
-  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
-    props.cyclinic.getPreliminary();
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
@@ -124,26 +92,19 @@ function createController(props: {
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
     if (result.success === false) return result;
+    else if (result.data.request.type === "write") return result;
 
-    if (
-      result.data.request.type === "write" ||
-      result.data.request.type === "complete"
-    )
-      return result;
-
-    return preliminary.validate({
+    return props.preliminary.validate({
       thinking: result.data.thinking ?? "",
       request: result.data.request,
     });
   };
-  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    preliminary.fixApplication(
-      typia.llm.application<IAutoBeAnalyzeScenarioApplication>({
-        validate: {
-          process: validate,
-        },
-      }),
-    ),
+  const application: ILlmApplication = props.preliminary.fixApplication(
+    typia.llm.application<IAutoBeAnalyzeScenarioApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   return {
     protocol: "class",
@@ -151,10 +112,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "write")
-          props.action.value = { type: "write", data: input.request };
-        else if (input.request.type === "complete")
-          props.action.value = { type: "complete" };
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeAnalyzeScenarioApplication,
   };
@@ -203,7 +161,7 @@ const repairMissingRequestType = (input: unknown): unknown => {
       ...root,
       request: {
         ...request,
-        type: "write",
+        type: "request",
       },
     };
   }
@@ -215,12 +173,12 @@ const repairFlattenedRequestPayload = (
 ): Record<string, unknown> => {
   if (isRecord(input.request)) return input;
 
-  const writeLike =
+  const completeLike =
     typeof input.type === "string" &&
-    (input.type === "write" || input.type === "complete") &&
+    input.type === "request" &&
     typeof input.reason === "string" &&
     typeof input.prefix === "string";
-  if (writeLike) {
+  if (completeLike) {
     const {
       thinking,
       type,
@@ -236,7 +194,7 @@ const repairFlattenedRequestPayload = (
       ...rest,
       ...(thinking !== undefined ? { thinking } : {}),
       request: {
-        type: "write",
+        type,
         reason,
         prefix,
         actors,

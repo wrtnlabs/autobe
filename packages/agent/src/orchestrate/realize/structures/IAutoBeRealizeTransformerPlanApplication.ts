@@ -1,7 +1,7 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Plans whether a single DTO needs a transformer. Sets databaseSchemaName to
@@ -42,7 +42,7 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceSchemas;

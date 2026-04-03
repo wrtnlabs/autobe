@@ -6,6 +6,7 @@ import typia, { IValidation } from "typia";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
+import { IAutoBePreliminaryComplete } from "../structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -21,17 +22,31 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   controller: AutoBePreliminaryController<Kind>,
   data: IAutoBePreliminaryRequest<Kind>,
 ): IValidation<IAutoBePreliminaryRequest<Kind>> => {
-  const type: Exclude<
-    IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
-    `getPrevious${string}`
-  > = (
+  // disciminator
+  const type:
+    | Exclude<
+        IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
+        `getPrevious${string}`
+      >
+    | "complete" = (
     data.request.type.startsWith("getPrevious")
       ? data.request.type.replace("getPrevious", "get")
       : data.request.type
-  ) as Exclude<
-    IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
-    `getPrevious${string}`
-  >;
+  ) as
+    | Exclude<
+        IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
+        `getPrevious${string}`
+      >
+    | "complete";
+
+  // complete case
+  if (type === "complete")
+    return typia.validate<{
+      thinking: string;
+      complete: IAutoBePreliminaryComplete;
+    }>(data) as IValidation<IAutoBePreliminaryRequest<Kind>>;
+
+  // individual validation
   const func = PreliminaryApplicationValidator[type];
   // biome-ignore-start lint: intended
   return func(

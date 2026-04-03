@@ -1,6 +1,6 @@
 import { AutoBeTestPrepareMapping } from "@autobe/interface";
 
-import { IComplete } from "../../common/structures/IComplete";
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 
 /**
  * Function calling interface for generating test data preparation functions.
@@ -69,7 +69,7 @@ export namespace IAutoBeTestPrepareWriteApplication {
      * passed TypeScript compilation. Before that, only "write" is available in
      * the union.
      */
-    request: IWrite | IComplete;
+    request: IWrite | IAutoBePreliminaryComplete;
   }
 
   /**

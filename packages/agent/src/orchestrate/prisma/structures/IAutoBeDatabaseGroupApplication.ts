@@ -1,10 +1,10 @@
 import { AutoBeDatabaseGroup } from "@autobe/interface";
 import { tags } from "typia";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeDatabaseGroupApplication {
   /** Process group generation task or retrieve preliminary data. */
@@ -25,7 +25,7 @@ export namespace IAutoBeDatabaseGroupApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;

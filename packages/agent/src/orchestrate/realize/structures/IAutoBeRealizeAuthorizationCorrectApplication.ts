@@ -1,5 +1,5 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBeRealizeAuthorizationWriteApplication } from "./IAutoBeRealizeAuthorizationWriteApplication";
 
 export interface IAutoBeRealizeAuthorizationCorrectApplication {
@@ -43,7 +43,10 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
      *   exhausted.
      * - `complete` is only available after at least one `write` submission.
      */
-    request: IWrite | IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request:
+      | IWrite
+      | IAutoBePreliminaryComplete
+      | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**

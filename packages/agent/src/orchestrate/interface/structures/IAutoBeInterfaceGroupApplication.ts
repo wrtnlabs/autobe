@@ -1,12 +1,12 @@
 import { AutoBeInterfaceGroup } from "@autobe/interface";
 import { tags } from "typia";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
-import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceGroupApplication {
   /** Process task or retrieve preliminary data. */
@@ -27,7 +27,7 @@ export namespace IAutoBeInterfaceGroupApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections

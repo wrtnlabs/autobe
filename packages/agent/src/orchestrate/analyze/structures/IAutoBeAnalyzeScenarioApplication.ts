@@ -4,8 +4,8 @@ import {
   CamelCasePattern,
 } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
-import { IComplete } from "../../common/structures/IComplete";
 import { FixedAnalyzeTemplateFeature } from "./FixedAnalyzeTemplate";
 
 export interface IAutoBeAnalyzeScenarioApplication {
@@ -32,7 +32,10 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * Action to perform. Exhausted preliminary types are removed from the
      * union.
      */
-    request: IWrite | IComplete | IAutoBePreliminaryGetPreviousAnalysisSections;
+    request:
+      | IWrite
+      | IAutoBePreliminaryComplete
+      | IAutoBePreliminaryGetPreviousAnalysisSections;
   }
 
   /** Submit project structure with actors and entities (6-file SRS template). */

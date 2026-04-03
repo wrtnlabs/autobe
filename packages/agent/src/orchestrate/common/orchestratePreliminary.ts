@@ -8,6 +8,7 @@ import {
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import { OpenApiTypeChecker } from "@typia/utils";
+import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
@@ -17,6 +18,7 @@ import { complementPreliminaryCollection } from "./internal/complementPreliminar
 import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
 import { IAnalysisSectionEntry } from "./structures/IAnalysisSectionEntry";
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
+import { IAutoBePreliminaryComplete } from "./structures/IAutoBePreliminaryComplete";
 
 export const orchestratePreliminary = async <
   Kind extends AutoBePreliminaryKind,
@@ -27,6 +29,7 @@ export const orchestratePreliminary = async <
     source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
     histories: MicroAgenticaHistory[];
     preliminary: AutoBePreliminaryController<Kind>;
+    completed: IPointer<boolean>;
     trial: number;
   },
 ): Promise<void> => {
@@ -42,9 +45,12 @@ export const orchestratePreliminary = async <
   }
 
   for (const exec of executes) {
+    // COMPLETE
+    if (typia.is<{ request: IAutoBePreliminaryComplete }>(exec.arguments)) {
+      props.completed.value ||= true;
+    }
     // ANALYSIS
-    // ANALYSIS
-    if (isAnalysisSections(props.preliminary, exec.arguments)) {
+    else if (isAnalysisSections(props.preliminary, exec.arguments)) {
       const ps: AutoBePreliminaryController<"analysisSections"> =
         props.preliminary;
       orchestrateAnalysisSections(ctx, {

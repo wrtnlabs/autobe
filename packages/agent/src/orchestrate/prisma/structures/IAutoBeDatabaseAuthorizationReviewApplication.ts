@@ -1,9 +1,9 @@
 import { AutoBeDatabaseComponentTableRevise } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeDatabaseAuthorizationReviewApplication {
   /** Process authorization review task or retrieve preliminary data. */
@@ -24,7 +24,7 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;

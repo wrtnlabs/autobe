@@ -1,9 +1,9 @@
 import { AutoBeTestScenario } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeTestScenarioApplication {
   /**
@@ -56,7 +56,7 @@ export namespace IAutoBeTestScenarioApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas;

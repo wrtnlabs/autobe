@@ -1,7 +1,7 @@
 import { CamelCasePattern, PascalCasePattern } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Generates authentication components (provider, decorator, payload) for an
@@ -35,7 +35,10 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
      *
      * - `complete` is only available after at least one `write` submission.
      */
-    request: IWrite | IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request:
+      | IWrite
+      | IAutoBePreliminaryComplete
+      | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**

@@ -18,7 +18,6 @@ import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { AutoBeCyclinicExhaustedError } from "../../utils/AutoBeCyclinicExhaustedError";
 import { AutoBePreliminaryExhaustedError } from "../../utils/AutoBePreliminaryExhaustedError";
 import { AutoBeTimeoutError } from "../../utils/AutoBeTimeoutError";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
@@ -151,7 +150,6 @@ export const orchestrateAnalyze = async (
       if (
         e instanceof AgenticaValidationError ||
         e instanceof AutoBePreliminaryExhaustedError ||
-        e instanceof AutoBeCyclinicExhaustedError ||
         e instanceof AutoBeTimeoutError
       ) {
         analyzeDebug(
@@ -461,7 +459,6 @@ async function processStageUnit(
             if (
               e instanceof AgenticaValidationError ||
               e instanceof AutoBePreliminaryExhaustedError ||
-              e instanceof AutoBeCyclinicExhaustedError ||
               e instanceof AutoBeTimeoutError
             ) {
               analyzeDebug(
@@ -705,7 +702,6 @@ async function processStageSection(
                   if (
                     e instanceof AgenticaValidationError ||
                     e instanceof AutoBePreliminaryExhaustedError ||
-                    e instanceof AutoBeCyclinicExhaustedError ||
                     e instanceof AutoBeTimeoutError
                   ) {
                     analyzeDebug(
@@ -807,8 +803,7 @@ async function processStageSection(
               if (
                 e instanceof AgenticaValidationError ||
                 e instanceof AutoBeTimeoutError ||
-                e instanceof AutoBePreliminaryExhaustedError ||
-                e instanceof AutoBeCyclinicExhaustedError
+                e instanceof AutoBePreliminaryExhaustedError
               ) {
                 analyzeDebug(
                   `section per-module-review-force-pass attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} error=${(e as Error).constructor.name} — skipping this module review`,
@@ -1000,8 +995,7 @@ async function processStageSection(
       if (
         e instanceof AgenticaValidationError ||
         e instanceof AutoBeTimeoutError ||
-        e instanceof AutoBePreliminaryExhaustedError ||
-        e instanceof AutoBeCyclinicExhaustedError
+        e instanceof AutoBePreliminaryExhaustedError
       ) {
         analyzeDebug(
           `section cross-file-review-force-pass attempt=${attempt} error=${(e as Error).constructor.name} — force-passing all pending files`,

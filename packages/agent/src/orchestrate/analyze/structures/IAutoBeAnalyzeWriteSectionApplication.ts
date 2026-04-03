@@ -1,5 +1,5 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Application interface for the Section (###) generation agent.
@@ -46,7 +46,7 @@ export interface IAutoBeAnalyzeWriteSectionApplicationProps {
   /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
     | IAutoBeAnalyzeWriteSectionApplicationWrite
-    | IComplete
+    | IAutoBePreliminaryComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 

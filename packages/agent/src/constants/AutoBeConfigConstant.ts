@@ -140,6 +140,8 @@ export const enum AutoBeConfigConstant {
    */
   RAG_LIMIT = 7,
 
+  PRELIMINARY_WRITE_LIMIT = 3,
+
   /**
    * Default timeout for long-running operations in milliseconds (15 minutes).
    *

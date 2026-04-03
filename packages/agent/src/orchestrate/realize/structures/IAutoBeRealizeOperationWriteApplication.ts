@@ -1,8 +1,8 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Function calling interface for the cyclinic write-compile-correct loop of API
@@ -75,7 +75,7 @@ export namespace IAutoBeRealizeOperationWriteApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetRealizeCollectors

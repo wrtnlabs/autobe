@@ -1,10 +1,10 @@
 import { AutoBeRealizeCollectorReference } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Plans whether a single DTO needs a collector. Sets databaseSchemaName to null
@@ -45,7 +45,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetInterfaceOperations

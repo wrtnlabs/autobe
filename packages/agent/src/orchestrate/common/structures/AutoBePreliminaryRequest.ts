@@ -1,5 +1,6 @@
 import { AutoBePreliminaryKind } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "./IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "./IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "./IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "./IAutoBePreliminaryGetInterfaceOperations";
@@ -24,7 +25,7 @@ export interface IAutoBePreliminaryRequest<Kind extends AutoBePreliminaryKind> {
   thinking: string;
 
   /** Actual request payload discriminated by `Kind`. */
-  request: Mapper[Kind];
+  request: Mapper[Kind | "complete"];
 }
 
 /** Maps preliminary `Kind` to corresponding request type. */
@@ -39,4 +40,5 @@ type Mapper = {
   previousDatabaseSchemas: IAutoBePreliminaryGetPreviousDatabaseSchemas;
   previousInterfaceSchemas: IAutoBePreliminaryGetPreviousInterfaceSchemas;
   previousInterfaceOperations: IAutoBePreliminaryGetPreviousInterfaceOperations;
+  complete: IAutoBePreliminaryComplete;
 };

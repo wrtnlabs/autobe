@@ -1,5 +1,5 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
-import { IComplete } from "../../common/structures/IComplete";
 
 /** Generates unit-level sections (##) within approved module structures. */
 export interface IAutoBeAnalyzeWriteUnitApplication {
@@ -20,7 +20,7 @@ export interface IAutoBeAnalyzeWriteUnitApplicationProps {
   /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
     | IAutoBeAnalyzeWriteUnitApplicationWrite
-    | IComplete
+    | IAutoBePreliminaryComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 

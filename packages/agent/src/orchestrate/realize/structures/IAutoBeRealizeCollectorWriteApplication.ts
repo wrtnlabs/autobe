@@ -1,7 +1,7 @@
 import { AutoBeRealizeCollectorMapping } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Function calling interface for the cyclinic write-compile-correct loop of DTO
@@ -82,7 +82,10 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * The preliminary types are removed from the union after their respective
      * data has been provided, physically preventing repeated calls.
      */
-    request: IWrite | IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request:
+      | IWrite
+      | IAutoBePreliminaryComplete
+      | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**

@@ -1,5 +1,5 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
-import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Reviews all files' section metadata in a single call for cross-file
@@ -20,7 +20,7 @@ export interface IAutoBeAnalyzeSectionCrossFileReviewApplicationProps {
   /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
     | IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite
-    | IComplete
+    | IAutoBePreliminaryComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
@@ -102,7 +102,3 @@ export interface IAutoBeAnalyzeSectionCrossFileReviewApplicationReviewIssue {
   /** Supporting evidence from the source text. */
   evidence?: string | null;
 }
-
-/** @deprecated Use IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite instead. */
-export type IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete =
-  IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite;

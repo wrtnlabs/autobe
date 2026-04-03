@@ -1,4 +1,7 @@
-import { IMicroAgenticaHistoryJson } from "@agentica/core";
+import {
+  AgenticaExecuteHistory,
+  IMicroAgenticaHistoryJson,
+} from "@agentica/core";
 import {
   AutoBeEventSource,
   AutoBePreliminaryAcquisition,
@@ -10,6 +13,7 @@ import {
   IValidation,
 } from "@typia/interface";
 import { OpenApiTypeChecker } from "@typia/utils";
+import { IPointer, Pair } from "tstl";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
@@ -331,6 +335,9 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       ) => (value: T | null) => IAutoBeOrchestrateResult<T>,
     ) => Promise<IAutoBeOrchestrateResult<T>>,
   ): Promise<T | never> {
+    const completed: IPointer<boolean> = { value: false };
+    const writes: Pair<T, any>[] = [];
+
     for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
       const result: IAutoBeOrchestrateResult<T> = await process(
         (x) => (value) => ({
@@ -338,7 +345,19 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           value,
         }),
       );
-      if (result.value !== null) return result.value;
+      if (result.value !== null) {
+        const executes: AgenticaExecuteHistory[] = result.histories.filter(
+          (h) => h.type === "execute",
+        );
+        const history: AgenticaExecuteHistory | undefined = executes.find(
+          (h) => (h.arguments.request as any).type === "write",
+        );
+        if (history === undefined)
+          throw new Error("No write execute found in histories.");
+
+        const raw: any = history.arguments.request;
+        writes.push(new Pair(result.value, raw));
+      }
 
       await orchestratePreliminary(ctx, {
         source_id: this.source_id,
@@ -346,9 +365,14 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         preliminary: this,
         trial: i + 1,
         histories: result.histories,
+        completed,
       });
     }
 
+    if (completed.value === true) {
+      const last: Pair<T, unknown> | undefined = writes.at(-1);
+      if (last !== undefined) return last.first;
+    }
     throw new AutoBePreliminaryExhaustedError();
   }
 }

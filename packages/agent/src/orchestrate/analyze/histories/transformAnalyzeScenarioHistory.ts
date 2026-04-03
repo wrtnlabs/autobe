@@ -8,8 +8,10 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export const transformAnalyzeScenarioHistory = (
   ctx: AutoBeContext,
-  preliminary: AutoBePreliminaryController<"previousAnalysisSections">,
-  feedback?: string,
+  props: {
+    preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
+    feedback?: string | undefined;
+  },
 ): IAutoBeOrchestrateHistory => ({
   histories: [
     {
@@ -21,8 +23,8 @@ export const transformAnalyzeScenarioHistory = (
     ...ctx
       .histories()
       .filter((h) => h.type === "userMessage" || h.type === "assistantMessage"),
-    ...preliminary.getHistories(),
-    ...(feedback
+    ...props.preliminary.getHistories(),
+    ...(props.feedback
       ? [
           {
             id: v7(),
@@ -32,7 +34,7 @@ export const transformAnalyzeScenarioHistory = (
 
               Your previous scenario was rejected during review. Please address the following issues:
 
-              ${feedback}
+              ${props.feedback}
 
               Revise your scenario to fix these problems while keeping everything else correct.
             `,

@@ -1,4 +1,4 @@
-import { IComplete } from "../../common/structures/IComplete";
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 
 /**
  * Function calling interface for generating authorization utility functions.
@@ -63,7 +63,7 @@ export namespace IAutoBeTestAuthorizationWriteApplication {
      * passed TypeScript compilation. Before that, only "write" is available in
      * the union.
      */
-    request: IWrite | IComplete;
+    request: IWrite | IAutoBePreliminaryComplete;
   }
 
   /**
