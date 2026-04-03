@@ -51,24 +51,19 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   //          | IAutoBePreliminaryGet*         — incremental RAG data loading
   //          | IAutoBePreliminaryComplete     — finalize the loop
   //
-  // The LLM sends `{ type: "complete", remind, confirm }` when it believes the
-  // cyclinic write → validate → correct loop is finished. However, LLMs
-  // frequently attempt to call complete() prematurely — before ever submitting
-  // a write — especially when the context window is thin or when exhausted
-  // preliminary types are removed from the union, leaving only `complete` as
-  // a seemingly valid choice.
+  // The LLM sends `{ type: "complete" }` when it believes the cyclinic
+  // write → validate → correct loop is finished. However, LLMs frequently
+  // attempt to call complete() prematurely — before ever submitting a write —
+  // especially when the context window is thin or when exhausted preliminary
+  // types are removed from the union, leaving only `complete` as a seemingly
+  // valid choice.
   //
   // To guard against this, we check `controller.getPreviousWrite()`:
   //
   //   - Prior write EXISTS  → validate the `IAutoBePreliminaryComplete`
-  //     structure (remind + confirm fields) via typia and allow finalization.
+  //     structure via typia and allow finalization.
   //   - NO prior write      → reject with an explicit error instructing the
   //     LLM to submit its write first before requesting completion.
-  //
-  // The `remind` field forces the LLM to recall what it submitted and why it
-  // considers the result correct — a self-check that reduces hallucinated
-  // completions. The `confirm` field must be explicitly `true` to proceed;
-  // `false` cancels the completion and continues the loop.
   //
   // @see IAutoBePreliminaryComplete       — shared completion request structure
   // @see AutoBePreliminaryController      — orchestrate() loop that consumes
@@ -78,10 +73,10 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   // ---------------------------------------------------------------------------
   if (type === "complete") {
     const previousWrite = controller.getPreviousWrite();
-    if (previousWrite === null)
+    if (previousWrite !== null)
       return typia.validate<{
         thinking: string;
-        complete: IAutoBePreliminaryComplete;
+        request: IAutoBePreliminaryComplete;
       }>(data) as IValidation<IAutoBePreliminaryRequest<Kind, true>>;
     return {
       success: false,

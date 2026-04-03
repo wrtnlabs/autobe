@@ -30,7 +30,7 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
      *
      * For write: what you're submitting and key design decisions.
      *
-     * For complete: confirm the last write is correct and why.
+     * For complete: why you consider the last write final.
      */
     thinking: string;
 

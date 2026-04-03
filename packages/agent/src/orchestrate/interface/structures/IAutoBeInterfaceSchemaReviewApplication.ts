@@ -22,7 +22,7 @@ export interface IAutoBeInterfaceSchemaReviewApplication {
    * correctness, and compliance with domain requirements and system policies.
    *
    * @param props Request containing preliminary data request, write submission,
-   *   or completion confirmation
+   *   or completion signal
    */
   process(props: IAutoBeInterfaceSchemaReviewApplication.IProps): void;
 }
@@ -48,7 +48,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      *
      * For completion:
      *
-     * - Confirm that the last write passed validation successfully.
+     * - State why you consider the last write final.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.

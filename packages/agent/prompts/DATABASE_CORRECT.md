@@ -231,12 +231,8 @@ process({
 ### 4.3. Complete (finalize after your last write)
 ```typescript
 process({
-  thinking: "All errors resolved. Finalizing.",
-  request: {
-    type: "complete",
-    remind: "Fixed 3 errors: merged duplicate email in users, corrected FK target in orders, fixed enum in products. Zero errors remaining.",
-    confirm: true,
-  }
+  thinking: "All errors resolved. Fixed 3 errors: merged duplicate email in users, corrected FK target in orders, fixed enum in products. Zero errors remaining.",
+  request: { type: "complete" }
 })
 ```
 

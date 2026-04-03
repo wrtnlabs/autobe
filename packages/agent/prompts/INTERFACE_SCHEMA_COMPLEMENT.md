@@ -78,8 +78,6 @@ interface IWrite {
 // Step 2: Confirm finalization (after at least one write)
 interface IAutoBePreliminaryComplete {
   type: "complete";
-  remind: string;   // Brief reminder of what was submitted and why it is correct
-  confirm: boolean; // Must be true to finalize
 }
 ```
 
@@ -91,7 +89,7 @@ thinking: "Loaded products DB schema and existing IOrder/ICartItem. Designed IPr
 // Revise (if resubmitting) - explain what changed
 thinking: "Previous write missed the thumbnail nullable field. Correcting schema."
 
-// Complete - confirm last write is correct
+// Complete - finalize the loop
 thinking: "Last write is correct. IProduct.ISummary designed with all required fields."
 ```
 
@@ -155,7 +153,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. IProduct.ISummary designed with id, name, price, thumbnail.",
-  request: { type: "complete", remind: "Submitted IProduct.ISummary with 4 fields from products DB schema. All references resolved.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 

@@ -27,7 +27,7 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      * For write: what review findings you're submitting and corrections
      * applied.
      *
-     * For complete: confirm the last write is correct and why.
+     * For complete: why you consider the last write final.
      */
     thinking: string;
 

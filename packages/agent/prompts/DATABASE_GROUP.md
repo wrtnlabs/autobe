@@ -156,7 +156,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. All business domains covered.",
-  request: { type: "complete", remind: "Submitted 10 component groups covering all business domains with clear boundaries.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -209,8 +209,6 @@ interface IWrite {
 // Step 2: Confirm finalization (after at least one write)
 interface IAutoBePreliminaryComplete {
   type: "complete";
-  remind: string;   // Brief reminder of what was submitted and why it is correct
-  confirm: boolean; // Must be true to finalize
 }
 
 interface AutoBeDatabaseGroup {

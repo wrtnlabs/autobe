@@ -14,7 +14,7 @@ export namespace IAutoBeDatabaseSchemaReviewApplication {
   export interface IProps {
     /**
      * Reasoning: what's missing (preliminary), what you're submitting (write),
-     * or why the last write is correct (complete).
+     * or why you're finalizing (complete).
      */
     thinking: string;
 

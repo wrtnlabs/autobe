@@ -88,7 +88,10 @@ function createController(props: {
     input = repairMissingRequestType(input);
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
-    if (result.success === false) return result;
+    if (result.success === false) {
+      console.log("validation failure", JSON.stringify(result.data, null, 2));
+      return result;
+    }
 
     if (result.data.request.type === "write") return result;
 

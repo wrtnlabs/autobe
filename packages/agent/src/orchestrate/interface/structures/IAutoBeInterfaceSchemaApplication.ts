@@ -18,7 +18,7 @@ export interface IAutoBeInterfaceSchemaApplication {
    * `complete` to finalize when satisfied.
    *
    * @param props Request containing preliminary data request, write submission,
-   *   or completion confirmation
+   *   or completion signal
    */
   process(props: IAutoBeInterfaceSchemaApplication.IProps): void;
 }
@@ -44,7 +44,7 @@ export namespace IAutoBeInterfaceSchemaApplication {
      *
      * For complete:
      *
-     * - Confirm that the last write is correct and passed validation.
+     * - State why you consider the last write final.
      */
     thinking: string;
 

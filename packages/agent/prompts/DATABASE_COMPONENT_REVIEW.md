@@ -131,8 +131,8 @@ process({
 
 // Step 2: Finalize
 process({
-  thinking: "Last write is correct. Component review complete.",
-  request: { type: "complete", remind: "Created order_cancellations and order_refunds, renamed orderItems. All requirements covered.", confirm: true }
+  thinking: "Component review complete. Created order_cancellations and order_refunds, renamed orderItems. All requirements covered.",
+  request: { type: "complete" }
 })
 ```
 
@@ -150,8 +150,8 @@ process({
 
 // Step 2: Finalize
 process({
-  thinking: "Last write is correct. No revisions needed.",
-  request: { type: "complete", remind: "All order features covered by existing tables. No revisions needed.", confirm: true }
+  thinking: "No revisions needed. All order features covered by existing tables.",
+  request: { type: "complete" }
 })
 ```
 

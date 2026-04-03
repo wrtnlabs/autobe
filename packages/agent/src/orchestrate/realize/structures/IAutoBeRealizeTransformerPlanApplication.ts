@@ -32,7 +32,7 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      * For write: is this DTO transformable or non-transformable? What database
      * table does it map to (if transformable)?
      *
-     * For complete: confirm the last write decision is correct.
+     * For complete: why you consider the decision final.
      */
     thinking: string;
 

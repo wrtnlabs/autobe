@@ -9,7 +9,7 @@ You fix **TypeScript compilation errors** in collector code. Refer to the Collec
 1. **Analyze**: Review TypeScript diagnostics and identify error patterns
 2. **Request Context** (if needed): Use `getDatabaseSchemas` for fixing field name errors
 3. **Execute**: Call `process({ request: { type: "write", think, mappings, draft, revise } })` after analysis
-4. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
+4. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 

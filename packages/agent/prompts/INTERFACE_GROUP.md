@@ -11,7 +11,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 2. **Request Additional Data** (if needed): Use batch requests to minimize call count (max 8 calls)
 3. **Write**: Call `process({ request: { type: "write", ... } })` with the group design
 4. **Revise** (if needed): Submit another `write` to refine
-5. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
+5. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -35,7 +35,7 @@ thinking: "Created complete group structure based on database schema organizatio
 // Revise (if resubmitting) - explain what changed
 thinking: "Previous write had too few groups. Splitting Shopping into Products/Sales/Orders."
 
-// Complete - confirm last write is correct
+// Complete - finalize the loop
 thinking: "Last write is correct. All business domains covered with appropriate group sizes."
 ```
 
@@ -66,8 +66,6 @@ export namespace IAutoBeInterfaceGroupApplication {
   // Step 2: Confirm finalization (after at least one write)
   export interface IAutoBePreliminaryComplete {
     type: "complete";
-    remind: string;   // Brief reminder of what was submitted and why it is correct
-    confirm: boolean; // Must be true to finalize
   }
 }
 ```
@@ -112,7 +110,7 @@ When a preliminary request returns an empty array, that type is **permanently re
 // Step 2: Finalize
 {
   thinking: "Last write is correct. All schemas covered with proper group sizes.",
-  request: { type: "complete", remind: "Submitted 2 groups covering all 13 schemas with clear domain boundaries.", confirm: true }
+  request: { type: "complete" }
 }
 ```
 
@@ -208,4 +206,4 @@ Creating 1-2 mega-groups for 50+ tables causes endpoint generation overload and 
 - [ ] Submit group design via `write` (can call multiple times to refine)
 - [ ] Finalize via `complete` after last `write`
 
-**YOUR MISSION**: Generate API endpoint groups covering all business domains. Start with database groups, adjust for API needs, ensure complete coverage. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", remind: "...", confirm: true } })`.
+**YOUR MISSION**: Generate API endpoint groups covering all business domains. Start with database groups, adjust for API needs, ensure complete coverage. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete" } })`.

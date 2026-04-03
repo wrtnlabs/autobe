@@ -13,7 +13,7 @@ export interface IAutoBeAnalyzeSectionCrossFileReviewApplication {
 export interface IAutoBeAnalyzeSectionCrossFileReviewApplicationProps {
   /**
    * Reasoning: what's missing (preliminary), what you're submitting (write), or
-   * why the last write is correct (complete).
+   * why you're finalizing (complete).
    */
   thinking?: string | null;
 

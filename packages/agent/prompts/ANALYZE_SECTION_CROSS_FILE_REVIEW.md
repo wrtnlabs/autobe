@@ -18,7 +18,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 1. **Analyze**: Review cross-file semantic consistency across all files
 2. **Write**: Call `process({ request: { type: "write", ... } })` with file results
 3. **Revise** (if needed): Submit another `write` to refine your review
-4. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
+4. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -109,10 +109,10 @@ process({
   }
 });
 
-// Step 2: Confirm finalization
+// Step 2: Finalize the loop
 process({
-  thinking: "Last write is correct. Cross-file review complete.",
-  request: { type: "complete", remind: "Approved all files — no contradictions or hallucinations found.", confirm: true }
+  thinking: "Cross-file review complete. Approved all files — no contradictions or hallucinations found.",
+  request: { type: "complete" }
 });
 ```
 
@@ -138,10 +138,10 @@ process({
   }
 });
 
-// Step 2: Confirm finalization
+// Step 2: Finalize the loop
 process({
-  thinking: "Last write is correct. Contradictions documented.",
-  request: { type: "complete", remind: "Rejected file 1 for hard-delete vs soft-delete contradiction.", confirm: true }
+  thinking: "Contradictions documented. Rejected file 1 for hard-delete vs soft-delete contradiction.",
+  request: { type: "complete" }
 });
 ```
 

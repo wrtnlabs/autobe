@@ -40,7 +40,7 @@ export namespace IAutoBeTestScenarioReviewApplication {
      *
      * For complete:
      *
-     * - Confirm the last write is correct and why.
+     * - State why you consider the last write final.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -51,8 +51,8 @@ export namespace IAutoBeTestScenarioReviewApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval, write
-     * submission, or completion confirmation. Exhausted preliminary types are
-     * removed from the union, physically preventing repeated calls.
+     * submission, or completion signal. Exhausted preliminary types are removed
+     * from the union, physically preventing repeated calls.
      */
     request:
       | IWrite

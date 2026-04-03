@@ -15,11 +15,10 @@ export interface IAutoBeDatabaseCorrectApplication {
    * 1. Request preliminary context if needed (getAnalysisSections, etc.)
    * 2. Submit corrected models via `write` — can be called multiple times to
    *    refine corrections
-   * 3. Confirm finalization via `complete` after you are satisfied with the
-   *    submitted models
+   * 3. Finalize via `complete` after you are satisfied with the submitted models
    *
    * @param props Request containing preliminary data request, write submission,
-   *   or completion confirmation
+   *   or completion signal
    */
   process(props: IAutoBeDatabaseCorrectApplication.IProps): void;
 }
@@ -34,8 +33,7 @@ export namespace IAutoBeDatabaseCorrectApplication {
      * For write submissions: summarize what errors you are fixing and how. If
      * this is a revision, explain what changed from the previous submission.
      *
-     * For completion: confirm that the last write submission is correct and
-     * complete.
+     * For completion: why you consider the last write submission final.
      */
     thinking: string;
 

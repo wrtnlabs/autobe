@@ -26,7 +26,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      *
      * For write: what you're submitting and key mapping decisions.
      *
-     * For complete: confirm the last write is correct and why.
+     * For complete: why you consider the last write final.
      *
      * Note: All DTO type information is available transitively from the plan's
      * DTO type names. You only need to request database schemas.

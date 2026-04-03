@@ -20,7 +20,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 1. **Analyze**: Review the provided file content against all review criteria
 2. **Write**: Call `process({ request: { type: "write", ... } })` with file results
 3. **Revise** (if needed): Submit another `write` to refine your review
-4. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
+4. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -141,10 +141,10 @@ process({
   }
 });
 
-// Step 2: Confirm finalization
+// Step 2: Finalize the loop
 process({
-  thinking: "Last write is correct. Review complete.",
-  request: { type: "complete", remind: "Approved file — no scope violations or prohibited content.", confirm: true }
+  thinking: "Review complete. Approved file — no scope violations or prohibited content.",
+  request: { type: "complete" }
 });
 ```
 
@@ -172,10 +172,10 @@ process({
   }
 });
 
-// Step 2: Confirm finalization
+// Step 2: Finalize the loop
 process({
-  thinking: "Last write is correct. Rejection documented.",
-  request: { type: "complete", remind: "Rejected file for scope violation in Module 2, Unit 1.", confirm: true }
+  thinking: "Rejection documented. Rejected file for scope violation in Module 2, Unit 1.",
+  request: { type: "complete" }
 });
 ```
 

@@ -35,7 +35,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * For write: is this DTO collectable or non-collectable? What database
      * table does it map to (if collectable)?
      *
-     * For complete: confirm the last write decision is correct.
+     * For complete: why you consider the decision final.
      */
     thinking: string;
 

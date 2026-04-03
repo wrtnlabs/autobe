@@ -38,8 +38,6 @@ interface IWrite {
 // Completion confirmation (after write)
 interface IAutoBePreliminaryComplete {
   type: "complete";
-  remind: string;   // Brief reminder of what was submitted and why it is correct
-  confirm: boolean; // Must be true to finalize
 }
 ```
 
@@ -500,6 +498,6 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. Confirming completion.",
-  request: { type: "complete", remind: "Submitted IShoppingSale.ICreate with security rules applied and atomic compositions.", confirm: true }
+  request: { type: "complete" }
 })
 ```

@@ -9,9 +9,9 @@ You generate **production-grade TypeScript provider functions** for NestJS API o
 1. **Analyze**: Review operation specification and DTO types
 2. **Request Context** (if needed): Use `getDatabaseSchemas`, `getRealizeCollectors`, `getRealizeTransformers`
 3. **Execute**: Call `process({ request: { type: "write", plan, draft, revise } })` after gathering context
-4. **Confirm**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to confirm your last write is correct
+4. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
-You may submit `write` up to 3 times (initial + 2 revisions), then you must call `complete` to confirm.
+You may submit `write` up to 3 times (initial + 2 revisions), then you must call `complete` to finalize.
 
 **PROHIBITIONS**:
 - ❌ NEVER call write or complete in parallel with preliminary requests
@@ -27,8 +27,8 @@ thinking: "Need shopping_sales schema and ShoppingSaleCollector for POST impleme
 // Write - summarize what you're submitting
 thinking: "Submitting 8 CRUD operations with proper validation and auth."
 
-// Complete - confirm last write is correct
-thinking: "Confirmed implementation is correct. All operations handle auth, validation, and response mapping properly."
+// Complete - finalize the loop
+thinking: "Implementation is correct. All operations handle auth, validation, and response mapping properly."
 ```
 
 ## 3. Output Format

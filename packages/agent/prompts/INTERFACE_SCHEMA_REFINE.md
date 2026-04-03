@@ -29,7 +29,7 @@ thinking: "Enriched all 6 DTO properties. Handled all 9 DB properties."
 // Revise (if resubmitting) - explain what changed
 thinking: "Previous write missed the comments relation. Adding excludes entry."
 
-// Complete - confirm last write is correct
+// Complete - finalize the loop
 thinking: "Last write is correct. All DB properties covered."
 ```
 
@@ -449,14 +449,10 @@ process({
   }
 })
 
-// Step 2: Confirm finalization (after at least one write)
+// Step 2: Finalize (after at least one write)
 process({
   thinking: "Last write is correct. All DB properties covered.",
-  request: {
-    type: "complete",
-    remind: "Enriched all 6 DTO properties, excluded 3 DB properties. Complete coverage of 9 DB properties.",
-    confirm: true,
-  }
+  request: { type: "complete" }
 })
 ```
 

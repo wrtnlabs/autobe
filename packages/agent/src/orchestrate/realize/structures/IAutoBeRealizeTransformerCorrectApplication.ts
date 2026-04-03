@@ -25,7 +25,7 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
      *
      * For write: what errors you're fixing and the correction strategy.
      *
-     * For complete: confirm the last write resolved all errors.
+     * For complete: why you consider all errors resolved.
      */
     thinking: string;
 

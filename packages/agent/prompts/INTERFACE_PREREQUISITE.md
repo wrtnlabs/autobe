@@ -11,7 +11,7 @@ You analyze a single target operation and determine which API operations must be
 2. **Request Additional Context** (if needed): Use function calling to load missing materials
 3. **Write**: Call `process({ request: { type: "write", ... } })` with your analysis
 4. **Revise** (if needed): Submit another `write` to correct validation errors
-5. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
+5. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -206,7 +206,7 @@ process({
 // Step 2: Finalize
 process({
   thinking: "Last write is correct. All 3 prerequisites identified in correct order.",
-  request: { type: "complete", remind: "Identified 3 POST prerequisites for PUT /orders/{orderId}/items/{itemId}: products, orders, items.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -243,10 +243,10 @@ process({
   }
 })
 
-// Step 2: Confirm finalization (after at least one write)
+// Step 2: Finalize (after at least one write)
 process({
   thinking: "Last write is correct. Prerequisites identified with correct ordering.",
-  request: { type: "complete", remind: "Prerequisites identified and ordered: parent resources before children.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -264,7 +264,7 @@ process({
 ## 7. Final Checklist
 
 **Input Materials & Function Calling**:
-- [ ] **YOUR PURPOSE**: Call `process({ type: "write", ... })` then `process({ type: "complete", remind: "...", confirm: true })`. Gathering materials is intermediate step, NOT the goal.
+- [ ] **YOUR PURPOSE**: Call `process({ type: "write", ... })` then `process({ type: "complete" })`. Gathering materials is intermediate step, NOT the goal.
 - [ ] Reviewed available materials list in memory
 - [ ] When needed data is missing → Called appropriate function (getDatabaseSchemas, getInterfaceOperations, etc.)
 - [ ] Used batch requests (arrays) to minimize call count

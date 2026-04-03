@@ -26,7 +26,7 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
      *
      * For write: what authentication components you're submitting.
      *
-     * For complete: confirm the last write is correct and why.
+     * For complete: why you consider the last write final.
      */
     thinking: string;
 

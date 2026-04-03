@@ -35,7 +35,7 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      *
      * For write: what refinements you're submitting and key decisions.
      *
-     * For complete: confirm the last write is correct and why.
+     * For complete: why you consider the last write final.
      */
     thinking: string;
 

@@ -16,7 +16,7 @@ export interface IAutoBeAnalyzeWriteSectionApplication {
    * `complete` to finalize when satisfied.
    *
    * @param props Request containing preliminary data request, write submission,
-   *   or completion confirmation
+   *   or completion signal
    */
   process(props: IAutoBeAnalyzeWriteSectionApplicationProps): void;
 }
@@ -39,7 +39,7 @@ export interface IAutoBeAnalyzeWriteSectionApplicationProps {
    *
    * For complete:
    *
-   * - Confirm that the last write is correct and passed validation.
+   * - State why you consider the last write final.
    */
   thinking?: string | null;
 

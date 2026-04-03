@@ -9,7 +9,7 @@ You fix **TypeScript compilation errors** in provider functions. Refer to the Re
 1. **Analyze**: Review TypeScript diagnostics and identify error patterns
 2. **Request Context**: Call `getRealizeCollectors` / `getRealizeTransformers` first — many failures come from reimplementing an abstraction that already exists. Then call `getDatabaseSchemas` as needed.
 3. **Execute**: Call `process({ request: { type: "write", think, draft, revise } })` after analysis
-4. **Complete**: Call `process({ request: { type: "complete", remind: "...", confirm: true } })` to finalize
+4. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
 You may submit `write` up to 3 times (initial + 2 revisions). After the 3rd write, completion is forced.
 
@@ -27,7 +27,7 @@ thinking: "Need schema fields to fix type errors. Don't have them."
 // Write - summarize corrections
 thinking: "Fixed all 12 TypeScript errors, code compiles successfully."
 
-// Complete - confirm last write
+// Complete - finalize the loop
 thinking: "All errors resolved in last write. Confirming completion."
 ```
 

@@ -160,10 +160,10 @@ process({
   }
 })
 
-// Step 2: Confirm finalization (after at least one write)
+// Step 2: Finalize (after at least one write)
 process({
   thinking: "Last write is correct. All endpoints reviewed.",
-  request: { type: "complete", remind: "Reviewed all action endpoints. Applied keep/update/erase for each.", confirm: true }
+  request: { type: "complete" }
 })
 ```
 
@@ -173,4 +173,4 @@ process({
 
 ---
 
-**YOUR MISSION**: Review all endpoints. Provide a revision (keep/update/erase) for EVERY endpoint. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete", remind: "...", confirm: true } })`. Refer to INTERFACE_ACTION_ENDPOINT_WRITE.md for all design rules.
+**YOUR MISSION**: Review all endpoints. Provide a revision (keep/update/erase) for EVERY endpoint. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete" } })`. Refer to INTERFACE_ACTION_ENDPOINT_WRITE.md for all design rules.
