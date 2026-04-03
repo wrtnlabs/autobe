@@ -27,6 +27,7 @@ import type {
   EvaluationInput,
   EvaluationResult,
   PhaseResult,
+  ScoreBreakdown,
 } from "./types";
 import {
   AGENT_WEIGHTS,
@@ -131,16 +132,6 @@ export function createProgram(): Command {
     });
 
   return program;
-}
-
-/** Score breakdown with phase and agent contributions */
-interface ScoreBreakdown {
-  phaseScore: number;
-  phaseWeight: number;
-  phaseContribution: number;
-  agentScore: number | null;
-  agentWeight: number;
-  agentContribution: number;
 }
 
 export async function runCLI(options: CLIOptions): Promise<void> {
@@ -734,7 +725,13 @@ function printAgentResults(agentResults: AgentResult[]): void {
 
   for (const result of agentResults) {
     const scoreEmoji =
-      result.score >= 80 ? "✅" : result.score >= 60 ? "⚠️" : "❌";
+      result.score < 0
+        ? "⛔"
+        : result.score >= 80
+          ? "✅"
+          : result.score >= 60
+            ? "⚠️"
+            : "❌";
     const criticalCount = result.issues.filter(
       (i) => i.severity === "critical",
     ).length;

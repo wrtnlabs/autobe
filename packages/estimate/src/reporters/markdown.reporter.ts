@@ -89,7 +89,9 @@ function renderOverallScore(result: ExtendedResult): string {
       ),
     );
     const agentAvg =
-      agents.reduce((sum, a) => sum + a.score, 0) / agents.length;
+      agents.length > 0
+        ? agents.reduce((sum, a) => sum + a.score, 0) / agents.length
+        : 0;
     const phaseW = 1 - AGENT_WEIGHT_RATIO;
 
     breakdown = `

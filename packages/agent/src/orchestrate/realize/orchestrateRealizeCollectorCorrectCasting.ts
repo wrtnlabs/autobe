@@ -4,7 +4,7 @@ import {
 } from "@autobe/interface";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { orchestrateRealizeCorrectCasting } from "./internal/orchestrateRealizeCorrectCasting";
+import { orchestrateRealizeCorrectCasting } from "./correct/orchestrateRealizeCorrectCasting";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
 
 export const orchestrateRealizeCollectorCorrectCasting = (

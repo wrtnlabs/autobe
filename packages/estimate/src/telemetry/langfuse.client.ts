@@ -2,6 +2,7 @@ import { Langfuse } from "langfuse";
 import type { LangfuseSpanClient, LangfuseTraceClient } from "langfuse";
 
 import type { AgentResult } from "../agents/types";
+import { AGENT_WEIGHT_RATIO } from "../types";
 import type { EvaluationResult, PhaseResult } from "../types";
 
 let client: Langfuse | null = null;
@@ -122,6 +123,42 @@ export function recordScores(
       comment: phase.passed ? "passed" : "failed",
     });
   }
+
+  // Golden set category breakdown (if available)
+  const goldenSet = result.phases.goldenSet;
+  if (goldenSet?.metrics) {
+    const m = goldenSet.metrics;
+    if (m.categoryScore !== undefined) {
+      trace.score({
+        name: "goldenSet_categoryScore",
+        value: m.categoryScore as number,
+        comment: "Category-weighted pass rate",
+      });
+    }
+    if (m.consistencyScore !== undefined) {
+      trace.score({
+        name: "goldenSet_consistencyScore",
+        value: m.consistencyScore as number,
+        comment: "Data consistency (schema warnings)",
+      });
+    }
+    // Contract evaluator metrics
+    if (m.contractPassed !== undefined) {
+      trace.score({
+        name: "contract_passRate",
+        value: (m.contractPassRate as number) ?? 0,
+        comment: `${m.contractPassed}/${m.contractEndpoints} endpoints passed`,
+      });
+    }
+  }
+
+  // Penalty breakdown (if available)
+  if (result.penalties) {
+    const penaltySpan = trace.span({ name: "penalties" });
+    penaltySpan.end({
+      output: result.penalties,
+    });
+  }
 }
 
 /** Record agent evaluation results as spans + scores on the trace. */
@@ -147,17 +184,20 @@ export function recordAgentResults(
       },
     });
 
-    trace.score({
-      name: `agent_${agent.agent}`,
-      value: agent.score,
-      comment: `${agent.model} | ${agent.issues.length} issues`,
-    });
+    // Skip failed agents (score=-1) to avoid polluting telemetry
+    if (agent.score >= 0) {
+      trace.score({
+        name: `agent_${agent.agent}`,
+        value: agent.score,
+        comment: `${agent.model} | ${agent.issues.length} issues`,
+      });
+    }
   }
 
   // Update total score with agent-adjusted value
   trace.score({
     name: "total_with_agents",
     value: finalScore,
-    comment: `Final score including agent evaluation (30%)`,
+    comment: `Final score including agent evaluation (${Math.round(AGENT_WEIGHT_RATIO * 100)}%)`,
   });
 }

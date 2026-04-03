@@ -29,6 +29,7 @@ import {
   AutoBeInterfaceOperationReviewEvent,
   AutoBeInterfaceSchemaCastingEvent,
   AutoBeInterfaceSchemaComplementEvent,
+  AutoBeInterfaceSchemaDecoupleEvent,
   AutoBeInterfaceSchemaEvent,
   AutoBeInterfaceSchemaRefineEvent,
   AutoBeInterfaceSchemaRenameEvent,
@@ -476,6 +477,17 @@ export interface IAutoBeRpcListener {
    */
   interfaceSchemaComplement?(
     event: AutoBeInterfaceSchemaComplementEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for API schema decouple events.
+   *
+   * Called once per detected circular reference cycle when cross-type circular
+   * references are identified and resolved. Each event carries one cycle and
+   * the property removals chosen to break it.
+   */
+  interfaceSchemaDecouple?(
+    event: AutoBeInterfaceSchemaDecoupleEvent,
   ): Promise<void>;
 
   /**

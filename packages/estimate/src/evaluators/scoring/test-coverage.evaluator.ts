@@ -187,11 +187,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     } else {
       // Fallback: naive analysis (no @Controller/@TypedRoute found)
       const coverageRatio =
-        controllerCount > 0
-          ? Math.min(testCount / controllerCount, 1)
-          : testCount > 0
-            ? 1
-            : 0;
+        controllerCount > 0 ? Math.min(testCount / controllerCount, 1) : 0;
 
       score = this.computeCoverageScore(
         testCount,

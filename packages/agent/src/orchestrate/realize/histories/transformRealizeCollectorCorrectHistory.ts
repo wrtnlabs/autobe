@@ -11,6 +11,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { transformPreviousAndLatestCorrectHistory } from "../../common/histories/transformPreviousAndLatestCorrectHistory";
 import { AutoBeRealizeCollectorProgrammer } from "../programmers/AutoBeRealizeCollectorProgrammer";
+import { AutoBeRealizeTransformerProgrammer } from "../programmers/AutoBeRealizeTransformerProgrammer";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 
 export const transformRealizeCollectorCorrectHistory = async (
@@ -81,6 +82,14 @@ export const transformRealizeCollectorCorrectHistory = async (
             ),
           )}
           \`\`\`
+
+          Here is the **Relation Mapping Table** for model \`${props.function.plan.databaseSchemaName}\`.
+          ONLY use propertyKey values from this table in Prisma queries — NEVER guess or derive from table names:
+
+          ${AutoBeRealizeTransformerProgrammer.formatRelationMappingTable({
+            application,
+            model,
+          })}
 
           Also, this is the list of database schema members you have to consider:
 

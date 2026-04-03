@@ -207,6 +207,16 @@ export interface EvaluationPenalties {
   suggestionOverflow?: SuggestionOverflowPenalty;
 }
 
+/** Score breakdown showing phase vs agent contribution */
+export interface ScoreBreakdown {
+  phaseScore: number;
+  phaseWeight: number;
+  phaseContribution: number;
+  agentScore: number | null;
+  agentWeight: number;
+  agentContribution: number;
+}
+
 /** Final evaluation result */
 export interface EvaluationResult {
   targetPath: string;
@@ -221,6 +231,7 @@ export interface EvaluationResult {
   meta: EvaluationResult.Meta;
   penalties?: EvaluationPenalties;
   agentEvaluations?: AgentResult[];
+  scoreBreakdown?: ScoreBreakdown;
   /** Code size and performance metrics (reference only) */
   performanceMetrics?: Record<string, number | string>;
 }

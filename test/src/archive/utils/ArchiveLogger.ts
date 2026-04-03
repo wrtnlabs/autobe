@@ -333,6 +333,15 @@ export namespace ArchiveLogger {
         `  - refactors:`,
         ...event.refactors.map((r) => `    - ${r.from} -> ${r.to}`),
       );
+    else if (event.type === "interfaceSchemaDecouple")
+      content.push(
+        `  - type: ${event.removal.typeName}`,
+        `  - property: ${event.removal.propertyName}`,
+        `  - edges:`,
+        ...event.cycle.edges.map(
+          (e) => `    - ${e.sourceType}.${e.propertyName} -> ${e.targetType}`,
+        ),
+      );
     //----
     // TEST
     //----

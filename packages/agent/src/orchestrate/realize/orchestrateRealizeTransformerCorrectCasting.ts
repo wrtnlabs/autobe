@@ -5,7 +5,7 @@ import {
 } from "@autobe/interface";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { orchestrateRealizeCorrectCasting } from "./internal/orchestrateRealizeCorrectCasting";
+import { orchestrateRealizeCorrectCasting } from "./correct/orchestrateRealizeCorrectCasting";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
 
 export const orchestrateRealizeTransformerCorrectCasting = (

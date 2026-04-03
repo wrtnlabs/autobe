@@ -32,24 +32,21 @@ export class GoldenSetEvaluator {
 
   private aggregateTimings(results: ScenarioResult[]): {
     metrics: Record<string, number>;
-    p95: number;
   } {
     const timings = results
       .map((r) => r.durationMs)
       .filter((d): d is number => d !== undefined);
-    if (timings.length === 0) return { metrics: {}, p95: 0 };
+    if (timings.length === 0) return { metrics: {} };
     const sorted = [...timings].sort((a, b) => a - b);
-    const p95 = sorted[Math.floor(sorted.length * 0.95)];
     return {
       metrics: {
         avgResponseMs: Math.round(
           timings.reduce((a, b) => a + b, 0) / timings.length,
         ),
         p50ResponseMs: sorted[Math.floor(sorted.length * 0.5)],
-        p95ResponseMs: p95,
+        p95ResponseMs: sorted[Math.floor(sorted.length * 0.95)],
         maxResponseMs: sorted[sorted.length - 1],
       },
-      p95,
     };
   }
 
@@ -146,26 +143,51 @@ export class GoldenSetEvaluator {
     const http = new HttpRunner(port);
     let results: ScenarioResult[];
 
-    switch (project) {
-      case "todo":
-        results = await runTodoScenarios(routes, http);
-        break;
-      case "bbs":
-        results = await runBbsScenarios(routes, http);
-        break;
-      case "reddit":
-        results = await runRedditScenarios(routes, http);
-        break;
-      case "shopping":
-        results = await runShoppingScenarios(routes, http);
-        break;
-      case "gauzy":
-        results = await runGauzyScenarios(routes, http);
-        break;
+    try {
+      switch (project) {
+        case "todo":
+          results = await runTodoScenarios(routes, http);
+          break;
+        case "bbs":
+          results = await runBbsScenarios(routes, http);
+          break;
+        case "reddit":
+          results = await runRedditScenarios(routes, http);
+          break;
+        case "shopping":
+          results = await runShoppingScenarios(routes, http);
+          break;
+        case "gauzy":
+          results = await runGauzyScenarios(routes, http);
+          break;
+      }
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      return {
+        phase: "goldenSet",
+        passed: false,
+        score: 0,
+        maxScore: 100,
+        weightedScore: 0,
+        issues: [
+          createIssue({
+            severity: "critical",
+            category: "runtime",
+            code: "GS004",
+            message: `Scenario execution crashed: ${errMsg}`,
+          }),
+        ],
+        durationMs: Math.round(performance.now() - startTime),
+        metrics: { totalFeatures: 0, passedFeatures: 0 },
+      };
     }
 
     const total = results.length;
     const passed = results.filter((r) => r.passed).length;
+
+    console.log(
+      `  ${this.name}: ${passed}/${total} scenarios passed for ${project}`,
+    );
 
     // Multi-dimensional scoring
     const { score: categoryScore, categoryMetrics } =

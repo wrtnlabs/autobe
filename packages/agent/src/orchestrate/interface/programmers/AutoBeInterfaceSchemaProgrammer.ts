@@ -15,6 +15,13 @@ export namespace AutoBeInterfaceSchemaProgrammer {
   export interface IDatabaseSchemaMember {
     key: string;
     nullable: boolean;
+    /**
+     * Database column type for type compatibility validation.
+     *
+     * - `null` means this member is a relation (object/array), not a column, so
+     *   primitive type checking should be skipped.
+     */
+    type: AutoBeDatabase.IPlainField["type"] | null;
   }
 
   export const getDatabaseSchemaName = (typeName: string): string =>
@@ -43,23 +50,27 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     {
       key: props.model.primaryField.name,
       nullable: false,
+      type: "uuid",
     },
     // Plain fields (columns like title, description, created_at, etc.)
     ...props.model.plainFields.map((f) => ({
       key: f.name,
       nullable: f.nullable,
+      type: f.type,
     })),
     // Foreign key columns (e.g., todo_app_user_id)
     ...props.model.foreignFields.map((f) => ({
       key: f.name,
       nullable: f.nullable,
+      type: "uuid" as const,
     })),
-    // Foreign key relation names (e.g., user)
+    // Foreign key relation names (e.g., user) — relations, not columns
     ...props.model.foreignFields.map((f) => ({
       key: f.relation.name,
       nullable: f.nullable,
+      type: null,
     })),
-    // Opposite relations from other models
+    // Opposite relations from other models — relations, not columns
     ...props.everyModels
       .map((m) =>
         m.foreignFields
@@ -67,6 +78,7 @@ export namespace AutoBeInterfaceSchemaProgrammer {
           .map((f) => ({
             key: f.relation.oppositeName,
             nullable: f.unique,
+            type: null,
           })),
       )
       .flat(),

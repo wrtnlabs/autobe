@@ -181,8 +181,8 @@ export class EvaluationPipeline {
     const phaseResults = await Promise.all(
       phaseStrategies.map(async (strategy) => {
         // Try to reuse cached result if dependencies haven't changed
-        if (canUseIncremental && canReusePhase(strategy.key, diff!)) {
-          const cached = cache!.phaseResults![strategy.key];
+        if (canUseIncremental && diff && canReusePhase(strategy.key, diff)) {
+          const cached = cache?.phaseResults?.[strategy.key];
           if (cached) {
             this.log(
               `  - ${strategy.label}: reusing cached result (score ${cached.score})`,
@@ -663,15 +663,19 @@ export class EvaluationPipeline {
       );
       const normFactor = activeSum > 0 ? 1 / activeSum : 1;
 
+      const safeScore = (v: number | undefined | null) => {
+        const n = v ?? 0;
+        return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : 0;
+      };
       let rawScore = activePhases.reduce(
         (sum, s) =>
-          sum + (phases[s.key]?.score ?? 0) * PHASE_WEIGHTS[s.key] * normFactor,
+          sum +
+          safeScore(phases[s.key]?.score) * PHASE_WEIGHTS[s.key] * normFactor,
         0,
       );
       // Apply gate as a soft multiplier with smooth interpolation.
       // Gate failed → raw multiplier (score/100).
-      // Gate passed → linear ramp from 0.7 (at gate=0) to 1.0 (at gate=100),
-      // providing meaningful penalty for poor gate scores.
+      // Gate passed → linear ramp from 0.85 (at gate=0) to 1.0 (at gate=100).
       rawScore = Math.min(100, rawScore); // clamp before multiplier
       const rawGateMultiplier = (phases.gate.score ?? 100) / 100;
       // C-4: Softer gate multiplier — 0.85 at gate=0 to 1.0 at gate=100
@@ -798,6 +802,7 @@ export class EvaluationPipeline {
       const scale =
         rawTotal > MAX_COMBINED_PENALTY ? MAX_COMBINED_PENALTY / rawTotal : 1.0;
 
+      // Round individual penalties for display, but use exact sum for effective total
       const warningPenalty = Math.round(rawWarningPenalty * scale);
       const dupPenalty = Math.round(rawDupPenalty * scale);
       const jsdocPenalty = Math.round(rawJsdocPenalty * scale);

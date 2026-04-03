@@ -140,7 +140,7 @@ for entry in "${TARGETS[@]}"; do
   $FULL_MODE && ARGS="$ARGS --run-tests --golden"
 
   LOG_FILE=$(mktemp)
-  node -r ts-node/register "$SCRIPT_DIR/dist/bin/estimate.js" $ARGS > "$LOG_FILE" 2>&1 || true
+  node "$SCRIPT_DIR/dist/bin/estimate.js" $ARGS > "$LOG_FILE" 2>&1 || true
 
   # Success = report file exists (exit code unreliable due to @clack/prompts piping)
   REPORT_FILE="$OUTPUT/estimate-report.json"

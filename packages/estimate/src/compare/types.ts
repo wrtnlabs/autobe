@@ -35,6 +35,7 @@ export interface ProjectMetrics {
 export interface AgentScores {
   security: number;
   llmQuality: number;
+  hallucination: number;
 }
 
 /** Project penalty breakdown */

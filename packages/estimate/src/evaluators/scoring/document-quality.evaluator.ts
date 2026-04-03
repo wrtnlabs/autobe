@@ -59,7 +59,7 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
       if (hasReadme) score += 5;
 
       // Doc file count: continuous interpolation (max 15)
-      // 0 files → 0, 1 → 3, 5 → 10, 10+ → 15
+      // 0 files → 0, 1 → 3, 5 → 8, 10+ → 15
       {
         const fileCountScore =
           docFiles.length >= 10

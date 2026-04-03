@@ -10,6 +10,7 @@ function extractGateMetrics(gate) {
   let typeWarningCount = 0;
   let suggestionCount = 0;
 
+  if (!gate?.issues) return { typeErrorCount, typeWarningCount, suggestionCount };
   for (const issue of gate.issues) {
     if (issue.severity === "suggestion") suggestionCount++;
     else if (issue.severity === "warning") typeWarningCount++;
@@ -20,6 +21,7 @@ function extractGateMetrics(gate) {
 }
 
 function extractGateIssuesByCode(gate) {
+  if (!gate?.issues) return [];
   const byCode = {};
   for (const issue of gate.issues) {
     const key = issue.code || "unknown";
@@ -35,6 +37,7 @@ function extractGateIssuesByCode(gate) {
 }
 
 function extractPhaseScore(phase) {
+  if (!phase) return { score: 0, maxScore: 100, weightedScore: 0, passed: false, durationMs: 0, metrics: {} };
   return {
     score: phase.score,
     maxScore: phase.maxScore,
@@ -46,6 +49,7 @@ function extractPhaseScore(phase) {
 }
 
 function extractPhaseDetail(phase) {
+  if (!phase) return extractPhaseScore(phase);
   const base = extractPhaseScore(phase);
   const detail = { ...base };
 

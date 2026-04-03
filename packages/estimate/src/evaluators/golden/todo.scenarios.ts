@@ -241,7 +241,7 @@ export async function runTodoScenarios(
       ),
     );
   } else {
-    const url = http.resolvePath(toggleEndpoint.url, { todoId });
+    const url = http.resolvePath(toggleEndpoint.url, { todoId, id: todoId });
     const res = await http.post(url, {}, true);
     const res2 = res.ok
       ? res
@@ -288,13 +288,19 @@ export async function runTodoScenarios(
       ),
     );
   } else {
-    const updateUrl = http.resolvePath(todoUpdateEndpoint.url, { todoId });
+    const updateUrl = http.resolvePath(todoUpdateEndpoint.url, {
+      todoId,
+      id: todoId,
+    });
     await http.patch(
       updateUrl,
       { title: "Updated Title for History Test" },
       true,
     );
-    const historyUrl = http.resolvePath(historyEndpoint.url, { todoId });
+    const historyUrl = http.resolvePath(historyEndpoint.url, {
+      todoId,
+      id: todoId,
+    });
     const res =
       historyEndpoint.method === "PATCH"
         ? await http.patch(historyUrl, { page: 1, limit: 10 }, true)
@@ -318,7 +324,10 @@ export async function runTodoScenarios(
       fail(10, "Get edit history", "endpoint not found or no todoId", "query"),
     );
   } else {
-    const historyUrl = http.resolvePath(historyEndpoint.url, { todoId });
+    const historyUrl = http.resolvePath(historyEndpoint.url, {
+      todoId,
+      id: todoId,
+    });
     const res =
       historyEndpoint.method === "PATCH"
         ? await http.patch(historyUrl, { page: 1, limit: 10 }, true)
@@ -345,7 +354,10 @@ export async function runTodoScenarios(
       ),
     );
   } else {
-    const deleteUrl = http.resolvePath(todoDeleteEndpoint.url, { todoId });
+    const deleteUrl = http.resolvePath(todoDeleteEndpoint.url, {
+      todoId,
+      id: todoId,
+    });
     const res = await http.delete(deleteUrl, true);
     results.push(
       res.ok
@@ -454,7 +466,10 @@ export async function runTodoScenarios(
       method: "GET",
     });
     if (getTodoEndpoint) {
-      const url = otherHttp.resolvePath(getTodoEndpoint.url, { todoId });
+      const url = otherHttp.resolvePath(getTodoEndpoint.url, {
+        todoId,
+        id: todoId,
+      });
       const res = await otherHttp.get(url, true);
       results.push(
         res.status === 403 || res.status === 404
