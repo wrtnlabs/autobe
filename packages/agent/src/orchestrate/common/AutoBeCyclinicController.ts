@@ -144,13 +144,26 @@ export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
 
       // PRELIMINARY
       if (action === null) {
-        await orchestratePreliminary(ctx, {
-          source_id: this.source_id,
-          source: this.source,
-          preliminary: this.preliminary,
-          trial: i + 1,
-          histories: result.histories,
-        });
+        if (this.preliminary.getKinds().length === 0) {
+          // No preliminary kinds available — LLM failed to call write.
+          // Record as a failure so the next iteration's history explicitly
+          // instructs the LLM to submit a write instead.
+          this.failures.push({
+            diagnostics:
+              "You did not call write in the previous turn. " +
+              "There is no preliminary data left to request. " +
+              "You MUST call process({ request: { type: \"write\", ... } }) RIGHT NOW.",
+            iteration: i,
+          });
+        } else {
+          await orchestratePreliminary(ctx, {
+            source_id: this.source_id,
+            source: this.source,
+            preliminary: this.preliminary,
+            trial: i + 1,
+            histories: result.histories,
+          });
+        }
         continue;
       }
 

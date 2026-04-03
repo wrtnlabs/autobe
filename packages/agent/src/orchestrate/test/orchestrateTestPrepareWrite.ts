@@ -342,19 +342,20 @@ async function buildHistories(
   if (props.failures.length === 0 && !props.writeSucceeded) return base;
 
   const failureEntries = props.failures.map((f) => {
-    const diagnostics =
-      f.diagnostics as IAutoBeTypeScriptCompileResult.IDiagnostic[];
+    const text =
+      typeof f.diagnostics === "string"
+        ? `[Iteration ${f.iteration + 1}] ${f.diagnostics}`
+        : `[Write attempt ${f.iteration + 1} FAILED] TypeScript compilation errors:\n` +
+          (f.diagnostics as IAutoBeTypeScriptCompileResult.IDiagnostic[])
+            .map(
+              (d) =>
+                `  - ${d.file ?? "unknown"} ${d.category} TS${d.code}: ${d.messageText}`,
+            )
+            .join("\n");
     return {
       id: v7(),
       type: "systemMessage" as const,
-      text:
-        `[Write attempt ${f.iteration + 1} FAILED] TypeScript compilation errors:\n` +
-        diagnostics
-          .map(
-            (d) =>
-              `  - ${d.file ?? "unknown"} ${d.category} TS${d.code}: ${d.messageText}`,
-          )
-          .join("\n"),
+      text,
       created_at: new Date().toISOString(),
     };
   });

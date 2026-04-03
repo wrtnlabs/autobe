@@ -342,13 +342,17 @@ function buildHistories(props: {
   if (props.failures.length === 0 && !props.writeSucceeded) return base;
 
   const failureEntries = props.failures.map((f) => {
-    const errors = f.diagnostics as IValidation.IError[];
+    const text =
+      typeof f.diagnostics === "string"
+        ? `[Iteration ${f.iteration + 1}] ${f.diagnostics}`
+        : `[Write attempt ${f.iteration + 1} FAILED] Validation errors:\n` +
+          (f.diagnostics as IValidation.IError[])
+            .map((e) => `  - ${e.path}: ${e.expected}`)
+            .join("\n");
     return {
       id: v7(),
       type: "systemMessage" as const,
-      text:
-        `[Write attempt ${f.iteration + 1} FAILED] Validation errors:\n` +
-        errors.map((e) => `  - ${e.path}: ${e.expected}`).join("\n"),
+      text,
       created_at: new Date().toISOString(),
     };
   });

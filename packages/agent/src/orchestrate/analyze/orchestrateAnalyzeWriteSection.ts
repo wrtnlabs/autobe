@@ -259,18 +259,25 @@ function buildHistories(
   if (props.failures.length === 0 && !props.writeSucceeded) return base;
 
   const failureEntries = props.failures.map((f) => {
-    const errors = f.diagnostics as IValidation.IError[];
+    const text =
+      typeof f.diagnostics === "string"
+        ? `[Iteration ${f.iteration + 1}] ${f.diagnostics}`
+        : (() => {
+            const errors = f.diagnostics as IValidation.IError[];
+            return (
+              `[Write attempt ${f.iteration + 1} FAILED] Content validation errors:\n` +
+              errors
+                .map(
+                  (e) =>
+                    `  - ${e.path}: expected ${e.expected}, got ${JSON.stringify(e.value)}`,
+                )
+                .join("\n")
+            );
+          })();
     return {
       id: v7(),
       type: "systemMessage" as const,
-      text:
-        `[Write attempt ${f.iteration + 1} FAILED] Content validation errors:\n` +
-        errors
-          .map(
-            (e) =>
-              `  - ${e.path}: expected ${e.expected}, got ${JSON.stringify(e.value)}`,
-          )
-          .join("\n"),
+      text,
       created_at: new Date().toISOString(),
     };
   });
