@@ -256,8 +256,10 @@ function renderGoldenSetDetail(phaseResult: PhaseResult): string {
 |----------|--------|-------|--------|--------|
 ${catRows}
 `;
-    } catch {
-      // skip malformed categories
+    } catch (err) {
+      console.warn(
+        `  Golden set category rendering failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 

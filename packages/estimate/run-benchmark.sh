@@ -113,11 +113,15 @@ for t in "${TARGETS[@]}"; do
 done
 echo ""
 
-# ── Build if needed ───────────────────────────────────────
-if [ ! -f "$SCRIPT_DIR/dist/bin/estimate.js" ]; then
-  echo "Building estimate..."
-  (cd "$SCRIPT_DIR" && npx tsc -b)
+# ── Resolve ts-node path ──────────────────────────────────
+# Use ts-node directly (same as `pnpm estimate` in package.json)
+# node dist/ has ESM resolution issues with workspace packages
+TSNODE_BIN="$REPO_ROOT/node_modules/.bin/ts-node"
+if [ ! -x "$TSNODE_BIN" ]; then
+  echo "ERROR: ts-node not found at $TSNODE_BIN"
+  exit 1
 fi
+ESTIMATE_CMD="$TSNODE_BIN $SCRIPT_DIR/src/bin/estimate.ts"
 
 # ── Run evaluations ──────────────────────────────────────
 PASSED=0
@@ -140,16 +144,18 @@ for entry in "${TARGETS[@]}"; do
   $FULL_MODE && ARGS="$ARGS --run-tests --golden"
 
   LOG_FILE=$(mktemp)
-  node "$SCRIPT_DIR/dist/bin/estimate.js" $ARGS > "$LOG_FILE" 2>&1 || true
+  EXIT_CODE=0
+  $ESTIMATE_CMD $ARGS > "$LOG_FILE" 2>&1 || EXIT_CODE=$?
 
   # Success = report file exists (exit code unreliable due to @clack/prompts piping)
   REPORT_FILE="$OUTPUT/estimate-report.json"
   if [ -f "$REPORT_FILE" ]; then
     tail -5 "$LOG_FILE"
+    [ "$EXIT_CODE" -ne 0 ] && echo "  (exit code $EXIT_CODE — report generated despite non-zero exit)"
     PASSED=$((PASSED + 1))
   else
     tail -10 "$LOG_FILE"
-    echo "  ERROR: evaluation failed (no report generated)"
+    echo "  ERROR: evaluation failed (exit code $EXIT_CODE, no report generated)"
     FAILED=$((FAILED + 1))
   fi
   rm -f "$LOG_FILE"

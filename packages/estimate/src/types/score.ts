@@ -3,6 +3,14 @@ import type { Issue } from "./issue";
 
 export const GATE_ERROR_THRESHOLD = 0.05;
 export const GATE_PENALTY_PER_PERCENT = 5;
+/** Minimum gate multiplier when gate passes with penalties (gate=0 → 0.85, gate=100 → 1.0) */
+export const GATE_MULTIPLIER_FLOOR = 0.85;
+/** Type error critical ratio threshold — above this, gate fails */
+export const TYPE_CRITICAL_RATIO = 0.3;
+/** Maximum prisma validation penalty */
+export const PRISMA_PENALTY_CAP = 40;
+/** Maximum total penalty from code quality deductions */
+export const MAX_COMBINED_PENALTY = 20;
 export const AGENT_WEIGHT_RATIO = 0.15;
 export const AGENT_WEIGHTS: Record<string, number> = {
   SecurityAgent: 0.25, // 25% of agent portion — OWASP security audit (lowered: AutoBE auth guards are user-configured)

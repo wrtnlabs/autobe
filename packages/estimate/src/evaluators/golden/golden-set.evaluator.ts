@@ -4,7 +4,7 @@ import { runBbsScenarios } from "./bbs.scenarios";
 import { runGauzyScenarios } from "./gauzy.scenarios";
 import { HttpRunner } from "./http-runner";
 import { runRedditScenarios } from "./reddit.scenarios";
-import type { ScenarioCategory, ScenarioResult } from "./scenario-helpers";
+import { type ScenarioCategory, type ScenarioResult, safeSuite } from "./scenario-helpers";
 import { runShoppingScenarios } from "./shopping.scenarios";
 import { runTodoScenarios } from "./todo.scenarios";
 import { buildRouteMap } from "./url-resolver";
@@ -141,28 +141,23 @@ export class GoldenSetEvaluator {
     }
 
     const http = new HttpRunner(port);
-    let results: ScenarioResult[];
+    const results: ScenarioResult[] = [];
 
-    try {
-      switch (project) {
-        case "todo":
-          results = await runTodoScenarios(routes, http);
-          break;
-        case "bbs":
-          results = await runBbsScenarios(routes, http);
-          break;
-        case "reddit":
-          results = await runRedditScenarios(routes, http);
-          break;
-        case "shopping":
-          results = await runShoppingScenarios(routes, http);
-          break;
-        case "gauzy":
-          results = await runGauzyScenarios(routes, http);
-          break;
-      }
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
+    // safeSuite preserves partial results even if suite crashes mid-way
+    const runners: Record<GoldenProject, () => Promise<ScenarioResult[]>> = {
+      todo: () => runTodoScenarios(routes, http),
+      bbs: () => runBbsScenarios(routes, http),
+      reddit: () => runRedditScenarios(routes, http),
+      shopping: () => runShoppingScenarios(routes, http),
+      gauzy: () => runGauzyScenarios(routes, http),
+    };
+
+    await safeSuite(results, project, async () => {
+      const suiteResults = await runners[project]();
+      results.push(...suiteResults);
+    });
+
+    if (results.length === 0) {
       return {
         phase: "goldenSet",
         passed: false,
@@ -174,7 +169,7 @@ export class GoldenSetEvaluator {
             severity: "critical",
             category: "runtime",
             code: "GS004",
-            message: `Scenario execution crashed: ${errMsg}`,
+            message: "Scenario suite returned no results (possible crash)",
           }),
         ],
         durationMs: Math.round(performance.now() - startTime),

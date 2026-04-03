@@ -38,8 +38,12 @@ import type {
 } from "../types";
 import {
   GATE_ERROR_THRESHOLD,
+  GATE_MULTIPLIER_FLOOR,
   GATE_PENALTY_PER_PERCENT,
+  MAX_COMBINED_PENALTY,
   PHASE_WEIGHTS,
+  PRISMA_PENALTY_CAP,
+  TYPE_CRITICAL_RATIO,
   createEmptyPhaseResult,
   createIssue,
   generateExplanation,
@@ -378,7 +382,7 @@ export class EvaluationPipeline {
     const typeCriticalCount = typeResult.issues.filter(
       (i) => i.severity === "critical",
     ).length;
-    if (typeCriticalCount > 0 && typeCriticalCount / totalFiles > 0.3) {
+    if (typeCriticalCount > 0 && typeCriticalCount / totalFiles > TYPE_CRITICAL_RATIO) {
       return this.createGateFailure(issues, "type-errors", startTime, {
         totalFiles,
         filesWithErrors,
@@ -400,7 +404,7 @@ export class EvaluationPipeline {
       (i) => i.severity === "warning",
     ).length;
     const prismaPenalty = Math.min(
-      40,
+      PRISMA_PENALTY_CAP,
       prismaCriticalCount * 10 + prismaWarningCount * 2,
     );
 
@@ -677,11 +681,15 @@ export class EvaluationPipeline {
       // Gate failed → raw multiplier (score/100).
       // Gate passed → linear ramp from 0.85 (at gate=0) to 1.0 (at gate=100).
       rawScore = Math.min(100, rawScore); // clamp before multiplier
-      const rawGateMultiplier = (phases.gate.score ?? 100) / 100;
-      // C-4: Softer gate multiplier — 0.85 at gate=0 to 1.0 at gate=100
-      // (was 0.7 to 1.0, too aggressive — made A grade unreachable)
+      const gateScore = phases.gate.score ?? 100;
+      const rawGateMultiplier = gateScore / 100;
+      // Gate passed with no penalty → multiplier 1.0 (perfect phases should yield 100).
+      // Gate passed with penalties → soft ramp from 0.85 (gate=0) to 1.0 (gate=100).
+      // Gate failed → raw multiplier (score/100).
       const gateMultiplier = phases.gate.passed
-        ? 0.85 + rawGateMultiplier * 0.15
+        ? gateScore === 100
+          ? 1.0
+          : GATE_MULTIPLIER_FLOOR + rawGateMultiplier * (1 - GATE_MULTIPLIER_FLOOR)
         : rawGateMultiplier;
       totalScore = Math.max(0, Math.round(rawScore * gateMultiplier));
 
@@ -798,24 +806,21 @@ export class EvaluationPipeline {
         rawSuggestionPenalty,
       ];
       const rawTotal = rawPenalties.reduce((s, p) => s + p, 0);
-      const MAX_COMBINED_PENALTY = 20;
       const scale =
         rawTotal > MAX_COMBINED_PENALTY ? MAX_COMBINED_PENALTY / rawTotal : 1.0;
 
-      // Round individual penalties for display, but use exact sum for effective total
+      // Compute effective total from exact scaled sum, then distribute
+      // rounded values for display. This avoids rounding drift where
+      // individually rounded penalties sum to more than the cap.
+      const effectivePenalty = Math.min(
+        MAX_COMBINED_PENALTY,
+        Math.round(rawTotal * scale),
+      );
       const warningPenalty = Math.round(rawWarningPenalty * scale);
       const dupPenalty = Math.round(rawDupPenalty * scale);
       const jsdocPenalty = Math.round(rawJsdocPenalty * scale);
       const syncPenalty = Math.round(rawSyncPenalty * scale);
       const suggestionPenalty = Math.round(rawSuggestionPenalty * scale);
-      const effectivePenalty = Math.min(
-        MAX_COMBINED_PENALTY,
-        warningPenalty +
-          dupPenalty +
-          jsdocPenalty +
-          syncPenalty +
-          suggestionPenalty,
-      );
 
       totalScore = Math.max(0, totalScore - effectivePenalty);
 

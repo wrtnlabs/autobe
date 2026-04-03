@@ -122,8 +122,11 @@ export class RuntimeEvaluator extends GateEvaluator {
           apiPort,
         );
         context.contractResult = contractResult;
-      } catch {
+      } catch (err) {
         // Contract testing is non-blocking — failures don't affect gate
+        console.warn(
+          `  Contract test failed (non-blocking): ${err instanceof Error ? err.message : String(err)}`,
+        );
       }
 
       const testResults = await this.runTests(rootPath);
@@ -200,8 +203,10 @@ export class RuntimeEvaluator extends GateEvaluator {
         cwd: rootPath,
         stdio: "pipe",
       });
-    } catch {
-      // ignore cleanup failures
+    } catch (err) {
+      console.warn(
+        `  docker compose down failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
@@ -255,7 +260,8 @@ export class RuntimeEvaluator extends GateEvaluator {
             stdio: "pipe",
             timeout: BUILD_TIMEOUT_MS,
           });
-        } catch {
+        } catch (_frozenErr) {
+          // Frozen lockfile failed — retry without frozen
           execSync("pnpm install", {
             cwd: rootPath,
             stdio: "pipe",

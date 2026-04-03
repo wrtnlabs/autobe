@@ -34,7 +34,7 @@
     "build": "tsc",
     "estimate": "ts-node src/bin/estimate.ts",
     "benchmark": "./run-benchmark.sh",
-    "test": "vitest --passWithNoTests",
+    "test": "vitest",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {

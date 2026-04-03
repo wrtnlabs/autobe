@@ -50,31 +50,23 @@ export function fail(
 }
 
 /**
- * Run a scenario function with error isolation. If the scenario throws, it
- * returns a fail result instead of crashing the entire suite.
+ * Run a scenario suite with error isolation.
+ * The suite function pushes results to the provided array.
+ * If it crashes mid-way, partial results are preserved and a crash entry is appended.
  */
-export async function safeScenario(
-  id: number,
-  name: string,
-  category: ScenarioCategory,
-  fn: () => Promise<ScenarioResult>,
-): Promise<ScenarioResult> {
-  const start = performance.now();
+export async function safeSuite(
+  results: ScenarioResult[],
+  suiteName: string,
+  fn: () => Promise<void>,
+): Promise<void> {
   try {
-    const result = await fn();
-    // Attach durationMs if not already set
-    if (result.durationMs === undefined) {
-      result.durationMs = Math.round(performance.now() - start);
-    }
-    return result;
+    await fn();
   } catch (err) {
-    return {
-      id,
-      name,
+    results.push({
+      id: 0,
+      name: `${suiteName} (crashed)`,
       passed: false,
-      reason: `Scenario crashed: ${err instanceof Error ? err.message : String(err)}`,
-      category,
-      durationMs: Math.round(performance.now() - start),
-    };
+      reason: `Suite crashed: ${err instanceof Error ? err.message : String(err)}`,
+    });
   }
 }
