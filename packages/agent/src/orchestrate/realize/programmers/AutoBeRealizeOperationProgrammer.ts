@@ -13,6 +13,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "./AutoBeRealizeTransformerProgrammer";
+import { writeRealizeOperationTemplate } from "./internal/writeRealizeOperationTemplate";
 
 export namespace AutoBeRealizeOperationProgrammer {
   /**
@@ -134,6 +135,8 @@ export namespace AutoBeRealizeOperationProgrammer {
     authorizations: AutoBeRealizeAuthorization[];
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
     operation: AutoBeOpenApi.IOperation;
+    collectors: AutoBeRealizeCollectorFunction[];
+    transformers: AutoBeRealizeTransformerFunction[];
   }): string {
     const scenario: IAutoBeRealizeScenarioResult = getScenario({
       authorizations: props.authorizations,
@@ -146,11 +149,14 @@ export namespace AutoBeRealizeOperationProgrammer {
         : (props.authorizations.find(
             (a) => a.actor.name === props.operation.authorizationActor,
           ) ?? null);
-    return writeTemplateCode({
+    return writeRealizeOperationTemplate({
       scenario,
       operation: props.operation,
-      schemas: props.schemas,
+      imports: writeImportStatements(props),
       authorization,
+      schemas: props.schemas,
+      collectors: props.collectors,
+      transformers: props.transformers,
     });
   }
 
@@ -200,6 +206,43 @@ export namespace AutoBeRealizeOperationProgrammer {
   }
 }
 
+function writeImportStatements(props: {
+  operation: AutoBeOpenApi.IOperation;
+  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+}): string[] {
+  const typeReferences: Set<string> = new Set();
+  const visit = (key: string) =>
+    OpenApiTypeChecker.visit({
+      schema: { $ref: `#/components/schemas/${key}` },
+      components: { schemas: props.schemas },
+      closure: (next) => {
+        if (OpenApiTypeChecker.isReference(next))
+          typeReferences.add(next.$ref.split("/").pop()!.split(".")[0]!);
+      },
+    });
+  if (props.operation.requestBody) visit(props.operation.requestBody.typeName);
+  if (props.operation.responseBody)
+    visit(props.operation.responseBody.typeName);
+
+  return [
+    `import { ArrayUtil } from "@nestia/e2e";`,
+    'import { HttpException } from "@nestjs/common";',
+    'import { Prisma } from "@prisma/sdk";',
+    'import jwt from "jsonwebtoken";',
+    'import typia, { tags } from "typia";',
+    'import { v4 } from "uuid";',
+    'import { MyGlobal } from "../MyGlobal";',
+    'import { PasswordUtil } from "../utils/PasswordUtil";',
+    'import { toISOStringSafe } from "../utils/toISOStringSafe"',
+    "",
+    `import { IEntity } from "@ORGANIZATION/PROJECT-api/lib/structures/IEntity";`,
+    ...Array.from(typeReferences).map(
+      (ref) =>
+        `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
+    ),
+  ];
+}
+
 function getFunctionName(operation: AutoBeOpenApi.IOperation): string {
   const functionName = `${operation.method}${operation.path
     .split("/")
@@ -223,150 +266,6 @@ function getFunctionName(operation: AutoBeOpenApi.IOperation): string {
     })
     .join("")}`;
   return functionName;
-}
-
-function writeImportStatements(props: {
-  operation: AutoBeOpenApi.IOperation;
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-}): string[] {
-  const typeReferences: Set<string> = new Set();
-  const visit = (key: string) =>
-    OpenApiTypeChecker.visit({
-      schema: {
-        $ref: `#/components/schemas/${key}`,
-      },
-      components: { schemas: props.schemas },
-      closure: (next) => {
-        if (OpenApiTypeChecker.isReference(next))
-          typeReferences.add(next.$ref.split("/").pop()!.split(".")[0]!);
-      },
-    });
-  if (props.operation.requestBody) visit(props.operation.requestBody.typeName);
-  if (props.operation.responseBody)
-    visit(props.operation.responseBody.typeName);
-
-  const imports = [
-    `import { ArrayUtil } from "@nestia/e2e";`,
-    'import { HttpException } from "@nestjs/common";',
-    'import { Prisma } from "@prisma/sdk";',
-    'import jwt from "jsonwebtoken";',
-    'import typia, { tags } from "typia";',
-    'import { v4 } from "uuid";',
-
-    'import { MyGlobal } from "../MyGlobal";',
-    'import { PasswordUtil } from "../utils/PasswordUtil";',
-    'import { toISOStringSafe } from "../utils/toISOStringSafe"',
-    "",
-    `import { IEntity } from "@ORGANIZATION/PROJECT-api/lib/structures/IEntity";`,
-    ...Array.from(typeReferences).map(
-      (ref) =>
-        `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
-    ),
-  ];
-  return imports;
-}
-
-function writeTemplateCode(props: {
-  scenario: IAutoBeRealizeScenarioResult;
-  operation: AutoBeOpenApi.IOperation;
-  schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  authorization: AutoBeRealizeAuthorization | null;
-}): string {
-  // Collect all function parameters in order
-  const functionParameters: string[] = [];
-
-  // Add authentication parameter if needed (e.g., user: IUser, admin: IAdmin)
-  if (props.authorization && props.authorization.actor.name) {
-    // Debug: Log the values to check what's being used
-    const authParameter = `${props.authorization.actor.name}: ${props.authorization.payload.name}`;
-    functionParameters.push(authParameter);
-  }
-
-  // Add path parameters (e.g., id, postId, etc.)
-  const pathParameters = props.operation.parameters.map((param) => {
-    return `${param.name}: ${writeParameterType(param.schema)}`;
-  });
-  functionParameters.push(...pathParameters);
-
-  // Add ip if required
-  if (
-    props.operation.requestBody?.typeName.endsWith(".ILogin") ||
-    props.operation.requestBody?.typeName.endsWith(".IJoin")
-  )
-    functionParameters.push("ip: string");
-
-  // Add request body parameter if present
-  if (props.operation.requestBody?.typeName) {
-    const bodyParameter = `body: ${props.operation.requestBody.typeName}`;
-    functionParameters.push(bodyParameter);
-  }
-
-  // Format parameters for props object
-  const hasParameters = functionParameters.length > 0;
-
-  let formattedSignature: string;
-  if (hasParameters) {
-    const propsFields = functionParameters
-      .map((param) => `  ${param}`)
-      .join(";\n");
-
-    formattedSignature = `props: {\n${propsFields};\n}`;
-  } else {
-    formattedSignature = "";
-  }
-
-  // Determine return type
-  const returnType = props.operation.responseBody?.typeName ?? "void";
-
-  // Generate the complete template
-  return StringUtil.trim`
-    Complete the code below, disregard the import part and return only the function part.
-
-    \`\`\`typescript
-    ${writeImportStatements(props).join("\n")} 
-
-    // DON'T CHANGE FUNCTION NAME AND PARAMETERS,
-    // ONLY YOU HAVE TO WRITE THIS FUNCTION BODY, AND USE IMPORTED.
-    export async function ${props.scenario.functionName}(${formattedSignature}): Promise<${returnType}> {
-      ...
-    }
-    \`\`\`
-  `;
-}
-
-function writeParameterType(
-  schema: AutoBeOpenApi.IParameter["schema"],
-): string {
-  const elements: string[] =
-    schema.type === "integer"
-      ? ["number", `tags.Type<"int32">`]
-      : [schema.type];
-  if (schema.type === "number") {
-    if (schema.minimum !== undefined)
-      elements.push(`tags.Minimum<${schema.minimum}>`);
-    if (schema.maximum !== undefined)
-      elements.push(`tags.Maximum<${schema.maximum}>`);
-    if (schema.exclusiveMinimum !== undefined)
-      elements.push(`tags.ExclusiveMinimum<${schema.exclusiveMinimum}>`);
-    if (schema.exclusiveMaximum !== undefined)
-      elements.push(`tags.ExclusiveMaximum<${schema.exclusiveMaximum}>`);
-    if (schema.multipleOf !== undefined)
-      elements.push(`tags.MultipleOf<${schema.multipleOf}>`);
-  } else if (schema.type === "string") {
-    if (schema.format !== undefined)
-      elements.push(`tags.Format<${JSON.stringify(schema.format)}>`);
-    if (schema.contentMediaType !== undefined)
-      elements.push(
-        `tags.ContentMediaType<${JSON.stringify(schema.contentMediaType)}>`,
-      );
-    if (schema.pattern !== undefined)
-      elements.push(`tags.Pattern<${JSON.stringify(schema.pattern)}>`);
-    if (schema.minLength !== undefined)
-      elements.push(`tags.MinLength<${schema.minLength}>`);
-    if (schema.maxLength !== undefined)
-      elements.push(`tags.MaxLength<${schema.maxLength}>`);
-  }
-  return elements.join(" & ");
 }
 
 const description = (func: string): string => StringUtil.trim`

@@ -4,6 +4,7 @@ import { missedOpenApiSchemas } from "@autobe/utils";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateInterfaceSchemaCasting } from "./orchestrateInterfaceSchemaCasting";
 import { orchestrateInterfaceSchemaComplement } from "./orchestrateInterfaceSchemaComplement";
+import { orchestrateInterfaceSchemaDecouple } from "./orchestrateInterfaceSchemaDecouple";
 import { orchestrateInterfaceSchemaRefine } from "./orchestrateInterfaceSchemaRefine";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
@@ -182,6 +183,12 @@ export const orchestrateInterfaceSchema = async (
         document,
       }),
     );
+
+  // DECOUPLE - break cross-type circular references (A->B->C->A)
+  await orchestrateInterfaceSchemaDecouple(ctx, {
+    schemas: document.components.schemas,
+    operations: document.operations,
+  });
 
   AutoBeJsonSchemaFactory.removeUnused({
     operations: document.operations,

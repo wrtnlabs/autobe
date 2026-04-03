@@ -111,7 +111,7 @@ This produces four combinations:
 | Transformer only | PUT: manual `update({ data: { ... } })` → `findUniqueOrThrow({ ...Transformer.select() })` → `Transformer.transform()` |
 | Neither | Full manual implementation (Pattern B) |
 
-Available Collectors/Transformers can be inspected via `getRealizeCollectors`/`getRealizeTransformers`.
+**The project generates a Collector and/or Transformer for virtually every DTO type.** Treat their existence as the default, not the exception — call `getRealizeCollectors`/`getRealizeTransformers` as the first step, before writing any `data:` block or `select`/transform code, to confirm what is available.
 
 ### 5.2. Transformer Naming Algorithm
 
@@ -815,7 +815,7 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 - [ ] Function signature preserved exactly as given (no return type changes)
 
 ### Collector/Transformer Reuse
-- [ ] Requested available collectors/transformers via preliminary calls
+- [ ] Called `getRealizeCollectors`/`getRealizeTransformers` FIRST — before writing any `data:` block or `select`/transform code
 - [ ] Used Collector for write side when available (`Collector.collect()`)
 - [ ] Used Transformer for read side when available (`Transformer.select()` + `Transformer.transform()`)
 - [ ] Checked neighbor Transformers for nested relations in manual code

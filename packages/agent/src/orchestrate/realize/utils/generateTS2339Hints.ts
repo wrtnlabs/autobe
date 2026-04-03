@@ -62,7 +62,7 @@ export function generateTS2339Hints(
     "These TS2339 errors are caused by accessing fields not available on the Prisma Payload type.",
     "This usually means the field is MISSING from your `select()` object.",
     "",
-    "**Fix**: For each property below, add it to `select()`:",
+    "**Fix**: For each property below, add it to `select()` — but first verify the property name exists in the **Relation Mapping Table**:",
     "- Scalar field → `fieldName: true`",
     "- Relation (has neighbor transformer) → `relation: NeighborTransformer.select()`",
     "- Relation (no transformer) → `relation: { select: { ... } }`",
@@ -71,4 +71,35 @@ export function generateTS2339Hints(
     "Affected properties:",
     lines,
   ].join("\n");
+}
+
+/**
+ * Extracts "Did you mean 'X'?" suggestions from TS2353/TS2339 diagnostics.
+ *
+ * The TypeScript compiler provides these suggestions when a property name is
+ * close to a valid one (e.g., `owner_member` → `ownerMember`).
+ */
+export function extractDidYouMeanHints(
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+): Array<{ wrong: string; suggested: string }> {
+  const DID_YOU_MEAN =
+    /(?:property '(\w+)' does not exist|'(\w+)' does not exist in type)[^]*?Did you mean (?:to write )?'(\w+)'/i;
+
+  const seen = new Set<string>();
+  const hints: Array<{ wrong: string; suggested: string }> = [];
+
+  for (const diag of diagnostics) {
+    const match = diag.messageText.match(DID_YOU_MEAN);
+    if (match !== null) {
+      const wrong = match[1] ?? match[2]!;
+      const suggested = match[3]!;
+      const key = `${wrong}->${suggested}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        hints.push({ wrong, suggested });
+      }
+    }
+  }
+
+  return hints;
 }

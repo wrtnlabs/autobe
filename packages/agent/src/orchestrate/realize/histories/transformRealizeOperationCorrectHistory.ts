@@ -1,7 +1,9 @@
 import {
   AutoBeOpenApi,
   AutoBeRealizeAuthorization,
+  AutoBeRealizeCollectorFunction,
   AutoBeRealizeOperationFunction,
+  AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -19,6 +21,8 @@ import { transformRealizeOperationWriteHistory } from "./transformRealizeOperati
 export function transformRealizeOperationCorrectHistory(props: {
   state: AutoBeState;
   authorizations: AutoBeRealizeAuthorization[];
+  collectors: AutoBeRealizeCollectorFunction[];
+  transformers: AutoBeRealizeTransformerFunction[];
   function: AutoBeRealizeOperationFunction;
   dto: Record<string, string>;
   failures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[];
@@ -46,6 +50,8 @@ export function transformRealizeOperationCorrectHistory(props: {
       scenario,
       authorization: scenario.decoratorEvent ?? null,
       totalAuthorizations: props.authorizations,
+      collectors: props.collectors,
+      transformers: props.transformers,
       dto: props.dto,
       preliminary: props.preliminary,
     });
@@ -83,6 +89,8 @@ export function transformRealizeOperationCorrectHistory(props: {
         authorizations: props.authorizations,
         operation,
         schemas: props.state.interface!.document.components.schemas,
+        collectors: props.collectors,
+        transformers: props.transformers,
       })}
 
       Current code is as follows:

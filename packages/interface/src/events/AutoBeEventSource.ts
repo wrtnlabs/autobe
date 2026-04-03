@@ -24,6 +24,7 @@ import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationR
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
 import { AutoBeInterfaceSchemaCastingEvent } from "./AutoBeInterfaceSchemaCastingEvent";
 import { AutoBeInterfaceSchemaComplementEvent } from "./AutoBeInterfaceSchemaComplementEvent";
+import { AutoBeInterfaceSchemaDecoupleEvent } from "./AutoBeInterfaceSchemaDecoupleEvent";
 import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
 import { AutoBeInterfaceSchemaRefineEvent } from "./AutoBeInterfaceSchemaRefineEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
@@ -107,6 +108,7 @@ export type AutoBeEventSource =
   | AutoBeInterfaceSchemaReviewEvent["type"]
   | AutoBeInterfaceSchemaRenameEvent["type"]
   | AutoBeInterfaceSchemaComplementEvent["type"]
+  | AutoBeInterfaceSchemaDecoupleEvent["type"]
   | AutoBeInterfacePrerequisiteEvent["type"]
   // test
   | AutoBeTestScenarioEvent["type"]

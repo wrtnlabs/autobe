@@ -8,7 +8,7 @@ import {
 } from "@autobe/interface";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { orchestrateRealizeCorrectCasting } from "./internal/orchestrateRealizeCorrectCasting";
+import { orchestrateRealizeCorrectCasting } from "./correct/orchestrateRealizeCorrectCasting";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
@@ -34,6 +34,8 @@ export const orchestrateRealizeOperationCorrectCasting = async (
               o.method === func.endpoint.method &&
               o.path === func.endpoint.path,
           )!,
+          collectors: props.collectors,
+          transformers: props.transformers,
         }),
       replaceImportStatements: async (next) => {
         const scenario: IAutoBeRealizeScenarioResult =

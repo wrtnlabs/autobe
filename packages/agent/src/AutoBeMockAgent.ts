@@ -253,7 +253,8 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   interfaceSchemaRefine: 400,
   interfaceSchemaReview: 200,
   interfaceSchemaRename: 200,
-  interfaceSchemaComplement: 2_000,
+  interfaceSchemaComplement: 400,
+  interfaceSchemaDecouple: 400,
   interfaceComplete: 1_000,
   interfacePrerequisite: 400,
   // TEST

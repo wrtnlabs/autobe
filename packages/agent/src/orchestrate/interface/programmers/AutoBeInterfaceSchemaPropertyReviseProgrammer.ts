@@ -179,11 +179,19 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
     const dbSchemaProp:
       | AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember
       | undefined = validateDatabaseSchemaProperty(props);
-    if (dbSchemaProp !== undefined)
+    if (dbSchemaProp !== undefined) {
       validateNullable({
         ...props,
         property: dbSchemaProp,
       });
+      validateType({
+        path: props.path,
+        errors: props.errors,
+        property: dbSchemaProp,
+        revise: props.revise,
+        originalDtoSchema: props.originalDtoSchema,
+      });
+    }
   };
 
   const validateDatabaseSchemaProperty = (props: {
@@ -343,5 +351,161 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
           { type: "null" } if you also need to change the schema.
         `,
       });
+  };
+
+  const validateType = (props: {
+    path: string;
+    errors: IValidation.IError[];
+    property: AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember;
+    revise: AutoBeInterfaceSchemaPropertyRevise;
+    originalDtoSchema:
+      | AutoBeOpenApi.IJsonSchema
+      | AutoBeOpenApi.IJsonSchemaProperty
+      | undefined;
+  }): void => {
+    // skip relations (object/array) — only validate primitive column types
+    if (props.property.type === null) return;
+
+    // extract the effective schema from the revise action
+    const schema: AutoBeOpenApi.IJsonSchema | null =
+      props.revise.type === "create" || props.revise.type === "update"
+        ? props.revise.schema
+        : props.revise.type === "erase" || props.originalDtoSchema === undefined
+          ? null
+          : props.originalDtoSchema;
+    if (schema === null) return;
+
+    // for oneOf: at least one non-null member must be type-compatible
+    if (AutoBeOpenApiTypeChecker.isOneOf(schema)) {
+      const nonNull = schema.oneOf.filter(
+        (s) => !AutoBeOpenApiTypeChecker.isNull(s),
+      );
+      if (nonNull.length === 0) {
+        // all-null oneOf (e.g., `null | null`)
+        const expected = describeExpectedSchema(props.property.type);
+        props.errors.push({
+          path: `${props.path}.schema`,
+          expected,
+          value: schema,
+          description: StringUtil.trim`
+            Database column "${props.property.key}" has type "${props.property.type}",
+            but the DTO property schema is a union of only null types
+            (e.g., "null | null") which carries no actual type information.
+
+            Expected JSON Schema: ${expected}.
+
+            Fix: Replace the entire schema with the correct type for this column.
+            If the column is nullable, wrap it as:
+            { oneOf: [${expected}, { type: "null" }] }.
+          `,
+        });
+      } else if (
+        !nonNull.some(
+          (s) =>
+            props.property.type !== null &&
+            isTypeCompatible(props.property.type, s),
+        )
+      ) {
+        // no non-null member matches the DB column type
+        const expected = describeExpectedSchema(props.property.type);
+        props.errors.push({
+          path: `${props.path}.schema`,
+          expected,
+          value: schema,
+          description: StringUtil.trim`
+            Database column "${props.property.key}" has type "${props.property.type}",
+            so the JSON Schema must be: ${expected}.
+
+            However, the DTO property declares an incompatible type:
+            ${JSON.stringify(schema, null, 2)}.
+
+            Fix: Replace the schema with ${expected}.
+            If the column is nullable, wrap it as:
+            { oneOf: [${expected}, { type: "null" }] }.
+
+            The database schema is the source of truth — the DTO property type
+            must be compatible with the underlying column type.
+          `,
+        });
+      }
+      return;
+    }
+
+    // non-oneOf: direct type check
+    if (isTypeCompatible(props.property.type, schema)) return;
+
+    const expected = describeExpectedSchema(props.property.type);
+    props.errors.push({
+      path: `${props.path}.schema`,
+      expected,
+      value: schema,
+      description: StringUtil.trim`
+        Database column "${props.property.key}" has type "${props.property.type}",
+        which expects JSON Schema: ${expected}.
+
+        However, the DTO property declares an incompatible type:
+        ${JSON.stringify(schema, null, 2)}.
+
+        Fix: Change the schema to match the database column type. The database
+        schema is the source of truth — the DTO property type must be compatible
+        with the underlying column type.
+      `,
+    });
+  };
+
+  /** Check whether a JSON Schema type is compatible with a database column type. */
+  const isTypeCompatible = (
+    dbType: AutoBeDatabase.IPlainField["type"],
+    schema: AutoBeOpenApi.IJsonSchema,
+  ): boolean => {
+    switch (dbType) {
+      case "boolean":
+        return AutoBeOpenApiTypeChecker.isBoolean(schema);
+      case "int":
+        return AutoBeOpenApiTypeChecker.isInteger(schema);
+      case "double":
+        return AutoBeOpenApiTypeChecker.isNumber(schema);
+      case "string":
+        return AutoBeOpenApiTypeChecker.isString(schema);
+      case "uuid":
+        return (
+          AutoBeOpenApiTypeChecker.isString(schema) && schema.format === "uuid"
+        );
+      case "uri":
+        return (
+          AutoBeOpenApiTypeChecker.isString(schema) &&
+          (schema.format === "uri" || schema.format === "url")
+        );
+      case "datetime":
+        return (
+          AutoBeOpenApiTypeChecker.isString(schema) &&
+          schema.format === "date-time"
+        );
+    }
+  };
+
+  /**
+   * Human-readable description of the expected JSON Schema for a DB column
+   * type.
+   */
+  const describeExpectedSchema = (
+    dbType: AutoBeDatabase.IPlainField["type"],
+  ): string => {
+    switch (dbType) {
+      case "boolean":
+        return '{ type: "boolean" }';
+      case "int":
+        return '{ type: "integer" }';
+      case "double":
+        return '{ type: "number" }';
+      case "string":
+        return '{ type: "string" }';
+      case "uuid":
+        return '{ type: "string", format: "uuid" }';
+      case "uri":
+        return '{ type: "string", format: "uri" }';
+      case "datetime":
+        return '{ type: "string", format: "date-time" }';
+    }
   };
 }

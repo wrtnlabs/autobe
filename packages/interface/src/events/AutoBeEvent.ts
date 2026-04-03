@@ -33,6 +33,7 @@ import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationR
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
 import { AutoBeInterfaceSchemaCastingEvent } from "./AutoBeInterfaceSchemaCastingEvent";
 import { AutoBeInterfaceSchemaComplementEvent } from "./AutoBeInterfaceSchemaComplementEvent";
+import { AutoBeInterfaceSchemaDecoupleEvent } from "./AutoBeInterfaceSchemaDecoupleEvent";
 import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
 import { AutoBeInterfaceSchemaRefineEvent } from "./AutoBeInterfaceSchemaRefineEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
@@ -143,6 +144,7 @@ export type AutoBeEvent =
   | AutoBeInterfaceSchemaReviewEvent
   | AutoBeInterfaceSchemaRenameEvent
   | AutoBeInterfaceSchemaComplementEvent
+  | AutoBeInterfaceSchemaDecoupleEvent
   | AutoBeInterfaceCompleteEvent
   | AutoBeInterfacePrerequisiteEvent
   // TEST

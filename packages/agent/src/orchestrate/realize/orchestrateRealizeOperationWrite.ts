@@ -142,12 +142,11 @@ async function process(
       realizeTransformers: props.transformers.filter(
         (t) =>
           t.plan.dtoTypeName ===
-          props.scenario.operation.responseBody?.typeName,
+          props.scenario.operation.responseBody?.typeName.replace(/^IPage/, ""),
       ),
       analysisSections: ragSections,
     },
   });
-
   return await cyclinic.orchestrate(
     ctx,
     // PROCESS: LLM conversation → action

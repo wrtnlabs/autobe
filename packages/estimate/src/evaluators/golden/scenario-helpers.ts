@@ -48,3 +48,33 @@ export function fail(
 ): ScenarioResult {
   return { id, name, passed: false, reason, category };
 }
+
+/**
+ * Run a scenario function with error isolation. If the scenario throws, it
+ * returns a fail result instead of crashing the entire suite.
+ */
+export async function safeScenario(
+  id: number,
+  name: string,
+  category: ScenarioCategory,
+  fn: () => Promise<ScenarioResult>,
+): Promise<ScenarioResult> {
+  const start = performance.now();
+  try {
+    const result = await fn();
+    // Attach durationMs if not already set
+    if (result.durationMs === undefined) {
+      result.durationMs = Math.round(performance.now() - start);
+    }
+    return result;
+  } catch (err) {
+    return {
+      id,
+      name,
+      passed: false,
+      reason: `Scenario crashed: ${err instanceof Error ? err.message : String(err)}`,
+      category,
+      durationMs: Math.round(performance.now() - start),
+    };
+  }
+}

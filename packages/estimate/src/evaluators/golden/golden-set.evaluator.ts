@@ -185,6 +185,10 @@ export class GoldenSetEvaluator {
     const total = results.length;
     const passed = results.filter((r) => r.passed).length;
 
+    console.log(
+      `  ${this.name}: ${passed}/${total} scenarios passed for ${project}`,
+    );
+
     // Multi-dimensional scoring
     const { score: categoryScore, categoryMetrics } =
       this.computeCategoryScore(results);

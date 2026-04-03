@@ -34,6 +34,11 @@ interface OpenApiSchema {
   maxLength?: number;
 }
 
+interface PathParam {
+  name: string;
+  schema?: OpenApiSchema;
+}
+
 interface EndpointSpec {
   path: string;
   method: string;
@@ -41,6 +46,7 @@ interface EndpointSpec {
   responseSchema?: OpenApiSchema;
   requiresAuth: boolean;
   category: ScenarioCategory;
+  pathParams: PathParam[];
 }
 
 interface ContractTestResult extends ScenarioResult {
@@ -84,18 +90,46 @@ export class ContractEvaluator {
 
     const http = new HttpRunner(port);
     const results: ContractTestResult[] = [];
+    // Collected resource IDs from POST responses: resource name → id string
+    const resourceIds = new Map<string, string>();
 
     // 1. Find auth endpoint and get token
     const authToken = await this.tryAuthenticate(spec, endpoints, http);
 
-    // 2. Test each endpoint
+    // 2. Test each endpoint (two-phase: create first, then parameterized)
     const toTest = this.selectEndpoints(endpoints);
     console.log(
       `  ${this.name}: testing ${toTest.length}/${endpoints.length} endpoints from spec`,
     );
 
-    for (const ep of toTest) {
-      const result = await this.testEndpoint(spec, ep, http, authToken);
+    // Phase 1: Run non-parameterized POST endpoints first to collect resource IDs
+    const createEndpoints = toTest.filter(
+      (ep) => ep.method === "POST" && ep.pathParams.length === 0,
+    );
+    const rest = toTest.filter(
+      (ep) => !(ep.method === "POST" && ep.pathParams.length === 0),
+    );
+
+    for (const ep of createEndpoints) {
+      const result = await this.testEndpoint(
+        spec,
+        ep,
+        http,
+        authToken,
+        resourceIds,
+      );
+      results.push(result);
+    }
+
+    // Phase 2: Run remaining endpoints (parameterized GET/PATCH/DELETE etc.)
+    for (const ep of rest) {
+      const result = await this.testEndpoint(
+        spec,
+        ep,
+        http,
+        authToken,
+        resourceIds,
+      );
       results.push(result);
     }
 
@@ -181,6 +215,7 @@ export class ContractEvaluator {
         const responseSchema = this.extractResponseSchema(spec, op);
         const requiresAuth = this.detectAuth(op);
         const category = this.categorizeEndpoint(apiPath, method);
+        const pathParams = this.extractPathParams(spec, op, apiPath);
 
         endpoints.push({
           path: apiPath,
@@ -189,6 +224,7 @@ export class ContractEvaluator {
           responseSchema: responseSchema ?? undefined,
           requiresAuth,
           category,
+          pathParams,
         });
       }
     }
@@ -254,6 +290,60 @@ export class ContractEvaluator {
       );
     }
     return false;
+  }
+
+  private extractPathParams(
+    spec: Record<string, unknown>,
+    op: Record<string, unknown>,
+    apiPath: string,
+  ): PathParam[] {
+    const params: PathParam[] = [];
+
+    // 1. Extract from OpenAPI `parameters` array
+    const opParams = op.parameters as
+      | Array<{
+          in?: string;
+          name?: string;
+          schema?: OpenApiSchema;
+          $ref?: string;
+        }>
+      | undefined;
+
+    if (opParams) {
+      for (const p of opParams) {
+        let resolved = p;
+        if (p.$ref) {
+          const r = resolveRef(spec, p.$ref) as typeof p | null;
+          if (r) resolved = r;
+        }
+        if (resolved.in === "path" && resolved.name) {
+          params.push({
+            name: resolved.name,
+            schema: resolved.schema,
+          });
+        }
+      }
+    }
+
+    // 2. Fallback: extract from path template itself ({id}, {userId}, etc.)
+    const templateParams = apiPath.match(/\{([^}]+)\}/g) ?? [];
+    for (const tpl of templateParams) {
+      const name = tpl.slice(1, -1); // strip { }
+      if (!params.some((p) => p.name === name)) {
+        params.push({ name });
+      }
+    }
+
+    // 3. Handle :param style (NestJS)
+    const colonParams = apiPath.match(/:([a-zA-Z_][a-zA-Z0-9_]*)/g) ?? [];
+    for (const tpl of colonParams) {
+      const name = tpl.slice(1); // strip :
+      if (!params.some((p) => p.name === name)) {
+        params.push({ name });
+      }
+    }
+
+    return params;
   }
 
   private categorizeEndpoint(
@@ -508,19 +598,20 @@ export class ContractEvaluator {
     ep: EndpointSpec,
     http: HttpRunner,
     authToken: string | null,
+    resourceIds: Map<string, string>,
   ): Promise<ContractTestResult> {
     const useToken = ep.requiresAuth && authToken !== null;
     const warnings: string[] = [];
 
     try {
       let res;
-      const path = ep.path;
 
-      // Skip endpoints with path parameters (we can't resolve them)
-      // Excluded from scoring — neither pass nor fail
-      if (path.includes("{") || path.includes(":")) {
+      // Resolve path parameters using collected resource IDs
+      const path = this.resolvePathParams(ep, resourceIds);
+      if (path === null) {
+        // No ID available for required path params — skip
         console.log(
-          `    skip: ${ep.method} ${ep.path} (unresolved path parameters)`,
+          `    skip: ${ep.method} ${ep.path} (no resource ID available)`,
         );
         return {
           id: 0,
@@ -530,7 +621,7 @@ export class ContractEvaluator {
           endpoint: ep.path,
           method: ep.method,
           responseWarnings: [],
-          reason: "skipped (path parameters)",
+          reason: "skipped (no resource ID for path params)",
           skipped: true,
         };
       }
@@ -544,6 +635,10 @@ export class ContractEvaluator {
             ? this.generateRequestBody(spec, ep.requestBodySchema)
             : {};
           res = await http.post(path, body, useToken);
+          // Collect resource ID from successful creation
+          if (res.ok && res.body) {
+            this.collectResourceId(ep.path, res.body, resourceIds);
+          }
           break;
         }
         case "PATCH": {
@@ -618,6 +713,144 @@ export class ContractEvaluator {
         responseWarnings: [],
       };
     }
+  }
+
+  /**
+   * Resolve path parameters using collected resource IDs. Returns the resolved
+   * path, or null if a required param has no available ID.
+   */
+  private resolvePathParams(
+    ep: EndpointSpec,
+    resourceIds: Map<string, string>,
+  ): string | null {
+    if (ep.pathParams.length === 0) return ep.path;
+
+    let resolved = ep.path;
+    for (const param of ep.pathParams) {
+      const id = this.findResourceId(param.name, ep.path, resourceIds);
+      if (!id) return null; // Can't resolve — skip this endpoint
+
+      // Replace both {param} and :param styles
+      resolved = resolved
+        .replaceAll(`{${param.name}}`, id)
+        .replaceAll(`:${param.name}`, id);
+    }
+    return resolved;
+  }
+
+  /**
+   * Find a resource ID for a path parameter by matching param name to resource
+   * names.
+   */
+  private findResourceId(
+    paramName: string,
+    apiPath: string,
+    resourceIds: Map<string, string>,
+  ): string | null {
+    // Direct match: "id" → look for resource from parent path segment
+    // e.g., /articles/{id} → resource "articles"
+    // e.g., /articles/{articleId} → resource "articles"
+    const lower = paramName.toLowerCase();
+
+    // 1. If param is just "id", infer resource from path
+    if (lower === "id") {
+      const resource = this.inferResourceFromPath(apiPath);
+      if (resource && resourceIds.has(resource)) {
+        return resourceIds.get(resource)!;
+      }
+      // Fallback: return any available ID (most recent)
+      const lastId = [...resourceIds.values()].pop();
+      return lastId ?? null;
+    }
+
+    // 2. If param is like "articleId" or "article_id", extract "article" → pluralize
+    const resourceName = lower
+      .replace(/id$/i, "")
+      .replace(/_id$/i, "")
+      .replace(/-id$/i, "");
+    if (resourceName) {
+      // Try plural forms
+      for (const suffix of ["s", "es", ""]) {
+        const key = resourceName + suffix;
+        if (resourceIds.has(key)) return resourceIds.get(key)!;
+      }
+    }
+
+    // 3. Try matching against all resource keys
+    for (const [key, id] of resourceIds) {
+      if (key.includes(resourceName) || resourceName.includes(key)) {
+        return id;
+      }
+    }
+
+    return null;
+  }
+
+  /** Infer resource name from path: /api/articles/{id} → "articles" */
+  private inferResourceFromPath(apiPath: string): string | null {
+    const segments = apiPath.split("/").filter(Boolean);
+    // Find the segment just before the first path param
+    for (let i = 0; i < segments.length; i++) {
+      if (segments[i].startsWith("{") || segments[i].startsWith(":")) {
+        return i > 0 ? segments[i - 1].toLowerCase() : null;
+      }
+    }
+    return null;
+  }
+
+  /** Extract resource ID from a POST response body and store it. */
+  private collectResourceId(
+    apiPath: string,
+    body: unknown,
+    resourceIds: Map<string, string>,
+  ): void {
+    if (!body || typeof body !== "object") return;
+
+    const id = this.extractId(body);
+    if (!id) return;
+
+    // Derive resource name from path: /api/articles → "articles"
+    const segments = apiPath.split("/").filter(Boolean);
+    // Take the last non-param segment
+    for (let i = segments.length - 1; i >= 0; i--) {
+      if (!segments[i].startsWith("{") && !segments[i].startsWith(":")) {
+        resourceIds.set(segments[i].toLowerCase(), id);
+        return;
+      }
+    }
+  }
+
+  /**
+   * Extract an ID value from a response body object. Handles both flat and
+   * nested (data/result wrapper) structures.
+   */
+  private extractId(body: unknown): string | null {
+    if (!body || typeof body !== "object") return null;
+    const obj = body as Record<string, unknown>;
+
+    // Check flat ID fields
+    const idValue = this.extractIdFromObject(obj);
+    if (idValue) return idValue;
+
+    // Check nested wrappers
+    for (const wrapper of ["data", "result", "response"]) {
+      if (typeof obj[wrapper] === "object" && obj[wrapper] !== null) {
+        const inner = obj[wrapper] as Record<string, unknown>;
+        const innerId = this.extractIdFromObject(inner);
+        if (innerId) return innerId;
+      }
+    }
+
+    return null;
+  }
+
+  private extractIdFromObject(obj: Record<string, unknown>): string | null {
+    for (const key of ["id", "ID", "_id"]) {
+      const val = obj[key];
+      if (typeof val === "string" && val.length > 0) return val;
+      if (typeof val === "number") return String(val);
+    }
+    return null;
   }
 
   private validateStatusCode(ep: EndpointSpec, status: number): boolean {

@@ -114,6 +114,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Interface Schema Rename",
           description: "Renaming API type schemas",
         };
+      case "interfaceSchemaDecouple":
+        return {
+          title: "Interface Schema Decouple",
+          description: "Decoupling circularly referenced API type schemas",
+        };
       case "interfacePrerequisite":
         return {
           title: "Interface Prerequisites",
