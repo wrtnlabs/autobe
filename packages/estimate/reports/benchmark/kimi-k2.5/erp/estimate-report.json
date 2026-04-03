@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp",
-  "totalScore": 87,
+  "totalScore": 83,
   "grade": "B",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846189684-3htqu4so4yr",
+          "id": "type-error-1775119449400-a5tg13xo6r",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/patchErpHrmGuestSessions.ts",
             "line": 1600
           },
-          "id": "type-error-1774846189684-55eri82vkgi",
+          "id": "type-error-1775119449400-z8outoup6td",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 2717
           },
-          "id": "type-error-1774846189684-08gs81w81qyt",
+          "id": "type-error-1775119449400-8980yrpt50k",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 3109
           },
-          "id": "type-error-1774846189684-u8gn0wu7ew",
+          "id": "type-error-1775119449400-czdxbc1064",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 3463
           },
-          "id": "type-error-1774846189684-yqshjkfamfj",
+          "id": "type-error-1775119449400-q5dntcrp61c",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 3599
           },
-          "id": "type-error-1774846189684-ab455gpdf35",
+          "id": "type-error-1775119449400-czdept2pfwq",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 3906
           },
-          "id": "type-error-1774846189684-8fi7ci322m4",
+          "id": "type-error-1775119449400-xjtmpulke3f",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 4034
           },
-          "id": "type-error-1774846189684-nkt1ahaaxdc",
+          "id": "type-error-1775119449400-ubdzlcayva",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 4351
           },
-          "id": "type-error-1774846189684-d9tnlm019rc",
+          "id": "type-error-1775119449400-y4g4teed6mf",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 4487
           },
-          "id": "type-error-1774846189684-lyiwm22x1cs",
+          "id": "type-error-1775119449400-4cg74ts9pxw",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 2210
           },
-          "id": "type-error-1774846189684-3kwzt8li3rw",
+          "id": "type-error-1775119449400-nuwdj5o48g",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 2334
           },
-          "id": "type-error-1774846189684-h3oay3p2ph8",
+          "id": "type-error-1775119449400-mewnb5uwys",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 2623
           },
-          "id": "type-error-1774846189684-bcxmzlb9u2i",
+          "id": "type-error-1775119449400-kbocfwp3i7s",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 2741
           },
-          "id": "type-error-1774846189684-szdrisv8zxc",
+          "id": "type-error-1775119449400-kv94nenay7r",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 3037
           },
-          "id": "type-error-1774846189684-kxdimz4aj4c",
+          "id": "type-error-1775119449400-e29rwnov8ce",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 3157
           },
-          "id": "type-error-1774846189684-l5wmnr2m34",
+          "id": "type-error-1775119449400-90ovcifnsq",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 4186
           },
-          "id": "type-error-1774846189684-ise8t9hh1bg",
+          "id": "type-error-1775119449400-8ljup6u3c5u",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 4332
           },
-          "id": "type-error-1774846189684-610uvi0w4gr",
+          "id": "type-error-1775119449400-5hx5z6x7e0n",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 4669
           },
-          "id": "type-error-1774846189684-5p8ap3q29zs",
+          "id": "type-error-1775119449400-wsupod4mrsh",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 4841
           },
-          "id": "type-error-1774846189684-u1r3zxbgvrl",
+          "id": "type-error-1775119449400-utsl189o2rd",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 5210
           },
-          "id": "type-error-1774846189684-jakokiovmgk",
+          "id": "type-error-1775119449400-63gk0di55ec",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 5393
           },
-          "id": "type-error-1774846189684-twgu0ck5tz",
+          "id": "type-error-1775119449400-0zpvlrf4npqo",
           "autoFixable": false
         },
         {
@@ -283,7 +283,7 @@
             "file": "src/providers/patchErpHrmMemberRoles.ts",
             "line": 2272
           },
-          "id": "type-error-1774846189684-b9q1o23ffba",
+          "id": "type-error-1775119449400-0x7yskzufoo",
           "autoFixable": false
         },
         {
@@ -295,7 +295,7 @@
             "file": "src/providers/patchErpHrmMemberRoles.ts",
             "line": 2395
           },
-          "id": "type-error-1774846189684-czoz0dpmc9",
+          "id": "type-error-1775119449400-5zayr0kwcjw",
           "autoFixable": false
         },
         {
@@ -307,7 +307,7 @@
             "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
             "line": 2627
           },
-          "id": "type-error-1774846189684-hcup9anb4i",
+          "id": "type-error-1775119449400-sq56m2aak2",
           "autoFixable": false
         },
         {
@@ -319,7 +319,7 @@
             "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
             "line": 2681
           },
-          "id": "type-error-1774846189684-qupcs252vs",
+          "id": "type-error-1775119449400-i1zn6t7a96",
           "autoFixable": false
         },
         {
@@ -331,7 +331,7 @@
             "file": "src/providers/putErpHrmMemberRolesRoleId.ts",
             "line": 3759
           },
-          "id": "type-error-1774846189684-loirzh0atzf",
+          "id": "type-error-1775119449400-jeuwanb8o5",
           "autoFixable": false
         },
         {
@@ -343,7 +343,7 @@
             "file": "src/transformers/ErpHrmActivityLogTransformer.ts",
             "line": 2671
           },
-          "id": "type-error-1774846189684-9iqwon2nwxd",
+          "id": "type-error-1775119449400-96rqjzs3ic",
           "autoFixable": false
         },
         {
@@ -355,7 +355,7 @@
             "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
             "line": 1597
           },
-          "id": "type-error-1774846189684-8wnrwcs5698",
+          "id": "type-error-1775119449400-ugkeaq6242f",
           "autoFixable": false
         },
         {
@@ -367,7 +367,7 @@
             "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
             "line": 1789
           },
-          "id": "type-error-1774846189684-nzl5apyev6p",
+          "id": "type-error-1775119449400-i33j5cai9yo",
           "autoFixable": false
         },
         {
@@ -379,7 +379,7 @@
             "file": "src/transformers/ErpHrmProjectTransformer.ts",
             "line": 1903
           },
-          "id": "type-error-1774846189684-kgvpbm969mm",
+          "id": "type-error-1775119449400-badb7ifqkov",
           "autoFixable": false
         },
         {
@@ -391,7 +391,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1383
           },
-          "id": "type-error-1774846189684-kpu5qruilvo",
+          "id": "type-error-1775119449400-ui0oetmhkm",
           "autoFixable": false
         },
         {
@@ -403,7 +403,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1401
           },
-          "id": "type-error-1774846189684-it7l7c4vi",
+          "id": "type-error-1775119449400-f7u2d4rsj6k",
           "autoFixable": false
         },
         {
@@ -415,7 +415,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1422
           },
-          "id": "type-error-1774846189684-4xi53r96jsx",
+          "id": "type-error-1775119449400-0m8i1hgxy6up",
           "autoFixable": false
         },
         {
@@ -427,7 +427,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1444
           },
-          "id": "type-error-1774846189684-exoear9rqfw",
+          "id": "type-error-1775119449400-fqe6pxj70tf",
           "autoFixable": false
         },
         {
@@ -439,7 +439,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1468
           },
-          "id": "type-error-1774846189684-geyzosho8t9",
+          "id": "type-error-1775119449400-8hp9bkl21a",
           "autoFixable": false
         },
         {
@@ -451,7 +451,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1492
           },
-          "id": "type-error-1774846189684-03n75fc0510e",
+          "id": "type-error-1775119449400-fqngxs95epl",
           "autoFixable": false
         },
         {
@@ -463,11 +463,11 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1523
           },
-          "id": "type-error-1774846189684-m6d7s0wd5gj",
+          "id": "type-error-1775119449400-e3xfp40rcm7",
           "autoFixable": false
         }
       ],
-      "durationMs": 4918,
+      "durationMs": 4407,
       "metrics": {
         "totalFiles": 244,
         "filesWithErrors": 0,
@@ -601,7 +601,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846189860-shkr3w4kjem",
+          "id": "complexity-1775119449605-j7jfq7vdfq",
           "autoFixable": false
         },
         {
@@ -614,7 +614,7 @@
             "line": 22
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846189861-i7fd2zm1b3m",
+          "id": "complexity-1775119449606-td1vl4enb0m",
           "autoFixable": false
         },
         {
@@ -627,7 +627,7 @@
             "line": 23
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846189864-9xipsxy2tok",
+          "id": "complexity-1775119449607-8sw2w08202m",
           "autoFixable": false
         },
         {
@@ -640,7 +640,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846189863-uqc2bmuwftq",
+          "id": "complexity-1775119449609-a3s0h6ll0k",
           "autoFixable": false
         },
         {
@@ -653,7 +653,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846189862-ky8th4dakp",
+          "id": "complexity-1775119449610-kheduyegqf",
           "autoFixable": false
         },
         {
@@ -666,7 +666,7 @@
             "line": 20
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846189866-mq7085dybh",
+          "id": "complexity-1775119449611-h32v0kmbe2",
           "autoFixable": false
         },
         {
@@ -679,7 +679,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846189879-34x4symfdyk",
+          "id": "complexity-1775119449621-pkm4rev7c5",
           "autoFixable": false
         },
         {
@@ -692,7 +692,7 @@
             "line": 24
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846189878-1wgzo55n7r7",
+          "id": "complexity-1775119449623-xh25aowp1nf",
           "autoFixable": false
         },
         {
@@ -705,7 +705,7 @@
             "line": 24
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846189881-bjoj66l1arc",
+          "id": "complexity-1775119449626-xwtsg9j68rb",
           "autoFixable": false
         },
         {
@@ -718,7 +718,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846189884-pw34nq7ttr",
+          "id": "complexity-1775119449627-xmtr2xtigoj",
           "autoFixable": false
         },
         {
@@ -731,7 +731,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846189886-2xciz64yhd7",
+          "id": "complexity-1775119449628-65kb24p7z5a",
           "autoFixable": false
         },
         {
@@ -744,7 +744,7 @@
             "line": 23
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846189881-k3doi24znzi",
+          "id": "complexity-1775119449631-xck0w050zgh",
           "autoFixable": false
         },
         {
@@ -757,7 +757,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846189891-e8tbqeotu49",
+          "id": "complexity-1775119449630-rnz28rsjc6e",
           "autoFixable": false
         },
         {
@@ -770,7 +770,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846189884-x4b72td5nl7",
+          "id": "complexity-1775119449632-yc5viaggtc",
           "autoFixable": false
         },
         {
@@ -783,7 +783,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846189885-9k264vniban",
+          "id": "complexity-1775119449633-7sn9gqbegvi",
           "autoFixable": false
         },
         {
@@ -796,7 +796,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846189888-r9yzozkijs",
+          "id": "complexity-1775119449634-q5p2zzijndm",
           "autoFixable": false
         },
         {
@@ -809,7 +809,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846189893-gltct3nad6",
+          "id": "complexity-1775119449636-pcegq80n03",
           "autoFixable": false
         }
       ]
@@ -826,7 +826,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
             "line": 187
           },
-          "id": "duplication-1774846190036-ei4lp7d1bpk",
+          "id": "duplication-1775119449758-g3smlmd18p",
           "autoFixable": false
         },
         {
@@ -838,7 +838,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
             "line": 188
           },
-          "id": "duplication-1774846190036-ncvthj21i9",
+          "id": "duplication-1775119449758-xrdvltnhg7",
           "autoFixable": false
         },
         {
@@ -850,7 +850,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 28
           },
-          "id": "duplication-1774846190036-5grqt16fpp2",
+          "id": "duplication-1775119449758-n4q81wy433",
           "autoFixable": false
         },
         {
@@ -862,7 +862,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 29
           },
-          "id": "duplication-1774846190036-s6fja32lx4r",
+          "id": "duplication-1775119449758-uftrwspa4n",
           "autoFixable": false
         },
         {
@@ -874,7 +874,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 30
           },
-          "id": "duplication-1774846190036-14avw5ufljq",
+          "id": "duplication-1775119449758-nubolqzory",
           "autoFixable": false
         },
         {
@@ -886,7 +886,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 31
           },
-          "id": "duplication-1774846190036-g6rusybp71",
+          "id": "duplication-1775119449758-rpa8i0b8x6",
           "autoFixable": false
         },
         {
@@ -898,7 +898,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 32
           },
-          "id": "duplication-1774846190036-3u4nlet8dv",
+          "id": "duplication-1775119449758-s9m2lotd3ac",
           "autoFixable": false
         },
         {
@@ -910,7 +910,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 33
           },
-          "id": "duplication-1774846190036-khglyos2ux",
+          "id": "duplication-1775119449758-d4mtq4detj7",
           "autoFixable": false
         },
         {
@@ -922,7 +922,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
             "line": 11
           },
-          "id": "duplication-1774846190036-c5axlalb0rg",
+          "id": "duplication-1775119449758-4w11g614eml",
           "autoFixable": false
         },
         {
@@ -934,7 +934,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
             "line": 13
           },
-          "id": "duplication-1774846190036-y1h3ychkzud",
+          "id": "duplication-1775119449758-lh952fu8ls",
           "autoFixable": false
         },
         {
@@ -946,7 +946,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
             "line": 31
           },
-          "id": "duplication-1774846190036-vrx3cq875zk",
+          "id": "duplication-1775119449758-rfmucjedkfl",
           "autoFixable": false
         },
         {
@@ -958,7 +958,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
             "line": 32
           },
-          "id": "duplication-1774846190036-2jp98snywhj",
+          "id": "duplication-1775119449758-vwigyiyy4gi",
           "autoFixable": false
         },
         {
@@ -970,7 +970,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberOrganizationsOrganizationId.ts",
             "line": 53
           },
-          "id": "duplication-1774846190036-yo7hy1nqlx",
+          "id": "duplication-1775119449758-1zim6c4rvxm",
           "autoFixable": false
         },
         {
@@ -982,7 +982,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberDepartmentsDepartmentId.ts",
             "line": 23
           },
-          "id": "duplication-1774846190036-57o09ov06l9",
+          "id": "duplication-1775119449759-m2wk81o5hu",
           "autoFixable": false
         },
         {
@@ -994,7 +994,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 17
           },
-          "id": "duplication-1774846190036-ytv51dph2t",
+          "id": "duplication-1775119449759-0ostdblyv87",
           "autoFixable": false
         },
         {
@@ -1006,7 +1006,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 18
           },
-          "id": "duplication-1774846190036-9dunk5b1u3g",
+          "id": "duplication-1775119449759-z2emkjntxlh",
           "autoFixable": false
         },
         {
@@ -1018,7 +1018,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdApprove.ts",
             "line": 30
           },
-          "id": "duplication-1774846190036-l4bb007fm4h",
+          "id": "duplication-1775119449759-zagjvf7de3n",
           "autoFixable": false
         },
         {
@@ -1030,7 +1030,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdApprove.ts",
             "line": 31
           },
-          "id": "duplication-1774846190036-ra5vh1kkduc",
+          "id": "duplication-1775119449759-kfxau56ewmf",
           "autoFixable": false
         },
         {
@@ -1042,7 +1042,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberRoles.ts",
             "line": 24
           },
-          "id": "duplication-1774846190036-a7peiagvd49",
+          "id": "duplication-1775119449759-7u1kxywbe7t",
           "autoFixable": false
         },
         {
@@ -1054,7 +1054,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberRoles.ts",
             "line": 25
           },
-          "id": "duplication-1774846190036-tjv1y3rp04g",
+          "id": "duplication-1775119449759-jkhs0inhsm9",
           "autoFixable": false
         },
         {
@@ -1066,7 +1066,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberTimesheets.ts",
             "line": 117
           },
-          "id": "duplication-1774846190036-isuwt30m9sk",
+          "id": "duplication-1775119449759-75ynkz0tg05",
           "autoFixable": false
         },
         {
@@ -1078,7 +1078,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberTimers.ts",
             "line": 108
           },
-          "id": "duplication-1774846190036-grsh7clntbb",
+          "id": "duplication-1775119449759-bnmnkfxgcia",
           "autoFixable": false
         },
         {
@@ -1090,7 +1090,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
             "line": 23
           },
-          "id": "duplication-1774846190036-4cdq666bknz",
+          "id": "duplication-1775119449759-2a8bhjbxe9u",
           "autoFixable": false
         },
         {
@@ -1102,7 +1102,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
             "line": 25
           },
-          "id": "duplication-1774846190036-hx8gry7nc9a",
+          "id": "duplication-1775119449759-vg1kgo5h53",
           "autoFixable": false
         },
         {
@@ -1114,7 +1114,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
             "line": 26
           },
-          "id": "duplication-1774846190036-2xup0peko0g",
+          "id": "duplication-1775119449759-zs5crg7ih0s",
           "autoFixable": false
         },
         {
@@ -1126,7 +1126,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
             "line": 27
           },
-          "id": "duplication-1774846190036-tg29gx76c4",
+          "id": "duplication-1775119449759-zedi5shxv5",
           "autoFixable": false
         },
         {
@@ -1138,7 +1138,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberProjects.ts",
             "line": 115
           },
-          "id": "duplication-1774846190036-eofe5ix4239",
+          "id": "duplication-1775119449759-kivsd18b8el",
           "autoFixable": false
         },
         {
@@ -1150,7 +1150,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
             "line": 40
           },
-          "id": "duplication-1774846190036-l3vqks8q47",
+          "id": "duplication-1775119449759-3ooznfclbdc",
           "autoFixable": false
         },
         {
@@ -1162,7 +1162,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
             "line": 41
           },
-          "id": "duplication-1774846190036-zyly636t43o",
+          "id": "duplication-1775119449759-nh1ino0rjx",
           "autoFixable": false
         },
         {
@@ -1174,7 +1174,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
             "line": 42
           },
-          "id": "duplication-1774846190036-4ib6ieywxu8",
+          "id": "duplication-1775119449759-n8qnwo7rt6p",
           "autoFixable": false
         },
         {
@@ -1186,7 +1186,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
             "line": 43
           },
-          "id": "duplication-1774846190036-c0edrbu0fs7",
+          "id": "duplication-1775119449759-bpqm4qgd4wr",
           "autoFixable": false
         },
         {
@@ -1198,7 +1198,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberOrganizationsOrganizationIdActivityLogsActivityLogIdDetailsDetailId.ts",
             "line": 23
           },
-          "id": "duplication-1774846190036-ci0znizv58",
+          "id": "duplication-1775119449759-wdm38182hjc",
           "autoFixable": false
         },
         {
@@ -1210,7 +1210,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
             "line": 18
           },
-          "id": "duplication-1774846190036-pnim2sweadf",
+          "id": "duplication-1775119449759-tfns0i8k9ef",
           "autoFixable": false
         },
         {
@@ -1222,7 +1222,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
             "line": 19
           },
-          "id": "duplication-1774846190036-pedwgd53o8",
+          "id": "duplication-1775119449759-p76srm77h3f",
           "autoFixable": false
         },
         {
@@ -1234,7 +1234,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
             "line": 20
           },
-          "id": "duplication-1774846190036-uuauxgla9t",
+          "id": "duplication-1775119449759-sjmjfwu2x2e",
           "autoFixable": false
         },
         {
@@ -1246,7 +1246,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 18
           },
-          "id": "duplication-1774846190036-4ey9iq4hmqi",
+          "id": "duplication-1775119449759-47ghgva8qpa",
           "autoFixable": false
         },
         {
@@ -1258,7 +1258,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 19
           },
-          "id": "duplication-1774846190036-ibdiuk1zv1j",
+          "id": "duplication-1775119449759-2lqpkv7iuzs",
           "autoFixable": false
         },
         {
@@ -1270,7 +1270,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 20
           },
-          "id": "duplication-1774846190036-4q19aiyrdak",
+          "id": "duplication-1775119449759-tc248v0595j",
           "autoFixable": false
         },
         {
@@ -1282,7 +1282,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 21
           },
-          "id": "duplication-1774846190036-7f090cjfg0n",
+          "id": "duplication-1775119449759-0bpe9dit8xkm",
           "autoFixable": false
         },
         {
@@ -1294,7 +1294,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 9
           },
-          "id": "duplication-1774846190036-yq1wm64fhor",
+          "id": "duplication-1775119449759-jciyejhdyn",
           "autoFixable": false
         },
         {
@@ -1306,7 +1306,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 10
           },
-          "id": "duplication-1774846190036-5ss9dcor6q",
+          "id": "duplication-1775119449759-9wg7le4iw8h",
           "autoFixable": false
         },
         {
@@ -1318,7 +1318,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 11
           },
-          "id": "duplication-1774846190036-uny8vqd6wpr",
+          "id": "duplication-1775119449759-onr6qdasv1a",
           "autoFixable": false
         },
         {
@@ -1330,7 +1330,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 12
           },
-          "id": "duplication-1774846190036-jv8wzvl4zk",
+          "id": "duplication-1775119449759-196808xk89q",
           "autoFixable": false
         },
         {
@@ -1342,7 +1342,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 13
           },
-          "id": "duplication-1774846190036-gy6gcqib8yc",
+          "id": "duplication-1775119449759-0kgmmyfjl2g",
           "autoFixable": false
         }
       ]
@@ -1359,7 +1359,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/ErphrmMemberOrganizationsActivity_logsController.ts",
             "line": 12
           },
-          "id": "naming-1774846190044-2sb27qietid",
+          "id": "naming-1775119449767-265m8ugn1ae",
           "autoFixable": false
         },
         {
@@ -1371,7 +1371,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/details/ErphrmMemberOrganizationsActivity_logsDetailsController.ts",
             "line": 12
           },
-          "id": "naming-1774846190043-m63ha5n8z49",
+          "id": "naming-1775119449767-3wrq6iduznv",
           "autoFixable": false
         }
       ]
@@ -1389,19 +1389,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/guest/sessions/ErphrmGuestSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846190068-nrifob1wixf",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/auth/member/ErphrmAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846190067-9x384i1wi5j",
+          "id": "jsdoc-1775119449787-kld6a37jqi",
           "autoFixable": false
         },
         {
@@ -1413,7 +1401,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/auth/guest/ErphrmAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846190071-tu8roeqhpw",
+          "id": "jsdoc-1775119449787-jqobxn5sqt",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/auth/member/ErphrmAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775119449788-7hat2sea6yd",
           "autoFixable": false
         },
         {
@@ -1425,7 +1425,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timesheets/ErphrmMemberTimesheetsController.ts",
             "line": 18
           },
-          "id": "jsdoc-1774846190068-hni3lg1qtbb",
+          "id": "jsdoc-1775119449789-szomqtkeilb",
           "autoFixable": false
         },
         {
@@ -1437,7 +1437,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timers/ErphrmMemberTimersController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774846190068-he9sry75v2",
+          "id": "jsdoc-1775119449789-trqtfjztms",
           "autoFixable": false
         },
         {
@@ -1449,7 +1449,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timer/ErphrmMemberTimerController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846190067-f6nwq1k87ra",
+          "id": "jsdoc-1775119449788-7e2etzs3u46",
           "autoFixable": false
         },
         {
@@ -1461,7 +1461,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timelogs/ErphrmMemberTimelogsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846190069-akleg0hddpk",
+          "id": "jsdoc-1775119449790-klnovst6jhb",
           "autoFixable": false
         },
         {
@@ -1473,31 +1473,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/roles/ErphrmMemberRolesController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846190070-vgxh80tfyn",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberOrganizationmembersController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846190070-625ufzlj9il",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberMembersController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/members/ErphrmMemberMembersController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846190079-dr7iuv1afmc",
+          "id": "jsdoc-1775119449790-vnoamhssqz",
           "autoFixable": false
         },
         {
@@ -1509,7 +1485,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/ErphrmMemberProjectsController.ts",
             "line": 18
           },
-          "id": "jsdoc-1774846190078-hn2h30rmac",
+          "id": "jsdoc-1775119449791-iodmoji83y",
           "autoFixable": false
         },
         {
@@ -1521,7 +1497,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/profile/ErphrmMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846190077-oez4h6pgt9",
+          "id": "jsdoc-1775119449789-kwgl00e3jon",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationmembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775119449792-i8y1d7mm9vh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/members/ErphrmMemberMembersController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775119449791-w7vu5iydrye",
           "autoFixable": false
         },
         {
@@ -1533,7 +1533,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/departments/ErphrmMemberDepartmentsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846190077-8l7sxxqdv2r",
+          "id": "jsdoc-1775119449792-vpfin28220e",
           "autoFixable": false
         },
         {
@@ -1545,7 +1545,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/contracts/ErphrmMemberContractsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846190079-wk9fddqzmm8",
+          "id": "jsdoc-1775119449793-drj44s01pxi",
           "autoFixable": false
         },
         {
@@ -1557,7 +1557,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/ErphrmMemberOrganizationsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846190080-s8o4cufrmf9",
+          "id": "jsdoc-1775119449794-shbmqod5s2",
           "autoFixable": false
         },
         {
@@ -1569,7 +1569,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/roles/permissions/ErphrmMemberRolesPermissionsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774846190080-62ibwhzq45",
+          "id": "jsdoc-1775119449793-c9lovde46pl",
           "autoFixable": false
         },
         {
@@ -1581,7 +1581,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/tasks/ErphrmMemberProjectsTasksController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846190081-r1k3civong",
+          "id": "jsdoc-1775119449794-7onr4v711o5",
           "autoFixable": false
         },
         {
@@ -1593,7 +1593,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/members/ErphrmMemberProjectsMembersController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846190083-v2si1hpbvaj",
+          "id": "jsdoc-1775119449795-2st7ywd0k2u",
           "autoFixable": false
         },
         {
@@ -1605,7 +1605,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/profile/avatar/ErphrmMemberProfileAvatarController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846190080-oy0wqeob4ip",
+          "id": "jsdoc-1775119449794-yemtcp7yijq",
           "autoFixable": false
         },
         {
@@ -1617,7 +1617,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/logo/ErphrmMemberOrganizationsLogoController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846190081-2vdaz6ocvi3",
+          "id": "jsdoc-1775119449795-1wpge5qh1wb",
           "autoFixable": false
         },
         {
@@ -1629,7 +1629,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/ErphrmMemberOrganizationsActivity_logsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846190082-8uj3puwrl7e",
+          "id": "jsdoc-1775119449796-lydtd9yuzfj",
           "autoFixable": false
         },
         {
@@ -1641,7 +1641,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/tasks/histories/ErphrmMemberProjectsTasksHistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846190082-3bvqdxg69o",
+          "id": "jsdoc-1775119449795-2m1lg8znwde",
           "autoFixable": false
         },
         {
@@ -1653,7 +1653,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/details/ErphrmMemberOrganizationsActivity_logsDetailsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846190082-q4zrtm49sd",
+          "id": "jsdoc-1775119449796-q3bze6nl9i",
           "autoFixable": false
         }
       ]
@@ -1672,7 +1672,7 @@
             "file": "src/api/structures/IErpHrmTimesheet.ts",
             "line": 94
           },
-          "id": "completeness-1774846190095-5nnd8jz4ecp",
+          "id": "completeness-1775119449808-lajw8by4eil",
           "autoFixable": false
         },
         {
@@ -1684,7 +1684,7 @@
             "file": "src/api/structures/IErpHrmTimesheet.ts",
             "line": 102
           },
-          "id": "completeness-1774846190095-qpj75od3vvp",
+          "id": "completeness-1775119449808-e9phsd4x65c",
           "autoFixable": false
         },
         {
@@ -1696,7 +1696,7 @@
             "file": "src/api/structures/IErpHrmTimesheet.ts",
             "line": 350
           },
-          "id": "completeness-1774846190095-xk56vi5bqk",
+          "id": "completeness-1775119449808-nu2hqhc7raa",
           "autoFixable": false
         },
         {
@@ -1708,7 +1708,7 @@
             "file": "src/api/structures/IErpHrmTimesheet.ts",
             "line": 358
           },
-          "id": "completeness-1774846190095-j7vxq0t380q",
+          "id": "completeness-1775119449808-j2hq4hbrsb",
           "autoFixable": false
         },
         {
@@ -1720,7 +1720,7 @@
             "file": "src/api/structures/IErpHrmTaskHistory.ts",
             "line": 171
           },
-          "id": "completeness-1774846190095-2aa7rokc94o",
+          "id": "completeness-1775119449808-2g8omu4dwf4",
           "autoFixable": false
         },
         {
@@ -1732,7 +1732,7 @@
             "file": "src/api/structures/IErpHrmRolePermission.ts",
             "line": 37
           },
-          "id": "completeness-1774846190095-l45sk68pj89",
+          "id": "completeness-1775119449808-q509j807su",
           "autoFixable": false
         },
         {
@@ -1744,7 +1744,7 @@
             "file": "src/api/structures/IErpHrmProjectMember.ts",
             "line": 30
           },
-          "id": "completeness-1774846190095-o1wlr5p7jvh",
+          "id": "completeness-1775119449808-nq9x4a79uh",
           "autoFixable": false
         },
         {
@@ -1756,7 +1756,7 @@
             "file": "src/api/structures/IErpHrmProjectMember.ts",
             "line": 38
           },
-          "id": "completeness-1774846190095-z9qqdi0mpqm",
+          "id": "completeness-1775119449808-2k2hze7vptz",
           "autoFixable": false
         },
         {
@@ -1768,7 +1768,7 @@
             "file": "src/api/structures/IErpHrmDepartment.ts",
             "line": 53
           },
-          "id": "completeness-1774846190096-g6udnvngca",
+          "id": "completeness-1775119449809-8noe74msokm",
           "autoFixable": false
         },
         {
@@ -1780,7 +1780,7 @@
             "file": "src/api/structures/IErpHrmContract.ts",
             "line": 343
           },
-          "id": "completeness-1774846190096-1tupxk6ihcd",
+          "id": "completeness-1775119449809-4zj1xyhm3c4",
           "autoFixable": false
         },
         {
@@ -1792,7 +1792,7 @@
             "file": "src/api/structures/IErpHrmActivityLog.ts",
             "line": 64
           },
-          "id": "completeness-1774846190096-njvuchb6i49",
+          "id": "completeness-1775119449809-51b0o1ssuej",
           "autoFixable": false
         },
         {
@@ -1804,7 +1804,7 @@
             "file": "src/api/structures/IErpHrmActivityLog.ts",
             "line": 72
           },
-          "id": "completeness-1774846190096-rf298gv4v5",
+          "id": "completeness-1775119449809-9u08xlvsrjs",
           "autoFixable": false
         }
       ]
@@ -1827,7 +1827,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846189684-3htqu4so4yr",
+      "id": "type-error-1775119449400-a5tg13xo6r",
       "autoFixable": false
     },
     {
@@ -1839,7 +1839,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 3463
       },
-      "id": "type-error-1774846189684-yqshjkfamfj",
+      "id": "type-error-1775119449400-q5dntcrp61c",
       "autoFixable": false
     },
     {
@@ -1851,7 +1851,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 3599
       },
-      "id": "type-error-1774846189684-ab455gpdf35",
+      "id": "type-error-1775119449400-czdept2pfwq",
       "autoFixable": false
     },
     {
@@ -1863,7 +1863,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 3906
       },
-      "id": "type-error-1774846189684-8fi7ci322m4",
+      "id": "type-error-1775119449400-xjtmpulke3f",
       "autoFixable": false
     },
     {
@@ -1875,7 +1875,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 4034
       },
-      "id": "type-error-1774846189684-nkt1ahaaxdc",
+      "id": "type-error-1775119449400-ubdzlcayva",
       "autoFixable": false
     },
     {
@@ -1887,7 +1887,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 4351
       },
-      "id": "type-error-1774846189684-d9tnlm019rc",
+      "id": "type-error-1775119449400-y4g4teed6mf",
       "autoFixable": false
     },
     {
@@ -1899,7 +1899,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 4487
       },
-      "id": "type-error-1774846189684-lyiwm22x1cs",
+      "id": "type-error-1775119449400-4cg74ts9pxw",
       "autoFixable": false
     },
     {
@@ -1911,7 +1911,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 2210
       },
-      "id": "type-error-1774846189684-3kwzt8li3rw",
+      "id": "type-error-1775119449400-nuwdj5o48g",
       "autoFixable": false
     },
     {
@@ -1923,7 +1923,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 2334
       },
-      "id": "type-error-1774846189684-h3oay3p2ph8",
+      "id": "type-error-1775119449400-mewnb5uwys",
       "autoFixable": false
     },
     {
@@ -1935,7 +1935,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 2623
       },
-      "id": "type-error-1774846189684-bcxmzlb9u2i",
+      "id": "type-error-1775119449400-kbocfwp3i7s",
       "autoFixable": false
     },
     {
@@ -1947,7 +1947,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 2741
       },
-      "id": "type-error-1774846189684-szdrisv8zxc",
+      "id": "type-error-1775119449400-kv94nenay7r",
       "autoFixable": false
     },
     {
@@ -1959,7 +1959,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 3037
       },
-      "id": "type-error-1774846189684-kxdimz4aj4c",
+      "id": "type-error-1775119449400-e29rwnov8ce",
       "autoFixable": false
     },
     {
@@ -1971,7 +1971,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 3157
       },
-      "id": "type-error-1774846189684-l5wmnr2m34",
+      "id": "type-error-1775119449400-90ovcifnsq",
       "autoFixable": false
     },
     {
@@ -1983,7 +1983,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 4186
       },
-      "id": "type-error-1774846189684-ise8t9hh1bg",
+      "id": "type-error-1775119449400-8ljup6u3c5u",
       "autoFixable": false
     },
     {
@@ -1995,7 +1995,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 4332
       },
-      "id": "type-error-1774846189684-610uvi0w4gr",
+      "id": "type-error-1775119449400-5hx5z6x7e0n",
       "autoFixable": false
     },
     {
@@ -2007,7 +2007,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 4669
       },
-      "id": "type-error-1774846189684-5p8ap3q29zs",
+      "id": "type-error-1775119449400-wsupod4mrsh",
       "autoFixable": false
     },
     {
@@ -2019,7 +2019,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 4841
       },
-      "id": "type-error-1774846189684-u1r3zxbgvrl",
+      "id": "type-error-1775119449400-utsl189o2rd",
       "autoFixable": false
     },
     {
@@ -2031,7 +2031,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 5210
       },
-      "id": "type-error-1774846189684-jakokiovmgk",
+      "id": "type-error-1775119449400-63gk0di55ec",
       "autoFixable": false
     },
     {
@@ -2043,7 +2043,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 5393
       },
-      "id": "type-error-1774846189684-twgu0ck5tz",
+      "id": "type-error-1775119449400-0zpvlrf4npqo",
       "autoFixable": false
     },
     {
@@ -2055,7 +2055,7 @@
         "file": "src/providers/patchErpHrmMemberRoles.ts",
         "line": 2272
       },
-      "id": "type-error-1774846189684-b9q1o23ffba",
+      "id": "type-error-1775119449400-0x7yskzufoo",
       "autoFixable": false
     },
     {
@@ -2067,7 +2067,7 @@
         "file": "src/providers/patchErpHrmMemberRoles.ts",
         "line": 2395
       },
-      "id": "type-error-1774846189684-czoz0dpmc9",
+      "id": "type-error-1775119449400-5zayr0kwcjw",
       "autoFixable": false
     },
     {
@@ -2079,7 +2079,7 @@
         "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
         "line": 2681
       },
-      "id": "type-error-1774846189684-qupcs252vs",
+      "id": "type-error-1775119449400-i1zn6t7a96",
       "autoFixable": false
     },
     {
@@ -2091,7 +2091,7 @@
         "file": "src/providers/putErpHrmMemberRolesRoleId.ts",
         "line": 3759
       },
-      "id": "type-error-1774846189684-loirzh0atzf",
+      "id": "type-error-1775119449400-jeuwanb8o5",
       "autoFixable": false
     },
     {
@@ -2103,7 +2103,7 @@
         "file": "src/transformers/ErpHrmActivityLogTransformer.ts",
         "line": 2671
       },
-      "id": "type-error-1774846189684-9iqwon2nwxd",
+      "id": "type-error-1775119449400-96rqjzs3ic",
       "autoFixable": false
     },
     {
@@ -2115,7 +2115,7 @@
         "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
         "line": 1597
       },
-      "id": "type-error-1774846189684-8wnrwcs5698",
+      "id": "type-error-1775119449400-ugkeaq6242f",
       "autoFixable": false
     },
     {
@@ -2127,7 +2127,7 @@
         "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
         "line": 1789
       },
-      "id": "type-error-1774846189684-nzl5apyev6p",
+      "id": "type-error-1775119449400-i33j5cai9yo",
       "autoFixable": false
     },
     {
@@ -2139,7 +2139,7 @@
         "file": "src/transformers/ErpHrmProjectTransformer.ts",
         "line": 1903
       },
-      "id": "type-error-1774846189684-kgvpbm969mm",
+      "id": "type-error-1775119449400-badb7ifqkov",
       "autoFixable": false
     },
     {
@@ -2151,7 +2151,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1383
       },
-      "id": "type-error-1774846189684-kpu5qruilvo",
+      "id": "type-error-1775119449400-ui0oetmhkm",
       "autoFixable": false
     },
     {
@@ -2163,7 +2163,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1401
       },
-      "id": "type-error-1774846189684-it7l7c4vi",
+      "id": "type-error-1775119449400-f7u2d4rsj6k",
       "autoFixable": false
     },
     {
@@ -2175,7 +2175,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1422
       },
-      "id": "type-error-1774846189684-4xi53r96jsx",
+      "id": "type-error-1775119449400-0m8i1hgxy6up",
       "autoFixable": false
     },
     {
@@ -2187,7 +2187,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1444
       },
-      "id": "type-error-1774846189684-exoear9rqfw",
+      "id": "type-error-1775119449400-fqe6pxj70tf",
       "autoFixable": false
     },
     {
@@ -2199,7 +2199,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1468
       },
-      "id": "type-error-1774846189684-geyzosho8t9",
+      "id": "type-error-1775119449400-8hp9bkl21a",
       "autoFixable": false
     },
     {
@@ -2211,7 +2211,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1492
       },
-      "id": "type-error-1774846189684-03n75fc0510e",
+      "id": "type-error-1775119449400-fqngxs95epl",
       "autoFixable": false
     },
     {
@@ -2223,7 +2223,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1523
       },
-      "id": "type-error-1774846189684-m6d7s0wd5gj",
+      "id": "type-error-1775119449400-e3xfp40rcm7",
       "autoFixable": false
     }
   ],
@@ -2237,7 +2237,7 @@
         "file": "src/providers/patchErpHrmGuestSessions.ts",
         "line": 1600
       },
-      "id": "type-error-1774846189684-55eri82vkgi",
+      "id": "type-error-1775119449400-z8outoup6td",
       "autoFixable": false
     },
     {
@@ -2249,7 +2249,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 2717
       },
-      "id": "type-error-1774846189684-08gs81w81qyt",
+      "id": "type-error-1775119449400-8980yrpt50k",
       "autoFixable": false
     },
     {
@@ -2261,7 +2261,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 3109
       },
-      "id": "type-error-1774846189684-u8gn0wu7ew",
+      "id": "type-error-1775119449400-czdxbc1064",
       "autoFixable": false
     },
     {
@@ -2273,14 +2273,14 @@
         "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
         "line": 2627
       },
-      "id": "type-error-1774846189684-hcup9anb4i",
+      "id": "type-error-1775119449400-sq56m2aak2",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:49:50.096Z",
-    "totalDurationMs": 5217,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T08:44:09.810Z",
+    "totalDurationMs": 4671,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 244
   },
   "penalties": {
@@ -2302,5 +2302,903 @@
     "structures": 36,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/erpHrm/member/organizations/activity-logs/ErphrmMemberOrganizationsActivity_logsController.ts",
+          "line": 62,
+          "description": "All controllers use console.log(error) for error handling instead of structured logging. This is the standard AutoBE pattern but lacks severity levels, request context, and structured output for monitoring systems.",
+          "suggestion": "Consider adopting a structured logger (e.g., NestJS Logger or Winston) that captures request IDs, user context, and severity levels for production monitoring."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/erpHrm/member/organizations/ErphrmMemberOrganizationsController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to any endpoint in this chunk. Sensitive operations like organization creation, deletion, and member management could be abused without throttling.",
+          "suggestion": "Apply rate limiting at the API gateway or using NestJS ThrottlerModule, especially on write operations (POST, PUT, DELETE)."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/erpHrm/member/organizations/ErphrmMemberOrganizationsController.ts",
+          "line": 155,
+          "description": "The PUT /:organizationId and DELETE /:organizationId endpoints accept a plain `string` for organizationId without UUID format validation (unlike the GET endpoint which uses `string & tags.Format<'uuid'>`). This inconsistency could allow malformed IDs to reach the provider layer.",
+          "suggestion": "Apply `string & tags.Format<'uuid'>` to all organizationId path parameters consistently, as done in the GET endpoint, to ensure format validation at the framework level."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/erpHrm/member/projects/members/ErphrmMemberProjectsMembersController.ts",
+          "line": 175,
+          "description": "The PUT /:projectMemberId and DELETE /:projectMemberId endpoints use plain `string` for projectId and projectMemberId path parameters, while the POST and GET endpoints use `string & tags.Format<'uuid'>`. This inconsistency bypasses UUID format validation for update and delete operations.",
+          "suggestion": "Apply `string & tags.Format<'uuid'>` to all projectId and projectMemberId path parameters consistently across all methods in this controller."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
+          "line": 200,
+          "description": "The GET /:organizationMemberId endpoint uses plain `string` for organizationMemberId without UUID format validation, while the DELETE endpoint uses `string & tags.Format<'uuid'>`. Inconsistent validation could allow non-UUID values to reach the provider layer for the GET operation.",
+          "suggestion": "Apply `string & tags.Format<'uuid'>` to the organizationMemberId parameter in the GET endpoint to match the DELETE endpoint's validation."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/putErpHrmMemberContractsContractId.ts",
+          "line": 44,
+          "description": "No authorization check verifying the requesting member has permission to update the contract. The provider only checks if the contract is active/not ended, but never verifies the member is an HR manager or admin. Any authenticated member who knows a contractId can attempt to update it.",
+          "suggestion": "Add an authorization check before the update: verify the requesting member has HR management permissions (e.g., 'contract:manage' permission) or is an organization owner. The read endpoint (getErpHrmMemberContractsContractId) correctly restricts to the contract owner, but the update endpoint has no such restriction."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/putErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+          "line": 38,
+          "description": "No authorization check verifying the requesting member has permission to update project member roles. Any authenticated member can change another member's role in a project if they know the projectMemberId, bypassing project-lead or admin requirements.",
+          "suggestion": "Add authorization validation: check if the requesting member is a project-lead for this specific project or has organization-level project management permission before allowing role updates."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postErpHrmMemberOrganizationsOrganizationIdLogo.ts",
+          "line": 30,
+          "description": "No authorization check verifying the requesting member has admin/owner permissions for the specified organization. Any authenticated member who knows an organizationId can update that organization's logo, including members of other organizations.",
+          "suggestion": "Verify the requesting member belongs to the specified organization AND has admin/owner role before allowing logo updates. Check erp_hrm_organization_members for membership and role permissions."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getErpHrmMemberOrganizationsOrganizationIdActivityLogsActivityLogId.ts",
+          "line": 44,
+          "description": "Authorization check only verifies the activity log belongs to the specified organization, but does not verify the requesting member belongs to that organization. A member of organization A could access activity logs of organization B if they know the IDs.",
+          "suggestion": "Add a check that the requesting member (props.member.id) is a member of props.organizationId by querying erp_hrm_organization_members before returning the activity log."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postErpHrmMemberRolesRoleIdPermissions.ts",
+          "line": 30,
+          "description": "No authorization check verifying the requesting member has permission to manage roles and permissions. Any authenticated member can add permissions to non-built-in roles if they know the roleId.",
+          "suggestion": "Add authorization check: verify the requesting member has a role management permission (e.g., 'role:manage') before allowing permission creation."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
+          "line": 20,
+          "description": "No authorization check verifying the requesting member has permission to view role permissions. Any authenticated member can retrieve role permission details.",
+          "suggestion": "Add authorization check: verify the requesting member has appropriate permissions to view role configurations, or at minimum verify the role belongs to the member's organization."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/putErpHrmMemberDepartmentsDepartmentId.ts",
+          "line": 30,
+          "description": "No authorization check verifying the requesting member has department management permissions. While organization isolation is enforced, any member of the organization can update department details, not just admins/managers.",
+          "suggestion": "Add authorization check: verify the requesting member has 'department:manage' or equivalent admin permission before allowing department updates."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postErpHrmMemberTimers.ts",
+          "line": 22,
+          "description": "The single active timer check queries by organization_member_id but uses props.member.id directly without first resolving the organization_member_id. This may allow timer creation for a different organization member if the member.id maps to multiple organization memberships.",
+          "suggestion": "Resolve the organization_member_id from erp_hrm_organization_members first (as done in other providers), then use that ID for the timer existence check to ensure correct scoping."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/erpHrm/member/projects/tasks/ErphrmMemberProjectsTasksController.ts",
+          "line": 62,
+          "description": "All controller methods use console.log(error) for error handling, which may expose stack traces and sensitive information in logs without structured logging.",
+          "suggestion": "Use a structured logger (e.g., NestJS Logger) with appropriate log levels. Avoid logging full error objects that may contain sensitive data."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/patchErpHrmMemberContracts.ts",
+          "line": 85,
+          "description": "The cursor-based pagination decodes a base64 cursor from user input and uses it directly in a Prisma query without validation of the decoded fields. A malformed or malicious cursor could cause unexpected query behavior.",
+          "suggestion": "Validate the decoded cursor fields (created_at as valid ISO date, id as valid UUID) before using them in the query. Wrap the cursor usage in additional validation beyond just the try/catch."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postErpHrmAuthGuestJoin.ts",
+          "line": 25,
+          "description": "Guest authentication is based solely on device fingerprint without rate limiting. An attacker could enumerate or forge device fingerprints to create unlimited guest sessions.",
+          "suggestion": "Consider rate limiting guest join requests per IP address. The device fingerprint alone is not a reliable security mechanism."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchErpHrmMemberProjectsProjectIdArchive.ts",
+          "line": 44,
+          "description": "The archive endpoint only checks that the requesting member belongs to the organization, but does not verify they have project management permissions (e.g., 'project:manage' permission or 'project-lead' role). Any organization member can archive any project in their organization.",
+          "suggestion": "Add a permission check similar to putErpHrmMemberProjectsProjectId.ts: verify the member has 'project:manage' permission or is a project-lead for the specific project before allowing the archive operation."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/deleteErpHrmMemberOrganizationMembersOrganizationMemberId.ts",
+          "line": 43,
+          "description": "Role-based permission check relies on hardcoded role name strings ('Owner', 'Manager') rather than a permission system. This is fragile — if role names change or new roles are added, the check silently fails. Additionally, there is no check preventing a Manager from deleting an Owner.",
+          "suggestion": "Use a permission-based check (e.g., 'employee:manage' permission) consistent with other providers. Also add a check to prevent deletion of members with higher-privilege roles (e.g., a Manager should not be able to delete an Owner)."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/deleteErpHrmMemberOrganizationMembersOrganizationMemberId.ts",
+          "line": 80,
+          "description": "Active timers are hard-deleted without any audit trail or archival. This could result in loss of billable time records and makes forensic investigation difficult.",
+          "suggestion": "Consider soft-deleting timers or archiving them before deletion to preserve data integrity and audit capability."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postErpHrmMemberProjectsProjectIdTasks.ts",
+          "line": 52,
+          "description": "The project existence check does not verify that the project is not soft-deleted (no 'deleted_at: null' filter). A task could be created under a deleted project.",
+          "suggestion": "Add 'deleted_at: null' to the project lookup query: findUniqueOrThrow({ where: { id: props.projectId, deleted_at: null } })."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/deleteErpHrmMemberOrganizationMembersOrganizationMemberId.ts",
+          "line": 100,
+          "description": "The audit log entry for employee deletion does not capture IP address or user agent, which are set to null. This limits forensic capability for security investigations.",
+          "suggestion": "Pass IP address and user agent from the HTTP request context into the provider function and record them in the activity log."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postErpHrmMemberOrganizationMembers.ts",
+          "line": 1,
+          "description": "Several unused imports are present across multiple provider files (IEntity, ArrayUtil, Prisma, jwt, PasswordUtil, toISOStringSafe, v4). While not a direct vulnerability, importing jwt and PasswordUtil in files that don't use them could indicate copy-paste patterns that may introduce unintended behavior in future edits.",
+          "suggestion": "Remove unused imports to reduce attack surface and improve code clarity."
+        }
+      ],
+      "score": 71,
+      "summary": "[sampled 30/110 files] [3 chunks, 22→22 issues] The controllers in this chunk follow the AutoBE pattern with MemberAuth decorators applied consistently across all endpoints, providing a reasonable authentication baseline. The main concerns are inconsistent UUID format validation on path parameters across HTTP methods within the same controller — some methods validate UUID format while sibling methods on the same resource do not. This could allow malformed input to reach provider/database layers. No critical injection or cryptographic issues are present. Logging uses console.log (AutoBE standard pattern). Rate limiting is absent but noted once as a suggestion.",
+      "durationMs": 82733,
+      "tokensUsed": {
+        "input": 49878,
+        "output": 3899,
+        "inputCost": 0.149634,
+        "outputCost": 0.058484999999999995
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putErpHrmMemberTimesheetsTimesheetId.ts",
+          "line": -1,
+          "description": "Importing '@prisma/sdk' which doesn't exist. Prisma's client is typically imported from '@prisma/client'.",
+          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client' in all files."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/putErpHrmMemberTimesheetsTimesheetId.ts",
+          "line": -1,
+          "description": "Multiple unused imports across files: IEntity, IErpHrmDepartment, IErpHrmMember, IErpHrmOrganizationMember, IErpHrmProject, IErpHrmRole, IErpHrmTask, IErpHrmTimelog, IErpHrmTimesheet, IErpHrmTimer, IErpHrmTaskHistory, IErpHrmProjectMember, IErpHrmOrganization, IErpHrmContract, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe.",
+          "suggestion": "Remove all unused imports to clean up code."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putErpHrmMemberTimelogsTimelogId.ts",
+          "line": 60,
+          "description": "Permission check uses 'time:manage' but the requirements don't specify this exact permission string. This could be a hallucinated permission name.",
+          "suggestion": "Verify the correct permission names from the requirements or permission matrix."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+          "line": -1,
+          "description": "Missing permission check - anyone can update project member roles without authorization.",
+          "suggestion": "Add authorization check to ensure only users with appropriate permissions can update project member roles."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postErpHrmMemberTimesheetsTimesheetIdReject.ts",
+          "line": -1,
+          "description": "Missing permission check - any member can reject timesheets without authorization.",
+          "suggestion": "Add authorization check to ensure only reviewers/managers can reject timesheets."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postErpHrmMemberTimers.ts",
+          "line": 18,
+          "description": "The code references `props.member.id` as `organization_member_id` in the query `where: { organization_member_id: props.member.id }`. However, `MemberPayload.id` is the user ID (member ID), not the organization member ID. This is a logic error because the timer table uses `organization_member_id` foreign key, not `user_id`.",
+          "suggestion": "First fetch the organization member record for the user, then use its `id` as `organization_member_id` in the query."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmMemberProjects.ts",
+          "line": 30,
+          "description": "Missing permission check for creating projects. According to requirements, only users with appropriate permissions should create projects.",
+          "suggestion": "Add permission validation (e.g., check for 'project:manage' or organization ownership) before creating the project."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmMemberProfileAvatar.ts",
+          "line": 22,
+          "description": "The update uses `new Date().toISOString() as unknown as Date` for `updated_at`. This is a type coercion that may cause runtime issues; `updated_at` should be a Date object.",
+          "suggestion": "Use `new Date()` directly instead of `toISOString()`."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmMemberOrganizationsOrganizationIdLogo.ts",
+          "line": 19,
+          "description": "Missing permission check. Only organization owners or users with 'organization:manage' permission should be able to update the logo.",
+          "suggestion": "Add authorization check to verify the member has permission to update the organization logo."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmMemberOrganizations.ts",
+          "line": 22,
+          "description": "Missing validation that the member doesn't already own an organization (if there's a limit). Also, the collector call includes `erpHrmMemberSessions: { id: props.member.session_id }` but the session ID may not be in `MemberPayload`.",
+          "suggestion": "Check if the member already owns an organization (if applicable) and ensure `session_id` is available in `MemberPayload` or remove it from collector call."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmMemberOrganizationMembers.ts",
+          "line": 22,
+          "description": "The query uses `satisfies Prisma.erp_hrm_organization_membersFindFirstArgs` which is unnecessary and may cause TypeScript errors if Prisma SDK types are not correctly imported.",
+          "suggestion": "Remove the `satisfies` clause as it's not needed for runtime."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmMemberDepartments.ts",
+          "line": 22,
+          "description": "The query to get member's organization assumes the first `organizationMembers` entry is the correct one. A user may belong to multiple organizations; the code should determine which organization context to use (e.g., from request or default).",
+          "suggestion": "Specify which organization to use (e.g., via request parameter or member's primary organization) instead of taking the first."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmMemberContracts.ts",
+          "line": 22,
+          "description": "Missing permission check. Only users with 'employee:manage' or similar permission should be able to create contracts.",
+          "suggestion": "Add authorization validation before creating the contract."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/postErpHrmMemberTimesheetsTimesheetIdApprove.ts",
+          "line": 1,
+          "description": "Multiple unused imports across files: `IEntity`, `IErpHrmDepartment`, `IErpHrmMember`, `IErpHrmOrganizationMember`, `IErpHrmProject`, `IErpHrmRole`, `IErpHrmTask`, `IErpHrmTimelog`, `ArrayUtil`, `Prisma`, `jwt`, `typia`, `v4`, `PasswordUtil`, `toISOStringSafe`. These imports are not used in the respective files and should be removed to clean up the code.",
+          "suggestion": "Remove all unused imports in each file to improve code clarity and reduce bundle size."
+        },
+        {
+          "severity": "suggestion",
+          "type": "copy-paste",
+          "file": "src/providers/postErpHrmMemberTimesheetsTimesheetIdApprove.ts",
+          "line": 1,
+          "description": "The same pattern of unused imports appears in multiple files, suggesting copy-paste without cleanup.",
+          "suggestion": "Audit each file and remove unnecessary imports."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postErpHrmAuthMemberJoin.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/postErpHrmAuthMemberJoin.ts",
+          "line": 78,
+          "description": "The function creates a session with an 'expired_at' set to 'refreshExpires' (7 days), but the session's 'access_token' and 'refresh_token' are JWT strings, not the actual tokens used in the response. The JWT tokens in the response are generated separately, making the session tokens redundant and potentially misleading.",
+          "suggestion": "Remove the session token generation or align it with the response token generation. Consider storing only a session reference ID instead of JWT strings in the database."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postErpHrmAuthGuestJoin.ts",
+          "line": 20,
+          "description": "The function uses 'props.body.ip ?? props.ip' to get the IP address, but the 'IErpHrmGuest.IJoin' interface likely doesn't have an 'ip' field. This will always use 'props.ip' from the function parameters.",
+          "suggestion": "Remove the fallback logic or ensure the interface definition matches the expected input."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmMemberTimesheets.ts",
+          "line": 30,
+          "description": "The 'where' clause uses 'organizationMember: { user_id: props.member.id }' but the Prisma model likely expects a direct 'organization_member_id' field or a different relation path. This may cause a Prisma query error.",
+          "suggestion": "Check the Prisma schema for the correct relation path to filter by user ID through organization members."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmMemberTimelogs.ts",
+          "line": 30,
+          "description": "The function checks for 'time:view-all' permission, but the permission string might not match the business requirements. It should verify the exact permission naming convention from the domain.",
+          "suggestion": "Confirm the permission string matches the role permission definitions in the requirements."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmMemberRolesRoleIdPermissions.ts",
+          "line": 30,
+          "description": "The function updates or creates a single permission record per role, but roles can have multiple permissions. The logic assumes one permission per role, which contradicts typical role-based access control.",
+          "suggestion": "Redesign to handle multiple permissions per role, likely using a many-to-many relationship."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+          "line": 30,
+          "description": "The function checks for 'project:manage' permission but uses a different table ('erp_hrm_role_permissions') than the role relation. Ensure the permission check aligns with the Prisma schema relations.",
+          "suggestion": "Verify the Prisma schema relations between roles and permissions."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmMemberProjectsProjectIdComplete.ts",
+          "line": 15,
+          "description": "The function casts 'props.member' to access 'organization_id', but 'MemberPayload' type may not have this property. This is an unsafe type assertion.",
+          "suggestion": "Fetch the member's organization ID from the database instead of type assertion."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/postErpHrmAuthMemberJoin.ts",
+          "line": 1,
+          "description": "Unused imports: 'IEntity', 'ArrayUtil', 'typia'.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/postErpHrmAuthGuestRefresh.ts",
+          "line": 1,
+          "description": "Unused imports: 'IEntity', 'ArrayUtil', 'Prisma', 'typia', 'PasswordUtil', 'toISOStringSafe'.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/patchErpHrmMemberTimesheets.ts",
+          "line": 1,
+          "description": "Unused imports: 'IErpHrmDepartment', 'IErpHrmMember', 'IErpHrmOrganizationMember', 'IErpHrmRole', 'jwt', 'typia', 'v4', 'PasswordUtil', 'toISOStringSafe'.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "suggestion",
+          "type": "inconsistent-naming",
+          "file": "src/providers/patchErpHrmMemberTimesheets.ts",
+          "line": 1,
+          "description": "Function name 'patchErpHrmMemberTimesheets' suggests a PATCH operation (update), but the function implements a GET/list operation with filtering and pagination.",
+          "suggestion": "Rename function to 'getErpHrmMemberTimesheets' or similar to reflect its read-only nature."
+        },
+        {
+          "severity": "suggestion",
+          "type": "inconsistent-naming",
+          "file": "src",
+          "description": "No description"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchErpHrmMemberProjects.ts",
+          "line": 7,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmMemberProjects.ts",
+          "line": 1,
+          "description": "Function name 'patchErpHrmMemberProjects' suggests a PATCH operation but the function implements a GET/list operation with filtering and pagination.",
+          "suggestion": "Rename function to 'getErpHrmMemberProjects' or similar to reflect its read-only nature"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/patchErpHrmMemberProjects.ts",
+          "line": 4,
+          "description": "Unused imports: IEntity, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
+          "suggestion": "Remove unused imports to clean up code"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmMemberOrganizationsOrganizationIdActivityLogs.ts",
+          "line": 50,
+          "description": "Duplicate createdAtFrom condition in date range filter. The createdAtFrom condition appears twice in the same where clause.",
+          "suggestion": "Remove duplicate createdAtFrom condition and ensure proper date range construction"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmMemberMembers.ts",
+          "line": 32,
+          "description": "Inconsistent cursor handling - assumes base64 encoded ID but doesn't validate format. Also uses 'props.body.cursor !== null' check but cursor is typed as string | undefined.",
+          "suggestion": "Use proper cursor validation and ensure consistent typing"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmMemberContracts.ts",
+          "line": 100,
+          "description": "Cursor parsing assumes JSON structure with created_at and id fields but doesn't validate the cursor format matches the orderBy clause.",
+          "suggestion": "Validate cursor structure matches the sort order and handle parsing errors gracefully"
+        },
+        {
+          "severity": "warning",
+          "type": "assumption",
+          "file": "src/providers/getErpHrmMemberTimer.ts",
+          "line": 20,
+          "description": "Assumes each organization member has exactly one timer. The query uses findUniqueOrThrow on organization_member_id which may not exist.",
+          "suggestion": "Handle case where timer doesn't exist (use findFirst) and return appropriate response"
+        },
+        {
+          "severity": "warning",
+          "type": "assumption",
+          "file": "src/providers/getErpHrmMemberTimelogsTimelogId.ts",
+          "line": 50,
+          "description": "Assumes rolePermissions exist on currentMember.role but role could be null.",
+          "suggestion": "Add null check for currentMember.role before accessing rolePermissions"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/getErpHrmMemberProjectsProjectId.ts",
+          "line": 1,
+          "description": "Multiple unused imports: IEntity, IErpHrmMember, IErpHrmOrganization, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe.",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "": null,
+          "description": "No description"
+        }
+      ],
+      "score": 28,
+      "summary": "[5 chunks, 159→38 issues] The code has critical hallucination issues with '@prisma/sdk' imports across all files, and multiple authorization/permission logic errors. Many unused imports indicate copy-paste patterns. The table names follow AutoBE conventions correctly. Score cannot be determined without seeing the full codebase and requirements.",
+      "durationMs": 421155,
+      "tokensUsed": {
+        "input": 97860,
+        "output": 17523,
+        "inputCost": 0.029358,
+        "outputCost": 0.01542024
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrm/guest/sessions/ErphrmGuestSessionsController.ts",
+          "line": 1,
+          "description": "Controller defines routes for guest sessions (/erpHrm/guest/sessions) but the Prisma schema has no model for guest sessions (erp_hrm_guest_sessions). The spec only defines erp_hrm_activity_logs and erp_hrm_activity_log_details for activity tracking, and erp_hrm_guests for guest users, but no session model for guests.",
+          "suggestion": "Remove this controller or implement based on actual spec models. If guest sessions are needed, they should be defined in the Prisma schema first."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrm/auth/guest/ErphrmAuthGuestController.ts",
+          "line": 1,
+          "description": "Controller defines guest authentication endpoints (/join, /refresh) that reference erp_hrm_guest_sessions table, but no such table exists in the provided Prisma schema. The schema defines erp_hrm_guests but not guest sessions.",
+          "suggestion": "Remove or revise authentication logic to use actual schema models. If guest sessions are required, add erp_hrm_guest_sessions model to schema."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrm/auth/member/ErphrmAuthMemberController.ts",
+          "line": 1,
+          "description": "Controller defines member authentication endpoints (/join, /login, /refresh) that reference erp_hrm_member_sessions and erp_hrm_member_email_verifications tables, but neither table exists in the provided Prisma schema. The schema defines erp_hrm_members but no session or email verification models.",
+          "suggestion": "Remove or revise authentication logic to use actual schema models. If member sessions and email verifications are required, add corresponding models to schema."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrm/member/timers/ErphrmMemberTimersController.ts",
+          "line": 1,
+          "description": "Controller defines timer operations but references 'billable = true (default, or derived from project settings)' in stop endpoint specification. The erp_hrm_timers model has no billable field, and billable status is defined in erp_hrm_timelogs. This is a spec mismatch if the implementation assumes billable field on timer.",
+          "suggestion": "Ensure timer-to-timelog conversion uses appropriate billable logic based on project or organization settings, not a timer field."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/controllers/erpHrm/member/timesheets/ErphrmMemberTimesheetsController.ts",
+          "line": 1,
+          "description": "Controller includes WebSocket event notifications for timesheet submission ('TimesheetSubmitted' event). The Prisma schema and spec do not mention WebSocket or real-time notifications. This is invented business logic not implied by the spec.",
+          "suggestion": "Remove WebSocket event publishing or clarify it as optional implementation detail beyond spec requirements."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrm/member/timelogs/ErphrmMemberTimelogsController.ts",
+          "line": 0,
+          "description": "Controller defines route PATCH '/' for listing/searching timelogs, but the OpenAPI spec (not provided in this chunk) likely defines a GET endpoint for listing resources. PATCH is typically used for partial updates, not for search/list operations. This is a spec mismatch in HTTP method.",
+          "suggestion": "Change the route to GET '/' for listing/searching timelogs, or ensure the OpenAPI spec defines a PATCH operation for this purpose."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrm/member/timelogs/ErphrmMemberTimelogsController.ts",
+          "line": 0,
+          "description": "The controller's PATCH '/' endpoint uses a request body (IErpHrmTimelog.IRequest) for search parameters. While this is a valid pattern, it's less common than using query parameters for GET searches. This could be a mismatch if the spec defines query parameters.",
+          "suggestion": "Verify the OpenAPI spec to confirm if search parameters are defined as query parameters or request body. Adjust accordingly."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/controllers/erpHrm/member/roles/ErphrmMemberRolesController.ts",
+          "line": 0,
+          "description": "The controller documentation mentions 'permissions array' in the role create/update operations, but the provided Prisma schema for erp_hrm_roles does not include a direct 'permissions' column. Permissions are stored in a separate erp_hrm_role_permissions table (not shown in this chunk). The code references are plausible but cannot be verified against the provided schema fragment.",
+          "suggestion": "Ensure the implementation correctly uses the erp_hrm_role_permissions relation as defined in the full schema."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrm/member/projects/ErphrmMemberProjectsController.ts",
+          "line": 1,
+          "description": "Controller defines route PATCH /erpHrm/member/projects/:projectId for reactivation, but there is no corresponding OpenAPI path for reactivating a project. The spec only defines standard CRUD operations (POST, GET, PUT, DELETE) and archive/complete status transitions. The 'reactivate' endpoint is a phantom operation.",
+          "suggestion": "Remove the reactivate endpoint or verify if there is a corresponding OpenAPI path for project reactivation. If not in spec, this route should not exist."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrm/member/projects/ErphrmMemberProjectsController.ts",
+          "line": 1,
+          "description": "Controller has two PATCH routes with same path pattern '/erpHrm/member/projects/:projectId' (reactivate and archive). This creates routing conflict. The archive endpoint is nested under '/archive' but reactivate uses base path. This suggests incorrect route definition.",
+          "suggestion": "Ensure reactivate endpoint has distinct path (e.g., '/:projectId/reactivate') or use different HTTP method as per OpenAPI spec."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/controllers/erpHrm/member/projects/ErphrmMemberProjectsController.ts",
+          "line": 1,
+          "description": "The 'reactivate' endpoint documentation mentions 'reopen' for completed projects, but the Prisma schema only defines status values 'active', 'archived', 'completed'. There's no 'reopen' status transition defined in the schema.",
+          "suggestion": "Align status transitions with schema-defined values. If 'reopen' is not a valid status, remove reference from documentation."
+        },
+        {
+          "severity": "suggestion",
+          "type": "contextual-precision",
+          "file": "src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
+          "line": 1,
+          "description": "Controller path '/erpHrm/member/organizationMembers' uses lowercase 'organizationmembers' but model name is 'erp_hrm_organization_members'. While not a hallucination, this could cause confusion in mapping.",
+          "suggestion": "Consider consistent naming convention between routes and models for clarity."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrm/member/departments/ErphrmMemberDepartmentsController.ts",
+          "line": 77,
+          "description": "Controller endpoint uses HTTP PATCH method for list/search operation ('index') instead of GET. PATCH is typically for partial updates, not list retrieval. This contradicts standard REST conventions.",
+          "suggestion": "Change PATCH to GET for list/search endpoint, or rename endpoint to something like 'search' if partial update semantics are intended."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrm/member/profile/avatar/ErphrmMemberProfileAvatarController.ts",
+          "line": 1,
+          "description": "Controller defines avatar upload/delete endpoints at '/erpHrm/member/profile/avatar' but the Prisma schema for erp_hrm_members (not provided in this chunk) does not include an 'avatar' field. This appears to be a fabricated field and endpoint not supported by the ground truth schema.",
+          "suggestion": "Remove this controller or verify that the erp_hrm_members model includes an 'avatar' field in the complete schema. If not, these endpoints should be removed."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrm/member/projects/tasks/ErphrmMemberProjectsTasksController.ts",
+          "line": 1,
+          "description": "Controller uses PATCH method for listing/searching tasks (index action) at '/erpHrm/member/projects/:projectId/tasks'. Typically, listing/search operations should use GET or POST for search with body. Using PATCH for listing is unconventional and may indicate a spec mismatch.",
+          "suggestion": "Verify the OpenAPI specification to confirm the correct HTTP method for this search operation. If the spec specifies PATCH, this is not a hallucination."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrm/member/projects/members/ErphrmMemberProjectsMembersController.ts",
+          "line": 1,
+          "description": "Controller uses PATCH method for listing/searching project members (index action) at '/erpHrm/member/projects/:projectId/members'. Similar to tasks controller, using PATCH for listing is unconventional.",
+          "suggestion": "Verify the OpenAPI specification to confirm the correct HTTP method for this search operation. If the spec specifies PATCH, this is not a hallucination."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrm/member/organizations/logo/ErphrmMemberOrganizationsLogoController.ts",
+          "line": 1,
+          "description": "Controller defines POST and DELETE endpoints for /erpHrm/member/organizations/:organizationId/logo, but there is no corresponding OpenAPI specification for organization logo upload/delete operations in the provided Prisma schema. The erp_hrm_organizations model does not have a logo_url field.",
+          "suggestion": "Remove this controller or add logo_url field to erp_hrm_organizations model if needed."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrm/member/organizations/activity-logs/ErphrmMemberOrganizationsActivity_logsController.ts",
+          "line": 1,
+          "description": "Controller uses PATCH method for listing activity logs (index endpoint), which is unconventional for GET operations. The spec likely expects GET for listing, not PATCH.",
+          "suggestion": "Change @TypedRoute.Patch() to @TypedRoute.Get() for listing endpoint."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putErpHrmMemberTimesheetsTimesheetId.ts",
+          "line": 1,
+          "description": "Provider implements PUT endpoint for timesheets but the Prisma schema shows timesheets have status field with values 'draft', 'submitted', 'approved', 'rejected'. The implementation checks for 'draft' status but doesn't validate other status transitions according to business rules.",
+          "suggestion": "Add proper status transition validation according to timesheet lifecycle."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putErpHrmMemberTimelogsTimelogId.ts",
+          "line": 1,
+          "description": "Provider references 'rolePermissions' relation on erp_hrm_roles model, but the provided Prisma schema doesn't show this relation. The schema shows erp_hrm_roles has rolePermissions relation, but the code accesses it through organizationMember.role.rolePermissions which may be incorrect.",
+          "suggestion": "Verify the relation path: erp_hrm_organization_members -> role -> rolePermissions is correct according to schema."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putErpHrmMemberRolesRoleId.ts",
+          "line": 1,
+          "description": "Provider references 'rolePermissions' relation which exists in schema, but also checks for 'org:manage' and 'role:manage' permissions which are not defined in the provided schema fragments.",
+          "suggestion": "Verify permission names match the specification."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postErpHrmMemberTimesheetsTimesheetIdReject.ts",
+          "line": 1,
+          "description": "The endpoint expects a body parameter for rejection reason, but the spec may not define this endpoint at all. The implementation logic contradicts typical REST patterns where POST to a resource ID with a body suggests a custom action, but we cannot verify against spec.",
+          "suggestion": "Verify if this endpoint exists in the OpenAPI spec. If not, it may be a phantom endpoint."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postErpHrmMemberTimesheetsTimesheetIdApprove.ts",
+          "line": 1,
+          "description": "The endpoint POST /member/timesheets/{timesheetId}/approve may not be defined in the spec. Approval logic is implemented but spec existence is unverified.",
+          "suggestion": "Check OpenAPI spec for this approval endpoint."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmMemberTimesheets.ts",
+          "line": 1,
+          "description": "PATCH endpoint for 'patchErpHrmMemberTimesheets' but implementing GET-style pagination logic. PATCH typically updates a resource, but this appears to be a search/listing endpoint.",
+          "suggestion": "Should likely be GET endpoint or POST for search queries, not PATCH"
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmMemberTimers.ts",
+          "line": 1,
+          "description": "PATCH endpoint 'patchErpHrmMemberTimers' implementing GET-style pagination logic. PATCH typically updates resources, not fetches.",
+          "suggestion": "Should likely be GET endpoint or POST for search queries"
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmMemberTimelogs.ts",
+          "line": 1,
+          "description": "PATCH endpoint 'patchErpHrmMemberTimelogs' implementing GET-style pagination logic for timelog listing.",
+          "suggestion": "Should be GET endpoint or POST for search queries"
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmMemberRolesRoleIdPermissions.ts",
+          "line": 1,
+          "description": "PATCH endpoint updating role permissions but appears to update ALL permissions for a role (multiple permissions) rather than a specific permission ID.",
+          "suggestion": "Should match route pattern for single permission update (e.g., /roles/{roleId}/permissions/{permissionId})"
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchErpHrmMemberProjectsProjectIdComplete.ts",
+          "line": 1,
+          "description": "The endpoint 'PATCH /member/projects/{projectId}/complete' has no corresponding operation in the OpenAPI spec. This appears to be a completely fabricated route for marking a project as 'completed'.",
+          "suggestion": "Remove this endpoint unless it exists in the OpenAPI specification."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchErpHrmMemberProjectsProjectId.ts",
+          "line": 1,
+          "description": "The endpoint 'PATCH /member/projects/{projectId}' (without a suffix) has no corresponding operation in the OpenAPI spec. This appears to be a fabricated route for reactivating archived projects.",
+          "suggestion": "Remove this endpoint unless it exists in the OpenAPI specification."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmMemberProjectsProjectIdArchive.ts",
+          "line": 1,
+          "description": "The function signature includes a 'body' parameter of type IErpHrmProject.IUpdate, but the implementation only uses it for optional fields during update. However, the spec likely defines a dedicated archive endpoint with specific parameters, not a generic update.",
+          "suggestion": "Verify the OpenAPI spec for the correct request body structure for archive operations."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmMemberProjectsProjectIdComplete.ts",
+          "line": 1,
+          "description": "The function signature has no request body, but the spec might define parameters for project completion. The implementation assumes a simple status change without validation.",
+          "suggestion": "Check the OpenAPI spec for required parameters when completing a project."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+          "line": 1,
+          "description": "The function includes complex access control logic (checking project membership and 'project:manage' permission) that may not be specified in the OpenAPI spec. This could be standard security practice, but should be verified against spec requirements.",
+          "suggestion": "Verify if the OpenAPI spec defines authorization requirements for this endpoint."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+          "line": 1,
+          "description": "The function includes complex permission checking (project-lead role or 'project:manage' permission) that may not be specified in the OpenAPI spec.",
+          "suggestion": "Verify if the OpenAPI spec defines authorization requirements for this endpoint."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchErpHrmMemberContracts.ts",
+          "line": 1,
+          "description": "The file implements a 'patchErpHrmMemberContracts' endpoint for paginated contract listing, but the OpenAPI spec (not provided in chunk) likely defines a GET endpoint for listing contracts. 'PATCH' method contradicts spec (if spec defines GET). The function name suggests PATCH but implements GET-like paginated listing.",
+          "suggestion": "Should be a GET endpoint function (getErpHrmMemberContracts) or implement actual PATCH logic as per spec."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
+          "line": 103,
+          "description": "Activity log creation references 'actor_member_id' which should be 'organization_member_id' according to Prisma schema (actor_member_id does not exist). Also uses 'props.member.id' (member ID) instead of organization member ID.",
+          "suggestion": "Use 'organization_member_id' and derive from 'props.member.id' via organization_members lookup."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmGuestSessions.ts",
+          "line": 17,
+          "description": "Accesses 'erp_hrm_member_sessions.erp_hrm_member_id' (invalid field name). Prisma schema shows 'erp_hrm_member_sessions' not defined in provided chunk. Might be fabricated.",
+          "suggestion": "Check if model exists in schema. If not, remove or adjust."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/getErpHrmMemberRolesRoleId.ts",
+          "line": 34,
+          "description": "Function assumes 'role.id' matches member's organization via membership lookup, but spec may define different authorization.",
+          "suggestion": "Ensure authorization matches spec requirements."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/getErpHrmMemberProjectsProjectId.ts",
+          "line": 26,
+          "description": "Authorization logic uses 'organization.organizationMembers' relation; but spec may require explicit project membership check.",
+          "suggestion": "Verify spec's authorization requirements."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/deleteErpHrmMemberTimesheetsTimesheetId.ts",
+          "line": 63,
+          "description": "Added transaction to unlink timelogs before soft delete (not specified in schema). This is extra business logic.",
+          "suggestion": "Check spec for timesheet deletion behavior."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/deleteErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+          "line": 31,
+          "description": "Permission check uses 'permission:project:manage' which does not exist in the Prisma schema. The schema has 'project:manage' permission (without 'permission:' prefix).",
+          "suggestion": "Change permission check to 'project:manage' to match the schema."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/deleteErpHrmMemberOrganizationMembersOrganizationMemberId.ts",
+          "line": 28,
+          "description": "Query selects 'role.name' from erp_hrm_organization_members, but the relation 'role' does not have a 'name' field in the schema. The role relation points to erp_hrm_roles which has a 'name' field, but the query structure is incorrect.",
+          "suggestion": "Update the query to properly join with erp_hrm_roles to access the 'name' field."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/deleteErpHrmMemberProjectsProjectId.ts",
+          "line": 19,
+          "description": "Added business rule preventing project deletion if timelogs exist. The spec does not define such a constraint; deletion should cascade per Prisma schema (onDelete: Cascade).",
+          "suggestion": "Remove the timelog check and allow cascade deletion as defined in the schema."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/deleteErpHrmMemberOrganizationsOrganizationId.ts",
+          "line": 39,
+          "description": "Added check for 'pending' timesheet status, but the schema defines timesheet statuses as 'draft', 'submitted', 'approved', 'rejected'. 'pending' is not a valid status.",
+          "suggestion": "Use correct status values from the schema or remove this check if not required by spec."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/deleteErpHrmMemberOrganizationMembersOrganizationMemberId.ts",
+          "line": 73,
+          "description": "Hard deletes timers when deleting an organization member. The schema does not define onDelete behavior for timers, but this may be overly destructive.",
+          "suggestion": "Consider soft deletion or cascade behavior consistent with other relations."
+        },
+        {
+          "severity": "suggestion",
+          "type": "spec-mismatch",
+          "file": "src/providers/deleteErpHrmMemberProjectsProjectIdMembersProjectMemberId.ts",
+          "line": 56,
+          "description": "Activity log creation uses 'props.member.id' for actor_member_id, but should use organization member ID (organizationMember.id) for proper relation.",
+          "suggestion": "Use organizationMember.id instead of props.member.id for actor_member_id."
+        }
+      ],
+      "score": 87,
+      "summary": "[11 chunks, 58→45 issues] Significant hallucinations detected: multiple phantom endpoints for guest/member sessions and authentication that reference non-existent database tables. The core timesheet/timer/task controllers align with Prisma models, but authentication layer is largely fabricated. Faithfulness score is low due to missing schema basis for session management.",
+      "durationMs": 203124,
+      "tokensUsed": {
+        "input": 231922,
+        "output": 8493,
+        "inputCost": 0.06957659999999999,
+        "outputCost": 0.007473840000000001
+      },
+      "deepEvalScores": {
+        "faithfulness": 87,
+        "relevancy": 89,
+        "contextualPrecision": 88
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 87,
+    "phaseWeight": 0.85,
+    "phaseContribution": 74,
+    "agentScore": 59,
+    "agentWeight": 0.15,
+    "agentContribution": 9
+  }
 }

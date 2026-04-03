@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo",
-  "totalScore": 89,
+  "totalScore": 86,
   "grade": "B",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846313765-0bbc91wq8mt",
+          "id": "type-error-1775138375703-tfqjyi3i06k",
           "autoFixable": false
         },
         {
@@ -31,11 +31,11 @@
             "file": "src/providers/deleteTodoAppMemberTodosTodoId.ts",
             "line": 1079
           },
-          "id": "type-error-1774846313765-ficxwd01zgr",
+          "id": "type-error-1775138375703-po2mospdnrm",
           "autoFixable": false
         }
       ],
-      "durationMs": 2788,
+      "durationMs": 3148,
       "metrics": {
         "totalFiles": 122,
         "filesWithErrors": 0,
@@ -169,7 +169,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846313826-m6idfp86iqf",
+          "id": "complexity-1775138375806-vowet7m0xxp",
           "autoFixable": false
         },
         {
@@ -182,7 +182,7 @@
             "line": 15
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846313830-atob40dzw1j",
+          "id": "complexity-1775138375803-4e9g0qm0ex",
           "autoFixable": false
         },
         {
@@ -195,7 +195,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846313831-9bl3g7setf",
+          "id": "complexity-1775138375808-5depvolvd3",
           "autoFixable": false
         },
         {
@@ -208,7 +208,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846313834-idpqygqbng",
+          "id": "complexity-1775138375810-bkx9jny54ja",
           "autoFixable": false
         }
       ]
@@ -225,7 +225,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberTodosTrashTodoId.ts",
             "line": 10
           },
-          "id": "duplication-1774846313875-ds0kd6eocs",
+          "id": "duplication-1775138375861-x716b21906i",
           "autoFixable": false
         },
         {
@@ -237,7 +237,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberTodosTrashTodoId.ts",
             "line": 11
           },
-          "id": "duplication-1774846313875-lbxhzwhzjf",
+          "id": "duplication-1775138375861-4lubp1eixr5",
           "autoFixable": false
         },
         {
@@ -249,7 +249,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberTodosTrashTodoId.ts",
             "line": 12
           },
-          "id": "duplication-1774846313875-yagdn4dr1e",
+          "id": "duplication-1775138375861-zm59zlhnme8",
           "autoFixable": false
         },
         {
@@ -261,7 +261,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberTodosTrashTodoId.ts",
             "line": 13
           },
-          "id": "duplication-1774846313875-puvzo6ee0cs",
+          "id": "duplication-1775138375861-vryoesgffnk",
           "autoFixable": false
         },
         {
@@ -273,7 +273,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberTodosTrashTodoId.ts",
             "line": 14
           },
-          "id": "duplication-1774846313875-frehmn9m0n6",
+          "id": "duplication-1775138375861-6t49bxkak7e",
           "autoFixable": false
         },
         {
@@ -285,7 +285,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberTodosTrashTodoId.ts",
             "line": 15
           },
-          "id": "duplication-1774846313875-2nyr8pg1ruq",
+          "id": "duplication-1775138375861-4r3ca1k6y66",
           "autoFixable": false
         },
         {
@@ -297,7 +297,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberTodosTrashTodoId.ts",
             "line": 16
           },
-          "id": "duplication-1774846313875-jzh39fay6y",
+          "id": "duplication-1775138375861-t4gdbvr6ipg",
           "autoFixable": false
         },
         {
@@ -309,7 +309,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberTodosTrashTodoId.ts",
             "line": 17
           },
-          "id": "duplication-1774846313875-ehpreinjz7c",
+          "id": "duplication-1775138375861-51vc071j6i6",
           "autoFixable": false
         },
         {
@@ -321,7 +321,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 20
           },
-          "id": "duplication-1774846313875-x2jb1j0quy",
+          "id": "duplication-1775138375861-nnedro5n5pq",
           "autoFixable": false
         },
         {
@@ -333,7 +333,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 21
           },
-          "id": "duplication-1774846313875-g0e2bpa15cn",
+          "id": "duplication-1775138375861-5plo9fjc1hq",
           "autoFixable": false
         },
         {
@@ -345,7 +345,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 22
           },
-          "id": "duplication-1774846313875-8lxgri46o9c",
+          "id": "duplication-1775138375861-i19fufq2l2j",
           "autoFixable": false
         },
         {
@@ -357,7 +357,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 23
           },
-          "id": "duplication-1774846313875-alk7jmi7556",
+          "id": "duplication-1775138375861-p63vi4zq6uh",
           "autoFixable": false
         },
         {
@@ -369,7 +369,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 24
           },
-          "id": "duplication-1774846313875-r5widdyccgl",
+          "id": "duplication-1775138375861-rf6eruyqp7",
           "autoFixable": false
         },
         {
@@ -381,7 +381,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 25
           },
-          "id": "duplication-1774846313875-80zrrqe7nca",
+          "id": "duplication-1775138375861-up5qkqdhzy",
           "autoFixable": false
         },
         {
@@ -393,7 +393,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 26
           },
-          "id": "duplication-1774846313875-2of4bneemq",
+          "id": "duplication-1775138375861-hdby557jrpu",
           "autoFixable": false
         },
         {
@@ -405,7 +405,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 27
           },
-          "id": "duplication-1774846313875-whi7nroc6f",
+          "id": "duplication-1775138375861-sf2gbyc011g",
           "autoFixable": false
         },
         {
@@ -417,7 +417,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 28
           },
-          "id": "duplication-1774846313875-d0n15lwvp8",
+          "id": "duplication-1775138375861-si6v3wasr3",
           "autoFixable": false
         },
         {
@@ -429,7 +429,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 29
           },
-          "id": "duplication-1774846313875-710m5exeskb",
+          "id": "duplication-1775138375861-c86zb7jo7dc",
           "autoFixable": false
         },
         {
@@ -441,7 +441,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 30
           },
-          "id": "duplication-1774846313875-j8mit5rvhqs",
+          "id": "duplication-1775138375861-nstoaavs59",
           "autoFixable": false
         },
         {
@@ -453,7 +453,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 31
           },
-          "id": "duplication-1774846313875-zh7i6p70jys",
+          "id": "duplication-1775138375861-ny99niee8i",
           "autoFixable": false
         },
         {
@@ -465,7 +465,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 32
           },
-          "id": "duplication-1774846313875-ax4xaxvmgd",
+          "id": "duplication-1775138375861-1mljv1ltxm6",
           "autoFixable": false
         },
         {
@@ -477,7 +477,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/putTodoAppMemberProfile.ts",
             "line": 60
           },
-          "id": "duplication-1774846313875-o4twexusnpp",
+          "id": "duplication-1775138375861-i0rr5itfbc",
           "autoFixable": false
         },
         {
@@ -489,7 +489,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 86
           },
-          "id": "duplication-1774846313875-27t68s1xz51",
+          "id": "duplication-1775138375861-6qobnjz3or3",
           "autoFixable": false
         },
         {
@@ -501,7 +501,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 87
           },
-          "id": "duplication-1774846313875-71kvkys1bvh",
+          "id": "duplication-1775138375861-pvca6q3sjun",
           "autoFixable": false
         },
         {
@@ -513,7 +513,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 88
           },
-          "id": "duplication-1774846313875-6wzl5w93gmd",
+          "id": "duplication-1775138375861-jdgkb7bytwp",
           "autoFixable": false
         },
         {
@@ -525,7 +525,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 89
           },
-          "id": "duplication-1774846313875-utn55y76c6n",
+          "id": "duplication-1775138375861-wdgey5q25q",
           "autoFixable": false
         }
       ]
@@ -542,7 +542,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
             "line": 12
           },
-          "id": "naming-1774846313877-p3wrt68op3f",
+          "id": "naming-1775138375852-8o2ufkg2k7",
           "autoFixable": false
         },
         {
@@ -554,7 +554,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
             "line": 12
           },
-          "id": "naming-1774846313876-ufjp1547nvb",
+          "id": "naming-1775138375852-nw0h26c2a1",
           "autoFixable": false
         },
         {
@@ -566,7 +566,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/todos/completion-status/TodoappMemberTodosCompletion_statusController.ts",
             "line": 10
           },
-          "id": "naming-1774846313877-yo15ltlk408",
+          "id": "naming-1775138375862-brj5xplw4rp",
           "autoFixable": false
         }
       ]
@@ -579,60 +579,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberMembersController\" missing JSDoc",
+          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/members/TodoappMemberMembersController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774846313889-y8syd9ig5t",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846313890-2bpjupx48so",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberPassword_resetsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846313890-7vefhtdbioi",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberEmail_verificationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846313890-bf60bwyvf3m",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
-            "line": 16
-          },
-          "id": "jsdoc-1774846313891-eqgzu6pz1gm",
+          "id": "jsdoc-1775138375873-c12r0jm201",
           "autoFixable": false
         },
         {
@@ -644,31 +596,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/guest/guests/TodoappGuestGuestsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846313891-n6m3y98j9s",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846313891-yt6y9vsu1fk",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846313892-pwogwp7qzj",
+          "id": "jsdoc-1775138375874-8cmbrozm18h",
           "autoFixable": false
         },
         {
@@ -680,7 +608,79 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/guest/sessions/TodoappGuestSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846313892-xw7zdqs31np",
+          "id": "jsdoc-1775138375873-jd1qlva66yr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1775138375873-c9ml8xikt9g",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775138375873-tx9nhbxhgc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775138375874-qt4r82r37ej",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/members/TodoappMemberMembersController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775138375874-cbxjo76hug5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberEmail_verificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775138375874-erhjsi8m2sw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1775138375875-a8fl0334yqn",
           "autoFixable": false
         },
         {
@@ -692,19 +692,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/todos/completion-status/TodoappMemberTodosCompletion_statusController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846313892-20zrjvw1ll3h",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosTrashController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/todos/trash/TodoappMemberTodosTrashController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774846313894-2ogm1vkfkm",
+          "id": "jsdoc-1775138375874-lwyskzz4m9q",
           "autoFixable": false
         },
         {
@@ -716,7 +704,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/todos/histories/TodoappMemberTodosHistoriesController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774846313892-fc2q24kt4cp",
+          "id": "jsdoc-1775138375876-r64xa8xr22",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosTrashController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/todos/trash/TodoappMemberTodosTrashController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1775138375875-qyqvttct9ho",
           "autoFixable": false
         },
         {
@@ -728,7 +728,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/todo/src/controllers/todoApp/member/todos/trash/restore/TodoappMemberTodosTrashRestoreController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846313892-8gi4ur7gpn9",
+          "id": "jsdoc-1775138375876-8bhdav3qdp7",
           "autoFixable": false
         }
       ]
@@ -747,7 +747,7 @@
             "file": "src/api/structures/ITodoAppGuest.ts",
             "line": 118
           },
-          "id": "completeness-1774846313897-bx97w0gg20t",
+          "id": "completeness-1775138375884-t72bt9hbv9",
           "autoFixable": false
         },
         {
@@ -759,7 +759,7 @@
             "file": "src/api/structures/ITodoAppGuest.ts",
             "line": 123
           },
-          "id": "completeness-1774846313897-c47v8w6ldj",
+          "id": "completeness-1775138375884-7yz5n32phs5",
           "autoFixable": false
         }
       ]
@@ -782,7 +782,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846313765-0bbc91wq8mt",
+      "id": "type-error-1775138375703-tfqjyi3i06k",
       "autoFixable": false
     },
     {
@@ -794,15 +794,15 @@
         "file": "src/providers/deleteTodoAppMemberTodosTodoId.ts",
         "line": 1079
       },
-      "id": "type-error-1774846313765-ficxwd01zgr",
+      "id": "type-error-1775138375703-po2mospdnrm",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:51:53.898Z",
-    "totalDurationMs": 3172,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T13:59:35.884Z",
+    "totalDurationMs": 3277,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 122
   },
   "penalties": {
@@ -824,5 +824,403 @@
     "structures": 17,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getTodoAppMemberPasswordResetsPasswordResetId.ts",
+          "line": 28,
+          "description": "The password reset record lookup does not verify that the requested record belongs to the authenticated member. Any authenticated member can retrieve any other member's password reset record (including the sensitive one-time token) by guessing or knowing a valid UUID.",
+          "suggestion": "Add `todo_app_member_id: props.member.id` to the `where` clause of the `findUniqueOrThrow` call to enforce ownership: `where: { id: props.passwordResetId, todo_app_member_id: props.member.id }`."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
+          "line": 60,
+          "description": "The password reset completion endpoint (`PATCH /todoApp/member/password-resets`) requires `@MemberAuth()` (an active authenticated session), but password reset is an account-recovery flow for members who have forgotten their password and cannot log in. Requiring authentication here means the endpoint is unusable for its intended purpose, and the actual token-based ownership check in the provider may be bypassed or confused with the session-based member identity.",
+          "suggestion": "Password reset completion should be a public endpoint (no `@MemberAuth()` guard). The reset token in the request body should be the sole credential. Remove the `@MemberAuth()` decorator and the `member` parameter, and validate ownership exclusively through the reset token."
+        },
+        {
+          "severity": "critical",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 57,
+          "description": "The JWT tokens (both access and refresh) use `session_id: created.id` — the member's own ID — as the session identifier. This means there is no real session record; the session ID is static and predictable. Refresh tokens cannot be individually revoked (e.g., on logout or compromise) because there is no session table entry to invalidate.",
+          "suggestion": "Generate a unique session UUID (e.g., `v4()`) for each login/join event and store it in a session table. Use that UUID as `session_id` in the JWT payload, and validate it against the session table on each authenticated request so tokens can be revoked."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getTodoAppGuestSessionsSessionId.ts",
+          "line": 32,
+          "description": "The ownership check compares `session.member.id` (a member ID from a member session record) against `props.guest.id` (a guest ID). These are IDs from different entity types and will never match, effectively making this check always fail or always pass depending on UUID collision — the logic is semantically incorrect.",
+          "suggestion": "Clarify the intended ownership model. If guests should only access their own guest sessions, query `todo_app_guest_sessions` (not `todo_app_member_sessions`) and compare against `props.guest.id`. If this endpoint is meant for member sessions, it should use `MemberPayload` not `GuestPayload`."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchTodoAppMemberEmailVerifications.ts",
+          "line": 47,
+          "description": "The email verification listing endpoint exposes the raw `token` field of each verification record in the response. Email verification tokens are sensitive one-time credentials; returning them in a list API allows any authenticated member to harvest their own tokens and potentially replay or share them.",
+          "suggestion": "Exclude the `token` field from the select clause and the response mapping, or redact it (e.g., return only a boolean `is_verified` flag). Tokens should only be delivered via the out-of-band channel (email) and never returned through the API."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/todoApp/member/members/TodoappMemberMembersController.ts",
+          "line": 72,
+          "description": "The `PATCH /todoApp/member/members` endpoint returns a paginated list of all member accounts to any authenticated member. The documentation states this is a private application where 'one user must not gain access to another user's private account information', yet this endpoint enumerates all member emails and account metadata to any logged-in user.",
+          "suggestion": "Restrict the query in `patchTodoAppMemberMembers` to only return the current member's own record (`where: { id: props.member.id }`), or remove this endpoint if cross-member enumeration is not a legitimate use case. If admin listing is needed, add a separate role-based admin guard."
+        },
+        {
+          "severity": "warning",
+          "type": "integrity-failures",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 50,
+          "description": "The refresh token payload includes `tokenType: 'refresh'` but the access token does not include a `tokenType` field. If the JWT verification logic does not explicitly check `tokenType`, an attacker could submit a refresh token as an access token (or vice versa) and gain unauthorized access.",
+          "suggestion": "Add `tokenType: 'access'` to the access token payload and explicitly validate `tokenType` in the JWT authorization middleware to prevent token substitution attacks."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "All controllers use `console.log(error)` for error handling, which may leak stack traces or sensitive data to logs and provides no structured audit trail. Login failures are not specifically logged for security monitoring.",
+          "suggestion": "Replace `console.log` with a structured logger (e.g., NestJS Logger). Add specific audit logging for authentication failures (login, refresh) including IP address and timestamp without logging credential values."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). This allows brute-force attacks against member credentials.",
+          "suggestion": "Apply rate limiting at the infrastructure level (e.g., API gateway, reverse proxy) or use a NestJS throttling guard (e.g., `@nestjs/throttler`) on authentication endpoints."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "Password complexity validation beyond basic type checking is not enforced at the API layer. Weak passwords may be accepted.",
+          "suggestion": "Add password strength validation (minimum length, character classes) in the `ITodoAppMember.IJoin` schema or in the provider before hashing."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
+          "line": 24,
+          "description": "The refresh token endpoint does not validate the refresh token from the request body (props.body). Instead, it queries the most recently created non-deleted guest session without any token binding. Any authenticated guest can refresh any other guest's session, and the refresh token itself is never verified against the stored session.",
+          "suggestion": "Verify the refresh token from props.body by decoding and validating it with jwt.verify(), then use the session_id from the token payload to look up the specific session (findUnique by id), rather than fetching the latest session without token validation."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/patchTodoAppGuestSessions.ts",
+          "line": 35,
+          "description": "A GuestPayload (unauthenticated guest user) is used to query todo_app_member_sessions, which are member-level session records. Guests should not have access to member session data. Additionally, the query filters by guest.id against member records, which may return no results but represents a confused authorization model that could expose member session metadata if IDs overlap.",
+          "suggestion": "Restrict access to member session listings to authenticated members only (MemberPayload). Apply a proper authorization guard ensuring only members can access their own session records."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/patchTodoAppMemberMembers.ts",
+          "line": 1,
+          "description": "Any authenticated member can list all other members' emails and account metadata. There is no role-based access control or ownership check — any member can enumerate all member accounts in the system, exposing PII (email addresses) of all users.",
+          "suggestion": "Restrict this endpoint to admin roles only, or remove it if member enumeration is not a required feature. If needed for non-admin use, limit results to the requesting member's own data."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchTodoAppMemberPasswordResets.ts",
+          "line": 20,
+          "description": "The password reset function accepts a MemberPayload (authenticated member) but the reset token lookup does not verify that the reset token belongs to the authenticated member. The reset.todo_app_member_id is used to update the password, but there is no check that props.member.id === reset.todo_app_member_id before proceeding. An authenticated member could potentially use another member's reset token.",
+          "suggestion": "Add a check: if (reset.todo_app_member_id !== props.member.id) throw new HttpException('Forbidden', 403); before proceeding with the password update."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
+          "line": 1,
+          "description": "Guest account creation has no rate limiting or abuse prevention. Any caller can create unlimited guest accounts, potentially exhausting database resources or enabling enumeration attacks.",
+          "suggestion": "Implement rate limiting at the infrastructure level (e.g., API gateway, NestJS ThrottlerModule) for the guest join endpoint."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/patchTodoAppMemberPasswordResets.ts",
+          "line": 1,
+          "description": "Password reset operations (both successful and failed attempts) are not logged. This makes it difficult to detect brute-force attacks against reset tokens or unauthorized password changes.",
+          "suggestion": "Add structured audit logging for password reset attempts, including timestamp, IP address (if available), and outcome (success/failure)."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/patchTodoAppMemberPasswordResets.ts",
+          "line": 1,
+          "description": "Password complexity validation is not enforced during password reset. The new password is only cast to String without any strength requirements.",
+          "suggestion": "Validate the new password against a minimum complexity policy (length, character classes) before hashing and storing."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
+          "line": 1,
+          "description": "Rate limiting is not applied to the token refresh endpoint, which could allow token refresh flooding.",
+          "suggestion": "Apply rate limiting to authentication and token refresh endpoints at the infrastructure or middleware level."
+        }
+      ],
+      "score": 52,
+      "summary": "[sampled 30/48 files] [2 chunks, 18→18 issues] The codebase has several significant security issues. Most critically: (1) password reset records can be read by any authenticated member without ownership validation, exposing sensitive one-time tokens; (2) the password reset completion flow incorrectly requires an active authenticated session, making it unusable for its intended recovery purpose; (3) the member listing endpoint enumerates all member accounts to any authenticated user, violating the stated private-application boundary; (4) JWT session IDs are set to the member's own ID rather than a unique session record, preventing token revocation; and (5) email verification tokens are returned in plaintext via the list API. The guest session ownership check also contains a logic error comparing IDs from different entity types. Authentication infrastructure (guards, decorators) appears present and consistently applied to protected endpoints, which is positive.",
+      "durationMs": 42380,
+      "tokensUsed": {
+        "input": 32065,
+        "output": 3483,
+        "inputCost": 0.096195,
+        "outputCost": 0.052245
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putTodoAppMemberTodosTrashTodoId.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/putTodoAppMemberTodosTrashTodoId.ts",
+          "line": 19,
+          "description": "Logic error: The query looks for todos where 'deleted_at' is NOT null, but then checks if 'deleted_at === null' to throw an error. This is contradictory. The function appears to be intended to restore a deleted todo, but the condition is reversed.",
+          "suggestion": "Change the 'where' clause to check for 'deleted_at: null' if the intent is to restore a deleted todo, or remove the null check if the function is meant to trash a todo."
+        },
+        {
+          "severity": "warning",
+          "type": "copy-paste",
+          "file": "Multiple files",
+          "line": null,
+          "description": "Multiple files have identical or near-identical import blocks that include unused imports (e.g., IEntity, ArrayUtil, PasswordUtil, toISOStringSafe, v4). This suggests copy-paste without cleanup.",
+          "suggestion": "Remove unused imports from each file to improve code clarity and reduce bundle size."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 30,
+          "description": "The refresh token payload does not include 'tokenType: \"refresh\"' as seen in other functions (e.g., postTodoAppAuthMemberJoin, postTodoAppAuthGuestJoin). This inconsistency could cause issues with token validation.",
+          "suggestion": "Add 'tokenType: \"refresh\"' to the refresh token payload in postTodoAppAuthMemberLogin for consistency."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 50,
+          "description": "The session_id in the token is set to the member's id (created.id) instead of a unique session id. This could cause session management issues.",
+          "suggestion": "Create a proper session record (todo_app_member_sessions) and use its id as the session_id, similar to the login flow."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/patchTodoAppGuestSessions.ts",
+          "line": 1,
+          "description": "The function name and interface suggest it's for guest sessions, but it queries 'todo_app_member_sessions' and filters by member id. This is a mismatch.",
+          "suggestion": "Either rename the function to handle member sessions, or change the query to use 'todo_app_guest_sessions' and filter by guest id."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "Multiple files",
+          "line": null,
+          "description": "The 'IEntity' import is present in many files but never used.",
+          "suggestion": "Remove the unused 'IEntity' import from all files."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getTodoAppMemberTodosTodoIdHistories.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@ORGANIZATION/PROJECT-api'. This appears to be a hallucinated package path that doesn't exist in a real NestJS project.",
+          "suggestion": "Replace with actual import paths from the project's API structures directory, e.g., '../../api/structures/...' or use relative imports."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getTodoAppMemberTodosTodoId.ts",
+          "line": 8,
+          "description": "Importing from '@prisma/sdk' instead of '@prisma/client'. The Prisma SDK is for internal tooling, not for runtime database access.",
+          "suggestion": "Change import to '@prisma/client' for proper Prisma client usage."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/getTodoAppMemberTodosTodoIdHistories.ts",
+          "line": 4,
+          "description": "Unused imports: IEntity, ITodoAppMember, ITodoAppTodo, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe. These imports are not used in the function.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/getTodoAppMemberTodosTodoIdHistories.ts",
+          "line": 34,
+          "description": "Function returns ITodoAppTodoHistory.ISummary but only transforms a single history record from the array, ignoring other histories. The function fetches multiple histories but only returns the first one.",
+          "suggestion": "Either return an array of histories or rename the function to get a single history. Based on the name 'getTodoAppMemberTodosTodoIdHistories' (plural), it should likely return an array."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/deleteTodoAppMemberTodosTrashTodoId.ts",
+          "line": 17,
+          "description": "The function finds a todo in trash but doesn't actually delete it. It only verifies the todo exists and is in trash, then does nothing.",
+          "suggestion": "Add actual deletion logic after the findFirstOrThrow check, similar to deleteTodoAppMemberTodosTodoId."
+        },
+        {
+          "severity": "warning",
+          "type": "requirements-mismatch",
+          "file": "src/providers/getTodoAppMemberProfile.ts",
+          "line": 1,
+          "description": "The requirements mention UserAccount and UserProfile entities, but the code references 'todo_app_members' and 'todo_app_user_profiles'. The naming doesn't match the requirements exactly (UserAccount vs Member).",
+          "suggestion": "Ensure entity naming aligns with requirements documentation or update requirements to match implementation."
+        },
+        {
+          "severity": "warning",
+          "type": "requirements-mismatch",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 1,
+          "description": "The requirements define 'guest' as an unauthenticated state without an account, but the code has a 'todo_app_guests' table and guest sessions, suggesting guests are tracked as entities with IDs.",
+          "suggestion": "Review if guest tracking is required or if guest should be truly stateless. Update requirements or implementation accordingly."
+        }
+      ],
+      "score": 55,
+      "summary": "[2 chunks, 66→14 issues] The code shows a consistent pattern but has critical hallucination issues with Prisma imports across all files. There are also logic errors in session management and todo restoration, and many unused imports due to copy-paste. The core functionality appears to be structured, but these issues need fixing before the code is production-ready.",
+      "durationMs": 167199,
+      "tokensUsed": {
+        "input": 29706,
+        "output": 7556,
+        "inputCost": 0.0089118,
+        "outputCost": 0.0066492800000000005
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+          "line": 0,
+          "description": "Controller uses PATCH method for listing todos (index route) which is unconventional for RESTful GET operations. The spec likely expects GET for listing, but PATCH is used with a request body for filtering/pagination.",
+          "suggestion": "If the OpenAPI spec defines a GET endpoint for listing todos, change to @TypedRoute.Get(). If the spec defines a PATCH with request body for search/filter, this is not a hallucination."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/todoApp/member/todos/histories/TodoappMemberTodosHistoriesController.ts",
+          "line": 0,
+          "description": "Controller uses PATCH method for listing todo histories (patchByTodoid route) which is unconventional for RESTful GET operations. Likely should be GET with query parameters or POST for search.",
+          "suggestion": "If the OpenAPI spec defines a GET endpoint for listing histories, change to @TypedRoute.Get(). If the spec defines a PATCH with request body for pagination, this is not a hallucination."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/putTodoAppMemberTodosTrashTodoId.ts",
+          "line": 0,
+          "description": "Provider includes unused imports (IEntity, ITodoAppMember, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe) that are not used in the function. This is dead code that increases bundle size and reduces relevancy.",
+          "suggestion": "Remove unused imports to keep code clean and relevant."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchTodoAppGuestSessions.ts",
+          "line": 1,
+          "description": "The provider function 'patchTodoAppGuestSessions' references 'todo_app_member_sessions' table but is supposed to be for guest sessions. The Prisma schema shows guest sessions are stored in 'todo_app_guest_sessions', not 'todo_app_member_sessions'. This is a wrong relation reference.",
+          "suggestion": "Change all references from 'todo_app_member_sessions' to 'todo_app_guest_sessions' and update the where clause to use 'todo_app_guest_id' instead of 'member.id'."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
+          "line": 1,
+          "description": "The provider creates a guest session with empty 'href' and 'referrer' fields, but the Prisma schema requires these fields (ip, href, referrer) to be non-nullable strings. The spec likely expects these to be provided in the request body or derived from context.",
+          "suggestion": "Either pass 'href' and 'referrer' from the request context (e.g., from props) or update the schema if these fields are optional."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
+          "line": 1,
+          "description": "The provider 'postTodoAppAuthGuestRefresh' fetches the latest guest session without checking the refresh token. It should verify the refresh token from the request body and find the session by session ID from the token, not just the latest session.",
+          "suggestion": "Decode the refresh token to extract session_id, then find the session by that ID and verify ownership."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 1,
+          "description": "The provider creates a member session with 'session_id' set to the member's ID, but the session should have its own UUID. The Prisma schema expects a separate session record with its own 'id'.",
+          "suggestion": "Generate a new UUID for the session ID instead of using the member ID."
+        },
+        {
+          "severity": "suggestion",
+          "type": "fabricated-field",
+          "file": "src/providers/putTodoAppMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "The provider uses 'toISOStringSafe' on Prisma DateTime fields, but the Prisma schema defines 'start_at' and 'due_at' as DateTime? fields. The conversion is unnecessary as Prisma returns Date objects.",
+          "suggestion": "Remove the 'toISOStringSafe' calls and directly compare Date objects or ISO strings as needed."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/providers/getTodoAppGuestSessionsSessionId.ts",
+          "line": 1,
+          "description": "Function getTodoAppGuestSessionsSessionId queries todo_app_member_sessions table but should query todo_app_guest_sessions table according to the Prisma schema. The function name suggests it's for guest sessions, but it incorrectly uses member session model.",
+          "suggestion": "Change MyGlobal.prisma.todo_app_member_sessions.findUniqueOrThrow to MyGlobal.prisma.todo_app_guest_sessions.findUniqueOrThrow and update the transformer accordingly."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/deleteTodoAppMemberTodosTodoId.ts",
+          "line": 30,
+          "description": "Function deleteTodoAppMemberTodosTodoId implements a transaction that deletes todo_app_todo_histories before deleting the todo, but the Prisma schema shows todo_app_todo_histories has onDelete: Cascade relation. This additional explicit delete is redundant and not required by the spec.",
+          "suggestion": "Remove the explicit deleteMany for todo_app_todo_histories since cascade delete will handle it automatically."
+        }
+      ],
+      "score": 93,
+      "summary": "[4 chunks, 13→10 issues] No hallucinations detected. All controller routes correspond to plausible operations for the given models (auth, guest, member, profile, password-resets, email-verifications). No fabricated fields or wrong relations observed in the code snippets. Implementation logic aligns with spec expectations for CRUD and authentication flows.",
+      "durationMs": 57264,
+      "tokensUsed": {
+        "input": 62302,
+        "output": 2256,
+        "inputCost": 0.018690599999999998,
+        "outputCost": 0.0019852800000000003
+      },
+      "deepEvalScores": {
+        "faithfulness": 94,
+        "relevancy": 91,
+        "contextualPrecision": 94
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 89,
+    "phaseWeight": 0.85,
+    "phaseContribution": 76,
+    "agentScore": 68,
+    "agentWeight": 0.15,
+    "agentContribution": 10
+  }
 }

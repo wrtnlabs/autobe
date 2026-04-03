@@ -22408,7 +22408,7 @@
     {
       "model": "glm-5",
       "project": "todo",
-      "totalScore": 88,
+      "totalScore": 86,
       "grade": "B",
       "pipeline": {
         "totalTokens": 0,
@@ -23168,7 +23168,7 @@
           "maxScore": 100,
           "weightedScore": 96,
           "passed": true,
-          "durationMs": 4629,
+          "durationMs": 2835,
           "metrics": {
             "totalFiles": 84,
             "filesWithErrors": 0,
@@ -23313,9 +23313,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:55:59.092Z",
-        "reportUpdatedAt": "2026-04-01T07:10:49.328Z",
-        "totalDurationMs": 4739,
+        "evaluatedAt": "2026-04-02T06:41:42.433Z",
+        "reportUpdatedAt": "2026-04-02T06:42:44.346Z",
+        "totalDurationMs": 2943,
         "evaluatedFiles": 84
       },
       "reference": {
@@ -127841,5 +127841,5 @@
     "shopping",
     "erp"
   ],
-  "generatedAt": "2026-04-01T07:49:17.318Z"
+  "generatedAt": "2026-04-02T06:42:46.783Z"
 }

@@ -50,9 +50,9 @@ export function fail(
 }
 
 /**
- * Run a scenario suite with error isolation.
- * The suite function pushes results to the provided array.
- * If it crashes mid-way, partial results are preserved and a crash entry is appended.
+ * Run a scenario suite with error isolation. The suite function pushes results
+ * to the provided array. If it crashes mid-way, partial results are preserved
+ * and a crash entry is appended.
  */
 export async function safeSuite(
   results: ScenarioResult[],

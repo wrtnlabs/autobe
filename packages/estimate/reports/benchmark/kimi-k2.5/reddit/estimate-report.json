@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit",
-  "totalScore": 78,
+  "totalScore": 76,
   "grade": "C",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846201466-2ozr70mo9pi",
+          "id": "type-error-1775119885374-gn1ybepagxq",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/redditLike/guest/posts/comments/thread/RedditlikeGuestPostsCommentsController.ts",
             "line": 2642
           },
-          "id": "type-error-1774846201466-civpguvluoh",
+          "id": "type-error-1775119885374-rn0mm0q90nb",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
             "line": 10621
           },
-          "id": "type-error-1774846201466-t2b6xc0b16",
+          "id": "type-error-1775119885374-9pkdd3pb9wo",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
             "line": 4988
           },
-          "id": "type-error-1774846201466-6v620um9lbe",
+          "id": "type-error-1775119885374-2e2cbedsyrr",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
             "line": 2642
           },
-          "id": "type-error-1774846201466-h5zwnbl1da7",
+          "id": "type-error-1775119885374-nn5eqwsj6vk",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/decorators/AdminAuth.ts",
             "line": 186
           },
-          "id": "type-error-1774846201466-ho6vs5i0jp5",
+          "id": "type-error-1775119885374-pdifilrsmu",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/decorators/AdminAuth.ts",
             "line": 338
           },
-          "id": "type-error-1774846201466-sizhc1h58b",
+          "id": "type-error-1775119885374-qk98igqtyel",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/decorators/AdminAuth.ts",
             "line": 345
           },
-          "id": "type-error-1774846201466-2gqb8b7zyhv",
+          "id": "type-error-1775119885374-aetjqkq2dwh",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/decorators/AdminAuth.ts",
             "line": 476
           },
-          "id": "type-error-1774846201466-d9b7lqamdo",
+          "id": "type-error-1775119885374-8ov4hcbvujc",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/authorize/adminAuthorize.ts",
             "line": 546
           },
-          "id": "type-error-1774846201466-wzv5nz2fcdn",
+          "id": "type-error-1775119885374-wbasqqiebhr",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/deleteRedditLikeMemberCommentsCommentIdMyVote.ts",
             "line": 1281
           },
-          "id": "type-error-1774846201466-uwwruy2id6",
+          "id": "type-error-1775119885374-xng7gctutw",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/getRedditLikeGuestSessionsMe.ts",
             "line": 2363
           },
-          "id": "type-error-1774846201466-zztszdwdmr",
+          "id": "type-error-1775119885374-47kirt8i6bu",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
             "line": 3215
           },
-          "id": "type-error-1774846201466-5693wa0ch08",
+          "id": "type-error-1775119885374-eovie59yq2i",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
             "line": 3461
           },
-          "id": "type-error-1774846201466-qia6l02xy7",
+          "id": "type-error-1775119885374-yvkblrx8zml",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
             "line": 3475
           },
-          "id": "type-error-1774846201466-a9k0yccuw17",
+          "id": "type-error-1775119885374-f9u3b3keb6f",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/patchRedditLikeGuestSessions.ts",
             "line": 2324
           },
-          "id": "type-error-1774846201466-w2ornidg0al",
+          "id": "type-error-1775119885374-899i1zirad5",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/patchRedditLikeGuestSessions.ts",
             "line": 2779
           },
-          "id": "type-error-1774846201466-lifbn29jpn",
+          "id": "type-error-1775119885374-j4bgp5asric",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
             "line": 3451
           },
-          "id": "type-error-1774846201466-hgyfrimnt2g",
+          "id": "type-error-1775119885374-ac6x8gyqs07",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
             "line": 3515
           },
-          "id": "type-error-1774846201466-wl0ftt0ovi",
+          "id": "type-error-1775119885374-655qgcx44wc",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
             "line": 2554
           },
-          "id": "type-error-1774846201466-fimir16q6n9",
+          "id": "type-error-1775119885374-70lupi0as93",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
             "line": 2657
           },
-          "id": "type-error-1774846201466-aoxr117mxj",
+          "id": "type-error-1775119885374-waptryza7u8",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
             "line": 3492
           },
-          "id": "type-error-1774846201466-1e61d5zytu2",
+          "id": "type-error-1775119885374-0xliobis2nor",
           "autoFixable": false
         },
         {
@@ -283,7 +283,7 @@
             "file": "src/transformers/RedditLikeCommentAtThreadTransformer.ts",
             "line": 715
           },
-          "id": "type-error-1774846201466-ubs5ei8cxx",
+          "id": "type-error-1775119885374-9wyubhwasns",
           "autoFixable": false
         },
         {
@@ -295,7 +295,7 @@
             "file": "src/transformers/RedditLikeCommunityAtSummaryTransformer.ts",
             "line": 1836
           },
-          "id": "type-error-1774846201466-9mptiyvsxig",
+          "id": "type-error-1775119885374-5v8qnu2uqsp",
           "autoFixable": false
         },
         {
@@ -307,7 +307,7 @@
             "file": "src/transformers/RedditLikeCommunityTransformer.ts",
             "line": 1871
           },
-          "id": "type-error-1774846201466-mc1d3fcr9qk",
+          "id": "type-error-1775119885374-amim5xkhu7",
           "autoFixable": false
         },
         {
@@ -319,11 +319,11 @@
             "file": "src/transformers/RedditLikeGuestAtSummaryTransformer.ts",
             "line": 1213
           },
-          "id": "type-error-1774846201466-deurb19f3z9",
+          "id": "type-error-1775119885374-ppyvoizo4y",
           "autoFixable": false
         }
       ],
-      "durationMs": 10381,
+      "durationMs": 8102,
       "metrics": {
         "totalFiles": 410,
         "filesWithErrors": 0,
@@ -457,7 +457,7 @@
             "line": 15
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846201709-9xsxffk4lt",
+          "id": "complexity-1775119885657-fd1eqyz6w48",
           "autoFixable": false
         },
         {
@@ -470,7 +470,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846201725-4ut7gydccdm",
+          "id": "complexity-1775119885671-hcejafk68al",
           "autoFixable": false
         },
         {
@@ -483,7 +483,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846201725-4jobaw04w",
+          "id": "complexity-1775119885674-imhrskqbst",
           "autoFixable": false
         },
         {
@@ -496,7 +496,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846201726-t6n4ppxdue",
+          "id": "complexity-1775119885677-73ofd11ix39",
           "autoFixable": false
         },
         {
@@ -509,7 +509,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846201727-ibwda1eujhn",
+          "id": "complexity-1775119885674-kq77trt2s7g",
           "autoFixable": false
         },
         {
@@ -522,7 +522,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846201732-dex0iam91in",
+          "id": "complexity-1775119885681-ykoh1sbtga",
           "autoFixable": false
         },
         {
@@ -535,7 +535,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846201733-gai9910hejb",
+          "id": "complexity-1775119885683-j2gfnw14plt",
           "autoFixable": false
         },
         {
@@ -548,7 +548,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846201735-f5a6ie2mmrp",
+          "id": "complexity-1775119885684-kkjf8qin7x",
           "autoFixable": false
         },
         {
@@ -561,7 +561,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846201738-m09j6g5egdq",
+          "id": "complexity-1775119885688-fuzh3rj5sck",
           "autoFixable": false
         }
       ]
@@ -578,7 +578,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
             "line": 25
           },
-          "id": "duplication-1774846201904-a6v2sybn6wb",
+          "id": "duplication-1775119885840-pqgfw7tdarp",
           "autoFixable": false
         },
         {
@@ -590,7 +590,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
             "line": 26
           },
-          "id": "duplication-1774846201904-6xy74yzyjq",
+          "id": "duplication-1775119885840-akxn4s9qxgv",
           "autoFixable": false
         },
         {
@@ -602,7 +602,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/popular/RedditlikeMemberFeedsPopularController.ts",
             "line": 46
           },
-          "id": "duplication-1774846201904-j2rdgeyble",
+          "id": "duplication-1775119885840-18l9rrcql3",
           "autoFixable": false
         },
         {
@@ -614,7 +614,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeOwnerCommunitiesCommunityId.ts",
             "line": 48
           },
-          "id": "duplication-1774846201904-ywg7g7t42vj",
+          "id": "duplication-1775119885841-782nn8aq1pu",
           "autoFixable": false
         },
         {
@@ -626,7 +626,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeOwnerCommunitiesCommunityId.ts",
             "line": 49
           },
-          "id": "duplication-1774846201904-qhptmmw9if",
+          "id": "duplication-1775119885841-86vbtkoahtm",
           "autoFixable": false
         },
         {
@@ -638,7 +638,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 29
           },
-          "id": "duplication-1774846201904-ll4bif3x8d",
+          "id": "duplication-1775119885841-qln8cw9zb3",
           "autoFixable": false
         },
         {
@@ -650,7 +650,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 30
           },
-          "id": "duplication-1774846201904-u9kffw3uwv",
+          "id": "duplication-1775119885841-2g332p39qq",
           "autoFixable": false
         },
         {
@@ -662,7 +662,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 42
           },
-          "id": "duplication-1774846201904-r5o8eknyug",
+          "id": "duplication-1775119885841-rj5nw1ce0n",
           "autoFixable": false
         },
         {
@@ -674,7 +674,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 43
           },
-          "id": "duplication-1774846201904-bqecaaf0eti",
+          "id": "duplication-1775119885841-bmenp471mj4",
           "autoFixable": false
         },
         {
@@ -686,7 +686,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
             "line": 46
           },
-          "id": "duplication-1774846201904-juhmtbn518",
+          "id": "duplication-1775119885841-k5zxmvqmhyf",
           "autoFixable": false
         },
         {
@@ -698,7 +698,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
             "line": 47
           },
-          "id": "duplication-1774846201904-vcjm85r1sl",
+          "id": "duplication-1775119885841-60rng62p8mr",
           "autoFixable": false
         },
         {
@@ -710,7 +710,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
             "line": 48
           },
-          "id": "duplication-1774846201904-oug3m725ac",
+          "id": "duplication-1775119885841-41vh68x62lr",
           "autoFixable": false
         },
         {
@@ -722,7 +722,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeOwnerReportsReportIdApprove.ts",
             "line": 83
           },
-          "id": "duplication-1774846201904-jiwju0d19m",
+          "id": "duplication-1775119885841-c7fqevju76e",
           "autoFixable": false
         },
         {
@@ -734,7 +734,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeOwnerModerators.ts",
             "line": 45
           },
-          "id": "duplication-1774846201904-tlcb7zlelh",
+          "id": "duplication-1775119885841-10kdicp7i16j",
           "autoFixable": false
         },
         {
@@ -746,7 +746,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 19
           },
-          "id": "duplication-1774846201904-1gir1aq1jmn",
+          "id": "duplication-1775119885841-qab0mje8nic",
           "autoFixable": false
         },
         {
@@ -758,7 +758,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 20
           },
-          "id": "duplication-1774846201904-ltud5478c39",
+          "id": "duplication-1775119885841-i6pbg1kipk",
           "autoFixable": false
         },
         {
@@ -770,7 +770,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 21
           },
-          "id": "duplication-1774846201904-vmhb8l5j7i9",
+          "id": "duplication-1775119885841-x0ra7xd5luc",
           "autoFixable": false
         },
         {
@@ -782,7 +782,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 22
           },
-          "id": "duplication-1774846201904-86ho47syixn",
+          "id": "duplication-1775119885841-u63qz6jwix",
           "autoFixable": false
         },
         {
@@ -794,7 +794,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 23
           },
-          "id": "duplication-1774846201904-8eqa31yaq6t",
+          "id": "duplication-1775119885841-5kod5nadcp7",
           "autoFixable": false
         },
         {
@@ -806,7 +806,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 24
           },
-          "id": "duplication-1774846201904-117oln56lamq",
+          "id": "duplication-1775119885841-n6jtr4q8me",
           "autoFixable": false
         },
         {
@@ -818,7 +818,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 25
           },
-          "id": "duplication-1774846201904-6dtxd4zomjm",
+          "id": "duplication-1775119885841-btx0ccolsc",
           "autoFixable": false
         },
         {
@@ -830,7 +830,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 26
           },
-          "id": "duplication-1774846201904-lqkefrmigx",
+          "id": "duplication-1775119885841-zv3oniudear",
           "autoFixable": false
         },
         {
@@ -842,7 +842,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 27
           },
-          "id": "duplication-1774846201904-qd5ytyqu9wi",
+          "id": "duplication-1775119885841-e4qesix55m6",
           "autoFixable": false
         },
         {
@@ -854,7 +854,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 19
           },
-          "id": "duplication-1774846201904-yc1pj6dfkug",
+          "id": "duplication-1775119885841-up2358p7bhk",
           "autoFixable": false
         },
         {
@@ -866,7 +866,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 20
           },
-          "id": "duplication-1774846201904-i52jru9d2v8",
+          "id": "duplication-1775119885841-b6qlvtpg3c7",
           "autoFixable": false
         },
         {
@@ -878,7 +878,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 21
           },
-          "id": "duplication-1774846201904-7xjgud49jig",
+          "id": "duplication-1775119885841-d85rdj2kl35",
           "autoFixable": false
         },
         {
@@ -890,7 +890,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 22
           },
-          "id": "duplication-1774846201904-wqgvgqnmk29",
+          "id": "duplication-1775119885841-e0r9i9jh14i",
           "autoFixable": false
         },
         {
@@ -902,7 +902,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 23
           },
-          "id": "duplication-1774846201904-xvckdrpw4am",
+          "id": "duplication-1775119885841-9ticmnlk4ob",
           "autoFixable": false
         },
         {
@@ -914,7 +914,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 24
           },
-          "id": "duplication-1774846201904-ycdcf7rrq8",
+          "id": "duplication-1775119885841-drd6jooek48",
           "autoFixable": false
         },
         {
@@ -926,7 +926,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 25
           },
-          "id": "duplication-1774846201904-cz15xz22fj6",
+          "id": "duplication-1775119885841-98d8plcxqj",
           "autoFixable": false
         },
         {
@@ -938,7 +938,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 26
           },
-          "id": "duplication-1774846201904-yjdzdauosd",
+          "id": "duplication-1775119885841-oytexuv9cai",
           "autoFixable": false
         },
         {
@@ -950,7 +950,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 27
           },
-          "id": "duplication-1774846201904-ff560t7ykf",
+          "id": "duplication-1775119885841-044ymx4ayuma",
           "autoFixable": false
         },
         {
@@ -962,7 +962,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 28
           },
-          "id": "duplication-1774846201904-hz7u1coknwi",
+          "id": "duplication-1775119885841-0heez28iqlg",
           "autoFixable": false
         },
         {
@@ -974,7 +974,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 29
           },
-          "id": "duplication-1774846201904-keja6zrsshs",
+          "id": "duplication-1775119885841-00pbmpte8pui",
           "autoFixable": false
         },
         {
@@ -986,7 +986,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdAccess.ts",
             "line": 34
           },
-          "id": "duplication-1774846201904-vyejzmg9qzb",
+          "id": "duplication-1775119885841-ryqt53lxbt",
           "autoFixable": false
         },
         {
@@ -998,7 +998,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdAccess.ts",
             "line": 35
           },
-          "id": "duplication-1774846201904-i091mz68v0b",
+          "id": "duplication-1775119885841-kofe0n8x9xh",
           "autoFixable": false
         },
         {
@@ -1010,7 +1010,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 13
           },
-          "id": "duplication-1774846201904-vzr3rd6fhz",
+          "id": "duplication-1775119885841-l2rd1ugu31",
           "autoFixable": false
         },
         {
@@ -1022,7 +1022,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 14
           },
-          "id": "duplication-1774846201904-2j0wqrreej3",
+          "id": "duplication-1775119885841-bsoc0zfl0fd",
           "autoFixable": false
         },
         {
@@ -1034,7 +1034,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 15
           },
-          "id": "duplication-1774846201904-wexl5lhwkwe",
+          "id": "duplication-1775119885841-zcv388llp9",
           "autoFixable": false
         },
         {
@@ -1046,7 +1046,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeAuthModeratorLogin.ts",
             "line": 37
           },
-          "id": "duplication-1774846201904-yog1w1ti4v",
+          "id": "duplication-1775119885841-3l256t03bru",
           "autoFixable": false
         },
         {
@@ -1058,7 +1058,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeAuthModeratorLogin.ts",
             "line": 76
           },
-          "id": "duplication-1774846201904-qj2fs8tgbbq",
+          "id": "duplication-1775119885841-l9rqfu8ncw",
           "autoFixable": false
         },
         {
@@ -1070,7 +1070,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeAuthModeratorLogin.ts",
             "line": 77
           },
-          "id": "duplication-1774846201904-c4ithzhvmmw",
+          "id": "duplication-1775119885841-eeww3c2j2ku",
           "autoFixable": false
         },
         {
@@ -1082,7 +1082,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 38
           },
-          "id": "duplication-1774846201904-lh2iwogxnlo",
+          "id": "duplication-1775119885852-cnk2tzqkqsq",
           "autoFixable": false
         },
         {
@@ -1094,7 +1094,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 39
           },
-          "id": "duplication-1774846201904-gybh28v0ry9",
+          "id": "duplication-1775119885852-w3kfwb9m18",
           "autoFixable": false
         },
         {
@@ -1106,7 +1106,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 40
           },
-          "id": "duplication-1774846201904-v77jvj9uuyl",
+          "id": "duplication-1775119885852-in3qte5rthk",
           "autoFixable": false
         },
         {
@@ -1118,7 +1118,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 41
           },
-          "id": "duplication-1774846201904-5vj4b6vifb3",
+          "id": "duplication-1775119885852-hen1zz1ytc",
           "autoFixable": false
         },
         {
@@ -1130,7 +1130,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 42
           },
-          "id": "duplication-1774846201904-hl93cm0gnnc",
+          "id": "duplication-1775119885852-jtovigit0p",
           "autoFixable": false
         },
         {
@@ -1142,7 +1142,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 43
           },
-          "id": "duplication-1774846201904-f0ap7snzdjh",
+          "id": "duplication-1775119885852-2w68nfpau9z",
           "autoFixable": false
         },
         {
@@ -1154,7 +1154,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 44
           },
-          "id": "duplication-1774846201904-5rugnw1e0ir",
+          "id": "duplication-1775119885852-y27nh0ram8k",
           "autoFixable": false
         },
         {
@@ -1166,7 +1166,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 45
           },
-          "id": "duplication-1774846201904-9s55cbmbs1",
+          "id": "duplication-1775119885852-878b4bcjys",
           "autoFixable": false
         },
         {
@@ -1178,7 +1178,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 59
           },
-          "id": "duplication-1774846201904-ri60ai8pkp",
+          "id": "duplication-1775119885852-clf5oxfzm7t",
           "autoFixable": false
         },
         {
@@ -1190,7 +1190,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 60
           },
-          "id": "duplication-1774846201904-qrvfkc17x2",
+          "id": "duplication-1775119885852-a924p4lq1yo",
           "autoFixable": false
         },
         {
@@ -1202,7 +1202,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 61
           },
-          "id": "duplication-1774846201904-iy4ih7y24j",
+          "id": "duplication-1775119885852-1w5a17q75m3",
           "autoFixable": false
         },
         {
@@ -1214,7 +1214,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 62
           },
-          "id": "duplication-1774846201904-ywyq3a9vf2m",
+          "id": "duplication-1775119885852-br26tf3b4js",
           "autoFixable": false
         },
         {
@@ -1226,7 +1226,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 63
           },
-          "id": "duplication-1774846201904-fza6x3v0qg",
+          "id": "duplication-1775119885852-z1bzggiycu",
           "autoFixable": false
         },
         {
@@ -1238,7 +1238,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 64
           },
-          "id": "duplication-1774846201904-pinj9pgfy8",
+          "id": "duplication-1775119885852-dka8wbqanxe",
           "autoFixable": false
         },
         {
@@ -1250,7 +1250,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 65
           },
-          "id": "duplication-1774846201904-l7ak6wfqia",
+          "id": "duplication-1775119885852-2o4pfc99m15",
           "autoFixable": false
         },
         {
@@ -1262,7 +1262,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 66
           },
-          "id": "duplication-1774846201904-69tki1rp7ww",
+          "id": "duplication-1775119885852-talb1y4q4qn",
           "autoFixable": false
         },
         {
@@ -1274,7 +1274,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 67
           },
-          "id": "duplication-1774846201904-bfm7nm3fd8k",
+          "id": "duplication-1775119885852-dgc7hte0v5",
           "autoFixable": false
         },
         {
@@ -1286,7 +1286,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 68
           },
-          "id": "duplication-1774846201904-8c42qlzq8d",
+          "id": "duplication-1775119885852-z1h080t5q5m",
           "autoFixable": false
         },
         {
@@ -1298,7 +1298,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 69
           },
-          "id": "duplication-1774846201904-vt24ve8alfh",
+          "id": "duplication-1775119885852-hhr2p3zegi",
           "autoFixable": false
         },
         {
@@ -1310,7 +1310,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 70
           },
-          "id": "duplication-1774846201904-2ycpma9jt6a",
+          "id": "duplication-1775119885852-rshu3pwu939",
           "autoFixable": false
         },
         {
@@ -1322,7 +1322,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 71
           },
-          "id": "duplication-1774846201904-5p7042ym57k",
+          "id": "duplication-1775119885852-sgs5n5z45r",
           "autoFixable": false
         },
         {
@@ -1334,7 +1334,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 72
           },
-          "id": "duplication-1774846201904-c3vymt8hhd6",
+          "id": "duplication-1775119885852-yfsu1qusuu",
           "autoFixable": false
         },
         {
@@ -1346,7 +1346,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 73
           },
-          "id": "duplication-1774846201904-dmemv4tl1ag",
+          "id": "duplication-1775119885852-ibsssnjqr9m",
           "autoFixable": false
         },
         {
@@ -1358,7 +1358,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 67
           },
-          "id": "duplication-1774846201904-nblhksit4sd",
+          "id": "duplication-1775119885852-tzpp6creew9",
           "autoFixable": false
         },
         {
@@ -1370,7 +1370,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 75
           },
-          "id": "duplication-1774846201904-62jb0yoygl",
+          "id": "duplication-1775119885852-u3efxt3ipg",
           "autoFixable": false
         },
         {
@@ -1382,7 +1382,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 76
           },
-          "id": "duplication-1774846201904-oogwbrveln",
+          "id": "duplication-1775119885852-p8eg69426ji",
           "autoFixable": false
         },
         {
@@ -1394,7 +1394,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 77
           },
-          "id": "duplication-1774846201904-4w2sphbbo44",
+          "id": "duplication-1775119885852-1jnu90ab6ao",
           "autoFixable": false
         },
         {
@@ -1406,7 +1406,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 78
           },
-          "id": "duplication-1774846201904-bt89qsq9d65",
+          "id": "duplication-1775119885852-fb15tqowzf",
           "autoFixable": false
         },
         {
@@ -1418,7 +1418,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 79
           },
-          "id": "duplication-1774846201904-pdx320f67i",
+          "id": "duplication-1775119885852-6izaqfgxz",
           "autoFixable": false
         },
         {
@@ -1430,7 +1430,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 80
           },
-          "id": "duplication-1774846201904-ctzrnmdupg",
+          "id": "duplication-1775119885852-z407z9wzmel",
           "autoFixable": false
         },
         {
@@ -1442,7 +1442,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
             "line": 29
           },
-          "id": "duplication-1774846201904-qt9w16vk6v9",
+          "id": "duplication-1775119885852-da3djtwctvj",
           "autoFixable": false
         },
         {
@@ -1454,7 +1454,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
             "line": 30
           },
-          "id": "duplication-1774846201904-ak6vvfg8cqo",
+          "id": "duplication-1775119885852-zqno0i4383c",
           "autoFixable": false
         },
         {
@@ -1466,7 +1466,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
             "line": 31
           },
-          "id": "duplication-1774846201904-l95k4hy671m",
+          "id": "duplication-1775119885852-xpnxplb14i",
           "autoFixable": false
         },
         {
@@ -1478,7 +1478,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
             "line": 32
           },
-          "id": "duplication-1774846201904-mvoywy352se",
+          "id": "duplication-1775119885852-xv5v270li8s",
           "autoFixable": false
         },
         {
@@ -1490,7 +1490,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 74
           },
-          "id": "duplication-1774846201904-beq01jsj3me",
+          "id": "duplication-1775119885852-otrns824ptr",
           "autoFixable": false
         },
         {
@@ -1502,7 +1502,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 76
           },
-          "id": "duplication-1774846201904-8zhw8337m09",
+          "id": "duplication-1775119885852-5txmqyolmq9",
           "autoFixable": false
         },
         {
@@ -1514,7 +1514,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 77
           },
-          "id": "duplication-1774846201904-wox9ncnt0mp",
+          "id": "duplication-1775119885852-3bs2e9u5vf3",
           "autoFixable": false
         },
         {
@@ -1526,7 +1526,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 78
           },
-          "id": "duplication-1774846201904-mjvhfm1291",
+          "id": "duplication-1775119885852-w78tgzbgoj",
           "autoFixable": false
         },
         {
@@ -1538,7 +1538,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 79
           },
-          "id": "duplication-1774846201904-b61nhjycram",
+          "id": "duplication-1775119885852-ervneb9nr2b",
           "autoFixable": false
         },
         {
@@ -1550,7 +1550,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 80
           },
-          "id": "duplication-1774846201904-jyrvqaf9d3",
+          "id": "duplication-1775119885852-ehsk0gqa2y",
           "autoFixable": false
         },
         {
@@ -1562,7 +1562,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 81
           },
-          "id": "duplication-1774846201904-jyorsecgw2",
+          "id": "duplication-1775119885852-ehvix7r6xqa",
           "autoFixable": false
         },
         {
@@ -1574,7 +1574,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 82
           },
-          "id": "duplication-1774846201904-hjxq7u3b1nv",
+          "id": "duplication-1775119885852-z4y000j5bdg",
           "autoFixable": false
         },
         {
@@ -1586,7 +1586,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeMemberFeedsPopular.ts",
             "line": 132
           },
-          "id": "duplication-1774846201904-jkyicqb3ffb",
+          "id": "duplication-1775119885852-eyoxtagfcfa",
           "autoFixable": false
         },
         {
@@ -1598,7 +1598,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeOwnerPostsPostIdCommentsThread.ts",
             "line": 19
           },
-          "id": "duplication-1774846201904-x5hiz4lggg",
+          "id": "duplication-1775119885852-zafipgvan3",
           "autoFixable": false
         },
         {
@@ -1610,7 +1610,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 20
           },
-          "id": "duplication-1774846201904-23exisost87h",
+          "id": "duplication-1775119885852-wdzlg9eqtyq",
           "autoFixable": false
         },
         {
@@ -1622,7 +1622,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 21
           },
-          "id": "duplication-1774846201904-oknc6a9a2xd",
+          "id": "duplication-1775119885852-7squ0a0wz0g",
           "autoFixable": false
         },
         {
@@ -1634,7 +1634,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 22
           },
-          "id": "duplication-1774846201904-kfwoc2pxa5r",
+          "id": "duplication-1775119885852-zimon8sijd",
           "autoFixable": false
         },
         {
@@ -1646,7 +1646,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 23
           },
-          "id": "duplication-1774846201904-8bq9iz0644b",
+          "id": "duplication-1775119885852-h9de7rmni4o",
           "autoFixable": false
         },
         {
@@ -1658,7 +1658,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 24
           },
-          "id": "duplication-1774846201904-l4bifet5m0o",
+          "id": "duplication-1775119885852-dp5rnahn4rm",
           "autoFixable": false
         },
         {
@@ -1670,7 +1670,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 25
           },
-          "id": "duplication-1774846201904-i5ehbx188md",
+          "id": "duplication-1775119885852-uzmy44s4ef",
           "autoFixable": false
         },
         {
@@ -1682,7 +1682,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 26
           },
-          "id": "duplication-1774846201904-41slbjvtau",
+          "id": "duplication-1775119885852-ryx0xpnx979",
           "autoFixable": false
         },
         {
@@ -1694,7 +1694,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 27
           },
-          "id": "duplication-1774846201904-odnlxka2jc",
+          "id": "duplication-1775119885852-ubpi53d049",
           "autoFixable": false
         },
         {
@@ -1706,7 +1706,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 28
           },
-          "id": "duplication-1774846201904-kji3kvl6ien",
+          "id": "duplication-1775119885852-d3gblh1eh9j",
           "autoFixable": false
         },
         {
@@ -1718,7 +1718,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 29
           },
-          "id": "duplication-1774846201904-xsxhl00erh8",
+          "id": "duplication-1775119885852-qo341167oue",
           "autoFixable": false
         },
         {
@@ -1730,7 +1730,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 16
           },
-          "id": "duplication-1774846201904-9afh2jzfk0a",
+          "id": "duplication-1775119885852-ihby7nm7728",
           "autoFixable": false
         },
         {
@@ -1742,7 +1742,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 17
           },
-          "id": "duplication-1774846201904-394vckheetn",
+          "id": "duplication-1775119885852-97u2jw27o7g",
           "autoFixable": false
         },
         {
@@ -1754,7 +1754,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 18
           },
-          "id": "duplication-1774846201904-onq67m1tre",
+          "id": "duplication-1775119885852-ih6o667d0c",
           "autoFixable": false
         },
         {
@@ -1766,7 +1766,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 19
           },
-          "id": "duplication-1774846201904-1rgrv0l6xkk",
+          "id": "duplication-1775119885852-e5p9kpwtgol",
           "autoFixable": false
         },
         {
@@ -1778,7 +1778,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 20
           },
-          "id": "duplication-1774846201904-49lzy39874",
+          "id": "duplication-1775119885852-mega3wd73fr",
           "autoFixable": false
         },
         {
@@ -1790,7 +1790,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 21
           },
-          "id": "duplication-1774846201904-kuic59iqauf",
+          "id": "duplication-1775119885852-hqgejxatn3l",
           "autoFixable": false
         },
         {
@@ -1802,7 +1802,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 22
           },
-          "id": "duplication-1774846201904-pj4rz02rld",
+          "id": "duplication-1775119885852-yayx7e5hcw",
           "autoFixable": false
         },
         {
@@ -1814,7 +1814,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 23
           },
-          "id": "duplication-1774846201904-o7hkzn0brem",
+          "id": "duplication-1775119885852-hpnqo7lncr",
           "autoFixable": false
         },
         {
@@ -1826,7 +1826,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 24
           },
-          "id": "duplication-1774846201904-kdwk9y6yr8c",
+          "id": "duplication-1775119885852-rk2p06bjupd",
           "autoFixable": false
         },
         {
@@ -1838,7 +1838,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 25
           },
-          "id": "duplication-1774846201904-9o9zs4ajd2h",
+          "id": "duplication-1775119885852-p3bgtdlr5wg",
           "autoFixable": false
         },
         {
@@ -1850,7 +1850,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 26
           },
-          "id": "duplication-1774846201904-uik6lv25t28",
+          "id": "duplication-1775119885852-vvplr967qc",
           "autoFixable": false
         },
         {
@@ -1862,7 +1862,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 27
           },
-          "id": "duplication-1774846201904-fjubiys4yks",
+          "id": "duplication-1775119885852-i4a5tlceoen",
           "autoFixable": false
         },
         {
@@ -1874,7 +1874,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 28
           },
-          "id": "duplication-1774846201904-hk4yklgn1lf",
+          "id": "duplication-1775119885852-rllchqs9c0a",
           "autoFixable": false
         },
         {
@@ -1886,7 +1886,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 29
           },
-          "id": "duplication-1774846201904-r0rn34eisji",
+          "id": "duplication-1775119885852-k3i3q0tbyp7",
           "autoFixable": false
         }
       ]
@@ -1903,7 +1903,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachment-references/RedditlikeAttachment_referencesController.ts",
             "line": 10
           },
-          "id": "naming-1774846201905-xdtoszcc7v",
+          "id": "naming-1775119885854-tvbp5nk0r2",
           "autoFixable": false
         },
         {
@@ -1915,7 +1915,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
             "line": 12
           },
-          "id": "naming-1774846201906-c8eiuhjnu4a",
+          "id": "naming-1775119885854-28e5dntwkfe",
           "autoFixable": false
         },
         {
@@ -1927,7 +1927,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/subscribed-communities/RedditlikeMemberSubscribed_communitiesController.ts",
             "line": 11
           },
-          "id": "naming-1774846201907-ajayfffjff",
+          "id": "naming-1775119885854-vkwjw38bzs",
           "autoFixable": false
         },
         {
@@ -1939,7 +1939,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/password-resets/RedditlikeMemberPassword_resetsController.ts",
             "line": 13
           },
-          "id": "naming-1774846201908-6q5dzwss9jv",
+          "id": "naming-1775119885855-jif5878t24h",
           "autoFixable": false
         },
         {
@@ -1951,7 +1951,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachment-references/RedditlikeMemberAttachment_referencesController.ts",
             "line": 11
           },
-          "id": "naming-1774846201908-4qcbnbk7mkx",
+          "id": "naming-1775119885856-amspde7w8yh",
           "autoFixable": false
         },
         {
@@ -1963,19 +1963,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/generate-thumbnails/RedditlikeOwnerAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "naming-1774846201910-whajrqk6w7e",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"RedditlikeOwnerAttachmentsBatch_cleanupController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/batch-cleanup/RedditlikeOwnerAttachmentsBatch_cleanupController.ts",
-            "line": 10
-          },
-          "id": "naming-1774846201910-l2w7k94nea",
+          "id": "naming-1775119885858-mjwbg7csrl8",
           "autoFixable": false
         },
         {
@@ -1987,7 +1975,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access-logs/RedditlikeOwnerAttachmentsAccess_logsController.ts",
             "line": 12
           },
-          "id": "naming-1774846201911-kw2kpdz15vh",
+          "id": "naming-1775119885858-rqdqj7rt8x",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeOwnerAttachmentsBatch_cleanupController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/batch-cleanup/RedditlikeOwnerAttachmentsBatch_cleanupController.ts",
+            "line": 10
+          },
+          "id": "naming-1775119885858-qy3j336l7qn",
           "autoFixable": false
         },
         {
@@ -1999,7 +1999,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/my-activity/RedditlikeOwnerAudit_logsMy_activityController.ts",
             "line": 11
           },
-          "id": "naming-1774846201911-30zhsa63uyd",
+          "id": "naming-1775119885858-cihfb8iw1oh",
           "autoFixable": false
         },
         {
@@ -2011,7 +2011,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/generate-thumbnails/RedditlikeModeratorAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "naming-1774846201911-vur9mj8p0v",
+          "id": "naming-1775119885859-floo0rgqxfh",
           "autoFixable": false
         },
         {
@@ -2023,7 +2023,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access-logs/RedditlikeModeratorAttachmentsAccess_logsController.ts",
             "line": 12
           },
-          "id": "naming-1774846201913-6dksdfzjvsp",
+          "id": "naming-1775119885859-rpzto0ri5e9",
           "autoFixable": false
         },
         {
@@ -2035,7 +2035,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/my-vote/RedditlikeMemberPostsMy_voteController.ts",
             "line": 12
           },
-          "id": "naming-1774846201912-t4hmnfot4rh",
+          "id": "naming-1775119885859-i2q40mqix9m",
           "autoFixable": false
         },
         {
@@ -2047,7 +2047,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/generate-thumbnails/RedditlikeMemberAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "naming-1774846201913-lk0u14haol",
+          "id": "naming-1775119885860-ko37r4v2gpk",
           "autoFixable": false
         },
         {
@@ -2059,7 +2059,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/my-vote/RedditlikeMemberCommentsMy_voteController.ts",
             "line": 12
           },
-          "id": "naming-1774846201913-4pypyih61ct",
+          "id": "naming-1775119885860-csr0y6y8vl",
           "autoFixable": false
         }
       ]
@@ -2077,7 +2077,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/posts/RedditlikePostsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201943-qdudo6if2s",
+          "id": "jsdoc-1775119885886-8ef28qpjiy4",
           "autoFixable": false
         },
         {
@@ -2089,7 +2089,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderators/RedditlikeModeratorsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201942-n5qtqbm103j",
+          "id": "jsdoc-1775119885887-0xgemeyfpmi",
           "autoFixable": false
         },
         {
@@ -2101,7 +2101,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owners/RedditlikeOwnersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201943-deum18qlg3d",
+          "id": "jsdoc-1775119885887-yc6af4bsib",
           "autoFixable": false
         },
         {
@@ -2113,7 +2113,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/members/RedditlikeMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201942-v94tqjs59w",
+          "id": "jsdoc-1775119885886-nbdgw33g6yj",
           "autoFixable": false
         },
         {
@@ -2125,7 +2125,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guests/RedditlikeGuestsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201942-0ydgqy4li0v",
+          "id": "jsdoc-1775119885887-b0p37l4dlwo",
           "autoFixable": false
         },
         {
@@ -2137,7 +2137,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachments/RedditlikeAttachmentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201943-r2l67a3qiu",
+          "id": "jsdoc-1775119885887-fxzyzmjbxuv",
           "autoFixable": false
         },
         {
@@ -2149,7 +2149,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/communities/RedditlikeCommunitiesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201943-ol8vxf11wx",
+          "id": "jsdoc-1775119885887-ocgj9cg61wb",
           "autoFixable": false
         },
         {
@@ -2161,7 +2161,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachment-references/RedditlikeAttachment_referencesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201943-52tte93wygr",
+          "id": "jsdoc-1775119885887-h85ltujjetu",
           "autoFixable": false
         },
         {
@@ -2173,7 +2173,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/posts/snapshots/RedditlikePostsSnapshotsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201944-yjxw97gtowi",
+          "id": "jsdoc-1775119885888-ceiolnksxn",
           "autoFixable": false
         },
         {
@@ -2185,7 +2185,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/posts/comments/RedditlikePostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201944-o5xvuww44xm",
+          "id": "jsdoc-1775119885888-5mt5gl7wr5",
           "autoFixable": false
         },
         {
@@ -2197,31 +2197,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/reports/RedditlikeOwnerReportsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201944-5g3ekhxzphh",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeOwnerAudit_logsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846201944-2kthlmlw7m8",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeOwnerCommunitiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/communities/RedditlikeOwnerCommunitiesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846201945-xiuzi2njzen",
+          "id": "jsdoc-1775119885888-aqy7gocebvq",
           "autoFixable": false
         },
         {
@@ -2233,7 +2209,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/moderators/RedditlikeOwnerModeratorsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846201945-w5dz6u9b8fp",
+          "id": "jsdoc-1775119885889-cdd0c9ky7ls",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/communities/RedditlikeOwnerCommunitiesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775119885888-iyhd6ikae5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAudit_logsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775119885888-eg038iz58v",
           "autoFixable": false
         },
         {
@@ -2245,7 +2245,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/reports/RedditlikeModeratorReportsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846201945-s6qgma8xxx",
+          "id": "jsdoc-1775119885889-5ebpgvje4ov",
           "autoFixable": false
         },
         {
@@ -2257,7 +2257,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/moderators/RedditlikeModeratorModeratorsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846201946-cp094jwp2gc",
+          "id": "jsdoc-1775119885889-bjlj4am10jb",
           "autoFixable": false
         },
         {
@@ -2269,7 +2269,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/RedditlikeModeratorPostsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846201946-m8pp1o8p6ns",
+          "id": "jsdoc-1775119885890-sm3mh5rpa8b",
           "autoFixable": false
         },
         {
@@ -2281,7 +2281,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/subscribed-communities/RedditlikeMemberSubscribed_communitiesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201945-ar98y412uzf",
+          "id": "jsdoc-1775119885890-xb19k062q39",
           "autoFixable": false
         },
         {
@@ -2293,7 +2293,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/subscriptions/RedditlikeMemberSubscriptionsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201946-2adwsiu6c1i",
+          "id": "jsdoc-1775119885890-rfbckcponl",
           "autoFixable": false
         },
         {
@@ -2305,7 +2305,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/reports/RedditlikeMemberReportsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201946-pti7a6m2ktm",
+          "id": "jsdoc-1775119885890-stt6dhbx2u",
           "autoFixable": false
         },
         {
@@ -2317,31 +2317,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/profile/RedditlikeMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201947-6scrbzkp88y",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPassword_resetsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/password-resets/RedditlikeMemberPassword_resetsController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774846201946-9j3ghox58h",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846201947-4fksqrts58p",
+          "id": "jsdoc-1775119885890-5syct23fiqr",
           "autoFixable": false
         },
         {
@@ -2353,7 +2329,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/me/RedditlikeMemberMeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201947-txp8avk4d9h",
+          "id": "jsdoc-1775119885890-dsd9rcctylf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/password-resets/RedditlikeMemberPassword_resetsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1775119885890-0u1qzfp0ys4n",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775119885891-weeobzb4bz",
           "autoFixable": false
         },
         {
@@ -2365,19 +2365,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/communities/RedditlikeMemberCommunitiesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846201948-gxeoztnf7l",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberAttachment_referencesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachment-references/RedditlikeMemberAttachment_referencesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846201947-o1qzkdrycm",
+          "id": "jsdoc-1775119885891-qm5697uodp",
           "autoFixable": false
         },
         {
@@ -2389,7 +2377,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/RedditlikeMemberAttachmentsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201948-vmxka0kzpja",
+          "id": "jsdoc-1775119885891-u49kxb94gdd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberAttachment_referencesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachment-references/RedditlikeMemberAttachment_referencesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775119885890-6df9r9lakd8",
           "autoFixable": false
         },
         {
@@ -2401,7 +2401,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/owner/RedditlikeAuthOwnerController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201948-t4v7s443kzm",
+          "id": "jsdoc-1775119885891-h9r0fzezuwf",
           "autoFixable": false
         },
         {
@@ -2413,7 +2413,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/moderator/RedditlikeAuthModeratorController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201948-ks4rww3wdyk",
+          "id": "jsdoc-1775119885892-2sgwmniibr5",
           "autoFixable": false
         },
         {
@@ -2425,7 +2425,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/member/RedditlikeAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201949-bbbx99s9muo",
+          "id": "jsdoc-1775119885892-fo1bezmf7c9",
           "autoFixable": false
         },
         {
@@ -2437,43 +2437,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachments/thumbnails/RedditlikeAttachmentsThumbnailsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201949-tax4sya5o",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberCommentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/RedditlikeMemberCommentsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846201949-qzv960tt0ko",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/guest/RedditlikeAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846201949-5oyd4auh5wx",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeGuestSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/sessions/RedditlikeGuestSessionsController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774846201950-pfnqel3xwmb",
+          "id": "jsdoc-1775119885892-nnhlbysf2v",
           "autoFixable": false
         },
         {
@@ -2485,7 +2449,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/comments/snapshots/RedditlikeCommentsSnapshotsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201950-52rpaxm9gtq",
+          "id": "jsdoc-1775119885892-n8g7c8apzap",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/RedditlikeMemberCommentsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775119885892-oujxlkxs2mb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/guest/RedditlikeAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1775119885892-pbwaypxbg7s",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/sessions/RedditlikeGuestSessionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1775119885893-6w4dj0i44i2",
           "autoFixable": false
         },
         {
@@ -2497,7 +2497,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/sessions/me/RedditlikeOwnerSessionsMeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201950-arpziky4bma",
+          "id": "jsdoc-1775119885897-16lpd50kxca",
           "autoFixable": false
         },
         {
@@ -2509,31 +2509,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/generate-thumbnails/RedditlikeOwnerAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201950-qxoddeldx9k",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeOwnerAttachmentsBatch_cleanupController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/batch-cleanup/RedditlikeOwnerAttachmentsBatch_cleanupController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846201950-pcoa4yrw189",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeOwnerAttachmentsAccessController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access/RedditlikeOwnerAttachmentsAccessController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846201951-fjsac0pofa9",
+          "id": "jsdoc-1775119885893-515ciqewu47",
           "autoFixable": false
         },
         {
@@ -2545,7 +2521,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access-logs/RedditlikeOwnerAttachmentsAccess_logsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846201951-nzuqom4n6s",
+          "id": "jsdoc-1775119885893-sxhb69r6dok",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAttachmentsBatch_cleanupController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/batch-cleanup/RedditlikeOwnerAttachmentsBatch_cleanupController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775119885893-bxb0l07ai2t",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAttachmentsAccessController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access/RedditlikeOwnerAttachmentsAccessController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775119885893-l3izsrco92",
           "autoFixable": false
         },
         {
@@ -2557,7 +2557,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/sessions/me/RedditlikeModeratorSessionsMeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201951-5q2o6mkv47n",
+          "id": "jsdoc-1775119885893-4ky8t7x2dwd",
           "autoFixable": false
         },
         {
@@ -2569,7 +2569,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/my-activity/RedditlikeOwnerAudit_logsMy_activityController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201951-pmyecn4rp3",
+          "id": "jsdoc-1775119885893-ka09mqkngk",
           "autoFixable": false
         },
         {
@@ -2581,7 +2581,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/reports/snapshots/RedditlikeModeratorReportsSnapshotsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201951-dftdrbl8xun",
+          "id": "jsdoc-1775119885893-5lc5f32csb",
           "autoFixable": false
         },
         {
@@ -2593,7 +2593,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201951-2an775i5vij",
+          "id": "jsdoc-1775119885894-64ljhmvlie5",
           "autoFixable": false
         },
         {
@@ -2605,7 +2605,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/generate-thumbnails/RedditlikeModeratorAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201952-ja3fj8ay94n",
+          "id": "jsdoc-1775119885894-ap629fazh6",
           "autoFixable": false
         },
         {
@@ -2617,7 +2617,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access-logs/RedditlikeModeratorAttachmentsAccess_logsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846201952-iu7rsfoh9af",
+          "id": "jsdoc-1775119885894-7riukk9l0u3",
           "autoFixable": false
         },
         {
@@ -2629,7 +2629,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access/RedditlikeModeratorAttachmentsAccessController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201952-pfobm2eqbch",
+          "id": "jsdoc-1775119885894-pdfkr7tvlp",
           "autoFixable": false
         },
         {
@@ -2641,7 +2641,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/sessions/me/RedditlikeMemberSessionsMeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201952-bc32l3rsix",
+          "id": "jsdoc-1775119885894-v0d0n9oxpc",
           "autoFixable": false
         },
         {
@@ -2653,7 +2653,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/votes/RedditlikeMemberPostsVotesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201952-ea4bekzkzrf",
+          "id": "jsdoc-1775119885894-tuykuiq0z7s",
           "autoFixable": false
         },
         {
@@ -2665,7 +2665,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/my-vote/RedditlikeMemberPostsMy_voteController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846201952-3s7fc0xiwuo",
+          "id": "jsdoc-1775119885895-socyf5j2y8s",
           "autoFixable": false
         },
         {
@@ -2677,7 +2677,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774846201953-x6mzptrqqpb",
+          "id": "jsdoc-1775119885896-0qijp654dfe",
           "autoFixable": false
         },
         {
@@ -2689,7 +2689,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/popular/RedditlikeMemberFeedsPopularController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201953-lb6ge12v94k",
+          "id": "jsdoc-1775119885894-16lq9x02t97",
           "autoFixable": false
         },
         {
@@ -2701,7 +2701,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/home/RedditlikeMemberFeedsHomeController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201953-7ziccpex6rn",
+          "id": "jsdoc-1775119885895-3j16v84tx1g",
           "autoFixable": false
         },
         {
@@ -2713,7 +2713,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/communities/subscriptions/RedditlikeMemberCommunitiesSubscriptionsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201953-ngjlv5y7c48",
+          "id": "jsdoc-1775119885895-xrokfah1rff",
           "autoFixable": false
         },
         {
@@ -2725,7 +2725,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/communities/subscription/RedditlikeMemberCommunitiesSubscriptionController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201954-xod28eyhffj",
+          "id": "jsdoc-1775119885895-2z4idv0vaok",
           "autoFixable": false
         },
         {
@@ -2737,7 +2737,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/generate-thumbnails/RedditlikeMemberAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201954-zzrlhnds59c",
+          "id": "jsdoc-1775119885895-n5j0fy65vtq",
           "autoFixable": false
         },
         {
@@ -2749,7 +2749,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/access/RedditlikeMemberAttachmentsAccessController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201954-jtu8rhepa",
+          "id": "jsdoc-1775119885896-hwhy20dwgu4",
           "autoFixable": false
         },
         {
@@ -2761,7 +2761,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/votes/RedditlikeMemberCommentsVotesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201960-bhnb2fs3bww",
+          "id": "jsdoc-1775119885896-17j6itpnw78",
           "autoFixable": false
         },
         {
@@ -2773,31 +2773,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/my-vote/RedditlikeMemberCommentsMy_voteController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846201960-5c5xoxw559p",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeGuestSessionsMeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/sessions/me/RedditlikeGuestSessionsMeController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846201960-h4wohb78ac5",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeGuestFeedsPopularController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/feeds/popular/RedditlikeGuestFeedsPopularController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846201960-n0zmv7txmob",
+          "id": "jsdoc-1775119885896-ydp84mkno1f",
           "autoFixable": false
         },
         {
@@ -2809,7 +2785,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/attachments/access/RedditlikeGuestAttachmentsAccessController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201961-pfnb9n4xklk",
+          "id": "jsdoc-1775119885896-2xpcdyx0w6g",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestSessionsMeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/sessions/me/RedditlikeGuestSessionsMeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775119885896-cw0t4pp0i8b",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestFeedsPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/feeds/popular/RedditlikeGuestFeedsPopularController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775119885896-s8bcuvlsfrb",
           "autoFixable": false
         },
         {
@@ -2821,7 +2821,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201961-uor9wwwg9hf",
+          "id": "jsdoc-1775119885897-2lpgery1udl",
           "autoFixable": false
         },
         {
@@ -2833,7 +2833,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/posts/comments/sorted/RedditlikeOwnerPostsCommentsSortedController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201961-3axjc9isj9y",
+          "id": "jsdoc-1775119885897-fj76xsyukp",
           "autoFixable": false
         },
         {
@@ -2845,7 +2845,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/communities/reports/pending/RedditlikeOwnerCommunitiesReportsPendingController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201961-bhu0fnu854r",
+          "id": "jsdoc-1775119885898-3qvs97eqbwn",
           "autoFixable": false
         },
         {
@@ -2857,7 +2857,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/comments/sorted/RedditlikeModeratorPostsCommentsSortedController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201961-npqwj6pecqg",
+          "id": "jsdoc-1775119885897-eqk3cd52azc",
           "autoFixable": false
         },
         {
@@ -2869,7 +2869,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/communities/reports/pending/RedditlikeModeratorCommunitiesReportsPendingController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201961-imds7rjj30g",
+          "id": "jsdoc-1775119885897-etqil2uwvbt",
           "autoFixable": false
         },
         {
@@ -2881,7 +2881,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/comments/sorted/RedditlikeMemberPostsCommentsSortedController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201962-0q02tk55frze",
+          "id": "jsdoc-1775119885897-zh55u2bcrp",
           "autoFixable": false
         },
         {
@@ -2893,7 +2893,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/posts/comments/thread/RedditlikeGuestPostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846201961-s4hajzc5hri",
+          "id": "jsdoc-1775119885897-yoptk9x97tc",
           "autoFixable": false
         },
         {
@@ -2905,7 +2905,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/posts/comments/sorted/RedditlikeGuestPostsCommentsSortedController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846201961-tkf3t0yco89",
+          "id": "jsdoc-1775119885897-lw9qr1h07y",
           "autoFixable": false
         }
       ]
@@ -2924,7 +2924,7 @@
             "file": "src/api/structures/IRedditLikeReport.ts",
             "line": 25
           },
-          "id": "completeness-1774846201977-rtqv598r3gd",
+          "id": "completeness-1775119885915-rmek04b3p4",
           "autoFixable": false
         },
         {
@@ -2936,7 +2936,7 @@
             "file": "src/api/structures/IRedditLikeReport.ts",
             "line": 33
           },
-          "id": "completeness-1774846201977-yplzu8hulg",
+          "id": "completeness-1775119885915-f4soaax5q39",
           "autoFixable": false
         },
         {
@@ -2948,7 +2948,7 @@
             "file": "src/api/structures/IRedditLikePostSnapshot.ts",
             "line": 128
           },
-          "id": "completeness-1774846201977-6buefxahvcb",
+          "id": "completeness-1775119885915-d8puf5p9j56",
           "autoFixable": false
         },
         {
@@ -2960,7 +2960,7 @@
             "file": "src/api/structures/IRedditLikePostImageContent.ts",
             "line": 21
           },
-          "id": "completeness-1774846201977-aubtfl5nxk8",
+          "id": "completeness-1775119885915-m3oot3if6g",
           "autoFixable": false
         },
         {
@@ -2972,7 +2972,7 @@
             "file": "src/api/structures/IRedditLikePostImageContent.ts",
             "line": 29
           },
-          "id": "completeness-1774846201977-lhzk5k4gzgd",
+          "id": "completeness-1775119885915-g9ipt4m5kg",
           "autoFixable": false
         },
         {
@@ -2984,7 +2984,7 @@
             "file": "src/api/structures/IRedditLikePost.ts",
             "line": 316
           },
-          "id": "completeness-1774846201978-p2lxpyjhmuq",
+          "id": "completeness-1775119885915-0j38w1he40yn",
           "autoFixable": false
         },
         {
@@ -2996,7 +2996,7 @@
             "file": "src/api/structures/IRedditLikeOwnerAuditLog.ts",
             "line": 77
           },
-          "id": "completeness-1774846201977-20fh1li6mw6",
+          "id": "completeness-1775119885915-fwh077k9lpk",
           "autoFixable": false
         },
         {
@@ -3008,7 +3008,7 @@
             "file": "src/api/structures/IRedditLikeModerator.ts",
             "line": 31
           },
-          "id": "completeness-1774846201977-275xrjemlxj",
+          "id": "completeness-1775119885915-0ac4zxu9bfno",
           "autoFixable": false
         },
         {
@@ -3020,7 +3020,7 @@
             "file": "src/api/structures/IRedditLikeModerator.ts",
             "line": 39
           },
-          "id": "completeness-1774846201977-ginpje7gfzj",
+          "id": "completeness-1775119885915-ke5bau5r43c",
           "autoFixable": false
         },
         {
@@ -3032,7 +3032,7 @@
             "file": "src/api/structures/IRedditLikeCommunitySubscription.ts",
             "line": 110
           },
-          "id": "completeness-1774846201978-nvh6gfty45j",
+          "id": "completeness-1775119885916-qnjq0wsj3o9",
           "autoFixable": false
         },
         {
@@ -3044,7 +3044,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 215
           },
-          "id": "completeness-1774846201978-rkpr89ata6j",
+          "id": "completeness-1775119885916-odbd1ncp8r",
           "autoFixable": false
         },
         {
@@ -3056,7 +3056,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 223
           },
-          "id": "completeness-1774846201978-ptkfdp7lh2c",
+          "id": "completeness-1775119885916-2aqfrpi6dtu",
           "autoFixable": false
         },
         {
@@ -3068,7 +3068,7 @@
             "file": "src/api/structures/IRedditLikeComment.ts",
             "line": 235
           },
-          "id": "completeness-1774846201978-itgekvmbjbl",
+          "id": "completeness-1775119885916-k75qjrobfw",
           "autoFixable": false
         },
         {
@@ -3080,7 +3080,7 @@
             "file": "src/api/structures/IRedditLikeAttachmentAccessLog.ts",
             "line": 240
           },
-          "id": "completeness-1774846201978-t17w04co5wa",
+          "id": "completeness-1775119885917-n4vzmf7wp5s",
           "autoFixable": false
         },
         {
@@ -3092,7 +3092,7 @@
             "file": "src/api/structures/IRedditLikeAttachment.ts",
             "line": 178
           },
-          "id": "completeness-1774846201978-l0nczm3l6l",
+          "id": "completeness-1775119885917-h0dfdqdmopa",
           "autoFixable": false
         }
       ]
@@ -3115,7 +3115,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846201466-2ozr70mo9pi",
+      "id": "type-error-1775119885374-gn1ybepagxq",
       "autoFixable": false
     },
     {
@@ -3127,7 +3127,7 @@
         "file": "src/decorators/AdminAuth.ts",
         "line": 186
       },
-      "id": "type-error-1774846201466-ho6vs5i0jp5",
+      "id": "type-error-1775119885374-pdifilrsmu",
       "autoFixable": false
     },
     {
@@ -3139,7 +3139,7 @@
         "file": "src/decorators/AdminAuth.ts",
         "line": 338
       },
-      "id": "type-error-1774846201466-sizhc1h58b",
+      "id": "type-error-1775119885374-qk98igqtyel",
       "autoFixable": false
     },
     {
@@ -3151,7 +3151,7 @@
         "file": "src/decorators/AdminAuth.ts",
         "line": 345
       },
-      "id": "type-error-1774846201466-2gqb8b7zyhv",
+      "id": "type-error-1775119885374-aetjqkq2dwh",
       "autoFixable": false
     },
     {
@@ -3163,7 +3163,7 @@
         "file": "src/decorators/AdminAuth.ts",
         "line": 476
       },
-      "id": "type-error-1774846201466-d9b7lqamdo",
+      "id": "type-error-1775119885374-8ov4hcbvujc",
       "autoFixable": false
     },
     {
@@ -3175,7 +3175,7 @@
         "file": "src/providers/authorize/adminAuthorize.ts",
         "line": 546
       },
-      "id": "type-error-1774846201466-wzv5nz2fcdn",
+      "id": "type-error-1775119885374-wbasqqiebhr",
       "autoFixable": false
     },
     {
@@ -3187,7 +3187,7 @@
         "file": "src/providers/deleteRedditLikeMemberCommentsCommentIdMyVote.ts",
         "line": 1281
       },
-      "id": "type-error-1774846201466-uwwruy2id6",
+      "id": "type-error-1775119885374-xng7gctutw",
       "autoFixable": false
     },
     {
@@ -3199,7 +3199,7 @@
         "file": "src/providers/getRedditLikeGuestSessionsMe.ts",
         "line": 2363
       },
-      "id": "type-error-1774846201466-zztszdwdmr",
+      "id": "type-error-1775119885374-47kirt8i6bu",
       "autoFixable": false
     },
     {
@@ -3211,7 +3211,7 @@
         "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
         "line": 3461
       },
-      "id": "type-error-1774846201466-qia6l02xy7",
+      "id": "type-error-1775119885374-yvkblrx8zml",
       "autoFixable": false
     },
     {
@@ -3223,7 +3223,7 @@
         "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
         "line": 3475
       },
-      "id": "type-error-1774846201466-a9k0yccuw17",
+      "id": "type-error-1775119885374-f9u3b3keb6f",
       "autoFixable": false
     },
     {
@@ -3235,7 +3235,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
         "line": 2554
       },
-      "id": "type-error-1774846201466-fimir16q6n9",
+      "id": "type-error-1775119885374-70lupi0as93",
       "autoFixable": false
     },
     {
@@ -3247,7 +3247,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
         "line": 2657
       },
-      "id": "type-error-1774846201466-aoxr117mxj",
+      "id": "type-error-1775119885374-waptryza7u8",
       "autoFixable": false
     },
     {
@@ -3259,7 +3259,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
         "line": 3492
       },
-      "id": "type-error-1774846201466-1e61d5zytu2",
+      "id": "type-error-1775119885374-0xliobis2nor",
       "autoFixable": false
     },
     {
@@ -3271,7 +3271,7 @@
         "file": "src/transformers/RedditLikeCommunityAtSummaryTransformer.ts",
         "line": 1836
       },
-      "id": "type-error-1774846201466-9mptiyvsxig",
+      "id": "type-error-1775119885374-5v8qnu2uqsp",
       "autoFixable": false
     },
     {
@@ -3283,7 +3283,7 @@
         "file": "src/transformers/RedditLikeCommunityTransformer.ts",
         "line": 1871
       },
-      "id": "type-error-1774846201466-mc1d3fcr9qk",
+      "id": "type-error-1775119885374-amim5xkhu7",
       "autoFixable": false
     },
     {
@@ -3295,7 +3295,7 @@
         "file": "src/transformers/RedditLikeGuestAtSummaryTransformer.ts",
         "line": 1213
       },
-      "id": "type-error-1774846201466-deurb19f3z9",
+      "id": "type-error-1775119885374-ppyvoizo4y",
       "autoFixable": false
     }
   ],
@@ -3309,7 +3309,7 @@
         "file": "src/controllers/redditLike/guest/posts/comments/thread/RedditlikeGuestPostsCommentsController.ts",
         "line": 2642
       },
-      "id": "type-error-1774846201466-civpguvluoh",
+      "id": "type-error-1775119885374-rn0mm0q90nb",
       "autoFixable": false
     },
     {
@@ -3321,7 +3321,7 @@
         "file": "src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
         "line": 10621
       },
-      "id": "type-error-1774846201466-t2b6xc0b16",
+      "id": "type-error-1775119885374-9pkdd3pb9wo",
       "autoFixable": false
     },
     {
@@ -3333,7 +3333,7 @@
         "file": "src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
         "line": 4988
       },
-      "id": "type-error-1774846201466-6v620um9lbe",
+      "id": "type-error-1775119885374-2e2cbedsyrr",
       "autoFixable": false
     },
     {
@@ -3345,7 +3345,7 @@
         "file": "src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
         "line": 2642
       },
-      "id": "type-error-1774846201466-h5zwnbl1da7",
+      "id": "type-error-1775119885374-nn5eqwsj6vk",
       "autoFixable": false
     },
     {
@@ -3357,7 +3357,7 @@
         "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
         "line": 3215
       },
-      "id": "type-error-1774846201466-5693wa0ch08",
+      "id": "type-error-1775119885374-eovie59yq2i",
       "autoFixable": false
     },
     {
@@ -3369,7 +3369,7 @@
         "file": "src/providers/patchRedditLikeGuestSessions.ts",
         "line": 2324
       },
-      "id": "type-error-1774846201466-w2ornidg0al",
+      "id": "type-error-1775119885374-899i1zirad5",
       "autoFixable": false
     },
     {
@@ -3381,7 +3381,7 @@
         "file": "src/providers/patchRedditLikeGuestSessions.ts",
         "line": 2779
       },
-      "id": "type-error-1774846201466-lifbn29jpn",
+      "id": "type-error-1775119885374-j4bgp5asric",
       "autoFixable": false
     },
     {
@@ -3393,7 +3393,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
         "line": 3451
       },
-      "id": "type-error-1774846201466-hgyfrimnt2g",
+      "id": "type-error-1775119885374-ac6x8gyqs07",
       "autoFixable": false
     },
     {
@@ -3405,7 +3405,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
         "line": 3515
       },
-      "id": "type-error-1774846201466-wl0ftt0ovi",
+      "id": "type-error-1775119885374-655qgcx44wc",
       "autoFixable": false
     },
     {
@@ -3417,14 +3417,14 @@
         "file": "src/transformers/RedditLikeCommentAtThreadTransformer.ts",
         "line": 715
       },
-      "id": "type-error-1774846201466-ubs5ei8cxx",
+      "id": "type-error-1775119885374-9wyubhwasns",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:50:01.979Z",
-    "totalDurationMs": 10750,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T08:51:25.917Z",
+    "totalDurationMs": 8483,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 410
   },
   "penalties": {
@@ -3450,5 +3450,1391 @@
     "structures": 48,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/redditLike/attachments/RedditlikeAttachmentsController.ts",
+          "line": 60,
+          "description": "The PATCH /redditLike/attachments endpoint has no authentication guard despite the spec stating 'only authenticated members can access this endpoint'. The controller method has no @AdminAuth(), @MemberAuth(), or any other auth decorator.",
+          "suggestion": "Add the appropriate authentication guard decorator (e.g., @MemberAuth()) to the index() method to enforce the documented access control requirement."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/redditLike/attachment-references/RedditlikeAttachment_referencesController.ts",
+          "line": 60,
+          "description": "Both endpoints (PATCH /redditLike/attachment-references and GET /redditLike/attachment-references/:referenceId) expose file metadata including storage_path, checksum_sha256, and uploaded_by_member_id with no authentication guard. The storage_path field in particular could reveal internal file system structure.",
+          "suggestion": "Add authentication guards if these endpoints should be restricted. If public access is intended, ensure storage_path is not exposed in the response DTO."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/redditLike/member/password-resets/RedditlikeMemberPassword_resetsController.ts",
+          "line": 80,
+          "description": "The GET /redditLike/member/password-resets/:resetId endpoint uses @AdminAuth() decorator but the spec says it should be accessible by members. More critically, the provider (getRedditLikeMemberPasswordResetsResetId) does NOT validate that the reset token belongs to the authenticated member — it simply looks up any token by value. This allows any authenticated user to probe the validity of any password reset token.",
+          "suggestion": "The token validation endpoint should either be unauthenticated (token itself is the credential) or should verify the token belongs to the requesting member. Remove the ability to enumerate token status for tokens belonging to other users."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/redditLike/guest/sessions/RedditlikeGuestSessionsController.ts",
+          "line": 75,
+          "description": "The PATCH /redditLike/guest/sessions endpoint uses @GuestAuth() but the spec states it should enforce that members can only view their own sessions. The authorization enforcement is delegated entirely to the provider with no controller-level ownership check. A guest-level token should not be able to query sessions for other actor types.",
+          "suggestion": "Ensure the provider strictly filters sessions by the authenticated actor's ID and type. Consider using a stronger auth guard (MemberAuth) for this sensitive session management endpoint."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/redditLike/member/attachments/access/RedditlikeMemberAttachmentsAccessController.ts",
+          "line": 60,
+          "description": "The POST /redditLike/member/attachments/:attachmentId/access endpoint uses @AdminAuth() decorator instead of a member-specific auth decorator. The spec states this requires member authentication. Using AdminAuth for a member endpoint may grant incorrect privilege levels or use wrong token validation logic.",
+          "suggestion": "Replace @AdminAuth() with the appropriate @MemberAuth() decorator to match the documented authorization actor type."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/redditLike/member/subscriptions/RedditlikeMemberSubscriptionsController.ts",
+          "line": 38,
+          "description": "The PATCH /redditLike/member/subscriptions endpoint uses @AdminAuth() decorator but the spec indicates this should be a member-level endpoint (x-autobe-authorization-actor: member). Using AdminAuth for member operations may apply incorrect token validation.",
+          "suggestion": "Replace @AdminAuth() with the appropriate @MemberAuth() decorator."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/patchRedditLikeGuestFeedsPopular.ts",
+          "line": 45,
+          "description": "The sortBy field from user input is directly used as a dynamic object key in the Prisma orderBy clause: `{ [sortBy]: sortOrder }`. While Prisma's type system provides some protection, if sortBy is not strictly validated against an allowlist of permitted column names, this could lead to unexpected query behavior or information disclosure through error messages.",
+          "suggestion": "Validate sortBy against an explicit allowlist of permitted field names before using it as a dynamic key: e.g., `const allowedSortFields = ['created_at', 'vote_score', 'title']; if (!allowedSortFields.includes(sortBy)) throw new HttpException('Invalid sort field', 400);`"
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/redditLike/auth/member/RedditlikeAuthMemberController.ts",
+          "line": 85,
+          "description": "Authentication endpoints (join, login, refresh) use console.log(error) for error handling. Failed authentication attempts are not specifically logged with context (IP, email attempted), limiting security monitoring capabilities.",
+          "suggestion": "Use structured logging with security context for authentication failures. Consider integrating a logging framework that captures IP address, timestamp, and sanitized request context for failed auth attempts."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/redditLike/auth/member/RedditlikeAuthMemberController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh), making them susceptible to brute force attacks. The spec acknowledges this risk but the implementation does not address it.",
+          "suggestion": "Apply rate limiting middleware (e.g., @nestjs/throttler) specifically to authentication endpoints with stricter limits than general API endpoints."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/controllers/redditLike/auth/member/RedditlikeAuthMemberController.ts",
+          "line": 1,
+          "description": "Password complexity validation is not enforced at the controller/provider level. The spec mentions 'Weak password validation should occur before hashing' but no implementation is visible.",
+          "suggestion": "Add password complexity validation (minimum length, character requirements) using typia custom validators or a dedicated validation pipe before the password is hashed."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/patchRedditLikeGuests.ts",
+          "line": 24,
+          "description": "The guest listing endpoint has no authentication or authorization check. Any unauthenticated caller can enumerate all guest records including device fingerprints, which is sensitive PII. There is no `owner`, `moderator`, or any auth payload in the function signature.",
+          "suggestion": "Add an appropriate authorization guard (e.g., OwnerPayload or AdminPayload) to this provider and require authentication before returning guest data."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getRedditLikeOwnersOwnerId.ts",
+          "line": 20,
+          "description": "The owner profile lookup endpoint accepts no authentication context. Any caller can retrieve owner profile data by guessing or iterating UUIDs. There is no auth payload in the function signature.",
+          "suggestion": "Add an authorization check — either require the caller to be authenticated and match the ownerId, or restrict this endpoint to admin/owner roles only."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postRedditLikeOwnerAttachmentsAttachmentIdGenerateThumbnails.ts",
+          "line": 26,
+          "description": "The thumbnail generation endpoint verifies the attachment exists but does not verify that the authenticated owner (`props.owner.id`) actually owns the attachment (`uploaded_by_member_id` or equivalent ownership field). Any authenticated owner can trigger thumbnail generation for any attachment.",
+          "suggestion": "After fetching the attachment, verify that `attachment.uploaded_by_member_id === props.owner.id` (or equivalent ownership field) before proceeding."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchRedditLikeOwnerAttachmentsAttachmentIdAccessLogs.ts",
+          "line": 35,
+          "description": "The access log listing endpoint does not verify that the authenticated owner owns the attachment being queried. Any owner can query access logs for any attachment by providing its ID.",
+          "suggestion": "Fetch the attachment and verify `attachment.uploaded_by_member_id === props.owner.id` before returning access logs."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getRedditLikeModeratorAttachmentsAttachmentIdAccessLogsLogId.ts",
+          "line": 27,
+          "description": "The moderator access log endpoint does not verify that the moderator has jurisdiction over the community associated with the attachment. Any authenticated moderator can read access logs for any attachment.",
+          "suggestion": "Verify that the moderator has moderation rights over the community that owns the attachment before returning the log entry."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/putRedditLikeMemberPostsPostId.ts",
+          "line": 113,
+          "description": "When updating an image post, existing images are deleted and new ones are created without verifying that the provided `attachmentId` values belong to the authenticated member. An attacker could reference attachment IDs owned by other users.",
+          "suggestion": "Before creating new image entries, verify each `image.attachmentId` belongs to the authenticated member by checking `uploaded_by_member_id === props.member.id`."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postRedditLikeMemberPosts.ts",
+          "line": 80,
+          "description": "When creating an image post, the `attachment_id` is used directly without verifying that the attachment belongs to the authenticated member. An attacker could reference another user's attachment.",
+          "suggestion": "Fetch the attachment and verify `attachment.uploaded_by_member_id === props.member.id` before associating it with the post."
+        },
+        {
+          "severity": "warning",
+          "type": "ssrf",
+          "file": "src/providers/putRedditLikeMemberPostsPostId.ts",
+          "line": 107,
+          "description": "The URL provided in a link post update is parsed with `new URL(url)` to extract the hostname, but the URL itself is stored without validation. There is no allowlist or blocklist preventing internal/private network URLs (e.g., `http://169.254.169.254/`, `http://localhost/`) from being stored and potentially fetched later by a preview generator.",
+          "suggestion": "Validate that the URL uses http/https scheme and that the hostname does not resolve to private/internal IP ranges before storing it."
+        },
+        {
+          "severity": "warning",
+          "type": "ssrf",
+          "file": "src/providers/postRedditLikeMemberPosts.ts",
+          "line": 72,
+          "description": "The URL for link posts is stored without scheme or hostname validation. Internal network URLs could be stored and later fetched by a preview/thumbnail service.",
+          "suggestion": "Validate the URL scheme (http/https only) and block private/internal hostnames before persisting the URL."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/authorize/moderatorAuthorize.ts",
+          "line": 1,
+          "description": "Authentication failures (wrong role, missing session) are not logged. This makes it difficult to detect brute-force or token-reuse attacks.",
+          "suggestion": "Log failed authorization attempts with relevant context (IP, token type, reason) to a structured audit log."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to the popular feed endpoint. Combined with the lack of a maximum `limit` cap, a caller could request very large pages repeatedly.",
+          "suggestion": "Enforce a maximum page size (e.g., limit ≤ 100) and apply rate limiting at the infrastructure or middleware level."
+        }
+      ],
+      "score": 60,
+      "summary": "[sampled 30/194 files] [2 chunks, 22→21 issues] The codebase has several significant access control issues. Most notably: (1) multiple member-level endpoints incorrectly use @AdminAuth() instead of member-specific auth decorators, suggesting a systematic misuse of authentication guards; (2) the password reset token validation endpoint allows any authenticated user to probe the validity of arbitrary reset tokens, which is a cross-user data access vulnerability; (3) attachment and attachment-reference endpoints expose sensitive file metadata (storage_path, checksums) without authentication. The providers generally implement good patterns (ownership checks, soft-delete filtering, transactions for vote operations), but the controller-level auth decorator mismatches undermine the security model. Public read endpoints for posts and comments appear intentionally unauthenticated which is acceptable. Priority fixes: correct the AdminAuth misuse across member endpoints and fix the password reset token enumeration vulnerability.",
+      "durationMs": 285417,
+      "tokensUsed": {
+        "input": 34793,
+        "output": 3806,
+        "inputCost": 0.104379,
+        "outputCost": 0.05709
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putRedditLikeOwnerModeratorsModeratorId.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putRedditLikeOwnerModeratorsModeratorId.ts",
+          "line": 1,
+          "description": "Function name suggests it's for owner to update moderators, but the function only updates 'can_add_moderators' field based on a 'role' field that doesn't exist in the IUpdate interface. The function also incorrectly uses 'owner' payload but checks community ownership.",
+          "suggestion": "Review the function purpose and ensure it updates the correct fields. The IUpdate interface should include 'role' if that's what's being updated, or update 'can_add_moderators' directly from body."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putRedditLikeModeratorModeratorsModeratorId.ts",
+          "line": 1,
+          "description": "Function name suggests moderator can update moderators, but logic checks if requester is community owner. This contradicts the actor permissions where moderators with 'can_add_moderators' permission should be able to update other moderators.",
+          "suggestion": "Update authorization logic to check if requester is owner OR moderator with 'can_add_moderators' permission, similar to postRedditLikeOwnerModerators."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putRedditLikeMemberPostsPostIdMyVote.ts",
+          "line": 1,
+          "description": "Function uses 'AdminPayload' but should use 'MemberPayload' based on the function name and actor permissions. Members vote on posts, not admins.",
+          "suggestion": "Change AdminPayload import and parameter type to MemberPayload."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putRedditLikeMemberProfile.ts",
+          "line": 1,
+          "description": "Function uses 'AdminPayload' but should use 'MemberPayload' based on the function name. Members update their own profiles, not admins.",
+          "suggestion": "Change AdminPayload import and parameter type to MemberPayload."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putRedditLikeMemberCommunitiesCommunityId.ts",
+          "line": 1,
+          "description": "Function uses 'AdminPayload' but should use 'OwnerPayload' based on the function name. Only community owners can update communities.",
+          "suggestion": "Change AdminPayload import and parameter type to OwnerPayload."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/putRedditLikeMemberPostsPostIdMyVote.ts",
+          "line": 1,
+          "description": "Missing validation for vote_type enum values ('upvote', 'downvote'). The code assumes body.vote_type is valid but doesn't validate it.",
+          "suggestion": "Add validation to ensure vote_type is either 'upvote' or 'downvote'."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/putRedditLikeMemberPostsPostId.ts",
+          "line": 1,
+          "description": "Missing validation for post_type-specific update fields. When updating a post, the code should validate that the provided fields match the post_type (e.g., body for text posts, url for link posts, images for image posts).",
+          "suggestion": "Add validation to ensure update fields are appropriate for the post_type."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/putRedditLikeAuthModeratorRefresh.ts",
+          "line": 1,
+          "description": "Missing validation for refresh token expiration. The code verifies JWT but doesn't check if the session's expired_at is in the future.",
+          "suggestion": "Add check for session.expired_at > new Date() before allowing refresh."
+        },
+        {
+          "severity": "suggestion",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postRedditLikeOwnerReportsReportIdApprove.ts",
+          "line": 1,
+          "description": "Hard deletes reported content without considering soft delete or audit trail requirements. This may violate data retention policies.",
+          "suggestion": "Consider using soft delete or moving content to a quarantine state instead of hard deletion."
+        },
+        {
+          "severity": "suggestion",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postRedditLikeOwnerAttachmentsBatchCleanup.ts",
+          "line": 1,
+          "description": "Assumes all referenced tables exist (e.g., reddit_like_attachment_reference_of_profiles). This may be a hallucinated table name if not defined in the schema.",
+          "suggestion": "Verify that all referenced table names match the actual Prisma schema."
+        },
+        {
+          "severity": "suggestion",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/putRedditLikeMemberPostsPostId.ts",
+          "line": 1,
+          "description": "Assumes post_type-specific content tables (textContent, linkContent, imageContent) are always populated. May throw errors if trying to update non-existent content.",
+          "suggestion": "Add checks to ensure content exists before updating, or handle missing content gracefully."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postRedditLikeModeratorReportsReportIdApprove.ts",
+          "line": 60,
+          "description": "Soft delete logic for comments is inconsistent with posts. Posts set both `is_deleted: true` and `deleted_at: new Date()`, while comments only set `is_deleted: true` without updating `deleted_at`.",
+          "suggestion": "Update comment soft delete to also set `deleted_at: new Date()` for consistency."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postRedditLikeMemberPosts.ts",
+          "line": 50,
+          "description": "Post type detection logic may incorrectly default to 'text' when no content fields are provided. The fallback logic doesn't handle missing content properly.",
+          "suggestion": "Add validation to ensure at least one content field is provided based on the determined post type."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/postRedditLikeMemberAttachments.ts",
+          "line": 20,
+          "description": "Hardcoded placeholder values for file processing infrastructure result (mimeType, fileSizeBytes, checksumSha256).",
+          "suggestion": "Implement actual file processing logic to extract real mime type, file size, and checksum from the uploaded file."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postRedditLikeMemberPosts.ts",
+          "line": 50,
+          "description": "Post type detection logic doesn't validate that required content fields are present for the determined type (e.g., body for text posts, url for link posts, attachment_id for image posts).",
+          "suggestion": "Add validation to ensure required fields exist for the determined post type."
+        },
+        {
+          "severity": "warning",
+          "type": "edge-case",
+          "file": "src/providers/postRedditLikeMemberPostsPostIdVotes.ts",
+          "line": 30,
+          "description": "Vote validation doesn't check if the post author is banned from the community or if the voter is banned.",
+          "suggestion": "Add checks for community bans before allowing votes."
+        },
+        {
+          "severity": "warning",
+          "type": "edge-case",
+          "file": "src/providers/postRedditLikeMemberPostsPostIdComments.ts",
+          "line": 30,
+          "description": "Comment creation doesn't check if the member is banned from the community.",
+          "suggestion": "Add ban check before allowing comment creation."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postRedditLikeMemberAttachments.ts",
+          "line": 20,
+          "description": "Assumes file processing infrastructure exists but provides placeholder implementation.",
+          "suggestion": "Implement proper file upload handling with actual storage, mime type detection, size calculation, and checksum generation."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postRedditLikeMemberPosts.ts",
+          "line": 50,
+          "description": "Assumes post_type can be inferred from content fields, but doesn't handle validation if inferred type doesn't match provided post_type.",
+          "suggestion": "Add validation to ensure post_type matches the provided content fields."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postRedditLikeAuthOwnerJoin.ts",
+          "line": 5,
+          "description": "Importing from '@prisma/sdk' is incorrect. The correct import for Prisma types is '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postRedditLikeAuthModeratorJoin.ts",
+          "line": 77,
+          "description": "Function creates a moderator join response with a fake community (empty name, description, owner set to the new member). This is unrealistic; a moderator join should not automatically assign a community. The response type likely expects a valid community or null.",
+          "suggestion": "Review the IRedditLikeModerator.IAuthorized interface. The community field might be optional or should be set to null. If a moderator must be assigned to a community upon creation, the business logic is missing."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postRedditLikeAuthMemberLogin.ts",
+          "line": 64,
+          "description": "Stores raw JWT tokens as `access_token_hash` and `refresh_token_hash` in the session table, but the column names suggest they should be hashes. This is a security issue if tokens are stored in plain text.",
+          "suggestion": "Hash the tokens before storing them, similar to what is done in `postRedditLikeAuthMemberRefresh.ts` using crypto.createHash."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postRedditLikeAuthModeratorLogin.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, IRedditLikeAttachment, IRedditLikeCommunity, ArrayUtil, typia, tags, v4 (in some functions).",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postRedditLikeAuthMemberRefresh.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, Prisma, typia, tags, v4, PasswordUtil, toISOStringSafe.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "warning",
+          "type": "naming",
+          "file": "src/providers/patchRedditLikePostsPostIdSnapshots.ts",
+          "line": 1,
+          "description": "Function name `patchRedditLikePostsPostIdSnapshots` suggests a PATCH operation (update), but the function implements a GET-like paginated read (no mutation). This is a misleading name.",
+          "suggestion": "Rename to `getRedditLikePostsPostIdSnapshots` or similar to reflect its read-only nature."
+        },
+        {
+          "severity": "suggestion",
+          "type": "edge-case",
+          "file": "src/providers/postRedditLikeAuthOwnerJoin.ts",
+          "line": 18,
+          "description": "Username generation from email prefix (`split('@')[0]`) could result in an empty string if email format is invalid (e.g., '@domain.com').",
+          "suggestion": "Add validation for email format and provide a fallback username generation logic."
+        },
+        {
+          "severity": "suggestion",
+          "type": "edge-case",
+          "file": "src/providers/postRedditLikeAuthGuestJoin.ts",
+          "line": 31,
+          "description": "Uses `props.body.ip ?? props.ip` for session IP. The `props.ip` parameter might not always be provided if the function is called from a different context.",
+          "suggestion": "Ensure the IP is always available or handle the case where both are undefined."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchRedditLikeModeratorReports.ts",
+          "line": 60,
+          "description": "The function incorrectly filters reports by 'status: props.body.status ?? \"pending\"' which hardcodes a default status of 'pending'. This may not match the intended behavior where all statuses should be returned if not specified.",
+          "suggestion": "Remove the default 'pending' value and only apply status filter when props.body.status is explicitly provided."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
+          "line": 100,
+          "description": "The 'controversial' sort case incorrectly filters vote_score between -10 and 10. This is an arbitrary range that may not reflect actual controversial posts.",
+          "suggestion": "Remove the arbitrary vote_score filter for controversial sorting or implement a more sophisticated algorithm."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
+          "line": 30,
+          "description": "When a specific communityId is requested but the member is not subscribed, the function returns empty results without any error. This may be confusing for API consumers.",
+          "suggestion": "Consider returning a 403 Forbidden error or a more descriptive response when a member tries to access an unsubscribed community's feed."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchRedditLikeMemberPasswordResets.ts",
+          "line": 40,
+          "description": "The status filter logic compares 'expiresAtStr > now' where both are strings. String comparison may not work correctly for date strings.",
+          "suggestion": "Compare Date objects instead of strings: 'new Date(expiresAtStr) > new Date(now)'."
+        },
+        {
+          "severity": "suggestion",
+          "type": "inconsistent-naming",
+          "file": "src/providers/patchRedditLikeMemberSubscriptions.ts",
+          "line": 1,
+          "description": "Function name 'patchRedditLikeMemberSubscriptions' suggests it returns subscriptions, but it actually returns communities. The function should be named more accurately.",
+          "suggestion": "Rename function to 'patchRedditLikeMemberSubscribedCommunities' or adjust return type to match subscriptions."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/patchRedditLikeOwnerAuditLogs.ts",
+          "line": 1,
+          "description": "Multiple unused imports across files: IEntity, HttpException, jwt, typia, v4, PasswordUtil, toISOStringSafe.",
+          "suggestion": "Remove unused imports to clean up code."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchRedditLikeGuestSessions.ts",
+          "line": 24,
+          "description": "Import '@prisma/sdk' instead of '@prisma/client' - Prisma SDK is not a real package.",
+          "suggestion": "Replace '@prisma/sdk' with '@prisma/client'."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getRedditLikeOwnersOwnerId.ts",
+          "finding": "Import '@prisma/sdk' instead of '@prisma/client' - Prisma SDK is not a real package.",
+          "suggestion": "Replace '@prisma/sdk' with '@prisma/client'.",
+          "line": 24,
+          "description": "No description"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchRedditLikeGuestSessions.ts",
+          "line": 52,
+          "description": "Return type mismatches function signature - returns IPageIRedditLikeMemberSession.ISummary but function says Promise<IPageIRedditLikeMemberSession.ISummary>.",
+          "suggestion": "Ensure the return type matches the actual returned data structure."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/getRedditLikeOwnersOwnerId.ts",
+          "finding": "Return type mismatches function signature - returns IRedditLikeOwner but function says Promise<IRedditLikeOwner>.",
+          "suggestion": "Ensure the return type matches the actual returned data structure.",
+          "line": 29,
+          "description": "No description"
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+          "line": 99,
+          "description": "Missing `satisfies` statement for the pagination object.",
+          "suggestion": "Add `satisfies IPage.IPagination` to the pagination object."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/getRedditLikeOwnersOwnerId.ts",
+          "finding": "Missing `satisfies` statement for the return object.",
+          "suggestion": "Add `satisfies IRedditLikeOwner` to the return statement.",
+          "line": 29,
+          "description": "No description"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/authorize/adminAuthorize.ts",
+          "line": 20,
+          "description": "Uses non-existent Prisma model 'admins' and references 'user_id' and 'user' fields. The schema should have 'reddit_like_members' and 'reddit_like_owners' models, not 'admins'.",
+          "suggestion": "Replace with appropriate model based on actor type. For 'admin' type (which might be 'member'), query 'reddit_like_members' where id = payload.id and deleted_at = null."
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/getRedditLikeMemberPostsPostIdMyVote.ts",
+          "line": 20,
+          "description": "Incorrect query logic. The 'reddit_like_post_votes' table likely has a composite key linking post_id and vote_id. The current query assumes a single vote per post, not per member. It also doesn't filter by member_id.",
+          "suggestion": "Query 'reddit_like_votes' directly with a join condition: where member_id = props.member.id AND postVote: { reddit_like_post_id: props.postId }."
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/deleteRedditLikeMemberCommentsCommentIdMyVote.ts",
+          "line": 40,
+          "description": "Vote type comparison uses 'upvote' string, but schema likely uses 'UP'/'DOWN' enum values. Also, comment vote_score update uses decrement with wrong value calculation.",
+          "suggestion": "Use correct enum values ('UP', 'DOWN') and calculate vote_value as (vote_type === 'UP' ? 1 : -1)."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/getRedditLikeAttachmentsAttachmentId.ts",
+          "line": 30,
+          "description": "Access log creation uses hardcoded null values for actor_id, actor_type, ip_address, etc., making audit logs useless. Should extract from request context.",
+          "suggestion": "Pass request context to provider and populate actor information (member ID, IP, user-agent) from session/headers."
+        },
+        {
+          "severity": "warning",
+          "type": "copy-paste",
+          "file": "src/providers/getRedditLikeGuestSessionsMe.ts",
+          "line": 40,
+          "description": "Returns IRedditLikeMemberSession type but populates with guest data, causing type mismatch. Interface likely expects different actor structure.",
+          "suggestion": "Create separate IRedditLikeGuestSession interface or ensure the actor field accepts guest summary type."
+        },
+        {
+          "severity": "warning",
+          "type": "inconsistent-naming",
+          "file": "src/providers/getRedditLikeGuestSessionsMe.ts",
+          "line": 30,
+          "description": "Guest summary property uses snake_case ('device_fingerprint', 'created_at') while other interfaces use camelCase. Inconsistent with AutoBE conventions.",
+          "suggestion": "Use camelCase property names in the interface definition or transform snake_case to camelCase."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/deleteRedditLikeMemberPostsPostIdMyVote.ts",
+          "line": 40,
+          "description": "Assumes 'karma' field exists in member schema, but schema doesn't support it. Code comments acknowledge this but leave dead logic.",
+          "suggestion": "Remove karma update logic entirely since schema doesn't support it."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/getRedditLikeMemberPasswordResetsResetId.ts",
+          "line": 20,
+          "description": "Unused imports: IEntity, ArrayUtil, HttpException, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe.",
+          "suggestion": "Remove unused imports to clean up code."
+        }
+      ],
+      "score": 70,
+      "summary": "[6 chunks, 197→48 issues] The code shows several critical hallucinations with incorrect Prisma imports across all files. There are logic errors in actor authorization mismatches (using AdminPayload where MemberPayload or OwnerPayload should be used). Some incomplete implementations lack validation. However, the code follows AutoBE conventions for table/model naming and generally implements the required business logic.",
+      "durationMs": 640054,
+      "tokensUsed": {
+        "input": 120461,
+        "output": 21223,
+        "inputCost": 0.0361383,
+        "outputCost": 0.018676240000000004
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owner/reports/RedditlikeOwnerReportsController.ts",
+          "line": 1,
+          "description": "Controller defines routes for owner-specific report approval/dismissal, but the provided Prisma schema does not define any owner-specific report models or relationships. The schema defines reports as belonging to members and communities, with no owner-specific report handling. This appears to be a fabricated endpoint pattern.",
+          "suggestion": "Remove this controller or verify if there is an OpenAPI specification for owner-specific report operations. If not, these endpoints should not exist."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owners/RedditlikeOwnersController.ts",
+          "line": 1,
+          "description": "Controller defines owner CRUD endpoints, but the provided Prisma schema chunks do not include any 'reddit_like_owners' model. The schema defines members, guests, moderators, but no owners table.",
+          "suggestion": "Remove this controller or verify if there is a corresponding Prisma schema for owners. If not, these endpoints are fabricated."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/moderators/RedditlikeModeratorsController.ts",
+          "line": 1,
+          "description": "Controller defines moderator CRUD endpoints, but the provided Prisma schema chunks do not include any 'reddit_like_moderators' model. The schema defines reports, votes, comments, posts, but no moderators table.",
+          "suggestion": "Remove this controller or verify if there is a corresponding Prisma schema for moderators. If not, these endpoints are fabricated."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/posts/RedditlikePostsController.ts",
+          "line": 46,
+          "description": "Controller uses PATCH method for listing/searching posts (index operation). Typically, search/list operations use GET or POST methods. While not strictly a hallucination, this is a potential spec mismatch if the OpenAPI spec defines a different HTTP method.",
+          "suggestion": "Verify the OpenAPI specification to ensure PATCH is the correct method for search operations. Consider using GET with query parameters or POST for complex search criteria."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
+          "line": 1,
+          "description": "Controller implements owner audit log endpoints, but the provided Prisma schema does not define any 'reddit_like_owner_audit_logs' model or related entities. This appears to be a completely fabricated feature not present in the ground truth.",
+          "suggestion": "Remove this controller and all associated providers/decorators unless the OpenAPI spec (not provided) defines owner audit log operations."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/moderator/posts/RedditlikeModeratorPostsController.ts",
+          "line": 1,
+          "description": "Controller implements a DELETE endpoint for moderators to delete posts, but the provided Prisma schema does not define any moderator-specific post deletion logic or permissions. The spec mentions moderators can delete posts, but this specific endpoint path and authorization actor ('moderator') is not verifiable from the given ground truth.",
+          "suggestion": "Verify this endpoint against the OpenAPI spec. If not present, remove it."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/subscribed-communities/RedditlikeMemberSubscribed_communitiesController.ts",
+          "line": 1,
+          "description": "Controller uses @AdminAuth() and AdminPayload, but the endpoint is for member operations ('/redditLike/member/subscribed-communities'). This is a contextual mismatch - member endpoints should use member authentication, not admin.",
+          "suggestion": "Change decorators to MemberAuth and MemberPayload to match the endpoint's intended actor."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/subscriptions/RedditlikeMemberSubscriptionsController.ts",
+          "line": 1,
+          "description": "Controller uses @AdminAuth() and AdminPayload for a member subscription endpoint. This is a contextual precision error in mapping authentication to the correct actor type.",
+          "suggestion": "Change decorators to MemberAuth and MemberPayload."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/reports/RedditlikeMemberReportsController.ts",
+          "line": 1,
+          "description": "Controller uses @AdminAuth() and AdminPayload for a member report submission endpoint. Member operations should not use admin authentication.",
+          "suggestion": "Change decorators to MemberAuth and MemberPayload."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/profile/RedditlikeMemberProfileController.ts",
+          "line": 1,
+          "description": "Controller uses @AdminAuth() and AdminPayload for a member profile update endpoint. This is an incorrect authentication mapping.",
+          "suggestion": "Change decorators to MemberAuth and MemberPayload."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/me/RedditlikeMemberMeController.ts",
+          "line": 1,
+          "description": "Controller uses @AdminAuth() and AdminPayload for retrieving the current member's profile. This endpoint should use member authentication, not admin.",
+          "suggestion": "Change decorators to MemberAuth and MemberPayload."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/controllers/redditLike/moderator/reports/RedditlikeModeratorReportsController.ts",
+          "line": 118,
+          "description": "The 'approve' endpoint specification mentions 'permanently deleting the reported content', but the Prisma schema for reports shows cascade delete constraints. The implementation logic of hard deletion vs. cascade may be over-specified beyond what the schema defines.",
+          "suggestion": "Align the implementation logic with the cascade behavior defined in the Prisma schema (onDelete: Cascade)."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/member/password-resets/RedditlikeMemberPassword_resetsController.ts",
+          "line": 1,
+          "description": "Controller defines PATCH /redditLike/member/password-resets and GET /redditLike/member/password-resets/:resetId endpoints, but there is no corresponding password reset model in the provided Prisma schema. The schema does not define reddit_like_member_password_resets or reddit_like_owner_password_resets tables.",
+          "suggestion": "Remove these endpoints or ensure the Prisma schema includes the necessary password reset models."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/member/attachment-references/RedditlikeMemberAttachment_referencesController.ts",
+          "line": 1,
+          "description": "Controller defines POST /redditLike/member/attachment-references and DELETE /redditLike/member/attachment-references/:referenceId endpoints, but the Prisma schema does not define reddit_like_attachment_references or its subtype tables (reddit_like_attachment_reference_of_profiles, reddit_like_attachment_reference_of_communities, reddit_like_attachment_reference_of_posts).",
+          "suggestion": "Remove these endpoints or ensure the Prisma schema includes the necessary attachment reference models."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/auth/owner/RedditlikeAuthOwnerController.ts",
+          "line": 1,
+          "description": "Controller defines authentication endpoints for owners (join, login, refresh), but the Prisma schema does not define reddit_like_owners or reddit_like_owner_sessions tables.",
+          "suggestion": "Remove these endpoints or ensure the Prisma schema includes the necessary owner models."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
+          "line": 1,
+          "description": "Controller uses AdminAuth decorator and AdminPayload for member endpoints, but the spec indicates authorization should be for 'member' actors, not 'admin'. This may be a naming convention issue but could indicate incorrect authorization logic.",
+          "suggestion": "Ensure authorization decorators correctly map to member authentication rather than admin authentication."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/attachments/thumbnails/RedditlikeAttachmentsThumbnailsController.ts",
+          "line": 1,
+          "description": "Controller defines endpoints for attachment thumbnails, but there is no Prisma schema model for 'reddit_like_attachment_thumbnails' table. The spec includes 'reddit_like_attachment_reference_of_posts' and 'reddit_like_post_image_contents' with thumbnail references, but no dedicated thumbnail model.",
+          "suggestion": "Remove this controller or ensure a corresponding Prisma model exists for attachment thumbnails."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owner/attachments/generate-thumbnails/RedditlikeOwnerAttachmentsGenerate_thumbnailsController.ts",
+          "line": 1,
+          "description": "Endpoint for generating thumbnails references 'reddit_like_attachment_thumbnails' table which does not exist in the provided Prisma schema.",
+          "suggestion": "Remove this endpoint or add the missing Prisma model."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owner/attachments/access-logs/RedditlikeOwnerAttachmentsAccess_logsController.ts",
+          "line": 1,
+          "description": "Endpoints for attachment access logs reference 'reddit_like_attachment_access_logs' table which is not defined in the provided Prisma schema.",
+          "suggestion": "Remove these endpoints or add the missing Prisma model."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owner/attachments/batch-cleanup/RedditlikeOwnerAttachmentsBatch_cleanupController.ts",
+          "line": 1,
+          "description": "Batch cleanup endpoint references 'reddit_like_attachment_access_logs' and 'reddit_like_attachment_thumbnails' tables which are not present in the Prisma schema.",
+          "suggestion": "Remove this endpoint or add the missing Prisma models."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owner/attachments/access/RedditlikeOwnerAttachmentsAccessController.ts",
+          "line": 1,
+          "description": "Access log creation endpoint references 'reddit_like_attachment_access_logs' table which is not defined in the Prisma schema.",
+          "suggestion": "Remove this endpoint or add the missing Prisma model."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owner/audit-logs/my-activity/RedditlikeOwnerAudit_logsMy_activityController.ts",
+          "line": 1,
+          "description": "Audit logs endpoint references an audit log model that is not present in the provided Prisma schema chunks.",
+          "suggestion": "Remove this endpoint or ensure the audit log model exists in the schema."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/comments/RedditlikeMemberCommentsController.ts",
+          "line": 1,
+          "description": "Controller path '/redditLike/member/comments' suggests a member-scoped operation, but the spec does not define member-specific comment listing. The spec defines comment models and relations, but no explicit member-scoped endpoints.",
+          "suggestion": "Verify if this endpoint aligns with spec requirements or if it should be a general comment listing."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/guest/sessions/RedditlikeGuestSessionsController.ts",
+          "line": 1,
+          "description": "Controller for guest sessions references 'reddit_like_guest_sessions', 'reddit_like_member_sessions', 'reddit_like_moderator_sessions', 'reddit_like_owner_sessions' tables, but these are not present in the provided Prisma schema chunks.",
+          "suggestion": "Ensure session models are defined in the schema or remove these endpoints."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/owner/sessions/me/RedditlikeOwnerSessionsMeController.ts",
+          "line": 1,
+          "description": "Endpoint references session tables (owner_sessions) not defined in the provided Prisma schema.",
+          "suggestion": "Ensure session models exist or remove endpoint."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/moderator/attachments/generate-thumbnails/RedditlikeModeratorAttachmentsGenerate_thumbnailsController.ts",
+          "line": -1,
+          "description": "Controller route '/redditLike/moderator/attachments/:attachmentId/generate-thumbnails' has no corresponding operation in the provided OpenAPI specification. The spec only includes moderation models (reports, votes, comments, posts) but no attachment-related endpoints for moderators.",
+          "suggestion": "Remove this controller or verify it exists in the full OpenAPI spec."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/sessions/me/RedditlikeMemberSessionsMeController.ts",
+          "line": 30,
+          "description": "Controller uses @AdminAuth() and AdminPayload decorators but is for member sessions. This suggests a mismatch between authorization actor type (admin vs member) and the intended functionality.",
+          "suggestion": "Use @MemberAuth() and MemberPayload decorators instead of admin ones."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/feeds/popular/RedditlikeMemberFeedsPopularController.ts",
+          "line": -1,
+          "description": "Controller route '/redditLike/member/feeds/popular' uses @AdminAuth() but the spec comment says it's available to both authenticated and guest users. There's a mismatch between authorization requirements and spec description.",
+          "suggestion": "Either adjust authorization to allow guests or update spec description."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/redditLike/member/feeds/home/RedditlikeMemberFeedsHomeController.ts",
+          "line": -1,
+          "description": "Controller uses @AdminAuth() but should use @MemberAuth() for member-specific home feed functionality.",
+          "suggestion": "Use @MemberAuth() and MemberPayload decorators instead of admin ones."
+        },
+        {
+          "severity": "warning",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/member/comments/votes/RedditlikeMemberCommentsVotesController.ts",
+          "line": 18,
+          "description": "Controller route POST '/redditLike/member/comments/:commentId/votes' appears to be a fabricated endpoint. No plausible matching OpenAPI spec operation is shown for member-level comment voting.",
+          "suggestion": "Either remove this endpoint or verify if there's a spec endpoint for member comment voting that matches this path."
+        },
+        {
+          "severity": "warning",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/member/comments/my-vote/RedditlikeMemberCommentsMy_voteController.ts",
+          "line": 18,
+          "description": "Controller routes GET, PUT, DELETE for '/redditLike/member/comments/:commentId/my-vote' appear fabricated. No spec endpoints shown for member-level 'my-vote' operations.",
+          "suggestion": "Either remove these endpoints or verify if spec defines member comment vote status endpoints."
+        },
+        {
+          "severity": "warning",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/member/attachments/access/RedditlikeMemberAttachmentsAccessController.ts",
+          "line": 18,
+          "description": "POST '/redditLike/member/attachments/:attachmentId/access' seems fabricated. No spec shown for member-specific attachment access logging.",
+          "suggestion": "Remove or verify spec existence for member attachment access logging."
+        },
+        {
+          "severity": "warning",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
+          "line": 18,
+          "description": "GET '/redditLike/owner/posts/:postId/comments/thread' endpoint appears fabricated. No spec shown for owner-specific comment thread retrieval.",
+          "suggestion": "Remove or verify spec existence for owner comment thread endpoint."
+        },
+        {
+          "severity": "warning",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/redditLike/owner/posts/comments/sorted/RedditlikeOwnerPostsCommentsSortedController.ts",
+          "line": 18,
+          "description": "PATCH '/redditLike/owner/posts/:postId/comments/sorted' endpoint appears fabricated. No spec shown for owner-specific sorted comment listing.",
+          "suggestion": "Remove or verify spec existence for owner sorted comments endpoint."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/providers/putRedditLikeOwnerModeratorsModeratorId.ts",
+          "line": 32,
+          "description": "Property 'can_add_moderators' accessed in Prisma update is not defined in any visible Prisma schema. The spec shows moderator tables but no field named can_add_moderators.",
+          "suggestion": "Check if can_add_moderators exists in moderator schema; if not, remove or correct to a valid field."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/putRedditLikeModeratorModeratorsModeratorId.ts",
+          "line": 50,
+          "description": "The code references 'can_add_moderators' field which does not exist in the Prisma schema for reddit_like_moderators model. The schema shows no such field.",
+          "suggestion": "Remove the 'can_add_moderators' field reference or update the Prisma schema to include it."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putRedditLikeMemberPostsPostId.ts",
+          "line": 124,
+          "description": "The code updates 'images' field for image posts, but the Prisma schema shows image posts use 'reddit_like_post_image_contents' and 'reddit_like_post_images' tables, not a direct 'images' field on the post.",
+          "suggestion": "Ensure image updates follow the correct schema structure via the appropriate subtype tables."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
+          "line": 64,
+          "description": "The code updates 'vote_score' on comments directly, but the spec does not explicitly define this as a required behavior. This is business logic that may be correct but should be verified against the OpenAPI spec.",
+          "suggestion": "Verify that vote score updates are specified in the OpenAPI spec."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postRedditLikeOwnerReportsReportIdApprove.ts",
+          "line": 50,
+          "description": "The code deletes posts or comments when a report is approved, but the spec does not explicitly define this behavior. This is business logic that may be correct but should be verified.",
+          "suggestion": "Verify that report approval triggers content deletion per the OpenAPI spec."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postRedditLikeModeratorReportsReportIdApprove.ts",
+          "line": 20,
+          "description": "The code references a field 'deleted_at' in the reddit_like_moderators model, but the Prisma schema for moderation (schema-06-moderation.prisma) does not define this field. The reddit_like_moderators model is not even present in the provided schema chunks.",
+          "suggestion": "Remove the 'deleted_at' condition or verify the correct model structure. The moderator check should likely use a different model or field."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postRedditLikeModeratorModerators.ts",
+          "line": 20,
+          "description": "The code references a field 'can_add_moderators' in the reddit_like_moderators model, but the model itself is not defined in the provided Prisma schema chunks.",
+          "suggestion": "Remove or verify the correct model and field for moderator permissions."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postRedditLikeMemberPosts.ts",
+          "line": 20,
+          "description": "The code references a model 'reddit_like_community_subscriptions' which is not defined in the provided Prisma schema chunks (01-owners, 02-members, 03-posts, 04-comments, 05-votes, 06-moderation). This is a fabricated model.",
+          "suggestion": "Remove the subscription check or verify the correct model for community subscriptions."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postRedditLikeMemberPosts.ts",
+          "line": 20,
+          "description": "The code enforces that a member must be subscribed to a community to create a post, but the Prisma schema for posts (schema-03-posts.prisma) does not define any such requirement. The spec does not mention subscription checks for post creation.",
+          "suggestion": "Remove the subscription check unless it's explicitly defined in the OpenAPI spec (not provided)."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/postRedditLikeMemberPosts.ts",
+          "line": 20,
+          "description": "The code infers post_type from content fields if not provided, but the Prisma schema defines post_type as a required column. The inference logic (text/link/image) is not specified in the schema and may not match the spec's validation rules.",
+          "suggestion": "Ensure post_type is explicitly provided in the request body as per the spec, or validate the inference logic against the OpenAPI spec."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postRedditLikeMemberPostsPostIdVotes.ts",
+          "line": 20,
+          "description": "The code prevents members from voting on their own posts, but the Prisma schema for votes (schema-05-votes.prisma) does not define any such restriction. This is an invented business rule.",
+          "suggestion": "Remove the self-voting check unless explicitly defined in the OpenAPI spec."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/postRedditLikeMemberAttachments.ts",
+          "line": 20,
+          "description": "The code simulates infrastructure processing (storagePath, mimeType, fileSizeBytes, checksumSha256) with placeholder values. While this is likely a placeholder for actual file handling, it's not based on the Prisma schema which defines these fields as required. The implementation should properly compute these values.",
+          "suggestion": "Implement actual file processing or ensure the infrastructure result is properly computed from the uploaded file."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchRedditLikePostsPostIdSnapshots.ts",
+          "line": 1,
+          "description": "The provider 'patchRedditLikePostsPostIdSnapshots' implements a PATCH endpoint for listing post snapshots, but the spec does not define any PATCH operation for post snapshots. The spec likely defines GET endpoints for snapshots, not PATCH.",
+          "suggestion": "Change to a GET endpoint or verify the spec defines a PATCH operation for this route."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
+          "line": 1,
+          "description": "The provider 'patchRedditLikeOwnerPostsPostIdCommentsSorted' implements a PATCH endpoint for listing comments (owner-scoped), but the spec does not define any PATCH operation for this. The spec likely defines GET endpoints for owner-scoped comment lists.",
+          "suggestion": "Change to a GET endpoint or verify the spec defines a PATCH operation for this route."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postRedditLikeAuthModeratorJoin.ts",
+          "line": 1,
+          "description": "The provider 'postRedditLikeAuthModeratorJoin' creates a moderator join endpoint, but the spec does not define a moderator join operation. Moderators are typically appointed by community owners, not self-joined. This appears to be a fabricated authentication flow.",
+          "suggestion": "Remove this endpoint unless the spec explicitly defines a moderator join/registration operation."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/postRedditLikeAuthModeratorLogin.ts",
+          "line": 1,
+          "description": "The provider 'postRedditLikeAuthModeratorLogin' includes complex logic to fetch community details, icon attachment, and subscriber count. While not contradictory to spec, this level of detail may be beyond what the spec defines for a login response.",
+          "suggestion:1": [
+            true,
+            [
+              true,
+              [
+                true,
+                "Object",
+                [
+                  true
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "0": " + ",
+          "1": [
+            [
+              " + [Objectprisma/prismaPrismaPrisma",
+              " + ",
+              " }"
+            ],
+            [
+              1,
+              [
+                " }",
+                " }",
+                [
+                  " }"
+                ],
+                " }",
+                " + ' + ",
+                " + ",
+                "}",
+                "}",
+                "}",
+                " + ' + 'github.com",
+                " + async (Object",
+                [
+                  " + ",
+                  [
+                    " ",
+                    "prisma",
+                    " + ",
+                    " + 'SPSnwPrisma",
+                    {},
+                    "}",
+                    "}",
+                    " + \"prisma: [Object",
+                    " }",
+                    [
+                      " + ",
+                      " + 'reddit",
+                      "github.com",
+                      " + 'github.com",
+                      " : ",
+                      " + 'github.com",
+                      " + 'github.com",
+                      " + ",
+                      " + 'github.comprisma-gateway: ",
+                      1,
+                      [
+                        " }"
+                      ],
+                      "github.com: \"}",
+                      " + 'github.com"
+                    ],
+                    1.1,
+                    [
+                      0,
+                      "}",
+                      1,
+                      [
+                        ", ",
+                        1,
+                        []
+                      ],
+                      "}",
+                      "}",
+                      " + 'github.com"
+                    ],
+                    "github",
+                    "github.com",
+                    1.1,
+                    [
+                      true,
+                      [],
+                      [
+                        " + 'github",
+                        "}",
+                        " + 'github",
+                        [],
+                        "github.com",
+                        [
+                          "}",
+                          1,
+                          [],
+                          "github.com",
+                          "github",
+                          [
+                            1,
+                            "github",
+                            "github.com",
+                            "github",
+                            " }",
+                            " + 'github.comprisma}",
+                            1,
+                            "github.com",
+                            " + 'github.com",
+                            " + \"github.com",
+                            "github.com",
+                            ": ",
+                            [
+                              1.1,
+                              [
+                                ", \"redditLikePostsPostId\": \"github.com",
+                                " + \"github.com\"}",
+                                1
+                              ],
+                              [
+                                ", ",
+                                "github.com",
+                                [
+                                  "github.com",
+                                  "github",
+                                  "github.com",
+                                  "github",
+                                  " + 'github",
+                                  1.1,
+                                  [
+                                    1
+                                  ],
+                                  " + \"github.com",
+                                  1,
+                                  "github.com",
+                                  " }",
+                                  1.1,
+                                  1.1,
+                                  "github",
+                                  " + \"github.com",
+                                  [
+                                    1,
+                                    "github",
+                                    " + 'prisma",
+                                    " + \"github",
+                                    " + 'github.com",
+                                    " }",
+                                    1.1,
+                                    [
+                                      1.1,
+                                      " + 'github",
+                                      1.1
+                                    ],
+                                    [
+                                      0.1,
+                                      1.1,
+                                      1,
+                                      " + \"github.com"
+                                    ],
+                                    "}",
+                                    "}",
+                                    1.04,
+                                    [
+                                      1.1
+                                    ],
+                                    1.1
+                                  ]
+                                ],
+                                [
+                                  1
+                                ]
+                              ]
+                            ]
+                          ],
+                          " + \"}",
+                          1.1,
+                          []
+                        ],
+                        [
+                          1.1,
+                          [
+                            1.1,
+                            [
+                              1.1,
+                              [
+                                1.1
+                              ]
+                            ],
+                            " + \"github.com",
+                            [
+                              1.51,
+                              1.1,
+                              1.1,
+                              1.1,
+                              ": ",
+                              1.1
+                            ],
+                            [
+                              1.1,
+                              [
+                                1.1
+                              ]
+                            ]
+                          ],
+                          " + 'github"
+                        ]
+                      ]
+                    ],
+                    1.1,
+                    1.1
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "description": "No description",
+          "type": "unknown",
+          "severity": "warning"
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchRedditLikeModeratorAttachmentsAttachmentIdAccessLogs.ts",
+          "line": 20,
+          "description": "The Prisma query includes a filter for 'deleted_at' field on 'reddit_like_attachment_access_logs' model, but the Prisma schema does not define a 'deleted_at' column for this model. This field does not exist in the provided schema.",
+          "suggestion": "Remove the 'deleted_at: null' filter from the where clause since the model doesn't have soft delete functionality."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchRedditLikeModeratorReports.ts",
+          "line": 60,
+          "description": "The code references a 'deleted_at' field in a comment about the 'reddit_like_reports' model, but the Prisma schema for 'reddit_like_reports' does not include a 'deleted_at' column. Reports don't have soft delete functionality.",
+          "suggestion": "Remove the comment about 'deleted_at' since it doesn't apply to the reports model."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
+          "line": 50,
+          "description": "The 'CONTROVERSIAL' sort logic orders by 'vote_score: asc' with a comment about 'high activity with mixed votes', but this is an invented business rule not specified in the provided schema. The spec doesn't define what 'controversial' means.",
+          "suggestion": "Either implement a proper controversial algorithm (like comments with votes close to zero but high total votes) or remove this custom logic if not in spec."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
+          "line": 80,
+          "description": "The 'controversial' sort logic adds a filter 'vote_score: { gte: -10, lte: 10 }' and orders by 'comment_count: desc'. This is invented business logic not specified in the provided schema.",
+          "suggestion": "Remove or clarify the controversial sorting logic if not defined in requirements."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+          "line": 1,
+          "description": "The function name 'patchRedditLikeGuestPostsPostIdCommentsSorted' suggests a PATCH operation, but the implementation performs a GET-like paginated read operation (no mutation). This is a spec mismatch between HTTP method and actual behavior.",
+          "suggestion": "Should be a GET endpoint for fetching sorted comments, not PATCH."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchRedditLikeGuestFeedsPopular.ts",
+          "line": 1,
+          "description": "Function 'patchRedditLikeGuestFeedsPopular' suggests a PATCH operation but implements a paginated read (GET) of posts. This is a spec mismatch.",
+          "suggestion": "Should be a GET endpoint for fetching popular feed posts."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+          "line": 30,
+          "description": "The Prisma where clause references 'deleted_at' field on reddit_like_comments, but the Prisma schema shows only 'is_deleted' boolean field. There is no 'deleted_at' column in reddit_like_comments model.",
+          "suggestion": "Use 'is_deleted: false' instead of 'deleted_at: null'."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/providers/patchRedditLikeGuestFeedsPopular.ts",
+          "line": 30,
+          "description": "The where clause uses 'is_deleted: false' but the Prisma schema for reddit_like_posts shows 'is_deleted Boolean' field. This is correct usage, but note that the schema also has a 'deleted_at DateTime?' field. The implementation should clarify which field to use for soft delete filtering.",
+          "suggestion": "Check spec for whether to filter by 'is_deleted' or 'deleted_at'."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/providers/patchRedditLikeCommunities.ts",
+          "line": 30,
+          "description": "The where clause uses 'deleted_at: null' but the Prisma schema for reddit_like_communities (not shown in chunk) likely has 'deleted_at DateTime?' field. This is plausible but cannot be verified from provided schema chunk.",
+          "suggestion": "Verify community model schema for soft delete field."
+        },
+        {
+          "severity": "warning",
+          "type": "wrong-relation",
+          "file": "src/providers/patchRedditLikeCommunities.ts",
+          "line": 50,
+          "description": "The orderBy clause references 'subscriptions' relation with '_count: \"desc\"', but the Prisma schema for communities (not shown) may not have a 'subscriptions' relation. This could be a fabricated relation.",
+          "suggestion": "Verify community model has a 'subscriptions' relation to count subscribers."
+        },
+        {
+          "severity": "warning",
+          "type": "wrong-relation",
+          "file": "src/providers/patchRedditLikeAttachmentReferences.ts",
+          "line": 30,
+          "description": "The where clause references 'profileReference', 'communityReference', 'postReference' relations on reddit_like_attachment_references, but these relations are not defined in the provided Prisma schema chunk. These might be fabricated or from a different schema part.",
+          "suggestion": "Verify attachment_references model relations in full schema."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchRedditLikeGuestFeedsPopular.ts",
+          "line": 60,
+          "description": "The 'hot' sorting logic combines vote_score and created_at, which is not specified in the schema. This is invented business logic for feed ranking.",
+          "suggestion": "Ensure this sorting logic aligns with spec requirements."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
+          "line": 40,
+          "description": "Sort types 'NEW', 'OLD', 'TOP', 'CONTROVERSIAL', 'QA', 'BEST' are invented sorting strategies not defined in the schema. This is business logic invention.",
+          "suggestion": "Verify sorting options with spec."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/deleteRedditLikeMemberPostsPostIdMyVote.ts",
+          "line": 50,
+          "description": "Code references 'karma' field on reddit_like_members model, but no such field exists in the Prisma schema. The schema defines reddit_like_members with fields: id, username, email, password_hash, display_name, bio, created_at, updated_at, deleted_at. There is no karma field.",
+          "suggestion": "Remove the karma update logic since it's not supported by the schema."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/deleteRedditLikeMemberPostsPostIdMyVote.ts",
+          "line": 30,
+          "description": "The vote_type field in schema is 'upvote' or 'downvote' (lowercase). Code uses 'UP' (uppercase) which may cause mismatch.",
+          "suggestion": "Use 'upvote' and 'downvote' as per schema."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/deleteRedditLikeMemberCommentsCommentIdMyVote.ts",
+          "line": 30,
+          "description": "Vote type comparison uses 'upvote' string literal, but schema defines vote_type as 'upvote' or 'downvote'. This is correct but ensure consistency.",
+          "suggestion": "No change needed, but ensure all vote_type checks use lowercase."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/getRedditLikeAttachmentsAttachmentId.ts",
+          "line": 30,
+          "description": "Creates a reddit_like_attachment_access_logs record, but no such model exists in the provided Prisma schema chunks. This appears to be fabricated audit logic.",
+          "suggestion": "Remove the access log creation unless the schema defines reddit_like_attachment_access_logs."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/deleteRedditLikeMemberCommunitiesCommunityId.ts",
+          "line": 30,
+          "description": "Deletes icon attachment directly when community is deleted, but schema shows icon_attachment_id is a foreign key to reddit_like_attachments with onDelete: Cascade? Not shown in provided schema chunk. Might be correct but not verifiable.",
+          "suggestion": "Verify cascade behavior in schema; if not cascade, handle reference cleanup appropriately."
+        },
+        {
+          "severity": "suggestion",
+          "type": "spec-mismatch",
+          "file": "src/providers/authorize/adminAuthorize.ts",
+          "line": 20,
+          "description": "References 'admins' table and 'user' relation, but no such model in provided schema chunks. Authorization models (admins, users) are not defined in given schema fragments.",
+          "suggestion": "Ensure admin authorization aligns with actual schema models."
+        }
+      ],
+      "score": 63,
+      "summary": "[12 chunks, 113→70 issues] Multiple critical hallucinations detected: controllers for owners, guests, moderators, and owner-specific report operations have no basis in the provided Prisma schema. These appear to be fabricated endpoints. The remaining controllers for posts, members, communities, attachments, attachment-references, and nested resources (post snapshots, comments) appear to be based on actual schema models. Several controllers use PATCH for search operations which may be a spec mismatch. Overall, significant hallucination in user/role management areas.",
+      "durationMs": 338323,
+      "tokensUsed": {
+        "input": 272485,
+        "output": 16132,
+        "inputCost": 0.08174549999999998,
+        "outputCost": 0.014196160000000001
+      },
+      "deepEvalScores": {
+        "faithfulness": 71,
+        "relevancy": 77,
+        "contextualPrecision": 70
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 78,
+    "phaseWeight": 0.85,
+    "phaseContribution": 66,
+    "agentScore": 65,
+    "agentWeight": 0.15,
+    "agentContribution": 10
+  }
 }

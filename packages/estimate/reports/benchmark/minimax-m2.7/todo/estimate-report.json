@@ -1,7 +1,7 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo",
-  "totalScore": 90,
-  "grade": "A",
+  "totalScore": 88,
+  "grade": "B",
   "phases": {
     "gate": {
       "phase": "gate",
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846183484-jnlpxonvr5k",
+          "id": "type-error-1775119222453-hthxefdvdfd",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
             "line": 3555
           },
-          "id": "type-error-1774846183484-wsenvfhlom",
+          "id": "type-error-1775119222453-do8n371ujjd",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
             "line": 2880
           },
-          "id": "type-error-1774846183484-0lu3ljy572v",
+          "id": "type-error-1775119222453-0zp2likctij",
           "autoFixable": false
         },
         {
@@ -55,11 +55,11 @@
             "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
             "line": 5071
           },
-          "id": "type-error-1774846183484-vzr3rf2f2sg",
+          "id": "type-error-1775119222453-8wwlcgrgjmy",
           "autoFixable": false
         }
       ],
-      "durationMs": 2782,
+      "durationMs": 2285,
       "metrics": {
         "totalFiles": 75,
         "filesWithErrors": 0,
@@ -193,7 +193,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846183719-ny29qezz5mo",
+          "id": "complexity-1775119222546-o8bry0chias",
           "autoFixable": false
         },
         {
@@ -206,7 +206,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846183725-mtz2axnu7md",
+          "id": "complexity-1775119222552-f9qhhz5isws",
           "autoFixable": false
         },
         {
@@ -219,7 +219,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846183726-1cxj4j253ql",
+          "id": "complexity-1775119222552-wpxpnkley8k",
           "autoFixable": false
         }
       ]
@@ -236,7 +236,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
             "line": 22
           },
-          "id": "duplication-1774846183750-uorpynkur9o",
+          "id": "duplication-1775119222578-7q13qtjlhpu",
           "autoFixable": false
         },
         {
@@ -248,7 +248,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
             "line": 23
           },
-          "id": "duplication-1774846183750-gn30fdj9wow",
+          "id": "duplication-1775119222578-veu0678aki",
           "autoFixable": false
         },
         {
@@ -260,7 +260,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
             "line": 24
           },
-          "id": "duplication-1774846183750-y77oko10uf",
+          "id": "duplication-1775119222578-9e5f7uzwxtl",
           "autoFixable": false
         },
         {
@@ -272,7 +272,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberRefresh.ts",
             "line": 23
           },
-          "id": "duplication-1774846183750-w66rtz9v3nm",
+          "id": "duplication-1775119222578-vom1yoklyr9",
           "autoFixable": false
         },
         {
@@ -284,7 +284,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 44
           },
-          "id": "duplication-1774846183750-2rhc0npygpa",
+          "id": "duplication-1775119222578-sgp441m98jf",
           "autoFixable": false
         },
         {
@@ -296,7 +296,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 45
           },
-          "id": "duplication-1774846183750-ko3cxwgj6u",
+          "id": "duplication-1775119222578-k03yj8b1n5",
           "autoFixable": false
         },
         {
@@ -308,7 +308,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 46
           },
-          "id": "duplication-1774846183750-bqp518h7qif",
+          "id": "duplication-1775119222578-qtsvc3bkokd",
           "autoFixable": false
         },
         {
@@ -320,7 +320,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 47
           },
-          "id": "duplication-1774846183750-e6vdhg38dp",
+          "id": "duplication-1775119222578-otngkr1k86",
           "autoFixable": false
         },
         {
@@ -332,7 +332,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 48
           },
-          "id": "duplication-1774846183750-kq24v4syd9a",
+          "id": "duplication-1775119222578-fx2mz69wzzd",
           "autoFixable": false
         },
         {
@@ -344,7 +344,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 49
           },
-          "id": "duplication-1774846183750-qcdpxona9c",
+          "id": "duplication-1775119222578-zf4dbrfjav",
           "autoFixable": false
         },
         {
@@ -356,7 +356,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 50
           },
-          "id": "duplication-1774846183750-ghe01nzfs4k",
+          "id": "duplication-1775119222578-iyrg0t88hgb",
           "autoFixable": false
         },
         {
@@ -368,7 +368,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 51
           },
-          "id": "duplication-1774846183750-bw8jorg5wyp",
+          "id": "duplication-1775119222578-xafkany8c4",
           "autoFixable": false
         },
         {
@@ -380,7 +380,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 52
           },
-          "id": "duplication-1774846183750-ex7r4ea8uv",
+          "id": "duplication-1775119222578-955tku9xk48",
           "autoFixable": false
         },
         {
@@ -392,7 +392,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 53
           },
-          "id": "duplication-1774846183750-phgse8wc3ha",
+          "id": "duplication-1775119222578-pwd6vssua2",
           "autoFixable": false
         },
         {
@@ -404,7 +404,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 54
           },
-          "id": "duplication-1774846183750-mbaj1ofcmk",
+          "id": "duplication-1775119222578-yj5357p3ppm",
           "autoFixable": false
         },
         {
@@ -416,7 +416,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 55
           },
-          "id": "duplication-1774846183750-neq5jqc5ugm",
+          "id": "duplication-1775119222578-wyr7g1l9pkk",
           "autoFixable": false
         },
         {
@@ -428,7 +428,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 56
           },
-          "id": "duplication-1774846183750-eaid02gqbyu",
+          "id": "duplication-1775119222578-r3hc2ac0ntr",
           "autoFixable": false
         },
         {
@@ -440,7 +440,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 57
           },
-          "id": "duplication-1774846183750-uhdl74bbvag",
+          "id": "duplication-1775119222578-wjyogapkn6i",
           "autoFixable": false
         },
         {
@@ -452,7 +452,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
             "line": 47
           },
-          "id": "duplication-1774846183750-ucby6byn8jg",
+          "id": "duplication-1775119222578-pk13ck76zz",
           "autoFixable": false
         },
         {
@@ -464,7 +464,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
             "line": 48
           },
-          "id": "duplication-1774846183750-j0ce8cjqn8s",
+          "id": "duplication-1775119222578-o8lmi5d0lam",
           "autoFixable": false
         },
         {
@@ -476,7 +476,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
             "line": 49
           },
-          "id": "duplication-1774846183750-kf7oflx2e7",
+          "id": "duplication-1775119222578-fpa36ffhuh",
           "autoFixable": false
         },
         {
@@ -488,7 +488,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 8
           },
-          "id": "duplication-1774846183750-t7dn00k1ul",
+          "id": "duplication-1775119222578-9bqugxkyson",
           "autoFixable": false
         },
         {
@@ -500,7 +500,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 9
           },
-          "id": "duplication-1774846183750-jadmd00ehx",
+          "id": "duplication-1775119222578-33932bl0w4r",
           "autoFixable": false
         },
         {
@@ -512,7 +512,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 10
           },
-          "id": "duplication-1774846183750-5n9jekdndyi",
+          "id": "duplication-1775119222578-rwuyy309dko",
           "autoFixable": false
         },
         {
@@ -524,7 +524,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 11
           },
-          "id": "duplication-1774846183750-xflf6sx2qhe",
+          "id": "duplication-1775119222578-6kd6wg5aivb",
           "autoFixable": false
         },
         {
@@ -536,7 +536,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 12
           },
-          "id": "duplication-1774846183750-wleb0jk67bb",
+          "id": "duplication-1775119222578-lfplx4u8oa",
           "autoFixable": false
         },
         {
@@ -548,7 +548,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 13
           },
-          "id": "duplication-1774846183750-802t4q83m5k",
+          "id": "duplication-1775119222578-dlybjnltpmr",
           "autoFixable": false
         },
         {
@@ -560,7 +560,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 14
           },
-          "id": "duplication-1774846183750-nw2eoddp0o",
+          "id": "duplication-1775119222578-3vilpo4qo79",
           "autoFixable": false
         },
         {
@@ -572,7 +572,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 15
           },
-          "id": "duplication-1774846183750-i3zv1zllah",
+          "id": "duplication-1775119222578-01kwlu9t29gx",
           "autoFixable": false
         },
         {
@@ -584,7 +584,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 16
           },
-          "id": "duplication-1774846183750-nk3dzt6xklj",
+          "id": "duplication-1775119222578-e7pia0ag78o",
           "autoFixable": false
         }
       ]
@@ -606,7 +606,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846183758-fuuyp7xorg",
+          "id": "jsdoc-1775119222584-1nqkhbitrfw",
           "autoFixable": false
         },
         {
@@ -618,19 +618,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846183758-m3rexky3a7n",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846183758-65ww4rkwf9w",
+          "id": "jsdoc-1775119222585-my6zooszfw",
           "autoFixable": false
         },
         {
@@ -642,7 +630,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
             "line": 17
           },
-          "id": "jsdoc-1774846183760-m25y31zq9a",
+          "id": "jsdoc-1775119222586-v576n5hb4o",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775119222584-8m58tflil5o",
           "autoFixable": false
         },
         {
@@ -654,7 +654,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846183759-x621q3kdsso",
+          "id": "jsdoc-1775119222584-ze7m2uko8u9",
           "autoFixable": false
         },
         {
@@ -666,7 +666,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/history/MultiusertodoMemberTodosHistoryController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846183759-bctgw7qcule",
+          "id": "jsdoc-1775119222585-q9anf9rwds",
           "autoFixable": false
         }
       ]
@@ -685,7 +685,7 @@
             "file": "src/api/structures/IMultiUserTodoTodoEditHistory.ts",
             "line": 93
           },
-          "id": "completeness-1774846183763-vglbcv5z0k",
+          "id": "completeness-1775119222588-oawftyoz8l9",
           "autoFixable": false
         },
         {
@@ -697,7 +697,7 @@
             "file": "src/api/structures/IMultiUserTodoTodo.ts",
             "line": 154
           },
-          "id": "completeness-1774846183763-p6teb2fmp6f",
+          "id": "completeness-1775119222589-k5k0kc88p8g",
           "autoFixable": false
         }
       ]
@@ -720,7 +720,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846183484-jnlpxonvr5k",
+      "id": "type-error-1775119222453-hthxefdvdfd",
       "autoFixable": false
     },
     {
@@ -732,7 +732,7 @@
         "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
         "line": 3555
       },
-      "id": "type-error-1774846183484-wsenvfhlom",
+      "id": "type-error-1775119222453-do8n371ujjd",
       "autoFixable": false
     },
     {
@@ -744,7 +744,7 @@
         "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
         "line": 5071
       },
-      "id": "type-error-1774846183484-vzr3rf2f2sg",
+      "id": "type-error-1775119222453-8wwlcgrgjmy",
       "autoFixable": false
     }
   ],
@@ -758,14 +758,14 @@
         "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
         "line": 2880
       },
-      "id": "type-error-1774846183484-0lu3ljy572v",
+      "id": "type-error-1775119222453-0zp2likctij",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:49:43.764Z",
-    "totalDurationMs": 2869,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T08:40:22.589Z",
+    "totalDurationMs": 2361,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 75
   },
   "penalties": {
@@ -792,5 +792,411 @@
     "structures": 9,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 52,
+          "description": "Client-supplied IP address override: `props.body.ip ?? props.ip` allows the client to spoof their IP address in the session record. The body's `ip` field takes precedence over the server-detected IP, undermining session metadata integrity and audit trails.",
+          "suggestion": "Always use the server-detected IP (`props.ip`) for session metadata. Remove the `ip` field from the request body schema or ignore it entirely when recording session data."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 62,
+          "description": "Same client-supplied IP override issue as in login: `props.body.ip ?? props.ip` allows clients to inject a fake IP into the session record during registration.",
+          "suggestion": "Always use the server-detected IP (`props.ip`) for session metadata. Do not accept IP from the request body."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 44,
+          "description": "The refresh token rotation does not validate that the incoming refresh token matches the one stored in the session (`session.refresh_token`). An attacker who obtains an old (already-rotated) refresh token could still use it if the JWT signature is valid and the session record has not expired, because only session existence and expiry are checked — not token binding.",
+          "suggestion": "After fetching the session, compare `props.body.refresh_token === session.refresh_token` (or a hash thereof). Reject the request if they do not match to enforce strict token rotation."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 44,
+          "description": "Same refresh token binding issue as in member refresh: the stored `session.refresh_token` is never compared against the presented token. Only JWT signature validity and session expiry are checked, so a previously rotated token remains usable.",
+          "suggestion": "Compare the presented refresh token against the stored token in the session record before issuing new tokens."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdToggle.ts",
+          "line": 34,
+          "description": "The todo is fetched with `findUniqueOrThrow` before ownership is verified. If the todo does not exist, a 500/P2025 Prisma error is thrown instead of a controlled 404, potentially leaking internal error details. More critically, the ownership check happens after the existence check, which means a timing difference could be used to enumerate valid todo IDs.",
+          "suggestion": "Use `findUnique` (not `findUniqueOrThrow`) and return a generic 404 for both not-found and ownership-mismatch cases to prevent enumeration. Alternatively, include `multi_user_todo_member_id` in the `where` clause of the initial query."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+          "line": 34,
+          "description": "Ownership check occurs after existence and trash-state checks. This ordering reveals to an attacker whether a todo ID exists and is in trash before confirming they own it, enabling enumeration of other users' deleted todo IDs.",
+          "suggestion": "Reorder checks: first verify ownership (include `multi_user_todo_member_id` in the query `where` clause), then check trash state. Return a generic 404 for any failure to prevent enumeration."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+          "line": 52,
+          "description": "All controllers use `console.log(error)` for error handling, which may log sensitive data (stack traces, user inputs) to stdout without structured formatting or log level control. This is the standard AutoBE pattern but worth noting.",
+          "suggestion": "Consider adopting a structured logger (e.g., NestJS Logger or Winston) with appropriate log levels and redaction of sensitive fields."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). This allows unlimited brute-force or credential-stuffing attempts.",
+          "suggestion": "Apply rate limiting at the infrastructure level (API gateway, reverse proxy) or use a NestJS throttling guard (e.g., @nestjs/throttler) on authentication endpoints."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 1,
+          "description": "No password complexity validation is enforced beyond type checking. Any non-empty string is accepted as a password.",
+          "suggestion": "Enforce minimum password length and complexity requirements (e.g., minimum 8 characters, mix of character types) using a validation pipe or typia constraints."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+          "line": 22,
+          "description": "Ownership check occurs AFTER the existence/trash check. If the todo exists but belongs to another user, the error message 'Todo is not in trash' (404) leaks information about the todo's state before the ownership check is performed. The ownership check should come before state-specific checks.",
+          "suggestion": "Reorder checks: first verify ownership (403 if mismatch), then verify trash status. This prevents information leakage about other users' todos."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 28,
+          "description": "Same ordering issue: the 'already in trash' check (404) occurs before the ownership check (403). An attacker can determine whether a specific todo ID exists and is in trash before being told they don't own it.",
+          "suggestion": "Check ownership before checking deleted_at status to avoid leaking information about other users' resource states."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 21,
+          "description": "Guest registration is based solely on a client-supplied device_id with no validation of its format, uniqueness constraints, or authenticity. Any client can supply an arbitrary device_id (including another user's) to obtain a valid JWT session for that guest account, enabling account takeover.",
+          "suggestion": "Validate device_id format server-side. Consider adding additional entropy or a server-generated challenge to prevent device_id spoofing. At minimum, document that device_id is not a security boundary."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 88,
+          "description": "The client-supplied ip field (props.body.ip) takes precedence over the actual request IP (props.ip) via `props.body.ip ?? props.ip`. This allows clients to spoof their IP address in session records, undermining any IP-based audit trail or abuse detection.",
+          "suggestion": "Use only the server-determined IP (props.ip) for session recording. Do not trust client-supplied IP values."
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 30,
+          "description": "jwt.verify() is called without specifying the expected algorithm(s). This can allow algorithm confusion attacks (e.g., 'none' algorithm or RS256/HS256 confusion) if the JWT_SECRET_KEY is ever a public key or if the library defaults change.",
+          "suggestion": "Pass explicit algorithm options: `jwt.verify(token, MyGlobal.env.JWT_SECRET_KEY, { algorithms: ['HS256'] })` to prevent algorithm substitution attacks."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistory.ts",
+          "line": 51,
+          "description": "The pagination limit from the request body is not capped. A client can request an arbitrarily large number of history records in a single query, potentially causing excessive database load.",
+          "suggestion": "Apply a maximum limit: `const limit = Math.min(props.body.limit ?? 20, 100);` consistent with other providers in the codebase."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 38,
+          "description": "JWT verification failures are silently caught and re-thrown as UnauthorizedException with no logging. Failed authentication attempts are not recorded, making it impossible to detect brute-force or token-scanning attacks.",
+          "suggestion": "Log authentication failures (without exposing the token value) to enable monitoring and alerting on suspicious activity."
+        }
+      ],
+      "score": 73,
+      "summary": "[2 chunks, 17→16 issues] The codebase demonstrates solid foundational security practices: bcrypt password hashing, JWT-based authentication with issuer validation, ownership checks on all todo operations, and consistent use of MemberAuth guards on protected endpoints. However, several notable issues exist: client-supplied IP spoofing in session creation (both join and login), missing refresh token binding validation (rotated tokens remain usable), and ordering of ownership vs. existence checks in toggle/restore providers that enables todo ID enumeration. These are warning-level issues that should be addressed before production deployment. No critical vulnerabilities such as SQL injection, plaintext secrets, or missing authentication on sensitive endpoints were found.",
+      "durationMs": 33084,
+      "tokensUsed": {
+        "input": 33438,
+        "output": 2973,
+        "inputCost": 0.100314,
+        "outputCost": 0.044594999999999996
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdToggle.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTrash.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistory.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoIdHistoryHistoryId.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 50,
+          "description": "The refresh token verification includes 'tokenType' property in the payload, but the verification step doesn't check for it. The token is signed with 'tokenType' property but verified without requiring it.",
+          "suggestion": "Add validation for tokenType property in refresh token verification or ensure consistency between signing and verification payloads"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 50,
+          "description": "The refresh token is signed with 'tokenType' property but the access token is not. This inconsistency could cause issues if token validation expects consistent structure.",
+          "suggestion": "Either add tokenType to access token payload or remove it from refresh token payload for consistency"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 80,
+          "description": "The guest session creation doesn't include access_token and refresh_token fields in the session record, but guest refresh endpoint expects them. This will cause guest refresh to fail.",
+          "suggestion": "Add access_token and refresh_token fields to the guest session creation data"
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Multiple unused imports across files: IEntity, IMultiUserTodoTodoEditHistory, ArrayUtil, jwt, typia, PasswordUtil, toISOStringSafe are imported but not used in many files.",
+          "suggestion": "Remove unused imports to clean up code and improve maintainability"
+        },
+        {
+          "severity": "warning",
+          "type": "inconsistent-naming",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 80,
+          "description": "Inconsistent property naming: guest session creation uses 'multi_user_todo_guest_id' but refresh endpoint queries with 'multi_user_todo_guest_id'. This appears consistent but should be verified against Prisma schema.",
+          "suggestion": "Verify that all property names match the Prisma schema exactly"
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Unused imports detected across multiple files: IEntity, IMultiUserTodoTodoEditHistory, ArrayUtil, jwt, typia, PasswordUtil, toISOStringSafe are imported but not used in their respective files.",
+          "suggestion": "Remove all unused imports to improve code clarity"
+        }
+      ],
+      "score": 70,
+      "summary": "The code shows a generally well-structured NestJS + Prisma implementation with proper authentication flows and business logic. However, there are critical hallucinations with '@prisma/sdk' imports across all provider files, which would cause runtime failures. The logic errors in token handling and missing session fields could lead to authentication issues. The code follows AutoBE conventions correctly with prefixed table names and proper type usage.",
+      "durationMs": 216846,
+      "tokensUsed": {
+        "input": 18522,
+        "output": 2623,
+        "inputCost": 0.0055566,
+        "outputCost": 0.00230824
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdToggle.ts",
+          "line": 1,
+          "description": "Endpoint POST /member/todos/{todoId}/toggle has no corresponding operation in the provided OpenAPI specification. The spec does not define a toggle operation for todo completion.",
+          "suggestion": "Remove this endpoint unless it's defined in the OpenAPI spec. Todo completion should be updated via PATCH /member/todos/{todoId} with a completed field."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTrash.ts",
+          "line": 1,
+          "description": "Endpoint PATCH /member/todos/trash has no corresponding operation in the provided OpenAPI specification. The spec does not define a separate endpoint for listing trashed todos.",
+          "suggestion": "Remove this endpoint unless it's defined in the OpenAPI spec. Trash listing should be part of the main todo list endpoint with a deleted_at filter parameter."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+          "line": 1,
+          "description": "Endpoint DELETE /member/todos/trash/{todoId} has no corresponding operation in the provided OpenAPI specification. The spec does not define a separate endpoint for permanent deletion from trash.",
+          "suggestion": "Remove this endpoint unless it's defined in the OpenAPI spec. Permanent deletion should be handled via DELETE /member/todos/{todoId} with appropriate trash state validation."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 1,
+          "description": "The refresh endpoint returns IMultiUserTodoMember.IAuthorized but the spec might define a different response structure for token refresh operations.",
+          "suggestion": "Verify the OpenAPI spec for the exact response structure of the refresh endpoint."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 1,
+          "description": "The guest join endpoint implements complex logic for handling existing guests (restoring soft-deleted guests) that may not be specified in the OpenAPI spec.",
+          "suggestion": "Simplify to just create new guest records unless the spec explicitly defines restoration behavior."
+        }
+      ],
+      "score": 88,
+      "summary": "[2 chunks, 8→5 issues] No hallucinations detected. All controller endpoints correspond to OpenAPI operations (join/login/refresh for auth; create, index, at, update, erase, toggle, restore for todos; profile update; trash index and erase; history index and at). No fabricated fields or wrong relations observed. The code faithfully implements the Prisma schema and expected behavior.",
+      "durationMs": 26954,
+      "tokensUsed": {
+        "input": 34972,
+        "output": 1184,
+        "inputCost": 0.0104916,
+        "outputCost": 0.00104192
+      },
+      "deepEvalScores": {
+        "faithfulness": 85,
+        "relevancy": 93,
+        "contextualPrecision": 90
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 90,
+    "phaseWeight": 0.85,
+    "phaseContribution": 77,
+    "agentScore": 77,
+    "agentWeight": 0.15,
+    "agentContribution": 12
+  }
 }

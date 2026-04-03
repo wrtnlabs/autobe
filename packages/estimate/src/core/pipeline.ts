@@ -382,7 +382,10 @@ export class EvaluationPipeline {
     const typeCriticalCount = typeResult.issues.filter(
       (i) => i.severity === "critical",
     ).length;
-    if (typeCriticalCount > 0 && typeCriticalCount / totalFiles > TYPE_CRITICAL_RATIO) {
+    if (
+      typeCriticalCount > 0 &&
+      typeCriticalCount / totalFiles > TYPE_CRITICAL_RATIO
+    ) {
       return this.createGateFailure(issues, "type-errors", startTime, {
         totalFiles,
         filesWithErrors,
@@ -689,7 +692,8 @@ export class EvaluationPipeline {
       const gateMultiplier = phases.gate.passed
         ? gateScore === 100
           ? 1.0
-          : GATE_MULTIPLIER_FLOOR + rawGateMultiplier * (1 - GATE_MULTIPLIER_FLOOR)
+          : GATE_MULTIPLIER_FLOOR +
+            rawGateMultiplier * (1 - GATE_MULTIPLIER_FLOOR)
         : rawGateMultiplier;
       totalScore = Math.max(0, Math.round(rawScore * gateMultiplier));
 

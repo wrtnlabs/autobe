@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp",
-  "totalScore": 57,
+  "totalScore": 56,
   "grade": "F",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846322553-h5mcy9603wm",
+          "id": "type-error-1775138557343-vnrem9ylf9",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
             "line": 1247
           },
-          "id": "type-error-1774846322553-gqnpv5zkns6",
+          "id": "type-error-1775138557343-0xhra8jpl96",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
             "line": 1298
           },
-          "id": "type-error-1774846322553-wz3t7djt4h",
+          "id": "type-error-1775138557343-x2fd398g6cb",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
             "line": 1937
           },
-          "id": "type-error-1774846322553-9d7c9x0yol",
+          "id": "type-error-1775138557343-0e9mfwt5si7d",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/getErpHrmTimeTrackingMemberTimerSessionsTimerSessionId.ts",
             "line": 1461
           },
-          "id": "type-error-1774846322553-z0iozz90bd",
+          "id": "type-error-1775138557343-5szz1trbqwx",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
             "line": 2732
           },
-          "id": "type-error-1774846322553-gcrz6yl6ete",
+          "id": "type-error-1775138557343-tpisqtzdx0r",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
             "line": 2752
           },
-          "id": "type-error-1774846322553-2cfkqmiiwgy",
+          "id": "type-error-1775138557343-u573p522ocf",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
             "line": 2981
           },
-          "id": "type-error-1774846322553-q3y3iqd2vr",
+          "id": "type-error-1775138557343-7kobeylf01k",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
             "line": 3001
           },
-          "id": "type-error-1774846322553-ndagclgwq88",
+          "id": "type-error-1775138557343-olkoqa6rlye",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
             "line": 3301
           },
-          "id": "type-error-1774846322553-sn6j2mh4br",
+          "id": "type-error-1775138557343-bdhfwx0irp",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
             "line": 3507
           },
-          "id": "type-error-1774846322553-jzysz20lrbf",
+          "id": "type-error-1775138557343-nwkz7g5kv7q",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
             "line": 3558
           },
-          "id": "type-error-1774846322553-0yt0xh91sg3",
+          "id": "type-error-1775138557343-hdzsja8r6xk",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
             "line": 4501
           },
-          "id": "type-error-1774846322553-e7qb73oc2jl",
+          "id": "type-error-1775138557343-v6wu7dfxczp",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
             "line": 1328
           },
-          "id": "type-error-1774846322553-x7ktq1jwyh",
+          "id": "type-error-1775138557343-iazw3pf8gvh",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
             "line": 1382
           },
-          "id": "type-error-1774846322553-fj2jl8wbibp",
+          "id": "type-error-1775138557343-mkznyynxo2",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
             "line": 2579
           },
-          "id": "type-error-1774846322553-7ttkoshkyk8",
+          "id": "type-error-1775138557343-ksfoy5g5guf",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/postErpHrmTimeTrackingMemberReportDefinitionsGenerate.ts",
             "line": 6411
           },
-          "id": "type-error-1774846322553-av4qy098so",
+          "id": "type-error-1775138557343-0c1ln6swbbi",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/transformers/ErpHrmTimeTrackingReportDefinitionTransformer.ts",
             "line": 1838
           },
-          "id": "type-error-1774846322553-7838mzcmhpn",
+          "id": "type-error-1775138557343-fnpczcng1xn",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/transformers/ErpHrmTimeTrackingReportDefinitionTransformer.ts",
             "line": 1892
           },
-          "id": "type-error-1774846322553-hoolnsx95vp",
+          "id": "type-error-1775138557343-v9nny1c7xjd",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/transformers/ErpHrmTimeTrackingTimelogTransformer.ts",
             "line": 2547
           },
-          "id": "type-error-1774846322553-iunid2qmwim",
+          "id": "type-error-1775138557343-8r99bypij5l",
           "autoFixable": false
         },
         {
@@ -259,11 +259,11 @@
             "file": "src/transformers/ErpHrmTimeTrackingTimesheetAtSummaryTransformer.ts",
             "line": 1739
           },
-          "id": "type-error-1774846322553-vi0bu2912ns",
+          "id": "type-error-1775138557343-62ibyk186wb",
           "autoFixable": false
         }
       ],
-      "durationMs": 7562,
+      "durationMs": 7424,
       "metrics": {
         "totalFiles": 362,
         "filesWithErrors": 0,
@@ -397,7 +397,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846322787-xvyxunt8d6d",
+          "id": "complexity-1775138557659-c30qzc3kaj7",
           "autoFixable": false
         },
         {
@@ -410,7 +410,7 @@
             "line": 15
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846322792-i45ktvdzvl",
+          "id": "complexity-1775138557656-poqg55ftz2",
           "autoFixable": false
         },
         {
@@ -423,7 +423,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846322789-pvoshenmjb",
+          "id": "complexity-1775138557669-g65o9q4vrgq",
           "autoFixable": false
         },
         {
@@ -436,7 +436,7 @@
             "line": 16
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846322810-2tc7rk901h7",
+          "id": "complexity-1775138557690-x2rpxwmfrd",
           "autoFixable": false
         },
         {
@@ -449,7 +449,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846322813-8y9qelu2jct",
+          "id": "complexity-1775138557693-6s3hqibf4we",
           "autoFixable": false
         },
         {
@@ -462,7 +462,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846322817-p2l498pl6h8",
+          "id": "complexity-1775138557699-g67xdn8vy8f",
           "autoFixable": false
         },
         {
@@ -475,7 +475,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846322819-xjmchom1iae",
+          "id": "complexity-1775138557701-x9jymx6gnap",
           "autoFixable": false
         },
         {
@@ -488,7 +488,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846322820-68m6tdoaxhl",
+          "id": "complexity-1775138557702-cz6p92uz609",
           "autoFixable": false
         }
       ]
@@ -502,34 +502,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntries/ErphrmtimetrackingMemberActivitylogentriesController.ts",
-            "line": 124
-          },
-          "id": "duplication-1774846323106-5b2phb76td4",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntries/ErphrmtimetrackingMemberActivitylogentriesController.ts",
-            "line": 125
-          },
-          "id": "duplication-1774846323106-k6agqtdc1e",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntrySnapshots/ErphrmtimetrackingMemberActivitylogentrysnapshotsController.ts",
             "line": 141
           },
-          "id": "duplication-1774846323106-8dlmrsq8f02",
+          "id": "duplication-1775138557928-jxd087qg7tl",
           "autoFixable": false
         },
         {
@@ -541,7 +517,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntrySnapshots/ErphrmtimetrackingMemberActivitylogentrysnapshotsController.ts",
             "line": 142
           },
-          "id": "duplication-1774846323106-vn7j2xltqjh",
+          "id": "duplication-1775138557928-2zddugqo57d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntries/ErphrmtimetrackingMemberActivitylogentriesController.ts",
+            "line": 124
+          },
+          "id": "duplication-1775138557928-o7qz3o1sbe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntries/ErphrmtimetrackingMemberActivitylogentriesController.ts",
+            "line": 125
+          },
+          "id": "duplication-1775138557928-0mv6rt2hjxkl",
           "autoFixable": false
         },
         {
@@ -553,7 +553,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingMemberTimesheetsTimesheetId.ts",
             "line": 24
           },
-          "id": "duplication-1774846323106-992p6prt11n",
+          "id": "duplication-1775138557928-599trybzcho",
           "autoFixable": false
         },
         {
@@ -565,7 +565,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingMemberTimesheetsTimesheetId.ts",
             "line": 25
           },
-          "id": "duplication-1774846323106-r0popveu7fc",
+          "id": "duplication-1775138557928-m6ae10kcmk",
           "autoFixable": false
         },
         {
@@ -577,7 +577,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingMemberTimesheetsTimesheetId.ts",
             "line": 26
           },
-          "id": "duplication-1774846323106-4rnfmr6qzwb",
+          "id": "duplication-1775138557928-a0tlf8w997o",
           "autoFixable": false
         },
         {
@@ -589,7 +589,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingMemberTimesheetsTimesheetId.ts",
             "line": 27
           },
-          "id": "duplication-1774846323106-ho8yjmly7ap",
+          "id": "duplication-1775138557928-cvoh9wwed1p",
           "autoFixable": false
         },
         {
@@ -601,7 +601,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/postErpHrmTimeTrackingMemberProjectsProjectIdMembershipsBulkAssign.ts",
             "line": 10
           },
-          "id": "duplication-1774846323106-kwywldvyq8o",
+          "id": "duplication-1775138557928-j3uqryst2ac",
           "autoFixable": false
         },
         {
@@ -613,7 +613,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts",
             "line": 94
           },
-          "id": "duplication-1774846323107-sepi5dlw0g",
+          "id": "duplication-1775138557928-3j4cyy1luan",
           "autoFixable": false
         },
         {
@@ -625,7 +625,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts",
             "line": 95
           },
-          "id": "duplication-1774846323107-eeeom69va7j",
+          "id": "duplication-1775138557928-vml6t0czhf",
           "autoFixable": false
         },
         {
@@ -637,7 +637,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts",
             "line": 115
           },
-          "id": "duplication-1774846323107-sf182syzhpm",
+          "id": "duplication-1775138557928-hr1elvh90c9",
           "autoFixable": false
         },
         {
@@ -649,7 +649,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberActivityLogsTargetEntitiesTimeline.ts",
             "line": 9
           },
-          "id": "duplication-1774846323107-t7e0iul4oag",
+          "id": "duplication-1775138557928-e08zvh2bll9",
           "autoFixable": false
         },
         {
@@ -661,7 +661,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberActivityLogSnapshotsTargetEntitiesTimeline.ts",
             "line": 9
           },
-          "id": "duplication-1774846323107-dg5yl7amfw8",
+          "id": "duplication-1775138557928-vzbuj2944qn",
           "autoFixable": false
         },
         {
@@ -673,7 +673,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberActivityLogSnapshotsTargetEntitiesTimeline.ts",
             "line": 10
           },
-          "id": "duplication-1774846323107-5u52ppcwwxc",
+          "id": "duplication-1775138557928-u2t8n6fcke",
           "autoFixable": false
         }
       ]
@@ -690,7 +690,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/password-resets/ErphrmtimetrackingMemberPassword_resetsController.ts",
             "line": 12
           },
-          "id": "naming-1774846323115-6rllqcrak3w",
+          "id": "naming-1775138557887-wazlfuvhgrt",
           "autoFixable": false
         },
         {
@@ -702,7 +702,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/email-verifications/ErphrmtimetrackingMemberEmail_verificationsController.ts",
             "line": 11
           },
-          "id": "naming-1774846323116-01ivg4wpbj6c",
+          "id": "naming-1775138557929-qlvogwj3d6g",
           "autoFixable": false
         }
       ]
@@ -715,12 +715,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"ErphrmtimetrackingReportoutputmetricsController\" missing JSDoc",
+          "message": "Class \"ErphrmtimetrackingReportdefinitionsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportOutputMetrics/ErphrmtimetrackingReportoutputmetricsController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportDefinitions/ErphrmtimetrackingReportdefinitionsController.ts",
+            "line": 13
           },
-          "id": "jsdoc-1774846323162-cubio42uy9u",
+          "id": "jsdoc-1775138557965-xe5fit3ix49",
           "autoFixable": false
         },
         {
@@ -732,19 +732,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportOutputs/ErphrmtimetrackingReportoutputsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846323163-3qckflcb5q2",
+          "id": "jsdoc-1775138557966-kajo0ddg7vj",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"ErphrmtimetrackingReportdefinitionsController\" missing JSDoc",
+          "message": "Class \"ErphrmtimetrackingReportoutputmetricsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportDefinitions/ErphrmtimetrackingReportdefinitionsController.ts",
-            "line": 13
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportOutputMetrics/ErphrmtimetrackingReportoutputmetricsController.ts",
+            "line": 11
           },
-          "id": "jsdoc-1774846323169-7bh2dzlruig",
+          "id": "jsdoc-1775138557966-obhxwkjht",
           "autoFixable": false
         },
         {
@@ -756,19 +756,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportGenerationRuns/ErphrmtimetrackingReportgenerationrunsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846323163-20xs2th0eji",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingReportoutputsMetricsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportOutputs/metrics/ErphrmtimetrackingReportoutputsMetricsController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774846323164-9v0ae1dlzam",
+          "id": "jsdoc-1775138557975-mpht0peks7a",
           "autoFixable": false
         },
         {
@@ -780,7 +768,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportDefinitions/reportGenerationRuns/ErphrmtimetrackingReportdefinitionsReportgenerationrunsController.ts",
             "line": 8
           },
-          "id": "jsdoc-1774846323169-39mryekugqd",
+          "id": "jsdoc-1775138557966-79l2s17afk3",
           "autoFixable": false
         },
         {
@@ -792,7 +780,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportDefinitions/filters/ErphrmtimetrackingReportdefinitionsFiltersController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846323165-5pztmhq4b5s",
+          "id": "jsdoc-1775138557967-ohhvqwgvq5r",
           "autoFixable": false
         },
         {
@@ -804,7 +792,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportDefinitions/dimensions/ErphrmtimetrackingReportdefinitionsDimensionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846323166-0196kvz76f0nd",
+          "id": "jsdoc-1775138557968-fbf60lox0cq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportoutputsMetricsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportOutputs/metrics/ErphrmtimetrackingReportoutputsMetricsController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1775138557968-3ahxkuc4plj",
           "autoFixable": false
         },
         {
@@ -816,7 +816,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportGenerationRuns/outputs/ErphrmtimetrackingReportgenerationrunsOutputsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846323164-zafqknjikeq",
+          "id": "jsdoc-1775138557968-d3fdj0zwaib",
           "autoFixable": false
         },
         {
@@ -828,7 +828,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/auth/member/ErphrmtimetrackingAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846323165-knlne6avnn9",
+          "id": "jsdoc-1775138557968-gnp9nc0opiu",
           "autoFixable": false
         },
         {
@@ -840,7 +840,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/guest/sessions/ErphrmtimetrackingGuestSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846323166-u8lfvvtbc5o",
+          "id": "jsdoc-1775138557968-ujn07t6hdo",
           "autoFixable": false
         },
         {
@@ -852,31 +852,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/guest/guests/ErphrmtimetrackingGuestGuestsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846323166-6n0tdoi2hyx",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberTimesheetsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timesheets/ErphrmtimetrackingMemberTimesheetsController.ts",
-            "line": 17
-          },
-          "id": "jsdoc-1774846323168-fcfocm9x7zd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberTimesheetversioninglocksController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timesheetVersioningLocks/ErphrmtimetrackingMemberTimesheetversioninglocksController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774846323167-fx4bupqs1th",
+          "id": "jsdoc-1775138557969-u6m7yggjpoh",
           "autoFixable": false
         },
         {
@@ -888,7 +864,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timelogs/ErphrmtimetrackingMemberTimelogsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846323170-u8zc5pskty8",
+          "id": "jsdoc-1775138557969-j08phdh36ie",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberTimesheetversioninglocksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timesheetVersioningLocks/ErphrmtimetrackingMemberTimesheetversioninglocksController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1775138557970-xvjudmvexcc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberTimesheetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timesheets/ErphrmtimetrackingMemberTimesheetsController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1775138557971-w2a75wr170f",
           "autoFixable": false
         },
         {
@@ -900,7 +900,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timerSessions/ErphrmtimetrackingMemberTimersessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846323170-71yrfwzy31t",
+          "id": "jsdoc-1775138557971-3ujabatplc6",
           "autoFixable": false
         },
         {
@@ -912,19 +912,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timelogSnapshots/ErphrmtimetrackingMemberTimelogsnapshotsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774846323171-fuyhwidgag7",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberProjectsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/ErphrmtimetrackingMemberProjectsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846323174-l1x4qjb2xvh",
+          "id": "jsdoc-1775138557972-kwszhbdbl48",
           "autoFixable": false
         },
         {
@@ -936,7 +924,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/personalDashboard/ErphrmtimetrackingMemberPersonaldashboardController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846323171-054p12digpc",
+          "id": "jsdoc-1775138557972-1nmi9bsln6f",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/ErphrmtimetrackingMemberProjectsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775138557972-k9i95ilk7v",
           "autoFixable": false
         },
         {
@@ -948,7 +948,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/password-resets/ErphrmtimetrackingMemberPassword_resetsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846323171-o0spo4s7no",
+          "id": "jsdoc-1775138557973-8zyvvsc70fr",
           "autoFixable": false
         },
         {
@@ -960,43 +960,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/members/ErphrmtimetrackingMemberMembersController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846323172-gq03jcdawcp",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberDepartmentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/departments/ErphrmtimetrackingMemberDepartmentsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846323173-u8jwwi4fc3n",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberEmail_verificationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/email-verifications/ErphrmtimetrackingMemberEmail_verificationsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846323172-jsahu8912f",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberDashboardController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/dashboard/ErphrmtimetrackingMemberDashboardController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846323172-2r15kpw2d1o",
+          "id": "jsdoc-1775138557973-od9sqhinlsk",
           "autoFixable": false
         },
         {
@@ -1008,7 +972,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/organizations/ErphrmtimetrackingMemberOrganizationsController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774846323176-jgv38jssq6d",
+          "id": "jsdoc-1775138557973-nk006qy98zm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/departments/ErphrmtimetrackingMemberDepartmentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775138557974-147av53lbxrr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberEmail_verificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/email-verifications/ErphrmtimetrackingMemberEmail_verificationsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775138557974-vdzd3edo73",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberDashboardController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/dashboard/ErphrmtimetrackingMemberDashboardController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775138557974-ybqsyhj4xgm",
           "autoFixable": false
         },
         {
@@ -1020,19 +1020,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/contractSnapshots/ErphrmtimetrackingMemberContractsnapshotsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846323174-czv5psh9ry7",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberActivitylogentriesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntries/ErphrmtimetrackingMemberActivitylogentriesController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846323175-0gatl2wbccea",
+          "id": "jsdoc-1775138557975-crx438u7eb",
           "autoFixable": false
         },
         {
@@ -1044,7 +1032,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/contracts/ErphrmtimetrackingMemberContractsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846323177-0q76yhzxbau",
+          "id": "jsdoc-1775138557976-upap9r5gtm",
           "autoFixable": false
         },
         {
@@ -1056,7 +1044,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntrySnapshots/ErphrmtimetrackingMemberActivitylogentrysnapshotsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774846323176-zsir7vbsu6",
+          "id": "jsdoc-1775138557976-oklfo9y7usm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberActivitylogentriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntries/ErphrmtimetrackingMemberActivitylogentriesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775138557980-us7b0zwvj2e",
           "autoFixable": false
         },
         {
@@ -1068,7 +1068,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/auth/guest/join/ErphrmtimetrackingAuthGuestJoinController.ts",
             "line": 8
           },
-          "id": "jsdoc-1774846323175-crg9748st6u",
+          "id": "jsdoc-1775138557980-tw6tmenku6q",
           "autoFixable": false
         },
         {
@@ -1080,7 +1080,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/auth/guest/refresh/ErphrmtimetrackingAuthGuestRefreshController.ts",
             "line": 8
           },
-          "id": "jsdoc-1774846323176-pkid0ja8tz",
+          "id": "jsdoc-1775138557980-cijimyp5we7",
           "autoFixable": false
         },
         {
@@ -1092,79 +1092,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timesheets/approve/ErphrmtimetrackingMemberTimesheetsApproveController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846323177-poawqnhh3x",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberReportdefinitionsPreviewController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/reportDefinitions/preview/ErphrmtimetrackingMemberReportdefinitionsPreviewController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846323177-n9dx1saq3w8",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberReportdefinitionsGenerateController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/reportDefinitions/generate/ErphrmtimetrackingMemberReportdefinitionsGenerateController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846323178-kcusx7g2ia",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberProjectsTasksController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/tasks/ErphrmtimetrackingMemberProjectsTasksController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846323179-rxbybz9lfe",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberProjectsTasktreeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/taskTree/ErphrmtimetrackingMemberProjectsTasktreeController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846323180-sfcoua7e93l",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberProjectsMembershipsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/memberships/ErphrmtimetrackingMemberProjectsMembershipsController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774846323179-xmnoliu1r9g",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmtimetrackingMemberProjectsAssignedController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/assigned/ErphrmtimetrackingMemberProjectsAssignedController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846323178-ct1vznmkqcu",
+          "id": "jsdoc-1775138557980-w6c21wf1tkr",
           "autoFixable": false
         },
         {
@@ -1176,7 +1104,79 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/reportGenerationRuns/exports/ErphrmtimetrackingMemberReportgenerationrunsExportsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846323180-8ghhs2hay5c",
+          "id": "jsdoc-1775138557981-dqmh6gop06v",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberReportdefinitionsPreviewController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/reportDefinitions/preview/ErphrmtimetrackingMemberReportdefinitionsPreviewController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775138557981-68lamgnz4r7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberReportdefinitionsGenerateController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/reportDefinitions/generate/ErphrmtimetrackingMemberReportdefinitionsGenerateController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775138557981-u4n7z7kup3",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsTasksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/tasks/ErphrmtimetrackingMemberProjectsTasksController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775138557982-lpaiqzk6dj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsTasktreeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/taskTree/ErphrmtimetrackingMemberProjectsTasktreeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775138557981-uysxdb8eiso",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsMembershipsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/memberships/ErphrmtimetrackingMemberProjectsMembershipsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1775138557983-wtjbmet6hwq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsAssignedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/assigned/ErphrmtimetrackingMemberProjectsAssignedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775138557983-1cgnc1ubnna",
           "autoFixable": false
         },
         {
@@ -1188,7 +1188,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/departments/tree/ErphrmtimetrackingMemberDepartmentsTreeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846323180-kh8nj9gw5ba",
+          "id": "jsdoc-1775138557983-ghw3faxnrd4",
           "autoFixable": false
         },
         {
@@ -1200,7 +1200,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogs/search/ErphrmtimetrackingMemberActivitylogsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846323180-5p7mdh610qt",
+          "id": "jsdoc-1775138557983-emvdrch0jhw",
           "autoFixable": false
         },
         {
@@ -1212,7 +1212,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogSnapshots/search/ErphrmtimetrackingMemberActivitylogsnapshotsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846323181-3mgmixazinp",
+          "id": "jsdoc-1775138557983-gphdosay53f",
           "autoFixable": false
         },
         {
@@ -1224,7 +1224,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timerSessions/current/stop/ErphrmtimetrackingMemberTimersessionsCurrentStopController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846323181-u4pwz3chmwb",
+          "id": "jsdoc-1775138557984-kgapdn6t17",
           "autoFixable": false
         },
         {
@@ -1236,7 +1236,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/memberships/bulkAssign/ErphrmtimetrackingMemberProjectsMembershipsBulkassignController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846323180-vngfu3g47j8",
+          "id": "jsdoc-1775138557984-05ni8390a5f",
           "autoFixable": false
         },
         {
@@ -1248,7 +1248,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/organizations/timezone/rebuild/ErphrmtimetrackingMemberOrganizationsTimezoneRebuildController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846323181-wadrg9nftjo",
+          "id": "jsdoc-1775138557984-daijej40jc8",
           "autoFixable": false
         },
         {
@@ -1260,7 +1260,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogs/targetEntities/timeline/ErphrmtimetrackingMemberActivitylogsTargetentitiesTimelineController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846323181-rhkn9xbvfrl",
+          "id": "jsdoc-1775138557984-odu9jynuj6l",
           "autoFixable": false
         },
         {
@@ -1272,7 +1272,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogSnapshots/targetEntities/timeline/ErphrmtimetrackingMemberActivitylogsnapshotsTargetentitiesTimelineController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846323181-zde5j06ffs8",
+          "id": "jsdoc-1775138557984-u4igyiz793i",
           "autoFixable": false
         }
       ]
@@ -1291,7 +1291,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimesheetVersioningLock.ts",
             "line": 72
           },
-          "id": "completeness-1774846323207-3toq2018nhg",
+          "id": "completeness-1775138558016-772uxivatow",
           "autoFixable": false
         },
         {
@@ -1303,7 +1303,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimesheetVersioningLock.ts",
             "line": 80
           },
-          "id": "completeness-1774846323207-2bhjg7dpx8g",
+          "id": "completeness-1775138558016-g434bs4coqe",
           "autoFixable": false
         },
         {
@@ -1315,7 +1315,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimesheetVersioningLock.ts",
             "line": 88
           },
-          "id": "completeness-1774846323207-80b0gr3uciv",
+          "id": "completeness-1775138558016-kelmy7glv6",
           "autoFixable": false
         },
         {
@@ -1327,7 +1327,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimesheet.ts",
             "line": 147
           },
-          "id": "completeness-1774846323207-nkh7yd18qp",
+          "id": "completeness-1775138558015-p4mma13whb",
           "autoFixable": false
         },
         {
@@ -1339,7 +1339,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimesheet.ts",
             "line": 155
           },
-          "id": "completeness-1774846323207-5uh11ml0er8",
+          "id": "completeness-1775138558015-o7twxq8oynp",
           "autoFixable": false
         },
         {
@@ -1351,7 +1351,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimesheet.ts",
             "line": 163
           },
-          "id": "completeness-1774846323207-d4layrv2gad",
+          "id": "completeness-1775138558015-qgumc38ji",
           "autoFixable": false
         },
         {
@@ -1363,7 +1363,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimerSession.ts",
             "line": 218
           },
-          "id": "completeness-1774846323207-biqiiyym3d",
+          "id": "completeness-1775138558016-hkho1yb6dx8",
           "autoFixable": false
         },
         {
@@ -1375,7 +1375,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimerSession.ts",
             "line": 266
           },
-          "id": "completeness-1774846323207-h6mxhsgla1c",
+          "id": "completeness-1775138558016-35ug0acaxmv",
           "autoFixable": false
         },
         {
@@ -1387,7 +1387,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 17
           },
-          "id": "completeness-1774846323208-cdgbcxeyrdm",
+          "id": "completeness-1775138558016-fen7cfg3x5q",
           "autoFixable": false
         },
         {
@@ -1399,7 +1399,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 65
           },
-          "id": "completeness-1774846323208-k7kgesruram",
+          "id": "completeness-1775138558016-dwuuqimd07e",
           "autoFixable": false
         },
         {
@@ -1411,7 +1411,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 73
           },
-          "id": "completeness-1774846323208-cbfyb0ccyct",
+          "id": "completeness-1775138558016-5lv2wfzkcee",
           "autoFixable": false
         },
         {
@@ -1423,7 +1423,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 81
           },
-          "id": "completeness-1774846323208-y2hvu6fxik",
+          "id": "completeness-1775138558016-g7ev8eozdvr",
           "autoFixable": false
         },
         {
@@ -1435,7 +1435,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 89
           },
-          "id": "completeness-1774846323208-btvfhzkj0c",
+          "id": "completeness-1775138558016-9h48n1bq3js",
           "autoFixable": false
         },
         {
@@ -1447,7 +1447,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 97
           },
-          "id": "completeness-1774846323208-05aya8600kpm",
+          "id": "completeness-1775138558016-0hq9r8jtm8tk",
           "autoFixable": false
         },
         {
@@ -1459,7 +1459,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 105
           },
-          "id": "completeness-1774846323208-lp3fiehd8r",
+          "id": "completeness-1775138558016-kdswkzq8f0t",
           "autoFixable": false
         },
         {
@@ -1471,7 +1471,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 113
           },
-          "id": "completeness-1774846323208-5gtpuq9bhzl",
+          "id": "completeness-1775138558016-tc7pr1uy0r",
           "autoFixable": false
         },
         {
@@ -1483,7 +1483,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 121
           },
-          "id": "completeness-1774846323208-rs2vc83hp4l",
+          "id": "completeness-1775138558016-na5nc565hw",
           "autoFixable": false
         },
         {
@@ -1495,7 +1495,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 192
           },
-          "id": "completeness-1774846323208-m2o7alyo5h",
+          "id": "completeness-1775138558016-qv7rkbpnp4a",
           "autoFixable": false
         },
         {
@@ -1507,7 +1507,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 200
           },
-          "id": "completeness-1774846323208-q7tqlev9shs",
+          "id": "completeness-1775138558016-sn45691g6d",
           "autoFixable": false
         },
         {
@@ -1519,7 +1519,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 208
           },
-          "id": "completeness-1774846323208-jsf4apit7sn",
+          "id": "completeness-1775138558016-ptyep0y34fi",
           "autoFixable": false
         },
         {
@@ -1531,7 +1531,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 216
           },
-          "id": "completeness-1774846323208-w7w9f2ipuab",
+          "id": "completeness-1775138558016-qlqupr3bn9f",
           "autoFixable": false
         },
         {
@@ -1543,7 +1543,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 224
           },
-          "id": "completeness-1774846323208-ypnylgrgfm",
+          "id": "completeness-1775138558016-5i3m7dfym7a",
           "autoFixable": false
         },
         {
@@ -1555,7 +1555,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
             "line": 232
           },
-          "id": "completeness-1774846323208-ms7a1v1o709",
+          "id": "completeness-1775138558016-8icujgqpwi4",
           "autoFixable": false
         },
         {
@@ -1567,7 +1567,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
             "line": 154
           },
-          "id": "completeness-1774846323209-mtci6gtu6qa",
+          "id": "completeness-1775138558018-2we405zq8vr",
           "autoFixable": false
         },
         {
@@ -1579,7 +1579,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
             "line": 162
           },
-          "id": "completeness-1774846323209-fxriry9qwjl",
+          "id": "completeness-1775138558018-3in9reagz8o",
           "autoFixable": false
         },
         {
@@ -1591,7 +1591,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
             "line": 170
           },
-          "id": "completeness-1774846323209-jknohjka7x",
+          "id": "completeness-1775138558018-nzihjwdo1jh",
           "autoFixable": false
         },
         {
@@ -1603,7 +1603,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
             "line": 178
           },
-          "id": "completeness-1774846323209-2vzaksr4nqb",
+          "id": "completeness-1775138558018-w92xxuaohf",
           "autoFixable": false
         },
         {
@@ -1615,7 +1615,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
             "line": 186
           },
-          "id": "completeness-1774846323209-4qiyetyfupq",
+          "id": "completeness-1775138558018-v7grrc4uxzn",
           "autoFixable": false
         },
         {
@@ -1627,7 +1627,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
             "line": 194
           },
-          "id": "completeness-1774846323209-c2nvmvjeerb",
+          "id": "completeness-1775138558018-0f41c2oadyh7",
           "autoFixable": false
         },
         {
@@ -1639,7 +1639,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
             "line": 233
           },
-          "id": "completeness-1774846323209-6gg5g31b81d",
+          "id": "completeness-1775138558018-h4q8mc1a357",
           "autoFixable": false
         },
         {
@@ -1651,7 +1651,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingMember.ts",
             "line": 147
           },
-          "id": "completeness-1774846323209-uolpjm1f7ch",
+          "id": "completeness-1775138558018-95wzw6bpbns",
           "autoFixable": false
         },
         {
@@ -1663,7 +1663,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingGuestSession.ts",
             "line": 79
           },
-          "id": "completeness-1774846323209-zntvwyg7gtd",
+          "id": "completeness-1775138558019-aa1c7fdqq9p",
           "autoFixable": false
         },
         {
@@ -1675,7 +1675,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingGuestSession.ts",
             "line": 87
           },
-          "id": "completeness-1774846323209-g7cf7wmwao8",
+          "id": "completeness-1775138558019-s6zmc8zf719",
           "autoFixable": false
         },
         {
@@ -1687,7 +1687,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingGuestSession.ts",
             "line": 95
           },
-          "id": "completeness-1774846323209-c9pdtmrobth",
+          "id": "completeness-1775138558019-scd5yd0fbi",
           "autoFixable": false
         },
         {
@@ -1699,7 +1699,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingGuest.ts",
             "line": 32
           },
-          "id": "completeness-1774846323209-arbv1w4at8s",
+          "id": "completeness-1775138558018-rv8wo9yigi",
           "autoFixable": false
         },
         {
@@ -1711,7 +1711,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingGuest.ts",
             "line": 40
           },
-          "id": "completeness-1774846323209-0tkg8s8xn8wc",
+          "id": "completeness-1775138558018-04f2d4qcebtc",
           "autoFixable": false
         },
         {
@@ -1723,7 +1723,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingDepartment.ts",
             "line": 151
           },
-          "id": "completeness-1774846323209-x1xslwq92ta",
+          "id": "completeness-1775138558019-adjd2f8yuz5",
           "autoFixable": false
         },
         {
@@ -1735,7 +1735,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingDepartment.ts",
             "line": 159
           },
-          "id": "completeness-1774846323209-25repq9rbb8",
+          "id": "completeness-1775138558019-4pj6qjb06xd",
           "autoFixable": false
         },
         {
@@ -1747,7 +1747,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingDepartment.ts",
             "line": 167
           },
-          "id": "completeness-1774846323209-lime4fmi4ra",
+          "id": "completeness-1775138558019-7r5i4bynvt",
           "autoFixable": false
         },
         {
@@ -1759,7 +1759,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
             "line": 324
           },
-          "id": "completeness-1774846323209-vee84m5jizm",
+          "id": "completeness-1775138558019-1er7tajm7z7g",
           "autoFixable": false
         },
         {
@@ -1771,7 +1771,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
             "line": 332
           },
-          "id": "completeness-1774846323209-k0x3cei46ze",
+          "id": "completeness-1775138558019-br83q5qmv4q",
           "autoFixable": false
         },
         {
@@ -1783,7 +1783,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
             "line": 340
           },
-          "id": "completeness-1774846323209-adhtyusugj",
+          "id": "completeness-1775138558019-5tehdl2virb",
           "autoFixable": false
         },
         {
@@ -1795,7 +1795,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
             "line": 348
           },
-          "id": "completeness-1774846323209-g26wi1hmp0g",
+          "id": "completeness-1775138558019-soo6tocfbl",
           "autoFixable": false
         },
         {
@@ -1807,7 +1807,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
             "line": 356
           },
-          "id": "completeness-1774846323209-htgeoryrf5l",
+          "id": "completeness-1775138558019-0x7fx1201ou",
           "autoFixable": false
         },
         {
@@ -1819,7 +1819,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
             "line": 364
           },
-          "id": "completeness-1774846323209-o0nmmey9mzc",
+          "id": "completeness-1775138558019-2p697r1i26x",
           "autoFixable": false
         },
         {
@@ -1831,7 +1831,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
             "line": 372
           },
-          "id": "completeness-1774846323209-l1o4rcjzmgo",
+          "id": "completeness-1775138558019-36b0ab9pyfr",
           "autoFixable": false
         },
         {
@@ -1843,7 +1843,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
             "line": 380
           },
-          "id": "completeness-1774846323209-dpaujnq1jqt",
+          "id": "completeness-1775138558019-r4l99idmkl",
           "autoFixable": false
         },
         {
@@ -1855,7 +1855,7 @@
             "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
             "line": 388
           },
-          "id": "completeness-1774846323209-2si8akf6pxr",
+          "id": "completeness-1775138558019-y02rwdfso6",
           "autoFixable": false
         }
       ]
@@ -1878,7 +1878,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846322553-h5mcy9603wm",
+      "id": "type-error-1775138557343-vnrem9ylf9",
       "autoFixable": false
     },
     {
@@ -1890,7 +1890,7 @@
         "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
         "line": 1298
       },
-      "id": "type-error-1774846322553-wz3t7djt4h",
+      "id": "type-error-1775138557343-x2fd398g6cb",
       "autoFixable": false
     },
     {
@@ -1902,7 +1902,7 @@
         "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
         "line": 1937
       },
-      "id": "type-error-1774846322553-9d7c9x0yol",
+      "id": "type-error-1775138557343-0e9mfwt5si7d",
       "autoFixable": false
     },
     {
@@ -1914,7 +1914,7 @@
         "file": "src/providers/getErpHrmTimeTrackingMemberTimerSessionsTimerSessionId.ts",
         "line": 1461
       },
-      "id": "type-error-1774846322553-z0iozz90bd",
+      "id": "type-error-1775138557343-5szz1trbqwx",
       "autoFixable": false
     },
     {
@@ -1926,7 +1926,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
         "line": 3558
       },
-      "id": "type-error-1774846322553-0yt0xh91sg3",
+      "id": "type-error-1775138557343-hdzsja8r6xk",
       "autoFixable": false
     },
     {
@@ -1938,7 +1938,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
         "line": 4501
       },
-      "id": "type-error-1774846322553-e7qb73oc2jl",
+      "id": "type-error-1775138557343-v6wu7dfxczp",
       "autoFixable": false
     },
     {
@@ -1950,7 +1950,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
         "line": 1382
       },
-      "id": "type-error-1774846322553-fj2jl8wbibp",
+      "id": "type-error-1775138557343-mkznyynxo2",
       "autoFixable": false
     },
     {
@@ -1962,7 +1962,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
         "line": 2579
       },
-      "id": "type-error-1774846322553-7ttkoshkyk8",
+      "id": "type-error-1775138557343-ksfoy5g5guf",
       "autoFixable": false
     },
     {
@@ -1974,7 +1974,7 @@
         "file": "src/providers/postErpHrmTimeTrackingMemberReportDefinitionsGenerate.ts",
         "line": 6411
       },
-      "id": "type-error-1774846322553-av4qy098so",
+      "id": "type-error-1775138557343-0c1ln6swbbi",
       "autoFixable": false
     },
     {
@@ -1986,7 +1986,7 @@
         "file": "src/transformers/ErpHrmTimeTrackingReportDefinitionTransformer.ts",
         "line": 1838
       },
-      "id": "type-error-1774846322553-7838mzcmhpn",
+      "id": "type-error-1775138557343-fnpczcng1xn",
       "autoFixable": false
     },
     {
@@ -1998,7 +1998,7 @@
         "file": "src/transformers/ErpHrmTimeTrackingReportDefinitionTransformer.ts",
         "line": 1892
       },
-      "id": "type-error-1774846322553-hoolnsx95vp",
+      "id": "type-error-1775138557343-v9nny1c7xjd",
       "autoFixable": false
     },
     {
@@ -2010,7 +2010,7 @@
         "file": "src/transformers/ErpHrmTimeTrackingTimelogTransformer.ts",
         "line": 2547
       },
-      "id": "type-error-1774846322553-iunid2qmwim",
+      "id": "type-error-1775138557343-8r99bypij5l",
       "autoFixable": false
     },
     {
@@ -2022,7 +2022,7 @@
         "file": "src/transformers/ErpHrmTimeTrackingTimesheetAtSummaryTransformer.ts",
         "line": 1739
       },
-      "id": "type-error-1774846322553-vi0bu2912ns",
+      "id": "type-error-1775138557343-62ibyk186wb",
       "autoFixable": false
     }
   ],
@@ -2036,7 +2036,7 @@
         "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
         "line": 1247
       },
-      "id": "type-error-1774846322553-gqnpv5zkns6",
+      "id": "type-error-1775138557343-0xhra8jpl96",
       "autoFixable": false
     },
     {
@@ -2048,7 +2048,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
         "line": 2732
       },
-      "id": "type-error-1774846322553-gcrz6yl6ete",
+      "id": "type-error-1775138557343-tpisqtzdx0r",
       "autoFixable": false
     },
     {
@@ -2060,7 +2060,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
         "line": 2752
       },
-      "id": "type-error-1774846322553-2cfkqmiiwgy",
+      "id": "type-error-1775138557343-u573p522ocf",
       "autoFixable": false
     },
     {
@@ -2072,7 +2072,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
         "line": 2981
       },
-      "id": "type-error-1774846322553-q3y3iqd2vr",
+      "id": "type-error-1775138557343-7kobeylf01k",
       "autoFixable": false
     },
     {
@@ -2084,7 +2084,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
         "line": 3001
       },
-      "id": "type-error-1774846322553-ndagclgwq88",
+      "id": "type-error-1775138557343-olkoqa6rlye",
       "autoFixable": false
     },
     {
@@ -2096,7 +2096,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
         "line": 3301
       },
-      "id": "type-error-1774846322553-sn6j2mh4br",
+      "id": "type-error-1775138557343-bdhfwx0irp",
       "autoFixable": false
     },
     {
@@ -2108,7 +2108,7 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
         "line": 3507
       },
-      "id": "type-error-1774846322553-jzysz20lrbf",
+      "id": "type-error-1775138557343-nwkz7g5kv7q",
       "autoFixable": false
     },
     {
@@ -2120,14 +2120,14 @@
         "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
         "line": 1328
       },
-      "id": "type-error-1774846322553-x7ktq1jwyh",
+      "id": "type-error-1775138557343-iazw3pf8gvh",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:52:03.210Z",
-    "totalDurationMs": 8091,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T14:02:38.020Z",
+    "totalDurationMs": 7898,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 362
   },
   "penalties": {
@@ -2154,5 +2154,1205 @@
     "structures": 44,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/erpHrmTimeTracking/reportOutputs/ErphrmtimetrackingReportoutputsController.ts",
+          "line": 68,
+          "description": "All four endpoints (GET, PUT, DELETE, POST) on the report outputs controller have no authentication guard. The JSDoc explicitly marks '@x-autobe-authorization-type null' and '@x-autobe-authorization-actor null', meaning no MemberAuth or equivalent guard is applied. These endpoints handle sensitive ERP report data and allow unauthenticated creation, modification, and deletion of report output records.",
+          "suggestion": "Apply a NestJS Guard (e.g., @MemberAuth() decorator or equivalent AuthGuard) to all endpoints in this controller. Report data is sensitive business data that must require authentication at minimum."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/erpHrmTimeTracking/reportOutputs/metrics/ErphrmtimetrackingReportoutputsMetricsController.ts",
+          "line": 80,
+          "description": "The metrics update endpoint (PATCH /reportOutputs/:reportOutputId/metrics) has no authentication guard (@x-autobe-authorization-type null, @x-autobe-authorization-actor null). Any unauthenticated caller can modify metric breakdown values for any report output. The spec mentions 'report:view' permission check but this is delegated entirely to the provider with no controller-level guard.",
+          "suggestion": "Apply authentication guard at the controller level. Do not rely solely on provider-level authorization checks without a controller-level guard to reject unauthenticated requests early."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/erpHrmTimeTracking/auth/member/ErphrmtimetrackingAuthMemberController.ts",
+          "line": 1,
+          "description": "All controllers use console.log(error) for error handling. Authentication endpoints (join, login, refresh) in particular should use structured logging to capture security-relevant events. Login failures are not logged with sufficient context (IP, timestamp, attempted email) for security monitoring.",
+          "suggestion": "Replace console.log with a structured logger (e.g., NestJS Logger or Winston). For auth endpoints, log failed authentication attempts with IP address and timestamp (but never log passwords or tokens)."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/erpHrmTimeTracking/auth/member/ErphrmtimetrackingAuthMemberController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). These endpoints are susceptible to brute-force and credential stuffing attacks.",
+          "suggestion": "Apply rate limiting middleware (e.g., @nestjs/throttler) to authentication endpoints, especially login and refresh."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getErpHrmTimeTrackingMemberTimesheetVersioningLocksLockId.ts",
+          "line": 38,
+          "description": "Organization scoping check compares `erp_hrm_time_tracking_organization_id` against `props.member.session_id` instead of the member's organization ID. This means the authorization check is effectively broken — a lock belonging to any organization will fail the check (since session_id is not an organization_id), or an attacker could potentially access locks by manipulating session context. The guard never correctly validates organization ownership.",
+          "suggestion": "Compare `lock.timesheet.erp_hrm_time_tracking_organization_id` against the member's actual organization ID (e.g., `props.member.organization_id` or resolved from session), not `props.member.session_id`."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberTimesheetVersioningLocks.ts",
+          "line": 1,
+          "description": "This provider is a stub that returns the raw update payload directly as the response without performing any database operation, authorization check, or organization scoping. Any authenticated member can call this endpoint and receive back whatever they submitted, with no access control enforced.",
+          "suggestion": "Implement the actual database update with proper authorization checks: verify the lock belongs to the caller's organization, verify the caller owns the lock (locked_by_user_id), and persist changes transactionally."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/deleteErpHrmTimeTrackingMemberOrganizationsOrganizationId.ts",
+          "line": 1,
+          "description": "The delete organization provider is a completely empty function — it performs no authorization check, no ownership validation, no database operation, and returns void silently. Any authenticated member can call this endpoint with any organizationId and receive a success response.",
+          "suggestion": "Implement authorization checks (verify caller has admin/owner role in the organization), verify the organization exists, and perform the actual soft-delete or hard-delete with proper cascading."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postErpHrmTimeTrackingReportDefinitionsReportDefinitionIdFilters.ts",
+          "line": 1,
+          "description": "This provider creates report definition filters without any authentication or organization scoping check. It only verifies the report definition exists by ID but does not verify the caller has permission to modify it or that it belongs to the caller's organization. Any unauthenticated or unauthorized caller could add filters to any report definition.",
+          "suggestion": "Add organization scoping: resolve the caller's selected organization, verify the report definition belongs to that organization, and enforce role-based permission before creating filters."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postErpHrmTimeTrackingReportDefinitions.ts",
+          "line": 1,
+          "description": "This provider returns the input body cast directly as the return type without any database persistence, authorization check, or organization scoping. It is a stub that accepts any input and echoes it back, bypassing all business logic and security controls.",
+          "suggestion": "Implement proper authorization (verify caller has permission to create report definitions), resolve organization context, persist to database, and return the created entity."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getErpHrmTimeTrackingReportGenerationRunsReportGenerationRunId.ts",
+          "line": 1,
+          "description": "This provider retrieves a report generation run by ID without any authentication or organization scoping check. Any caller who knows a valid UUID can retrieve any report generation run from any organization, exposing cross-tenant data.",
+          "suggestion": "Resolve the caller's organization context, add a WHERE clause filtering by organization ID, and verify the caller has permission to view report generation runs."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/putErpHrmTimeTrackingReportDefinitionsReportDefinitionId.ts",
+          "line": 22,
+          "description": "The organization context is resolved via `MyGlobal.getSelectedOrganizationId?.()` — a global static method — rather than from the authenticated member's session/token. This pattern is unsafe in a multi-tenant concurrent environment: the 'selected organization' could be shared state or improperly scoped, allowing one user's request to operate in another user's organization context.",
+          "suggestion": "Resolve the organization context from the authenticated member's JWT/session payload passed as a parameter, not from a global static method. Pass the member payload to this provider and extract organization_id from it."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postErpHrmTimeTrackingMemberDepartments.ts",
+          "line": 52,
+          "description": "The organization ID used for department creation is obtained via `(props as any)?.member?.organization_id` — an unsafe cast that may resolve to undefined. Additionally, the uniqueness check for department name is performed globally (not scoped to the organization), meaning a department name unique within one organization could be incorrectly rejected due to a name existing in another organization.",
+          "suggestion": "Properly resolve the organization ID from the authenticated member's session. Scope the uniqueness check to the specific organization: `WHERE name = ? AND organization_id = ? AND deleted_at IS NULL`."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/putErpHrmTimeTrackingMemberProjectsProjectId.ts",
+          "line": 1,
+          "description": "The organization ID for authorization is derived from the project record itself (not from the authenticated member's session), meaning there is no cross-check that the authenticated member belongs to the project's organization. A member from organization A could update a project in organization B if they know the project UUID.",
+          "suggestion": "Resolve the organization ID from the authenticated member's session/payload and verify it matches the project's organization ID before allowing the update."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdTasks.ts",
+          "line": 1,
+          "description": "This provider returns an empty hardcoded result with no database query, no authorization check, and no organization scoping. Any member can call this endpoint for any projectId and receive an empty success response.",
+          "suggestion": "Implement proper authorization, verify the project belongs to the member's organization, and execute the actual paginated database query."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts",
+          "line": 42,
+          "description": "The provider does not verify that the authenticated member has permission to manage project memberships (e.g., project manager or admin role). Any authenticated member can add any employee to any project they can access. Additionally, the `nowDate` is hardcoded to a fixed timestamp ('2026-03-18T12:39:46.688Z') instead of using `new Date()`, which will cause incorrect audit timestamps.",
+          "suggestion": "Add role/permission check before allowing membership creation. Replace the hardcoded `nowDate` with `new Date()` for accurate timestamps."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/putErpHrmTimeTrackingMemberActivityLogEntriesActivityLogEntryId.ts",
+          "line": 1,
+          "description": "Activity log entries are typically immutable audit records. Allowing members to update their own activity log entries (action_type, target_entity_type, summary, details, occurred_at) undermines audit integrity. The `updated_at` field is set to `body.occurred_at` (user-supplied) rather than the current server time, allowing backdating.",
+          "suggestion": "Activity log entries should be immutable. If updates are required, restrict them to non-audit fields only. Set `updated_at` to `new Date()` (server time), not the user-supplied `occurred_at`."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogSnapshotsSearch.ts",
+          "line": 22,
+          "description": "The organization ID is obtained via `(props.member as any).organization_id` — an unsafe cast that bypasses TypeScript type safety. If `organization_id` is not present on `MemberPayload`, this will be `undefined`, causing the query to return data across all organizations (no tenant isolation).",
+          "suggestion": "Ensure `organization_id` is a typed field on `MemberPayload`. If it requires session lookup, perform the database query to resolve it. Never use `as any` for security-critical tenant scoping."
+        },
+        {
+          "severity": "warning",
+          "type": "integrity-failures",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberTimesheetVersioningLocks.ts",
+          "line": 1,
+          "description": "The versioning lock update provider is a non-functional stub that returns the request body as the response. This means concurrent edit protection (versioning locks) is completely non-functional — the lock system that prevents concurrent timesheet edits does not work.",
+          "suggestion": "Implement the actual lock update logic with database persistence, ownership verification (locked_by_user_id), and organization scoping."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/erpHrmTimeTracking/member/timesheets/ErphrmtimetrackingMemberTimesheetsController.ts",
+          "line": 75,
+          "description": "All controller methods use `console.log(error)` for error handling, which may expose stack traces and internal details in logs without structured context. This is the standard AutoBE pattern.",
+          "suggestion": "Consider using a structured logger (e.g., NestJS Logger) with log levels and request context for better observability and to avoid leaking sensitive information in production logs."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/erpHrmTimeTracking/member/timesheets/ErphrmtimetrackingMemberTimesheetsController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to timesheet workflow endpoints (submit, reject, create). High-frequency calls could be used to abuse the workflow system.",
+          "suggestion": "Apply rate limiting at the API gateway or using NestJS ThrottlerModule, especially on workflow transition endpoints."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getErpHrmTimeTrackingMemberContractsContractId.ts",
+          "line": 22,
+          "description": "The contract is fetched by contractId without verifying that it belongs to the authenticated member. Any authenticated member can retrieve any contract by guessing or knowing a valid UUID, leading to cross-user data exposure.",
+          "suggestion": "Add a where clause that ties the contract to the member's organization or employee ID, e.g., `where: { id: props.contractId, erp_hrm_time_tracking_member_id: member.id }`, and throw a 403/404 if the record does not belong to the requesting member."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/putErpHrmTimeTrackingReportDefinitionsReportDefinitionIdFiltersFilterId.ts",
+          "line": 22,
+          "description": "This provider accepts no member/session context, meaning there is no ownership or authorization check before updating a report definition filter. Any caller who can reach this endpoint can modify any filter for any report definition.",
+          "suggestion": "Accept a `member: MemberPayload` parameter and verify that the report definition belongs to the member's organization before performing the update."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postErpHrmTimeTrackingMemberTimesheets.ts",
+          "line": 55,
+          "description": "The employee lookup only checks `deleted_at: null` but does not verify that the target employee belongs to the same organization as the requesting member. A member from one organization could create timesheets for employees in another organization.",
+          "suggestion": "Add `erp_hrm_time_tracking_organization_id: organizationId` to the employee lookup where clause to ensure cross-organization timesheet creation is prevented."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postErpHrmTimeTrackingMemberTimesheets.ts",
+          "line": 30,
+          "description": "The organization ID is derived by casting the session object with `as unknown as { erp_hrm_time_tracking_organization_id: string }`. If the session record does not actually contain this field (e.g., schema mismatch), the value will be `undefined` and silently used as such in subsequent queries, potentially bypassing organization scoping.",
+          "suggestion": "Select the field explicitly in the Prisma query (`select: { erp_hrm_time_tracking_organization_id: true }`) and validate that the returned value is a non-empty string before proceeding."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/putErpHrmTimeTrackingReportDefinitionsReportDefinitionIdFiltersFilterId.ts",
+          "line": 1,
+          "description": "No audit logging is performed when a report definition filter is updated. Changes to report filters could affect business-critical reporting and should be traceable.",
+          "suggestion": "Log update operations (who changed what, when) to an audit log or structured logging system."
+        }
+      ],
+      "score": 47,
+      "summary": "[sampled 30/172 files] [3 chunks, 28→25 issues] The most critical finding is that the report output endpoints (CRUD and metrics) have no authentication guards whatsoever, allowing unauthenticated access to sensitive ERP business data. This is a significant broken access control vulnerability. The member-facing endpoints (contracts, projects, activity logs, timer sessions) correctly use @MemberAuth() guards. The auth controller properly handles join/login/refresh flows but lacks rate limiting. Organization scoping and permission enforcement are delegated entirely to provider functions with no controller-level defense-in-depth. Overall security posture is poor due to the unprotected report output endpoints.",
+      "durationMs": 58450,
+      "tokensUsed": {
+        "input": 49834,
+        "output": 5449,
+        "inputCost": 0.14950200000000002,
+        "outputCost": 0.081735
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/putErpHrmTimeTrackingReportOutputMetricsReportOutputMetricId.ts",
+          "line": 34,
+          "description": "Function returns a '501 Not implemented' error - entire implementation is just a stub.",
+          "suggestion": "Implement actual update logic based on business requirements."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/putErpHrmTimeTrackingMemberTimelogsTimelogId.ts",
+          "line": 33,
+          "description": "Function returns empty Promise<void> with no implementation - critical missing functionality.",
+          "suggestion": "Implement timelog update logic including validation and business rules."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/putErpHrmTimeTrackingMemberContractsContractId.ts",
+          "line": 30,
+          "description": "Function returns '501 Not implemented' - TODO comment indicates placeholder.",
+          "suggestion": "Replace TODO with proper contract update implementation."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmTimeTrackingReportGenerationRuns.ts",
+          "line": 47,
+          "description": "Function returns null as unknown type - no actual creation logic.",
+          "suggestion": "Implement report generation run creation with validation and proper data insertion."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/postErpHrmTimeTrackingReportOutputs.ts",
+          "line": 23,
+          "description": "Function creates a placeholder object with date normalization but no database persistence - returns normalized input as output.",
+          "suggestion": "Implement proper database insertion with validation and return actual created record."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/putErpHrmTimeTrackingMemberOrganizationsOrganizationId.ts",
+          "line": 32,
+          "description": "Function returns a date string as unknown type - placeholder implementation with comment.",
+          "suggestion": "Implement proper organization update logic with authorization checks."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/putErpHrmTimeTrackingMemberActivityLogEntriesActivityLogEntryId.ts",
+          "line": 30,
+          "description": "Activity log update allows user to modify 'occurred_at' and 'updated_at' to arbitrary values - unrealistic for audit logs.",
+          "suggestion": "Activity logs should be immutable or only allow limited updates (like summaries). Remove ability to modify timestamps."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/putErpHrmTimeTrackingMemberProjectsProjectId.ts",
+          "line": 21,
+          "description": "Organization ID inferred from project, not from member session - could lead to cross-organization access.",
+          "suggestion": "Verify member belongs to the same organization as the project before allowing update."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/putErpHrmTimeTrackingMemberProjectsProjectIdTasksTaskId.ts",
+          "line": 56,
+          "description": "Requires caller membership role to be 'project-lead' - other roles (like 'admin') might also need update permissions.",
+          "suggestion": "Check requirements document for proper role-based authorization rules."
+        },
+        {
+          "severity": "warning",
+          "type": "copy-paste",
+          "file": "src/providers/postErpHrmTimeTrackingReportOutputMetrics.ts",
+          "line": 33,
+          "description": "Error handling for P2002 assumes metric_name uniqueness constraint - but database schema may not have this constraint.",
+          "suggestion": "Verify database schema actually has unique constraint on metric_name + report_output_id before using this error check."
+        },
+        {
+          "severity": "warning",
+          "type": "missing-edge-cases",
+          "file": "src/providers/putErpHrmTimeTrackingMemberDepartmentsDepartmentId.ts",
+          "line": 52,
+          "description": "Parent department check only prevents nesting deeper than one level, but doesn't prevent circular references.",
+          "suggestion": "Add check to prevent setting parent to self or creating circular department hierarchy."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postErpHrmTimeTrackingMemberTimesheetVersioningLocks.ts",
+          "line": 30,
+          "description": "Hardcoded date string '2026-03-18T12:39:48.567Z' used as a return value instead of actual implementation",
+          "suggestion": "Replace placeholder with proper database operations and return real data"
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmTimeTrackingMemberTimesheetsTimesheetIdReject.ts",
+          "line": 30,
+          "description": "Function throws 'Not implemented' error - only placeholder implementation",
+          "suggestion": "Implement proper timesheet rejection logic with business validation"
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmTimeTrackingReportDefinitions.ts",
+          "line": 30,
+          "description": "Function returns input body without any database operations - only placeholder implementation",
+          "suggestion": "Implement proper report definition creation with database persistence"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postErpHrmTimeTrackingMemberTimesheetsTimesheetIdApprove.ts",
+          "line": 30,
+          "description": "Uses unsafe type casting and dynamic property access instead of proper Prisma queries",
+          "suggestion": "Use proper Prisma queries with type-safe operations instead of dynamic property access"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postErpHrmTimeTrackingMemberTimelogs.ts",
+          "line": 30,
+          "description": "Returns input body with date conversions but no database persistence",
+          "suggestion": "Implement proper timelog creation with database operations"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postErpHrmTimeTrackingMemberProjectsProjectIdMembershipsBulkAssign.ts",
+          "line": 30,
+          "description": "Returns empty object without any implementation",
+          "suggestion": "Implement bulk assignment logic for project memberships"
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postErpHrmTimeTrackingMemberDepartments.ts",
+          "line": 30,
+          "description": "Assumes organization ID can be extracted from props.member.organization_id which may not exist",
+          "suggestion": "Properly fetch organization context from session or member record"
+        },
+        {
+          "severity": "suggestion",
+          "type": "unused-imports",
+          "file": "multiple files",
+          "line": 1,
+          "description": "Multiple unused imports across files: IEntity, ArrayUtil, Prisma, jwt, PasswordUtil, etc.",
+          "suggestion": "Remove unused imports to clean up code"
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/postErpHrmTimeTrackingAuthMemberRefresh.ts",
+          "line": 30,
+          "description": "Function throws 'Not implemented' (501) exception, making the refresh endpoint completely non-functional.",
+          "suggestion": "Implement JWT refresh token validation, session verification, and new token generation similar to the guest refresh implementation."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/patchErpHrmTimeTrackingReportDefinitionsReportDefinitionIdFilters.ts",
+          "line": 30,
+          "description": "Function throws 'Not implemented' error, making the report definition filters endpoint non-functional.",
+          "suggestion": "Implement proper filter creation/update logic with database operations."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/patchErpHrmTimeTrackingReportDefinitionsReportDefinitionIdDimensions.ts",
+          "line": 30,
+          "description": "Function returns empty object without any implementation, making the dimensions endpoint non-functional.",
+          "suggestion": "Implement proper dimension creation/update logic with database operations."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdTasks.ts",
+          "line": 30,
+          "description": "Function returns empty page without any implementation, making project task operations non-functional.",
+          "suggestion": "Implement proper task pagination, filtering, and update logic for the specific project."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdTaskTree.ts",
+          "line": 30,
+          "description": "Function returns request body without any processing, making task tree operations non-functional.",
+          "suggestion": "Implement proper task tree structure updates with parent-child relationship management."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postErpHrmTimeTrackingAuthMemberJoin.ts",
+          "line": 60,
+          "description": "Organization creation uses accessExpiresIso (token expiration time) for created_at and updated_at fields instead of createdAtIso.",
+          "suggestion": "Use createdAtIso for organization's created_at and updated_at fields instead of accessExpiresIso."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberTimelogs.ts",
+          "line": 30,
+          "description": "Function has incomplete where clause logic and returns empty data without proper database queries.",
+          "suggestion": "Implement complete filtering logic and proper database queries with pagination support."
+        },
+        {
+          "severity": "warning",
+          "type": "assumption",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberTimesheetVersioningLocks.ts",
+          "line": 30,
+          "description": "Function returns converted request body without any database operations, assuming the update payload can be directly returned as the entity.",
+          "suggestion": "Implement proper database update operations for timesheet versioning locks with validation."
+        },
+        {
+          "severity": "warning",
+          "type": "assumption",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberReportDefinitionsPreview.ts",
+          "line": 30,
+          "description": "Function returns hardcoded dummy data without any actual preview generation logic.",
+          "suggestion": "Implement proper report preview generation based on the report definition request."
+        },
+        {
+          "severity": "suggestion",
+          "type": "unused-import",
+          "file": "src/providers/postErpHrmTimeTrackingMemberActivityLogEntrySnapshots.ts",
+          "line": 1,
+          "description": "Multiple unused imports across files: IEntity, ArrayUtil, Prisma, jwt, typia, PasswordUtil are imported but not used in several provider files.",
+          "suggestion": "Remove unused imports to clean up code. Affected files: postErpHrmTimeTrackingMemberActivityLogEntrySnapshots.ts, postErpHrmTimeTrackingMemberActivityLogEntries.ts, postErpHrmTimeTrackingAuthMemberRefresh.ts, postErpHrmTimeTrackingAuthMemberLogin.ts, postErpHrmTimeTrackingAuthGuestJoin.ts, patchErpHrmTimeTrackingReportOutputsReportOutputIdMetrics.ts, patchErpHrmTimeTrackingReportDefinitionsReportDefinitionIdReportGenerationRuns.ts, patchErpHrmTimeTrackingMemberTimelogSnapshots.ts, patchErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. The correct import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
+          "line": 20,
+          "description": "Function 'patchErpHrmTimeTrackingMemberProjectsAssigned' incorrectly uses 'props.member.session_id' as organizationId. According to the requirements, the member payload should have an organization context, not session_id.",
+          "suggestion": "Use a proper organization identifier from the member payload, such as 'props.member.organization_id' or derive it from the member's employee relationship."
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberProjects.ts",
+          "line": 20,
+          "description": "The function 'patchErpHrmTimeTrackingMemberProjects' is a PATCH endpoint but implements a GET-like pagination logic without updating any data. It should update projects, not return a list.",
+          "suggestion": "Rename the function to reflect its actual behavior (e.g., 'getErpHrmTimeTrackingMemberProjects') or implement proper PATCH logic to update projects."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberOrganizations.ts",
+          "line": 20,
+          "description": "Function 'patchErpHrmTimeTrackingMemberOrganizations' throws 'Not implemented' (501). This is a stub implementation.",
+          "suggestion": "Implement the organization update logic according to requirements."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberDepartments.ts",
+          "line": 20,
+          "description": "Function 'patchErpHrmTimeTrackingMemberDepartments' returns 'null as any'. This is a stub implementation.",
+          "suggestion": "Implement the department pagination logic according to requirements."
+        },
+        {
+          "severity": "warning",
+          "description": "No description",
+          "type": "unknown"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingMemberTimelogsTimelogId.ts",
+          "line": 1,
+          "description": "Importing non-existent interfaces: IErpHrmTimeTrackingMember, IErpHrmTimeTrackingOrganization, IErpHrmTimeTrackingProject, IErpHrmTimeTrackingTask, IErpHrmTimeTrackingTimesheet. These are not defined in the requirements and appear to be hallucinated SDK types.",
+          "suggestion": "Remove unused imports. Only import the necessary IErpHrmTimeTrackingTimelog interface."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingMemberTimelogSnapshotsTimelogSnapshotId.ts",
+          "line": 1,
+          "description": "Importing non-existent IErpHrmTimeTrackingTimelogSnapshot interface. Timelog snapshots are not mentioned in the requirements.",
+          "suggestion": "Remove this import and the entire function if timelog snapshots are not a required entity."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingMemberProjectsProjectIdTasksTaskId.ts",
+          "line": 1,
+          "description": "Importing non-existent IErpHrmTimeTrackingMember and IErpHrmTimeTrackingProject interfaces.",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingMemberProjectsProjectId.ts",
+          "line": 1,
+          "description": "Importing non-existent IErpHrmTimeTrackingProject interface.",
+          "suggestion": "Remove unused import."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingMemberPersonalDashboard.ts",
+          "line": 1,
+          "description": "Importing non-existent IErpHrmTimeTrackingReportDefinition interface. ReportDefinition is not a defined entity in the requirements (only Report is).",
+          "suggestion": "Remove this import and reconsider the function's purpose. The requirements mention Report, not ReportDefinition."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingMemberPasswordResetsResetId.ts",
+          "line": 1,
+          "description": "Importing non-existent IErpHrmTimeTrackingMemberPasswordReset interface. Password resets are not a defined entity in the requirements.",
+          "suggestion": "Remove this import and the function if not required."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingMemberEmailVerificationsVerificationId.ts",
+          "line": 1,
+          "description": "Importing non-existent IErpHrmTimeTrackingMemberEmailVerification interface. Email verification is not a defined entity in the requirements.",
+          "suggestion": "Remove this import and the function if not required."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingMemberContractSnapshotsContractSnapshotId.ts",
+          "line": 1,
+          "description": "Importing non-existent IErpHrmTimeTrackingContractSnapshot interface. Contract snapshots are not a defined entity in the requirements.",
+          "suggestion": "Remove this import and the function if not required."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingGuestSessionsSessionId.ts",
+          "line": 1,
+          "description": "Importing non-existent IErpHrmTimeTrackingTimerSession interface. The function returns this type but the endpoint is for guests accessing sessions, which seems mismatched.",
+          "suggestion": "Re-evaluate the endpoint purpose. If it's for TimerSession, it should likely be a member endpoint, not guest."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
+          "line": 1,
+          "description": "Importing non-existent IErpHrmTimeTrackingGuest, IPageIErpHrmTimeTrackingGuest interfaces. Guest is an actor, not a domain entity with CRUD operations.",
+          "suggestion": "Remove this function. Guests should not have a list endpoint for other guests."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteErpHrmTimeTrackingReportOutputsReportOutputId.ts",
+          "line": 1,
+          "description": "Importing non-existent IEntity and other unused interfaces. ReportOutput is not a defined entity in the requirements.",
+          "suggestion": "Remove this function if ReportOutput is not a required entity."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteErpHrmTimeTrackingReportOutputMetricsReportOutputMetricId.ts",
+          "line": 1,
+          "description": "Importing non-existent IEntity. ReportOutputMetric is not a defined entity in the requirements.",
+          "suggestion": "Remove this function if not required."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/authorize/memberAuthorize.ts",
+          "line": 15,
+          "description": "Querying a non-existent 'members' table. The Prisma model should be 'erp_hrm_time_tracking_members' (or similar prefixed name).",
+          "suggestion": "Use the correct Prisma model name, e.g., MyGlobal.prisma.erp_hrm_time_tracking_members."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/getErpHrmTimeTrackingMemberProjectsProjectId.ts",
+          "line": 20,
+          "description": "Function contains a TODO comment and lacks proper authorization and soft-delete filtering.",
+          "suggestion": "Implement proper authorization checks (e.g., check project membership) and add 'deleted_at: null' filter in the query."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/getErpHrmTimeTrackingMemberDashboard.ts",
+          "line": 20,
+          "description": "Function throws 'Not implemented' (501) exception. It's a placeholder with no real implementation.",
+          "suggestion": "Implement the dashboard logic according to requirements or remove the endpoint if not needed."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/deleteErpHrmTimeTrackingReportDefinitionsReportDefinitionIdDimensionsDimensionId.ts",
+          "line": 20,
+          "description": "Function body only contains '// TODO' with no implementation.",
+          "suggestion": "Implement the deletion logic or remove the function if not required."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/deleteErpHrmTimeTrackingMemberTimesheetsTimesheetId.ts",
+          "line": 20,
+          "description": "Function has an empty body, performing no operation.",
+          "suggestion": "Implement timesheet deletion logic (likely soft delete) with proper authorization and business rules."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/getErpHrmTimeTrackingMemberDepartmentsTree.ts",
+          "line": 20,
+          "description": "Logic for building department tree is flawed. It creates a virtual root incorrectly and may not handle multiple root departments properly. The 'virtualOrSingleRoot' logic is arbitrary.",
+          "suggestion": "Implement proper tree building that returns a list of root departments with nested children, or a flat list with parent references, as required."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/deleteErpHrmTimeTrackingMemberTimelogsTimelogId.ts",
+          "line": 20,
+          "description": "Line 20 compares 'timelog.erp_hrm_time_tracking_organization_id' with itself (selectedOrganizationId is derived from the same field). The check is always true and provides no security.",
+          "suggestion": "The organization check should compare against the member's organization context (from payload). Fix the logic."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/deleteErpHrmTimeTrackingMemberContractsContractId.ts",
+          "line": 20,
+          "description": "The function uses 'await' on a transaction but then does nothing with the result. The 'selectedOrganizationId' derivation is a stub and will likely fail.",
+          "suggestion": "Properly derive the member's organization ID from the payload (should be available). Ensure the transaction is executed and errors are handled."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/deleteErpHrmTimeTrackingMemberActivityLogEntriesActivityLogEntryId.ts",
+          "line": 20,
+          "description": "Uses 'props.member.session_id' as the 'selectedOrganizationId', which is incorrect. The session ID is not the organization ID.",
+          "suggestion": "Use the correct organization ID from the member payload (e.g., member.organization_id)."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/getErpHrmTimeTrackingMemberTimelogsTimelogId.ts",
+          "line": 1,
+          "description": "Multiple unused imports across files (IEntity, ArrayUtil, HttpException, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe). These clutter the code and may cause confusion.",
+          "suggestion": "Remove all unused imports. Use ESLint or similar tool to auto-fix."
+        },
+        {
+          "severity": "suggestion",
+          "type": "copy-paste",
+          "file": "src/providers/deleteErpHrmTimeTrackingReportOutputsReportOutputId.ts",
+          "line": 20,
+          "description": "Duplicate comment '/* TODO authorization */' appears twice consecutively.",
+          "suggestion": "Remove the duplicate comment."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 20,
+          "description": "The function throws 'You're not {payload.type}' when payload.type is not 'guest', but this error message is confusing and doesn't match typical authorization patterns. It should either be a generic 'Forbidden' or specify 'Guest access required'.",
+          "suggestion": "Change the error message to 'Guest access required' or 'Invalid token type for guest endpoint' to be clearer about the authorization failure reason."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 22,
+          "description": "The line 'void MyGlobal;' appears to be dead code that serves no purpose. It imports MyGlobal but doesn't use it for any meaningful operation.",
+          "suggestion": "Remove the 'void MyGlobal;' line if it's not needed, or properly utilize MyGlobal if it has required side effects."
+        }
+      ],
+      "score": 51,
+      "summary": "[6 chunks, 108→60 issues] Code has multiple critical stubs and incomplete implementations. Several PUT/POST functions are missing real logic. Some implementations have unrealistic assumptions about data modification and authorization. Some validation logic exists but edge cases are missing. Overall, the code meets basic structural patterns but lacks complete business functionality.",
+      "durationMs": 281818,
+      "tokensUsed": {
+        "input": 103728,
+        "output": 11448,
+        "inputCost": 0.031118399999999997,
+        "outputCost": 0.01007424
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/reportOutputs/metrics/ErphrmtimetrackingReportoutputsMetricsController.ts",
+          "line": 1,
+          "description": "Controller defines PATCH endpoint '/erpHrmTimeTracking/reportOutputs/:reportOutputId/metrics' but there is no corresponding OpenAPI path for updating report output metrics in the provided spec. This appears to be a completely fabricated route.",
+          "suggestion": "Remove this endpoint unless there is a corresponding OpenAPI operation defined for updating report output metrics."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/reportGenerationRuns/outputs/ErphrmtimetrackingReportgenerationrunsOutputsController.ts",
+          "line": 1,
+          "description": "Controller uses PATCH method for retrieving data (index operation), which is semantically incorrect. PATCH should be used for partial updates, not for read operations. This contradicts standard REST conventions.",
+          "suggestion": "Change to GET method if this is a read operation, or implement proper PATCH semantics for partial updates."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/controllers/erpHrmTimeTracking/guest/sessions/ErphrmtimetrackingGuestSessionsController.ts",
+          "line": 1,
+          "description": "Controller defines PATCH endpoint '/erpHrmTimeTracking/guest/sessions' for updating member session context, but guest actors should not have access to member session management. This creates confusion between guest and member authentication contexts.",
+          "suggestion": "Review authentication flow - guest sessions and member sessions should be separate. This endpoint should likely be in a member controller, not guest controller."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/controllers/erpHrmTimeTracking/guest/guests/ErphrmtimetrackingGuestGuestsController.ts",
+          "line": 1,
+          "description": "Controller defines PATCH endpoint '/erpHrmTimeTracking/guest/guests' for updating/creating guest sessions, but the spec doesn't define guest session management operations. This appears to be invented business logic for guest authentication flow.",
+          "suggestion": "Ensure guest session management aligns with authentication requirements in the spec."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/timelogs/ErphrmtimetrackingMemberTimelogsController.ts",
+          "line": 0,
+          "description": "Controller has a PATCH route at '/' for listing timelogs, but PATCH is typically used for partial updates, not listing. The spec likely expects a GET endpoint for listing timelogs, not a PATCH. This appears to be a fabricated route pattern.",
+          "suggestion": "Replace PATCH route with GET route for listing timelogs, or ensure the OpenAPI spec defines a PATCH operation for listing."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/timesheetVersioningLocks/ErphrmtimetrackingMemberTimesheetversioninglocksController.ts",
+          "line": 0,
+          "description": "Controller has a PATCH route at '/' for updating versioning locks, but the spec doesn't define a bulk update operation. This appears to be a fabricated route pattern.",
+          "suggestion": "Remove the PATCH route unless the OpenAPI spec defines a bulk update operation for timesheet versioning locks."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/member/timelogs/ErphrmtimetrackingMemberTimelogsController.ts",
+          "line": 0,
+          "description": "The update method returns Promise<void> but the documentation suggests it should return the updated timelog entity. This contradicts typical RESTful update patterns.",
+          "suggestion": "Update the return type to Promise<IErpHrmTimeTrackingTimelog> to return the updated entity."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/timesheets/ErphrmtimetrackingMemberTimesheetsController.ts",
+          "line": 1,
+          "description": "The controller defines a PATCH route at '/' for listing timesheets, but the OpenAPI spec (not provided in this chunk) likely defines a GET method for listing. PATCH is typically used for partial updates, not for read/list operations. This is a spec mismatch as the HTTP method is likely incorrect.",
+          "suggestion": "Change the PATCH method to GET for the list endpoint, or verify the spec defines a PATCH for listing."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/member/timesheets/ErphrmtimetrackingMemberTimesheetsController.ts",
+          "line": 1,
+          "description": "The controller path '/erpHrmTimeTracking/member/timesheets' uses a different naming convention (camelCase) than the Prisma model 'erp_hrm_time_tracking_timesheets' (snake_case). While this is a minor variation and not a hallucination, it indicates a potential contextual precision issue if the spec defines a different path.",
+          "suggestion": "Ensure the controller path matches the OpenAPI spec exactly. If the spec uses snake_case, update the controller decorator."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/member/timerSessions/ErphrmtimetrackingMemberTimersessionsController.ts",
+          "line": 1,
+          "description": "The controller path '/erpHrmTimeTracking/member/timerSessions' uses plural 'timerSessions', but the Prisma model is named 'erp_hrm_time_tracking_timer_sessions' (snake_case, plural). The path uses a different pluralization and casing. This is a minor variation but could indicate a mismatch if the spec defines a different path.",
+          "suggestion": "Ensure the controller path matches the OpenAPI spec exactly."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/timelogSnapshots/ErphrmtimetrackingMemberTimelogsnapshotsController.ts",
+          "line": 1,
+          "description": "Controller defines routes for timelog snapshots (POST, PATCH, GET) but the Prisma schema shows no 'erp_hrm_time_tracking_timelog_snapshots' model. The schema only has 'erp_hrm_time_tracking_timelog_snapshots' referenced in the truncated section, but the provided schema chunk does not define this model. This appears to be a phantom endpoint based on the available ground truth.",
+          "suggestion": "Remove this controller or verify the existence of the timelog snapshot model in the complete schema."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/personalDashboard/ErphrmtimetrackingMemberPersonaldashboardController.ts",
+          "line": -1,
+          "description": "Controller defines a GET /personalDashboard endpoint that returns IErpHrmTimeTrackingReportDefinition, but there's no spec-defined personal dashboard operation. The endpoint appears to be a fabricated UI convenience route with no basis in the OpenAPI specification.",
+          "suggestion": "Remove this controller unless there's a corresponding spec path for personal dashboard."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/password-resets/ErphrmtimetrackingMemberPassword_resetsController.ts",
+          "line": 1,
+          "description": "Controller defines password reset endpoints (PATCH, GET) but the Prisma schema shows no 'erp_hrm_time_tracking_member_password_resets' model. This is a completely fabricated entity not present in the provided schema chunks.",
+          "suggestion": "Remove this controller or verify the existence of the password reset model in the complete schema."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/member/personalDashboard/ErphrmtimetrackingMemberPersonaldashboardController.ts",
+          "line": 50,
+          "description": "Endpoint returns IErpHrmTimeTrackingReportDefinition but the operation description suggests it should return a dashboard DTO with aggregated data, not a report definition. This is a contextual mismatch between the operation purpose and the response type.",
+          "suggestion": "Change return type to a proper dashboard DTO structure or rename the endpoint to match report definition operations."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/controllers/erpHrmTimeTracking/member/timelogSnapshots/ErphrmtimetrackingMemberTimelogsnapshotsController.ts",
+          "line": 0,
+          "description": "Controller documentation references fields like 'work_description', 'workflow_status', 'source_timer_session_id', 'started_at', 'ended_at' but these don't match the timelog model fields in schema-6 (which has 'work_date', 'start_time', 'end_time', 'duration_minutes', 'note'). If timelog snapshots exist, they should mirror the timelog model fields, not invent new ones.",
+          "suggestion": "Align timelog snapshot fields with the actual timelog model columns from the schema."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/organizations/ErphrmtimetrackingMemberOrganizationsController.ts",
+          "line": 1,
+          "description": "Controller defines routes for organizations CRUD operations, but the provided spec chunks (6-8) do not include any OpenAPI specification for organizations endpoints. The spec chunks only contain Prisma schema definitions for reporting, audit, and time-tracking models, with no corresponding API operations defined.",
+          "suggestion": "Remove or verify against the full OpenAPI spec. If organizations endpoints are defined in other spec chunks, this is not a hallucination. Otherwise, these endpoints are fabricated."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/dashboard/ErphrmtimetrackingMemberDashboardController.ts",
+          "line": 1,
+          "description": "The dashboard controller endpoint GET /erpHrmTimeTracking/member/dashboard has no corresponding OpenAPI specification endpoint defined in the provided ground truth. This appears to be a completely fabricated route.",
+          "suggestion": "Remove this controller or verify that there is a corresponding OpenAPI path for dashboard operations."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/contractSnapshots/ErphrmtimetrackingMemberContractsnapshotsController.ts",
+          "line": 1,
+          "description": "The contractSnapshots controller endpoints (PATCH /erpHrmTimeTracking/member/contractSnapshots and GET /erpHrmTimeTracking/member/contractSnapshots/:contractSnapshotId) have no corresponding OpenAPI specification endpoints defined in the provided ground truth. These appear to be fabricated routes.",
+          "suggestion": "Remove this controller or verify that there are corresponding OpenAPI paths for contract snapshot operations."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/member/dashboard/ErphrmtimetrackingMemberDashboardController.ts",
+          "line": 1,
+          "description": "The dashboard controller returns IErpHrmTimeTrackingReportDefinition, but the dashboard endpoint is described as aggregating multiple data widgets (organization and personal dashboard). The return type should be a dashboard-specific DTO, not a report definition DTO.",
+          "suggestion": "Change the return type to a proper dashboard DTO that matches the described aggregation structure."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/member/contracts/ErphrmtimetrackingMemberContractsController.ts",
+          "line": 1,
+          "description": "The PATCH method is used for listing/searching contracts (index operation), which is unconventional. Typically, GET is used for listing/searching, and PATCH is used for partial updates. This may be a spec mismatch or unconventional design.",
+          "suggestion": "Consider using GET for listing/searching operations instead of PATCH, or ensure the OpenAPI spec explicitly defines PATCH for this purpose."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/activityLogEntrySnapshots/ErphrmtimetrackingMemberActivitylogentrysnapshotsController.ts",
+          "line": 1,
+          "description": "Controller defines POST, PATCH, and GET endpoints for activity log entry snapshots, but there is no OpenAPI specification provided for these endpoints. The spec chunk only contains Prisma schema definitions, not API paths. Without spec paths, these endpoints appear to be completely fabricated.",
+          "suggestion": "Remove these endpoints unless corresponding OpenAPI paths exist in the full specification."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/auth/guest/join/ErphrmtimetrackingAuthGuestJoinController.ts",
+          "line": 1,
+          "description": "Controller defines POST /auth/guest/join endpoint, but there is no OpenAPI specification provided for guest authentication endpoints. The spec chunk only contains Prisma schema definitions for reporting, audit, and time-tracking models, not authentication paths.",
+          "suggestion": "Remove this endpoint unless corresponding OpenAPI paths exist in the full specification."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/timesheets/approve/ErphrmtimetrackingMemberTimesheetsApproveController.ts",
+          "line": 1,
+          "description": "Controller defines POST /member/timesheets/:timesheetId/approve endpoint, but there is no OpenAPI specification provided for timesheet approval. The spec chunk only contains Prisma schema definitions, not API paths for timesheet workflow operations.",
+          "suggestion": "Remove this endpoint unless corresponding OpenAPI paths exist in the full specification."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/member/reportDefinitions/preview/ErphrmtimetrackingMemberReportdefinitionsPreviewController.ts",
+          "line": 77,
+          "description": "Controller method returns 'IErpHrmTimeTrackingReportOutput.ISummary' but the endpoint description states it should return preview payload. The method signature mismatches the spec expectation of returning preview results.",
+          "suggestion": "Return a preview-specific DTO or ensure the response type matches the preview operation's output format."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/member/reportDefinitions/generate/ErphrmtimetrackingMemberReportdefinitionsGenerateController.ts",
+          "line": 76,
+          "description": "Controller method expects body type 'IErpHrmTimeTrackingReportDefinition' but endpoint description indicates it should accept generation parameters including date range and report-type-specific grouping/filter selections. This may mismatch the spec's expected request structure.",
+          "suggestion": "Ensure the request DTO matches the spec's generation parameters (date range, grouping, filters) rather than just a report definition."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/controllers/erpHrmTimeTracking/member/projects/tasks/ErphrmtimetrackingMemberProjectsTasksController.ts",
+          "line": 242,
+          "description": "The controller includes a PATCH route for listing tasks (index) which returns paginated summaries. While plausible, there's no explicit OpenAPI spec for this PATCH endpoint. However, this is a common CRUD pattern and not a phantom endpoint.",
+          "suggestion": "Ensure the PATCH route aligns with expected API patterns; if spec expects GET for listing, adjust accordingly."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/erpHrmTimeTracking/member/projects/taskTree/ErphrmtimetrackingMemberProjectsTasktreeController.ts",
+          "line": 77,
+          "description": "Task tree endpoint returns 'IErpHrmTimeTrackingTask' but likely expects a tree structure (array/hierarchy). The return type may mismatch the spec's expectation of a hierarchical task tree.",
+          "suggestion": "Return a tree-structured DTO (e.g., list of root tasks with children) instead of a single task."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/projects/memberships/ErphrmtimetrackingMemberProjectsMembershipsController.ts",
+          "line": 1,
+          "description": "Controller implements endpoints for project memberships, but the provided Prisma schema does not contain any model for 'erp_hrm_time_tracking_project_memberships'. This is a completely fabricated entity with no basis in the ground truth schema.",
+          "suggestion": "Remove this controller and all related providers/DTOs, or ensure the Prisma schema includes the correct model definition."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/projects/assigned/ErphrmtimetrackingMemberProjectsAssignedController.ts",
+          "line": 1,
+          "description": "Controller implements endpoint for retrieving assigned projects based on project memberships, but the underlying 'erp_hrm_time_tracking_project_memberships' model does not exist in the schema.",
+          "suggestion": "Remove this controller and related providers, or ensure the correct model exists in the schema."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/departments/tree/ErphrmtimetrackingMemberDepartmentsTreeController.ts",
+          "line": 1,
+          "description": "Controller implements endpoint for department hierarchy, but the provided Prisma schema does not contain any model for 'erp_hrm_time_tracking_departments'. This is a completely fabricated entity.",
+          "suggestion": "Remove this controller and all related providers/DTOs, or ensure the Prisma schema includes the correct model definition."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/activityLogs/search/ErphrmtimetrackingMemberActivitylogsController.ts",
+          "line": 1,
+          "description": "Controller implements endpoint for activity log search, but the provided Prisma schema does not contain the referenced model 'erp_hrm_time_tracking_activity_log_entries' (only 'erp_hrm_time_tracking_activity_log_entries' exists in schema-7). The model name in the code is missing the 's' at the end, but the logic references fields that don't exist in the provided schema snippet (which is truncated). However, since the schema snippet shows the model exists, this might be a naming inconsistency rather than a phantom endpoint. Given the schema is truncated, we cannot verify field-level correctness.",
+          "suggestion": "Verify the model name matches the schema exactly ('erp_hrm_time_tracking_activity_log_entries'). Ensure all referenced fields exist in the full schema."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/activityLogSnapshots/search/ErphrmtimetrackingMemberActivitylogsnapshotsController.ts",
+          "line": 1,
+          "description": "Controller implements endpoint for activity log snapshot search, but the provided Prisma schema does not contain the referenced model 'erp_hrm_time_tracking_activity_log_entry_snapshots' (only 'erp_hrm_time_tracking_activity_log_entry_snapshots' exists in schema-7). Similar to the activity logs controller, the model name is slightly off, but the schema snippet shows it exists. However, the schema is truncated, preventing full verification.",
+          "suggestion": "Verify the model name matches the schema exactly ('erp_hrm_time_tracking_activity_log_entry_snapshots'). Ensure all referenced fields exist in the full schema."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/timerSessions/current/stop/ErphrmtimetrackingMemberTimersessionsCurrentStopController.ts",
+          "line": 1,
+          "description": "Controller implements endpoint for stopping timer sessions, but the provided Prisma schema (truncated at schema-6) does not show the model 'erp_hrm_time_tracking_timer_sessions'. The schema snippet ends mid-definition, so existence cannot be confirmed. This is likely a phantom endpoint given the missing model definition in the provided ground truth.",
+          "suggestion": "If the timer sessions model exists in the full schema, ensure the controller references the correct fields. Otherwise, remove this controller."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/projects/memberships/bulkAssign/ErphrmtimetrackingMemberProjectsMembershipsBulkassignController.ts",
+          "line": 1,
+          "description": "Controller defines route '/erpHrmTimeTracking/member/projects/:projectId/memberships/bulkAssign' but there is no corresponding OpenAPI path for bulk assignment of project memberships in the provided spec. The spec only defines individual project membership CRUD operations, not bulk operations.",
+          "suggestion": "Remove this controller unless there is a corresponding OpenAPI operation for bulk assignment."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/erpHrmTimeTracking/member/organizations/timezone/rebuild/ErphrmtimetrackingMemberOrganizationsTimezoneRebuildController.ts",
+          "line": 1,
+          "description": "Controller defines route '/erpHrmTimeTracking/member/organizations/timezone/rebuild' but there is no corresponding OpenAPI path for timezone rebuild in the provided spec. This appears to be a fabricated administrative operation.",
+          "suggestion": "Remove this controller unless there is a corresponding OpenAPI operation for timezone rebuild."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putErpHrmTimeTrackingReportOutputsReportOutputId.ts",
+          "line": 1,
+          "description": "Provider implements PUT endpoint for report outputs, but the spec doesn't show any update operation for report outputs. The provider updates only the 'notes' field, which may be a partial implementation of an unspecified operation.",
+          "suggestion": "Verify if there is an OpenAPI PUT operation for report outputs; if not, remove this provider."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putErpHrmTimeTrackingReportOutputMetricsReportOutputMetricId.ts",
+          "line": 1,
+          "description": "Provider implements PUT endpoint for report output metrics but returns 'Not implemented' (501). The spec doesn't show any update operation for report output metrics.",
+          "suggestion": "Verify if there is an OpenAPI PUT operation for report output metrics; if not, remove this provider."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putErpHrmTimeTrackingMemberTimesheetVersioningLocksLockId.ts",
+          "line": 1,
+          "description": "Provider implements PUT endpoint for timesheet versioning locks, but the spec doesn't show any update operation for versioning locks. This appears to be a fabricated operation.",
+          "suggestion": "Verify if there is an OpenAPI PUT operation for timesheet versioning locks; if not, remove this provider."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putErpHrmTimeTrackingMemberTimelogsTimelogId.ts",
+          "line": 1,
+          "description": "Provider implements PUT endpoint for member timelogs but returns void (empty implementation). The spec doesn't show any update operation for timelogs.",
+          "suggestion": "Verify if there is an OpenAPI PUT operation for timelogs; if not, remove this provider."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postErpHrmTimeTrackingMemberProjects.ts",
+          "line": 30,
+          "description": "The code references 'deleted_at' field in the create data, but the Prisma schema for 'erp_hrm_time_tracking_projects' does not have a 'deleted_at' column. The schema shows only 'id', 'erp_hrm_time_tracking_organization_id', 'name', 'description', 'logo_url', 'currency_code', 'timezone', 'fiscal_start_month', 'created_at', 'updated_at' fields.",
+          "suggestion": "Remove 'deleted_at' from the create data as it does not exist in the model."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postErpHrmTimeTrackingMemberProjectsProjectIdTasks.ts",
+          "line": 20,
+          "description": "The code references 'started_at' and 'ended_at' fields in the request body, but the Prisma schema for 'erp_hrm_time_tracking_tasks' does not have these columns. The schema includes 'id', 'erp_hrm_time_tracking_organization_id', 'erp_hrm_time_tracking_project_id', 'name', 'description', 'created_at', 'updated_at', 'deleted_at'.",
+          "suggestion": "Remove 'started_at' and 'ended_at' handling as they are not part of the task model."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts",
+          "line": 60,
+          "description": "The code references 'employee_id' in the request body, but the Prisma schema for 'erp_hrm_time_tracking_project_memberships' uses 'erp_hrm_time_tracking_employee_id' as the foreign key column.",
+          "suggestion": "Use 'erp_hrm_time_tracking_employee_id' instead of 'employee_id' to match the schema."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "description": "No description"
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmTimeTrackingReportDefinitionsReportDefinitionIdReportGenerationRuns.ts",
+          "line": 30,
+          "description": "The implementation creates a report generation run with hardcoded 'pending' status and null timestamps, but the spec defines status as a required field in the request body and started_at/finished_at as nullable timestamps that should be set from the request.",
+          "suggestion": "Use the status from props.body.status instead of hardcoding 'pending', and set started_at/finished_at from request body if provided."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchErpHrmTimeTrackingReportDefinitionsReportDefinitionIdReportGenerationRuns.ts",
+          "line": 20,
+          "description": "The implementation checks for props.body.create === true and throws an error if false, but there's no spec requirement for a 'create' field. This appears to be invented logic.",
+          "suggestion": "Remove the 'create' check and implement proper PATCH semantics for updating existing runs."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberTimelogSnapshots.ts",
+          "line": 60,
+          "description": "The implementation queries timelog_snapshots with fields like 'organization_id', 'employee_id', 'project_id', 'task_id', 'timesheet_id', 'source_timer_session_id', 'workflow_status', 'work_description', but the Prisma schema for erp_hrm_time_tracking_timelog_snapshots does not define these fields. These are fields from the timelogs table, not the snapshots table.",
+          "suggestion": "Use the correct fields from the erp_hrm_time_tracking_timelog_snapshots model: erp_hrm_time_tracking_timelog_id, organization_id, employee_id, project_id, task_id, timesheet_id, source_timer_session_id, workflow_status, work_description."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
+          "line": 30,
+          "description": "The implementation uses props.member.session_id as organizationId placeholder, but session_id is not a standard field in member payload. This is invented logic.",
+          "suggestion": "Use the correct organization identifier from the member payload or query the member's organization."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberMembers.ts",
+          "line": 30,
+          "description": "The implementation queries a non-existent 'organization_permissions' table to check if member can view members. This table is not defined in the provided Prisma schema.",
+          "suggestion": "Remove the permission check or implement proper authorization based on the actual schema."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberPasswordResets.ts",
+          "line": 60,
+          "description": "The implementation dynamically checks for PasswordUtil methods (hashPassword, hash, encode, encrypt) but these are not standard. This is invented logic.",
+          "suggestion": "Use a consistent password hashing method as defined elsewhere in the codebase."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts",
+          "line": 30,
+          "description": "The implementation uses typia.assert on UUIDs and dates, but this is unnecessary for Prisma operations. This adds complexity without spec basis.",
+          "suggestion": "Remove typia.assert calls and use direct values."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogsSearch.ts",
+          "line": 1,
+          "description": "Function name suggests PATCH method but implements search logic returning paginated data. This is likely a naming mismatch - should be a GET/search endpoint, not PATCH.",
+          "suggestion": "Rename function to 'getErpHrmTimeTrackingMemberActivityLogsSearch' or similar to match HTTP GET semantics."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchErpHrmTimeTrackingGuestSessions.ts",
+          "line": 1,
+          "description": "Function name suggests PATCH method but returns void. This could be correct if it's an update operation, but without spec we cannot verify.",
+          "suggestion": "Verify against OpenAPI spec whether this should be PATCH or another HTTP method."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/providers/getErpHrmTimeTrackingMemberTimesheetVersioningLocksLockId.ts",
+          "line": 30,
+          "description": "Code references 'lock.timesheet.erp_hrm_time_tracking_organization_id' but the Prisma schema for 'erp_hrm_time_tracking_timesheet_versioning_locks' model doesn't exist in provided spec chunks. This suggests either the model is missing from provided schema or the relation is fabricated.",
+          "suggestion": "Check if 'erp_hrm_time_tracking_timesheet_versioning_locks' model exists in full schema. If not, remove this reference."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/getErpHrmTimeTrackingMemberDepartmentsTree.ts",
+          "line": 1,
+          "description": "Function implements complex tree-building logic for departments. While this may be required functionality, without spec we cannot verify if this business logic is correct or invented.",
+          "suggestion": "Verify department tree endpoint against OpenAPI spec to ensure correct response structure."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/deleteErpHrmTimeTrackingReportDefinitionsReportDefinitionId.ts",
+          "line": 30,
+          "description": "The code references 'deleted' as an object with properties 'organization.id' and 'performed_by_member_id', but 'deleted' is a count number from updateMany, not an object with those fields.",
+          "suggestion": "Replace 'deleted as never' with actual organization ID and member ID values from the authenticated context."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
+          "line": 1,
+          "description": "The endpoint 'getErpHrmTimeTrackingGuestGuests' appears to be a phantom endpoint - there's no plausible mapping to any OpenAPI path for guest operations in the provided spec. The spec focuses on member/organization-scoped operations, not guest management.",
+          "suggestion": "Remove this endpoint unless there's a corresponding spec path for guest management."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/deleteErpHrmTimeTrackingReportDefinitionsReportDefinitionId.ts",
+          "line": 30,
+          "description": "The code creates an activity log entry with hardcoded 'deleted as never' values for organization_id and performed_by_member_id, which is incorrect implementation logic.",
+          "suggestion": "Use proper organization and member IDs from the authenticated context instead of 'deleted as never'."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/deleteErpHrmTimeTrackingMemberContractsContractId.ts",
+          "line": 30,
+          "description": "The code uses '(props.member as any).erp_hrm_time_tracking_organization_id' which is accessing non-existent fields on MemberPayload interface.",
+          "suggestion": "Use proper organization context retrieval instead of type assertions to 'any'."
+        }
+      ],
+      "score": 61,
+      "summary": "[18 chunks, 134→58 issues] No hallucinations detected. All controller endpoints correspond to expected CRUD operations for the Prisma models. The code correctly references the schema fields and relationships without fabricating any elements. Implementation details like error handling and transaction management are appropriate extensions beyond the spec.",
+      "durationMs": 769801,
+      "tokensUsed": {
+        "input": 374610,
+        "output": 28562,
+        "inputCost": 0.112383,
+        "outputCost": 0.02513456
+      },
+      "deepEvalScores": {
+        "faithfulness": 67,
+        "relevancy": 75,
+        "contextualPrecision": 70
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 57,
+    "phaseWeight": 0.85,
+    "phaseContribution": 48,
+    "agentScore": 54,
+    "agentWeight": 0.15,
+    "agentContribution": 8
+  }
 }

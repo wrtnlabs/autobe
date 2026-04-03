@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit",
-  "totalScore": 85,
+  "totalScore": 83,
   "grade": "B",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846084507-gpqvcocjibe",
+          "id": "type-error-1775112895027-vi6h9mupz0k",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/patchCommunityGuestSessions.ts",
             "line": 1294
           },
-          "id": "type-error-1774846084507-zex46kye1fm",
+          "id": "type-error-1775112895027-8oh6qzopzgc",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/patchCommunityGuestSessions.ts",
             "line": 1738
           },
-          "id": "type-error-1774846084507-xf24tkl32j",
+          "id": "type-error-1775112895027-9rm7vz3hvzc",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 2188
           },
-          "id": "type-error-1774846084507-wxu4d9bdhc",
+          "id": "type-error-1775112895027-of5d1kn2cxf",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/patchCommunityPosts.ts",
             "line": 2558
           },
-          "id": "type-error-1774846084507-6qnvc7hrkat",
+          "id": "type-error-1775112895027-qft75lmy2v",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
             "line": 1983
           },
-          "id": "type-error-1774846084507-vm1c4oqpwei",
+          "id": "type-error-1775112895027-18dvarlebig",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/transformers/CommunityCommunityAtSummaryTransformer.ts",
             "line": 1190
           },
-          "id": "type-error-1774846084507-sjk9tmbxgtt",
+          "id": "type-error-1775112895027-sx3ghsvh0ys",
           "autoFixable": false
         },
         {
@@ -103,11 +103,11 @@
             "file": "src/transformers/CommunityPostAtSummaryTransformer.ts",
             "line": 1845
           },
-          "id": "type-error-1774846084507-m2pyeq58ekh",
+          "id": "type-error-1775112895027-w8nyswxp9o",
           "autoFixable": false
         }
       ],
-      "durationMs": 8097,
+      "durationMs": 7820,
       "metrics": {
         "totalFiles": 226,
         "filesWithErrors": 0,
@@ -241,7 +241,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846084890-871ur7n9449",
+          "id": "complexity-1775112895291-lye6afjmfhl",
           "autoFixable": false
         },
         {
@@ -254,7 +254,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846084886-njad41ijwd",
+          "id": "complexity-1775112895292-xfpi710m3hm",
           "autoFixable": false
         },
         {
@@ -267,7 +267,7 @@
             "line": 21
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846084889-s2j6hwa4rh",
+          "id": "complexity-1775112895295-x6iszjytrzs",
           "autoFixable": false
         },
         {
@@ -280,7 +280,7 @@
             "line": 20
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846084894-m85gdfzn6w",
+          "id": "complexity-1775112895295-67pu1p7h55g",
           "autoFixable": false
         },
         {
@@ -293,7 +293,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846084893-hkbarslmmts",
+          "id": "complexity-1775112895302-f1v66bxtxqg",
           "autoFixable": false
         },
         {
@@ -306,7 +306,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846084898-ld3a9m26hco",
+          "id": "complexity-1775112895297-6cwtsgjln17",
           "autoFixable": false
         },
         {
@@ -319,7 +319,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846084897-cut18q2wm4",
+          "id": "complexity-1775112895299-u078bqq2o3l",
           "autoFixable": false
         }
       ]
@@ -336,7 +336,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
             "line": 99
           },
-          "id": "duplication-1774846085032-1fgns2nw57v",
+          "id": "duplication-1775112895433-86hn61sfq9i",
           "autoFixable": false
         },
         {
@@ -348,7 +348,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
             "line": 165
           },
-          "id": "duplication-1774846085032-kna9aj2gn49",
+          "id": "duplication-1775112895433-6v1ldz1frtl",
           "autoFixable": false
         },
         {
@@ -360,7 +360,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
             "line": 24
           },
-          "id": "duplication-1774846085032-7j55vg4qdby",
+          "id": "duplication-1775112895433-k4tgsiuwk6",
           "autoFixable": false
         },
         {
@@ -372,7 +372,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
             "line": 25
           },
-          "id": "duplication-1774846085032-w2vyzh5tk1",
+          "id": "duplication-1775112895433-xwnixbjxf2",
           "autoFixable": false
         },
         {
@@ -384,7 +384,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
             "line": 26
           },
-          "id": "duplication-1774846085032-65z9gwet12c",
+          "id": "duplication-1775112895433-rc9rhfp1qlj",
           "autoFixable": false
         },
         {
@@ -396,7 +396,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
             "line": 27
           },
-          "id": "duplication-1774846085032-t8njw7hh1fo",
+          "id": "duplication-1775112895433-gzf6sibmypt",
           "autoFixable": false
         },
         {
@@ -408,7 +408,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdCommentsCommentIdVotesVoteId.ts",
             "line": 13
           },
-          "id": "duplication-1774846085032-y9fgyh6zcct",
+          "id": "duplication-1775112895433-swq4r28mtb",
           "autoFixable": false
         },
         {
@@ -420,7 +420,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityIdReportsReportId.ts",
             "line": 29
           },
-          "id": "duplication-1774846085032-gfmb8sef59g",
+          "id": "duplication-1775112895433-nssdm3op3k",
           "autoFixable": false
         },
         {
@@ -432,7 +432,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityIdReportsReportId.ts",
             "line": 30
           },
-          "id": "duplication-1774846085032-pykqcgg3xsb",
+          "id": "duplication-1775112895433-t8foibeju8a",
           "autoFixable": false
         },
         {
@@ -444,7 +444,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityIdReportsReportId.ts",
             "line": 31
           },
-          "id": "duplication-1774846085032-kfji8gozscd",
+          "id": "duplication-1775112895433-wawcjlpmytp",
           "autoFixable": false
         },
         {
@@ -456,7 +456,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 22
           },
-          "id": "duplication-1774846085032-huo0o855bxj",
+          "id": "duplication-1775112895433-uiftt5ttvh",
           "autoFixable": false
         },
         {
@@ -468,7 +468,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 23
           },
-          "id": "duplication-1774846085032-rhj59fa2lk",
+          "id": "duplication-1775112895433-6ed8jqeb8s",
           "autoFixable": false
         },
         {
@@ -480,7 +480,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 24
           },
-          "id": "duplication-1774846085032-9wxax920fo",
+          "id": "duplication-1775112895433-5qtphu466xb",
           "autoFixable": false
         },
         {
@@ -492,7 +492,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 25
           },
-          "id": "duplication-1774846085032-ik2iqp48vtl",
+          "id": "duplication-1775112895433-151azsie1rf",
           "autoFixable": false
         },
         {
@@ -504,7 +504,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 26
           },
-          "id": "duplication-1774846085032-fyriage6f44",
+          "id": "duplication-1775112895433-pe11dllar6",
           "autoFixable": false
         },
         {
@@ -516,7 +516,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 27
           },
-          "id": "duplication-1774846085032-gfbyvezp8xv",
+          "id": "duplication-1775112895433-81r21j4lv28",
           "autoFixable": false
         },
         {
@@ -528,7 +528,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 28
           },
-          "id": "duplication-1774846085032-iata413x5yc",
+          "id": "duplication-1775112895433-0hpvt7mg5csn",
           "autoFixable": false
         },
         {
@@ -540,7 +540,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 29
           },
-          "id": "duplication-1774846085032-ajpw70im09",
+          "id": "duplication-1775112895433-ax2h1wcsyzv",
           "autoFixable": false
         },
         {
@@ -552,7 +552,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityMemberCommunitiesCommunityIdReportsReportIdDismiss.ts",
             "line": 13
           },
-          "id": "duplication-1774846085032-6zah42ufes8",
+          "id": "duplication-1775112895433-xzr95el78",
           "autoFixable": false
         },
         {
@@ -564,7 +564,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
             "line": 27
           },
-          "id": "duplication-1774846085032-vv4lb2y1fo9",
+          "id": "duplication-1775112895433-9me10pavemf",
           "autoFixable": false
         },
         {
@@ -576,7 +576,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityAuthGuestRefresh.ts",
             "line": 90
           },
-          "id": "duplication-1774846085032-ptnc66qyi3",
+          "id": "duplication-1775112895434-373knr6ik9m",
           "autoFixable": false
         },
         {
@@ -588,7 +588,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityAuthGuestRefresh.ts",
             "line": 91
           },
-          "id": "duplication-1774846085032-cc9fsjoey3j",
+          "id": "duplication-1775112895434-8ohjux7lw3v",
           "autoFixable": false
         },
         {
@@ -600,7 +600,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityUserProfilesUserProfileIdPosts.ts",
             "line": 42
           },
-          "id": "duplication-1774846085032-gm95swo5cnh",
+          "id": "duplication-1775112895434-7t2thd72jwp",
           "autoFixable": false
         },
         {
@@ -612,7 +612,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityUserProfilesUserProfileIdPosts.ts",
             "line": 76
           },
-          "id": "duplication-1774846085032-cpcgm1tmj6w",
+          "id": "duplication-1775112895434-saynzzrbiw7",
           "autoFixable": false
         },
         {
@@ -624,7 +624,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityUserProfilesUserProfileIdPosts.ts",
             "line": 77
           },
-          "id": "duplication-1774846085032-87ivskuv84o",
+          "id": "duplication-1775112895434-k0h7mq3znti",
           "autoFixable": false
         },
         {
@@ -636,7 +636,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 23
           },
-          "id": "duplication-1774846085032-cj2bs15nyfn",
+          "id": "duplication-1775112895434-wkrkl9nmhaa",
           "autoFixable": false
         },
         {
@@ -648,7 +648,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 24
           },
-          "id": "duplication-1774846085032-zrk5dvgd519",
+          "id": "duplication-1775112895434-az8l5uq8kj",
           "autoFixable": false
         },
         {
@@ -660,7 +660,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 25
           },
-          "id": "duplication-1774846085032-u8lkiv4xb7r",
+          "id": "duplication-1775112895434-8mtf8vv33nf",
           "autoFixable": false
         },
         {
@@ -672,7 +672,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 26
           },
-          "id": "duplication-1774846085032-1ib67qojbbji",
+          "id": "duplication-1775112895434-qiepuk8j88",
           "autoFixable": false
         },
         {
@@ -684,7 +684,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 27
           },
-          "id": "duplication-1774846085032-4mvtc47f30a",
+          "id": "duplication-1775112895434-9mwzuo6ili",
           "autoFixable": false
         },
         {
@@ -696,7 +696,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 28
           },
-          "id": "duplication-1774846085032-3ihqjcoxnmq",
+          "id": "duplication-1775112895434-cm3wicb54wt",
           "autoFixable": false
         },
         {
@@ -708,7 +708,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 29
           },
-          "id": "duplication-1774846085032-cxku0zz7lr6",
+          "id": "duplication-1775112895434-7xrojn8151m",
           "autoFixable": false
         },
         {
@@ -720,7 +720,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 30
           },
-          "id": "duplication-1774846085032-d3e6vgf7a8e",
+          "id": "duplication-1775112895434-29q15967du6",
           "autoFixable": false
         },
         {
@@ -732,7 +732,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 31
           },
-          "id": "duplication-1774846085032-g7h368r7o5",
+          "id": "duplication-1775112895434-6105eih238s",
           "autoFixable": false
         },
         {
@@ -744,7 +744,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 32
           },
-          "id": "duplication-1774846085032-8rc65fxyp2a",
+          "id": "duplication-1775112895434-0ivtnbsxznw",
           "autoFixable": false
         },
         {
@@ -756,7 +756,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 33
           },
-          "id": "duplication-1774846085032-wbo4p9jooi",
+          "id": "duplication-1775112895434-o5x3hkd1w",
           "autoFixable": false
         },
         {
@@ -768,7 +768,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 74
           },
-          "id": "duplication-1774846085032-ekr36xm6k8f",
+          "id": "duplication-1775112895434-nwq8ycidn6",
           "autoFixable": false
         },
         {
@@ -780,7 +780,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 75
           },
-          "id": "duplication-1774846085032-uni0w15hky8",
+          "id": "duplication-1775112895434-lq5bt57c7ar",
           "autoFixable": false
         },
         {
@@ -792,7 +792,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 76
           },
-          "id": "duplication-1774846085032-cjhhbvudgrv",
+          "id": "duplication-1775112895434-7cfm4t6zk7p",
           "autoFixable": false
         },
         {
@@ -804,7 +804,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 77
           },
-          "id": "duplication-1774846085032-25m6d5whbih",
+          "id": "duplication-1775112895434-lapvdncrbak",
           "autoFixable": false
         },
         {
@@ -816,7 +816,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 78
           },
-          "id": "duplication-1774846085032-tiq64gsk6cb",
+          "id": "duplication-1775112895434-7939ygom9d3",
           "autoFixable": false
         },
         {
@@ -828,7 +828,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 79
           },
-          "id": "duplication-1774846085032-kdocao7lun",
+          "id": "duplication-1775112895434-nivxbkhzui",
           "autoFixable": false
         },
         {
@@ -840,7 +840,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 80
           },
-          "id": "duplication-1774846085032-qqgx2hdrc3n",
+          "id": "duplication-1775112895434-5icnh5lcj93",
           "autoFixable": false
         },
         {
@@ -852,7 +852,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 81
           },
-          "id": "duplication-1774846085032-gyfwd84kewd",
+          "id": "duplication-1775112895434-kaipfmcn0a",
           "autoFixable": false
         },
         {
@@ -864,7 +864,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 82
           },
-          "id": "duplication-1774846085032-tifezzos1p",
+          "id": "duplication-1775112895434-qn18gedqtlq",
           "autoFixable": false
         },
         {
@@ -876,7 +876,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 83
           },
-          "id": "duplication-1774846085032-z8gv7zmc5fk",
+          "id": "duplication-1775112895434-qhzez8dxr2",
           "autoFixable": false
         },
         {
@@ -888,7 +888,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 84
           },
-          "id": "duplication-1774846085032-iylvx87ux5k",
+          "id": "duplication-1775112895434-2h3lgatwqwp",
           "autoFixable": false
         },
         {
@@ -900,7 +900,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 85
           },
-          "id": "duplication-1774846085032-2d9sq9gighs",
+          "id": "duplication-1775112895434-pasjjzl7bvk",
           "autoFixable": false
         },
         {
@@ -912,7 +912,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 86
           },
-          "id": "duplication-1774846085032-t3gbyn2d5a",
+          "id": "duplication-1775112895434-2yt4gvvk00c",
           "autoFixable": false
         },
         {
@@ -924,7 +924,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdVotes.ts",
             "line": 63
           },
-          "id": "duplication-1774846085032-wpvcyxiiwv",
+          "id": "duplication-1775112895434-8ejik242g8",
           "autoFixable": false
         },
         {
@@ -936,7 +936,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdVotes.ts",
             "line": 64
           },
-          "id": "duplication-1774846085032-s5ypxcuxz88",
+          "id": "duplication-1775112895434-ab1nul577lo",
           "autoFixable": false
         },
         {
@@ -948,7 +948,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 86
           },
-          "id": "duplication-1774846085032-zuxb5lqjvcr",
+          "id": "duplication-1775112895434-9xok2p42eds",
           "autoFixable": false
         },
         {
@@ -960,7 +960,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 91
           },
-          "id": "duplication-1774846085032-4m90mp6uo2t",
+          "id": "duplication-1775112895434-wwhckjidrx",
           "autoFixable": false
         },
         {
@@ -972,7 +972,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 95
           },
-          "id": "duplication-1774846085032-29pgupsxup4",
+          "id": "duplication-1775112895434-kok7skw4ruq",
           "autoFixable": false
         },
         {
@@ -984,7 +984,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 96
           },
-          "id": "duplication-1774846085032-qy48au6elx",
+          "id": "duplication-1775112895434-dvrpcgvi84s",
           "autoFixable": false
         },
         {
@@ -996,7 +996,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 97
           },
-          "id": "duplication-1774846085032-yxaivzky2ug",
+          "id": "duplication-1775112895434-ia2o0haisha",
           "autoFixable": false
         },
         {
@@ -1008,7 +1008,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberCommunitiesCommunityIdReports.ts",
             "line": 27
           },
-          "id": "duplication-1774846085032-wl6al6afucj",
+          "id": "duplication-1775112895434-j3wh05v8yla",
           "autoFixable": false
         },
         {
@@ -1020,7 +1020,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberCommunitiesCommunityIdReports.ts",
             "line": 28
           },
-          "id": "duplication-1774846085032-s68oba5odsp",
+          "id": "duplication-1775112895434-mh87e3gysy9",
           "autoFixable": false
         },
         {
@@ -1032,7 +1032,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberCommunitiesCommunityIdReports.ts",
             "line": 29
           },
-          "id": "duplication-1774846085032-949lq1xzbag",
+          "id": "duplication-1775112895434-ad6skb9fsph",
           "autoFixable": false
         },
         {
@@ -1044,7 +1044,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityCommunitiesCommunityIdPosts.ts",
             "line": 98
           },
-          "id": "duplication-1774846085032-u6yjww2kita",
+          "id": "duplication-1775112895434-fils2m84j9w",
           "autoFixable": false
         },
         {
@@ -1056,7 +1056,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityCommunitiesCommunityIdPosts.ts",
             "line": 99
           },
-          "id": "duplication-1774846085032-mjryft8zes",
+          "id": "duplication-1775112895434-rfmm8174msa",
           "autoFixable": false
         },
         {
@@ -1068,7 +1068,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 8
           },
-          "id": "duplication-1774846085032-c8rlb2crz9s",
+          "id": "duplication-1775112895434-0bvs3tnsogg6",
           "autoFixable": false
         },
         {
@@ -1080,7 +1080,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 9
           },
-          "id": "duplication-1774846085032-nd2jhajv1fo",
+          "id": "duplication-1775112895434-ny3t8xruo0r",
           "autoFixable": false
         },
         {
@@ -1092,7 +1092,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 10
           },
-          "id": "duplication-1774846085032-92zswz3wrkf",
+          "id": "duplication-1775112895434-wnd6il1hzrm",
           "autoFixable": false
         },
         {
@@ -1104,7 +1104,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 11
           },
-          "id": "duplication-1774846085032-0wgz8njo0y7r",
+          "id": "duplication-1775112895434-cypkml7dv4b",
           "autoFixable": false
         },
         {
@@ -1116,7 +1116,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 12
           },
-          "id": "duplication-1774846085032-fxce47qmai",
+          "id": "duplication-1775112895434-1ihnzzoufoh",
           "autoFixable": false
         },
         {
@@ -1128,7 +1128,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 13
           },
-          "id": "duplication-1774846085032-vufnw5w70gf",
+          "id": "duplication-1775112895434-wv4xrvxcv3",
           "autoFixable": false
         },
         {
@@ -1140,7 +1140,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 14
           },
-          "id": "duplication-1774846085032-9alg926b39",
+          "id": "duplication-1775112895434-1sbd76hz2mm",
           "autoFixable": false
         },
         {
@@ -1152,7 +1152,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 15
           },
-          "id": "duplication-1774846085032-2har2hrka8",
+          "id": "duplication-1775112895434-t0cp6zbona",
           "autoFixable": false
         }
       ]
@@ -1174,7 +1174,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/members/CommunityMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846085056-vg6xjp1iy2r",
+          "id": "jsdoc-1775112895459-nr0t3d5l36a",
           "autoFixable": false
         },
         {
@@ -1186,7 +1186,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/CommunityUserprofilesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846085055-8g05nq6txos",
+          "id": "jsdoc-1775112895473-f70oix3z9dw",
           "autoFixable": false
         },
         {
@@ -1198,19 +1198,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/CommunityPostsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846085056-mykqohzhen",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityCommunitiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/CommunityCommunitiesController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846085057-j4d3j6428m",
+          "id": "jsdoc-1775112895469-khwoprq0x9e",
           "autoFixable": false
         },
         {
@@ -1222,7 +1210,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/guests/CommunityGuestsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846085056-jt9fzee15be",
+          "id": "jsdoc-1775112895460-c3t49styavm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/CommunityCommunitiesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775112895460-ufi5k5l79h",
           "autoFixable": false
         },
         {
@@ -1234,31 +1234,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/comments/CommunityPostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846085057-5a08kohxdp2",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityCommunitiesPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/posts/CommunityCommunitiesPostsController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846085057-oyybfvm6dtf",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityCommunitiesModeratorsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/moderators/CommunityCommunitiesModeratorsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846085058-s2iov35si2",
+          "id": "jsdoc-1775112895461-2693aedxah8",
           "autoFixable": false
         },
         {
@@ -1270,31 +1246,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/guest/sessions/CommunityGuestSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846085057-ii0zki9ttv8",
+          "id": "jsdoc-1775112895460-yxkbb5cjcy",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityUserprofilesPostsController\" missing JSDoc",
+          "message": "Class \"CommunityCommunitiesPostsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/posts/CommunityUserprofilesPostsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/posts/CommunityCommunitiesPostsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846085058-k63dp7atbpc",
+          "id": "jsdoc-1775112895460-d4cpqzxae3q",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityUserprofilesKarmalogsController\" missing JSDoc",
+          "message": "Class \"CommunityCommunitiesModeratorsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/karmaLogs/CommunityUserprofilesKarmalogsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/moderators/CommunityCommunitiesModeratorsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846085058-ygswny9w2de",
+          "id": "jsdoc-1775112895461-tvjsumbui8",
           "autoFixable": false
         },
         {
@@ -1306,7 +1282,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/comments/CommunityUserprofilesCommentsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846085058-pozgs3d8v7f",
+          "id": "jsdoc-1775112895469-9109wkumfjv",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityUserprofilesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/posts/CommunityUserprofilesPostsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1775112895467-1tfiwx28xoi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityUserprofilesKarmalogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/karmaLogs/CommunityUserprofilesKarmalogsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775112895461-pfmgoij2v5r",
           "autoFixable": false
         },
         {
@@ -1318,7 +1318,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/auth/member/CommunityAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846085059-xukfr6ex2c9",
+          "id": "jsdoc-1775112895461-i2e252swjgi",
           "autoFixable": false
         },
         {
@@ -1330,7 +1330,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/auth/guest/CommunityAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846085059-4lhpzgjhf49",
+          "id": "jsdoc-1775112895462-bvv8p9cat2d",
           "autoFixable": false
         },
         {
@@ -1342,7 +1342,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/subscriptions/CommunityMemberSubscriptionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846085060-2nyj7vfc09k",
+          "id": "jsdoc-1775112895467-0jebbli8zcq",
           "autoFixable": false
         },
         {
@@ -1354,43 +1354,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/CommunityMemberCommunitiesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846085062-2apaigvw957",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityPostsCommentsVotesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/comments/votes/CommunityPostsCommentsVotesController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846085061-bi9fzcwp1r",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityMemberPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/CommunityMemberPostsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846085061-dbbf2336nzo",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityMemberFeedController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/feed/CommunityMemberFeedController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846085060-a54ttm06yrd",
+          "id": "jsdoc-1775112895468-i5bavmqam2",
           "autoFixable": false
         },
         {
@@ -1402,7 +1366,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/profile/CommunityMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846085061-6kgw57ktbvc",
+          "id": "jsdoc-1775112895468-uqrbndm4wc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/CommunityMemberPostsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775112895468-iqsb6fy124",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberFeedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/feed/CommunityMemberFeedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775112895469-0rco5z0fg8j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityPostsCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/comments/votes/CommunityPostsCommentsVotesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775112895468-f8jrpqf3kcf",
           "autoFixable": false
         },
         {
@@ -1414,43 +1414,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/subscriptions/CommunityMemberCommunitiesSubscriptionsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846085064-zqvxjbrcpng",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityMemberCommunitiesPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/posts/CommunityMemberCommunitiesPostsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846085064-qris4od3n9h",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityMemberCommunitiesModeratorsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/moderators/CommunityMemberCommunitiesModeratorsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846085062-ltb19shbv2j",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityMemberCommunitiesBansController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/bans/CommunityMemberCommunitiesBansController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774846085063-60pnatypfk4",
+          "id": "jsdoc-1775112895469-npx8e0xz2g",
           "autoFixable": false
         },
         {
@@ -1462,7 +1426,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/reports/CommunityMemberCommunitiesReportsController.ts",
             "line": 16
           },
-          "id": "jsdoc-1774846085064-1dvrnp9j50d",
+          "id": "jsdoc-1775112895473-i78zauuy2hi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/posts/CommunityMemberCommunitiesPostsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775112895472-9ird4329z5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/moderators/CommunityMemberCommunitiesModeratorsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775112895470-7l8bbhff88p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/bans/CommunityMemberCommunitiesBansController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1775112895470-09ssyw6dnf8s",
           "autoFixable": false
         },
         {
@@ -1474,7 +1474,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/votes/CommunityMemberPostsVotesController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774846085065-acy7rctb7w",
+          "id": "jsdoc-1775112895471-x2cpobroj7",
           "autoFixable": false
         },
         {
@@ -1486,7 +1486,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846085066-oorleajkz6",
+          "id": "jsdoc-1775112895471-d4phupuph54",
           "autoFixable": false
         },
         {
@@ -1498,7 +1498,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/guest/posts/comments/replies/CommunityGuestPostsCommentsRepliesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846085065-nsifetkfumo",
+          "id": "jsdoc-1775112895472-9ovfq8xnuul",
           "autoFixable": false
         },
         {
@@ -1510,7 +1510,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/votes/CommunityMemberPostsCommentsVotesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846085066-8lm4thvcbcu",
+          "id": "jsdoc-1775112895471-uz12yciglvk",
           "autoFixable": false
         },
         {
@@ -1522,7 +1522,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/replies/CommunityMemberPostsCommentsRepliesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846085066-dkbjky4ir0c",
+          "id": "jsdoc-1775112895473-s6xo6sndxd",
           "autoFixable": false
         }
       ]
@@ -1541,7 +1541,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 28
           },
-          "id": "completeness-1774846085079-5a6pw8p12x9",
+          "id": "completeness-1775112895489-lxp6z5ajb5",
           "autoFixable": false
         },
         {
@@ -1553,7 +1553,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 36
           },
-          "id": "completeness-1774846085079-ynvdzn6q95d",
+          "id": "completeness-1775112895489-5qmwcbg3ui3",
           "autoFixable": false
         },
         {
@@ -1565,7 +1565,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 44
           },
-          "id": "completeness-1774846085079-yeamok4t7ji",
+          "id": "completeness-1775112895489-rfvsi5m494",
           "autoFixable": false
         },
         {
@@ -1577,7 +1577,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 52
           },
-          "id": "completeness-1774846085079-hj1opu6nv68",
+          "id": "completeness-1775112895489-al1kwp3vrep",
           "autoFixable": false
         },
         {
@@ -1589,7 +1589,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 60
           },
-          "id": "completeness-1774846085079-mu8hpvcan3j",
+          "id": "completeness-1775112895489-ib1s5qljg1",
           "autoFixable": false
         },
         {
@@ -1601,7 +1601,7 @@
             "file": "src/api/structures/ICommunityCommunity.ts",
             "line": 45
           },
-          "id": "completeness-1774846085080-dl3virm8atl",
+          "id": "completeness-1775112895489-mma5xx4lddb",
           "autoFixable": false
         },
         {
@@ -1613,7 +1613,7 @@
             "file": "src/api/structures/ICommunityCommentVote.ts",
             "line": 141
           },
-          "id": "completeness-1774846085079-5d5kxncaupq",
+          "id": "completeness-1775112895490-ze16gjr5wlf",
           "autoFixable": false
         }
       ]
@@ -1636,7 +1636,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846084507-gpqvcocjibe",
+      "id": "type-error-1775112895027-vi6h9mupz0k",
       "autoFixable": false
     },
     {
@@ -1648,7 +1648,7 @@
         "file": "src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
         "line": 1983
       },
-      "id": "type-error-1774846084507-vm1c4oqpwei",
+      "id": "type-error-1775112895027-18dvarlebig",
       "autoFixable": false
     },
     {
@@ -1660,7 +1660,7 @@
         "file": "src/transformers/CommunityCommunityAtSummaryTransformer.ts",
         "line": 1190
       },
-      "id": "type-error-1774846084507-sjk9tmbxgtt",
+      "id": "type-error-1775112895027-sx3ghsvh0ys",
       "autoFixable": false
     }
   ],
@@ -1674,7 +1674,7 @@
         "file": "src/providers/patchCommunityGuestSessions.ts",
         "line": 1294
       },
-      "id": "type-error-1774846084507-zex46kye1fm",
+      "id": "type-error-1775112895027-8oh6qzopzgc",
       "autoFixable": false
     },
     {
@@ -1686,7 +1686,7 @@
         "file": "src/providers/patchCommunityGuestSessions.ts",
         "line": 1738
       },
-      "id": "type-error-1774846084507-xf24tkl32j",
+      "id": "type-error-1775112895027-9rm7vz3hvzc",
       "autoFixable": false
     },
     {
@@ -1698,7 +1698,7 @@
         "file": "src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
         "line": 2188
       },
-      "id": "type-error-1774846084507-wxu4d9bdhc",
+      "id": "type-error-1775112895027-of5d1kn2cxf",
       "autoFixable": false
     },
     {
@@ -1710,7 +1710,7 @@
         "file": "src/providers/patchCommunityPosts.ts",
         "line": 2558
       },
-      "id": "type-error-1774846084507-6qnvc7hrkat",
+      "id": "type-error-1775112895027-qft75lmy2v",
       "autoFixable": false
     },
     {
@@ -1722,14 +1722,14 @@
         "file": "src/transformers/CommunityPostAtSummaryTransformer.ts",
         "line": 1845
       },
-      "id": "type-error-1774846084507-m2pyeq58ekh",
+      "id": "type-error-1775112895027-w8nyswxp9o",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:48:05.081Z",
-    "totalDurationMs": 8432,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T06:54:55.490Z",
+    "totalDurationMs": 8109,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 226
   },
   "penalties": {
@@ -1751,5 +1751,523 @@
     "structures": 31,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/community/guests/CommunityGuestsController.ts",
+          "line": 60,
+          "description": "The guest listing endpoint (PATCH /community/guests) exposes all guest identity records including device fingerprints with no authentication or authorization guard. The spec comment states 'No authorization restrictions are enforced at the operation level' and relies on unspecified 'higher-level middleware'. This endpoint leaks PII-adjacent data (device fingerprints, session metadata) to any unauthenticated caller.",
+          "suggestion": "Apply an admin-level authentication guard to this endpoint. Device fingerprints are sensitive identifiers that should only be accessible to administrators. Do not rely on undocumented middleware for access control."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/community/member/communities/bans/CommunityMemberCommunitiesBansController.ts",
+          "line": 100,
+          "description": "The ban management endpoints (POST, PATCH, GET, PUT) use @MemberAuth() for authentication but the actual RBAC check (verifying moderator/owner role) is delegated entirely to the provider layer. If the provider-level role check is missing or bypassed, any authenticated member could issue, view, or lift bans. The controller provides no guard-level RBAC enforcement.",
+          "suggestion": "Consider implementing a community moderator guard at the controller or route level to enforce role checks before reaching the provider, providing defense in depth."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
+          "line": 68,
+          "description": "All controllers use console.log(error) for error handling, which may expose stack traces and internal details to logs without structured formatting. This is the standard AutoBE pattern but lacks structured logging with severity levels, correlation IDs, and log aggregation support.",
+          "suggestion": "Replace console.log with a structured logger (e.g., NestJS Logger or Winston) that supports log levels, redaction of sensitive fields, and integration with log aggregation systems."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to any of the community endpoints (comment creation, voting, subscription, ban management). High-frequency abuse of write endpoints could enable spam, vote manipulation, or DoS.",
+          "suggestion": "Apply rate limiting at the API gateway or using NestJS throttler (@nestjs/throttler) on write endpoints, especially comment creation and voting."
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postCommunityAuthGuestJoin.ts",
+          "line": 52,
+          "description": "Access token and refresh token are signed with the same JWT_SECRET_KEY and the same payload structure. There is no differentiation between access and refresh token secrets, meaning a stolen refresh token could be used as an access token if the verification logic does not strictly check token type. Additionally, the guest fingerprint is stored and used as a unique identifier without any validation or sanitization, which could allow fingerprint spoofing to hijack guest sessions.",
+          "suggestion": "Use separate secrets for access and refresh tokens (JWT_ACCESS_SECRET and JWT_REFRESH_SECRET). Validate and sanitize the fingerprint input to prevent spoofing attacks."
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postCommunityAuthMemberRefresh.ts",
+          "line": 60,
+          "description": "Access token and refresh token are signed with the same JWT_SECRET_KEY. A compromised refresh token could potentially be submitted as an access token if the consuming guard does not strictly validate the token type field. The type check relies solely on the decoded payload field 'type', which is not cryptographically enforced.",
+          "suggestion": "Use separate signing secrets for access and refresh tokens. Enforce token type at the cryptographic level rather than relying on a payload claim."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 18,
+          "description": "The authorization function throws ForbiddenException (403) when no token is present, but the correct HTTP status for missing authentication credentials is 401 Unauthorized. This semantic error could confuse clients and security tooling about the nature of the rejection.",
+          "suggestion": "Throw UnauthorizedException (401) when the Authorization header is missing, reserving ForbiddenException (403) for cases where a valid token exists but lacks sufficient permissions."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/patchCommunityCommunitiesCommunityIdPosts.ts",
+          "line": 70,
+          "description": "For 'hot', 'top', and 'controversial' sort modes, the provider fetches ALL matching posts from the database into memory before sorting and paginating. On a large dataset, this can cause severe memory exhaustion and denial-of-service conditions. There is no upper bound on the number of records fetched.",
+          "suggestion": "Implement database-level sorting using precomputed score columns or materialized views. If in-memory sorting is required, add a hard cap (e.g., MAX 10,000 records) and return an error or fallback for larger datasets."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getCommunityGuestsGuestId.ts",
+          "line": 18,
+          "description": "The endpoint retrieves a guest record by ID without any authentication or ownership check. Any caller who knows or can guess a guest UUID can retrieve another guest's session data including fingerprint and timestamps. Guest UUIDs may be predictable or leaked.",
+          "suggestion": "Require the caller to present a valid guest token and verify that the requested guestId matches the authenticated guest's own ID, or restrict this endpoint to internal/admin use only."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postCommunityAuthGuestJoin.ts",
+          "line": 30,
+          "description": "The guest join endpoint accepts a client-supplied IP address (props.body.ip) and uses it preferentially over the actual request IP (props.ip). This allows clients to spoof their IP address in session records, undermining any IP-based fraud detection or rate limiting.",
+          "suggestion": "Always use the server-derived IP address (props.ip) for session recording. Do not trust client-supplied IP values."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/community/member/communities/CommunityMemberCommunitiesController.ts",
+          "line": 62,
+          "description": "Error handling uses console.log(error) which may expose stack traces and sensitive information in production logs. This pattern is repeated across all controller methods.",
+          "suggestion": "Use a structured logging library (e.g., Winston, Pino) with appropriate log levels. Ensure stack traces are not exposed in production environments."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdBans.ts",
+          "line": 40,
+          "description": "The ban creation does not check if the target member is already banned in this community, which could result in duplicate ban records. While not a direct security vulnerability, it represents a business logic gap.",
+          "suggestion": "Check for an existing active ban record before creating a new one and return a 409 Conflict if one already exists."
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postCommunityAuthMemberLogin.ts",
+          "line": 62,
+          "description": "Access token and refresh token are stored in plaintext in the database (community_member_sessions table). If the session store is compromised, all active tokens are immediately usable by an attacker without any additional cracking step.",
+          "suggestion": "Store only a cryptographic hash (e.g., SHA-256) of the tokens in the database. On validation, hash the presented token and compare against the stored hash, similar to how passwords are handled."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/postCommunityAuthMemberLogin.ts",
+          "line": 33,
+          "description": "Failed login attempts (wrong password or unknown email) are not logged. Without audit logging of authentication failures, brute-force attacks and credential stuffing are undetectable.",
+          "suggestion": "Log failed login attempts with timestamp, IP address, and a sanitized identifier (e.g., hashed email) to enable detection and alerting on suspicious patterns."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postCommunityAuthMemberLogin.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to the login endpoint. This allows unlimited brute-force or credential stuffing attempts.",
+          "suggestion": "Apply rate limiting at the controller or gateway level (e.g., using @nestjs/throttler) to restrict the number of login attempts per IP or account within a time window."
+        }
+      ],
+      "score": 71,
+      "summary": "[sampled 30/96 files] [3 chunks, 18→15 issues] The most critical issues are in CommunityGuestsController, which exposes guest identity records (including device fingerprints) without any authentication guard on both the list and detail endpoints. This represents a clear data exposure vulnerability. The ban management controller delegates all RBAC to the provider layer without controller-level guards, creating a defense-in-depth gap. The authenticated member endpoints (comments, votes, subscriptions) appear to use @MemberAuth() correctly. Standard AutoBE patterns (console.log, no rate limiting) are noted as suggestions.",
+      "durationMs": 30718,
+      "tokensUsed": {
+        "input": 48550,
+        "output": 3340,
+        "inputCost": 0.14565000000000003,
+        "outputCost": 0.05009999999999999
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putCommunityMemberPostsPostIdVotes.ts",
+          "line": 5,
+          "description": "Importing from '@prisma/sdk' is incorrect. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putCommunityMemberPostsPostIdVotes.ts",
+          "line": 30,
+          "description": "The query uses 'community_member_id' field in the where clause, but the Prisma model likely expects 'member_id' based on the relationship naming pattern.",
+          "suggestion": "Check the Prisma schema for the correct field name. Likely change 'community_member_id' to 'member_id'."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putCommunityMemberPostsPostIdCommentsCommentIdVotesVoteId.ts",
+          "line": 30,
+          "description": "The 'comment' relation is accessed via 'vote.comment', but the Prisma model might not have this relation defined.",
+          "suggestion": "Check the Prisma schema to ensure the 'community_comment_votes' model has a relation named 'comment' to 'community_comments'."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
+          "line": 30,
+          "description": "The raw SQL query references 'community_bans' table with ambiguous column names ('member_id', 'community_member_id', 'banned_member_id'). This could lead to incorrect results.",
+          "suggestion": "Review the Prisma schema for the correct column names in the 'community_bans' model and adjust the query accordingly."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdReportsReportIdApprove.ts",
+          "line": 50,
+          "description": "The code sets 'post_id' and 'comment_id' to null before deleting the content, but the cascade delete might still occur due to foreign key constraints.",
+          "suggestion": "Verify the foreign key constraint behavior in the Prisma schema. If cascade delete is set, setting to null might not prevent deletion."
+        },
+        {
+          "severity": "suggestion",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/putCommunityMemberPostsPostId.ts",
+          "line": 30,
+          "description": "The code assumes 'post.type' is one of 'text', 'link', or 'image' but doesn't validate this enum.",
+          "suggestion": "Add validation to ensure 'post.type' matches expected enum values before proceeding."
+        },
+        {
+          "severity": "suggestion",
+          "type": "missing-edge-cases",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdSubscriptions.ts",
+          "line": 30,
+          "description": "No validation to prevent subscribing to a deleted community.",
+          "suggestion": "Add a check to ensure the community's 'deleted_at' is null before allowing subscription."
+        },
+        {
+          "severity": "suggestion",
+          "type": "missing-edge-cases",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdModerators.ts",
+          "line": 30,
+          "description": "No check to prevent adding a moderator who is already banned from the community.",
+          "suggestion": "Add a check for active bans on the target member before allowing moderator assignment."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/putCommunityMemberProfile.ts",
+          "line": 4,
+          "description": "Unused imports: ICommunityMember, IEntity, ArrayUtil, jwt, PasswordUtil, toISOStringSafe.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postCommunityMemberCommunities.ts",
+          "line": 6,
+          "description": "Importing from '@prisma/sdk' which doesn't exist. Prisma's client is typically imported from '@prisma/client'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityAuthMemberRefresh.ts",
+          "line": 26,
+          "description": "JWT verification is missing proper type checking. The `jwt.verify` returns `JwtPayload | string`, but the code assumes it's an object with specific properties.",
+          "suggestion": "Add proper type guard: if (typeof decoded === 'string') throw new HttpException(...);"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityAuthMemberLogin.ts",
+          "line": 67,
+          "description": "JWT payload includes `tokenType: 'refresh'` property which is not used elsewhere and might cause inconsistency.",
+          "suggestion": "Remove `tokenType: 'refresh'` from the refresh token payload to keep payloads consistent."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityAuthGuestRefresh.ts",
+          "line": 19,
+          "description": "JWT verification returns `JwtPayload | string`. The code checks for string/null but the condition `result === null` is impossible; `jwt.verify` throws on invalid token.",
+          "suggestion": "Simplify: `const decoded = jwt.verify(...) as JwtPayload;` after catching errors."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityAuthGuestJoin.ts",
+          "line": 21,
+          "description": "Session `expired_at` is set to `accessExpires` (1 hour) but refresh token expires in 7 days. Should be `refreshExpires`.",
+          "suggestion": "Change `expired_at: refreshExpires` to match refresh token lifetime."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchCommunityPostsPostIdComments.ts",
+          "line": 85,
+          "description": "Sorting by vote count using `votes: { _count: 'desc' }` but Prisma's `_count` aggregation on relations might not be supported in `orderBy`. This could cause runtime errors.",
+          "suggestion": "Verify Prisma's support for `_count` in orderBy with relations. If not supported, need to use raw SQL or compute scores in memory."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchCommunityPosts.ts",
+          "line": 44,
+          "description": "Sorting by `votes: { _count: 'desc' }` for 'top' and 'controversial' might not be supported by Prisma. Also 'controversial' logic is missing.",
+          "suggestion": "Check Prisma documentation for ordering by relation count. Implement 'controversial' sorting properly."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postCommunityAuthMemberJoin.ts",
+          "line": 56,
+          "description": "Email verification token is created but never used or sent. No email sending logic.",
+          "suggestion": "Add email sending logic or remove the verification token creation if not required."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/postCommunityAuthMemberRefresh.ts",
+          "line": 3,
+          "description": "Unused imports: IAuthorizationToken, IEntity, ArrayUtil, Prisma, typia, tags, v4, PasswordUtil, toISOStringSafe.",
+          "suggestion": "Remove unused imports to clean up code."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+          "line": 30,
+          "description": "Inconsistent vote_type comparison: uses 'upvote' string literal, but other files use 'up'.",
+          "suggestion": "Standardize vote_type values across the codebase. Check the Prisma schema for the correct enum values."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/deleteCommunityMemberPostsPostId.ts",
+          "line": 70,
+          "description": "Inconsistent vote_type comparison: uses 'upvote' and 'downvote' string literals.",
+          "suggestion": "Standardize vote_type values across the codebase. Check the Prisma schema for the correct enum values."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/deleteCommunityMemberPostsPostIdCommentsCommentId.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, PasswordUtil, toISOStringSafe.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "suggestion",
+          "type": "copy-paste",
+          "file": "src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
+          "line": 1,
+          "description": "Boilerplate import pattern repeated across multiple files with unused imports.",
+          "suggestion": "Consider creating a shared utility file or using a linter to remove unused imports automatically."
+        }
+      ],
+      "score": 53,
+      "summary": "[4 chunks, 103→23 issues] The code shows a consistent pattern of incorrect Prisma SDK imports across all files, which is a critical hallucination. There are also several logic errors related to field names and database relationships. However, the overall structure follows NestJS+Prisma conventions correctly, with proper error handling and transaction usage. Many unused imports suggest generated code that wasn't cleaned up.",
+      "durationMs": 318363,
+      "tokensUsed": {
+        "input": 70042,
+        "output": 19124,
+        "inputCost": 0.0210126,
+        "outputCost": 0.01682912
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/community/members/CommunityMembersController.ts",
+          "line": 52,
+          "description": "Controller has route PATCH /community/members with @TypedRoute.Patch() but no corresponding endpoint in the provided OpenAPI spec. This appears to be a fabricated endpoint for listing members.",
+          "suggestion": "Remove this route unless there is a spec-defined PATCH operation for listing members. Typically listing should be GET, not PATCH."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/community/guest/sessions/CommunityGuestSessionsController.ts",
+          "line": 1,
+          "description": "Controller path '/community/guest/sessions' appears to reference a guest sessions model, but the Prisma schema does not define a community_guest_sessions model. The provided spec mentions guest sessions in comments but no actual model exists. This might be referencing a non-existent table.",
+          "suggestion": "Verify if community_guest_sessions table exists in Prisma schema. If not, this controller is referencing a phantom model."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/community/communities/posts/CommunityCommunitiesPostsController.ts",
+          "line": 1,
+          "description": "Controller defines PATCH /community/communities/:communityId/posts endpoint but there is no corresponding OpenAPI path for listing community posts via PATCH method. The spec likely expects GET for listing posts.",
+          "suggestion": "Change to GET method or verify OpenAPI spec includes PATCH operation for listing posts."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/community/userProfiles/comments/CommunityUserprofilesCommentsController.ts",
+          "line": 1,
+          "description": "Controller defines PATCH /community/userProfiles/:userProfileId/comments endpoint but there is no corresponding OpenAPI path for listing user comments via PATCH method. Likely should be GET.",
+          "suggestion": "Change to GET method or verify OpenAPI spec includes PATCH operation for listing user comments."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/community/member/feed/CommunityMemberFeedController.ts",
+          "line": 1,
+          "description": "Controller defines a PATCH route at '/community/member/feed' for retrieving a paginated home feed. This endpoint has no corresponding operation in the provided OpenAPI spec chunk. The spec defines operations for communities, profiles, posts, comments, votes, and subscriptions, but no feed endpoint.",
+          "suggestion": "Remove this controller unless a feed endpoint is defined in the OpenAPI specification."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/community/posts/comments/votes/CommunityPostsCommentsVotesController.ts",
+          "line": 1,
+          "description": "Controller defines a PATCH route at '/community/posts/:postId/comments/:commentId/votes' for listing votes and a GET route for retrieving a single vote. The provided spec chunk does not include any operations for listing or retrieving individual comment votes. Only vote creation/update/deletion might be implied, but not listing.",
+          "suggestion": "Remove these endpoints unless list/retrieve operations for comment votes are defined in the OpenAPI spec."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/community/member/feed/CommunityMemberFeedController.ts",
+          "line": 1,
+          "description": "The feed controller uses PATCH method for a read/retrieve operation, which is a non-standard REST practice (GET should be used). This is a spec mismatch if the OpenAPI spec defines a GET method for feed retrieval.",
+          "suggestion": "Change the HTTP method to GET if the spec defines a GET endpoint for the feed."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/providers/putCommunityMemberPostsPostIdCommentsCommentIdVotesVoteId.ts",
+          "line": 80,
+          "description": "The provider uses a relation field 'commentVote' that does not exist in the Prisma schema. The schema defines a relation from community_user_profile_karma_logs to community_comment_votes via 'community_comment_vote_id', but the code attempts to connect using a field named 'commentVote'.",
+          "suggestion": "Change the relation connection to use the correct field name: 'communityCommentVotes' or adjust the Prisma schema to match the code."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postCommunityMemberPostsPostIdCommentsCommentIdVotes.ts",
+          "line": 80,
+          "description": "The provider uses a field 'communityMemberSessions' that does not exist in the Prisma schema for community_comment_votes. The schema shows community_comment_votes has a relation to community_members via 'community_member_id', but there is no 'communityMemberSessions' relation.",
+          "suggestion": "Remove the 'communityMemberSessions' field from the collector data or adjust the schema to include the relation."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
+          "line": 40,
+          "description": "The ban check uses raw SQL with incorrect column names. The Prisma schema shows columns 'community_id', 'banned_member_id', and 'issuing_moderator_id', but the query references 'community_community_id', 'member_id', and 'banned_member_id' which don't exist in the community_bans model.",
+          "suggestion": "Use Prisma's typed API instead of raw SQL: `await MyGlobal.prisma.community_bans.findFirst({ where: { community_id: props.communityId, banned_member_id: props.member.id, status: 'active' } })`"
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdReportsReportIdApprove.ts",
+          "line": 60,
+          "description": "The code nulls out post_id and comment_id before deleting content, but the Prisma schema has `onDelete: Cascade` on those relations. This creates unnecessary complexity and could cause referential integrity issues.",
+          "suggestion": "Remove the nulling-out step and just delete the content directly; cascade will handle the report's foreign keys automatically."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdReports.ts",
+          "line": 50,
+          "description": "The code checks if a comment's parent post belongs to the community, but the Prisma schema shows community_community_id is on community_posts, not directly on community_comments. This is correct but relies on nested relation traversal.",
+          "suggestion": "No change needed—this is a valid implementation of the spec."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
+          "line": 30,
+          "description": "The subscription check is stricter than the spec implies. The spec doesn't explicitly require subscription for posting; this could be an invented business rule.",
+          "suggestion": "Verify with OpenAPI spec whether subscription is required for post creation. If not specified, consider removing this check."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdModerators.ts",
+          "line": 30,
+          "description": "The code allows any moderator (not just owner) to assign new moderators. The spec doesn't define permission hierarchy; this may be an invented rule.",
+          "suggestion": "Check OpenAPI spec for moderator assignment permissions. If unspecified, this is acceptable implementation detail."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/postCommunityMemberCommunitiesCommunityIdBans.ts",
+          "line": 40,
+          "description": "The code prevents banning moderators, but the spec doesn't explicitly forbid this. This could be an invented business rule.",
+          "suggestion": "Verify with OpenAPI spec whether moderators can be banned. If not specified, this is defensive programming."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchCommunityGuests.ts",
+          "line": 1,
+          "description": "The provider 'patchCommunityGuests' implements a PATCH endpoint for listing guests, but there is no corresponding OpenAPI path for listing guests in the provided spec. The spec only defines community_guests model but no CRUD endpoints for it.",
+          "suggestion": "Remove this provider unless there is an OpenAPI path for listing guests."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchCommunityGuestSessions.ts",
+          "line": 1,
+          "description": "The provider 'patchCommunityGuestSessions' implements a PATCH endpoint for listing guest sessions, but there is no corresponding OpenAPI path for listing guest sessions in the provided spec. The spec does not define any endpoints for community_member_sessions.",
+          "suggestion": "Remove this provider unless there is an OpenAPI path for listing guest sessions."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchCommunityGuestPostsPostIdCommentsCommentIdReplies.ts",
+          "line": 1,
+          "description": "The provider 'patchCommunityGuestPostsPostIdCommentsCommentIdReplies' implements a PATCH endpoint for listing comment replies as a guest, but there is no corresponding OpenAPI path for guest-specific reply listing in the provided spec. Guest endpoints are not defined.",
+          "suggestion": "Remove this provider unless there is an OpenAPI path for guest reply listing."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchCommunityPostsPostIdComments.ts",
+          "line": 1,
+          "description": "The provider 'patchCommunityPostsPostIdComments' implements a PATCH endpoint for listing comments on a post, but the HTTP method should likely be GET for listing. However, without the OpenAPI spec, we cannot confirm the exact mismatch. The implementation may be correct if the spec defines PATCH for listing.",
+          "suggestion": "Verify the OpenAPI spec to ensure the HTTP method matches (likely GET)."
+        }
+      ],
+      "score": 84,
+      "summary": "[9 chunks, 43→19 issues] Multiple phantom endpoints detected where controllers implement PATCH routes for listing entities (members, profiles, posts, guests, communities, comments, guest sessions) that likely should be GET endpoints according to standard REST conventions. No OpenAPI spec provided to confirm these routes, but PATCH for listing is unusual. Also potential reference to non-existent guest sessions model. Most other code appears faithful to Prisma schema and logical.",
+      "durationMs": 102574,
+      "tokensUsed": {
+        "input": 187023,
+        "output": 6518,
+        "inputCost": 0.056106899999999994,
+        "outputCost": 0.00573584
+      },
+      "deepEvalScores": {
+        "faithfulness": 82,
+        "relevancy": 89,
+        "contextualPrecision": 83
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 85,
+    "phaseWeight": 0.85,
+    "phaseContribution": 72,
+    "agentScore": 68,
+    "agentWeight": 0.15,
+    "agentContribution": 10
+  }
 }

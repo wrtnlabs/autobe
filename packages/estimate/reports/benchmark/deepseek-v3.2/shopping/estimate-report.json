@@ -15,7 +15,7 @@
           "severity": "critical",
           "category": "syntax",
           "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-          "id": "syntax-1774846129568-yjx5rrz8awo",
+          "id": "syntax-1775116203314-1276aysesja",
           "autoFixable": false
         }
       ],
@@ -161,16 +161,16 @@
       "severity": "critical",
       "category": "syntax",
       "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-      "id": "syntax-1774846129568-yjx5rrz8awo",
+      "id": "syntax-1775116203314-1276aysesja",
       "autoFixable": false
     }
   ],
   "warnings": [],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:48:49.569Z",
-    "totalDurationMs": 25,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T07:50:03.318Z",
+    "totalDurationMs": 21,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 0
   },
   "performanceMetrics": {
@@ -185,5 +185,41 @@
     "structures": 0,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 0,
+    "phaseWeight": 1,
+    "phaseContribution": 0,
+    "agentScore": null,
+    "agentWeight": 0,
+    "agentContribution": 0
+  }
 }

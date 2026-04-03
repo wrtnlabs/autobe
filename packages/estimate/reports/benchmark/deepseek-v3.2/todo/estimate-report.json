@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo",
-  "totalScore": 86,
+  "totalScore": 84,
   "grade": "B",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846134879-2ss054w7trq",
+          "id": "type-error-1775116212419-8a0n6qe48x3",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/patchTodoAppMemberTodosTodoIdHistoriesHistoryIdAttributeChanges.ts",
             "line": 3307
           },
-          "id": "type-error-1774846134879-f24ho60vy8v",
+          "id": "type-error-1775116212419-c5grykqkzb",
           "autoFixable": false
         },
         {
@@ -43,11 +43,11 @@
             "file": "src/providers/postTodoAppAuthMemberJoin.ts",
             "line": 3465
           },
-          "id": "type-error-1774846134879-h2avcdq1bef",
+          "id": "type-error-1775116212419-ytt5g7v4gg",
           "autoFixable": false
         }
       ],
-      "durationMs": 4001,
+      "durationMs": 3214,
       "metrics": {
         "totalFiles": 121,
         "filesWithErrors": 0,
@@ -181,7 +181,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846135018-c6f2bbf2by7",
+          "id": "complexity-1775116212572-rqvkq51w7m",
           "autoFixable": false
         }
       ]
@@ -198,7 +198,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/providers/postTodoAppMemberTodosTodoIdRestore.ts",
             "line": 11
           },
-          "id": "duplication-1774846135076-5rt8llz6vvh",
+          "id": "duplication-1775116212618-5khmnb0tdwb",
           "autoFixable": false
         },
         {
@@ -210,7 +210,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/providers/postTodoAppMemberTodosTodoIdRestore.ts",
             "line": 12
           },
-          "id": "duplication-1774846135076-5i20awmmbsv",
+          "id": "duplication-1775116212618-khmu404klq",
           "autoFixable": false
         },
         {
@@ -222,7 +222,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/providers/postTodoAppMemberTodosTodoIdRestore.ts",
             "line": 13
           },
-          "id": "duplication-1774846135076-e32d9x08fmw",
+          "id": "duplication-1775116212618-ubhoxurfsup",
           "autoFixable": false
         },
         {
@@ -234,7 +234,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/providers/postTodoAppMemberTodosTodoIdRestore.ts",
             "line": 14
           },
-          "id": "duplication-1774846135076-o70szglc35",
+          "id": "duplication-1775116212618-potkfbeqqd",
           "autoFixable": false
         },
         {
@@ -246,7 +246,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/providers/postTodoAppMemberTodosTodoIdRestore.ts",
             "line": 15
           },
-          "id": "duplication-1774846135076-vohkikwrpak",
+          "id": "duplication-1775116212618-cm25r8hfenb",
           "autoFixable": false
         },
         {
@@ -258,7 +258,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/providers/patchTodoAppMembers.ts",
             "line": 170
           },
-          "id": "duplication-1774846135076-euga93ugrzc",
+          "id": "duplication-1775116212619-k6k0awaqcbj",
           "autoFixable": false
         },
         {
@@ -270,7 +270,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 66
           },
-          "id": "duplication-1774846135076-007p0p1w7sske",
+          "id": "duplication-1775116212619-v8mbw8ugc0q",
           "autoFixable": false
         },
         {
@@ -282,7 +282,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/providers/patchTodoAppMemberSessions.ts",
             "line": 70
           },
-          "id": "duplication-1774846135076-t7jw0i2pfa",
+          "id": "duplication-1775116212619-6ogadidlhup",
           "autoFixable": false
         },
         {
@@ -294,7 +294,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/providers/deleteTodoAppMemberTodosTrashTodoId.ts",
             "line": 8
           },
-          "id": "duplication-1774846135076-335h8tbxr5f",
+          "id": "duplication-1775116212619-tvebyvvtbbs",
           "autoFixable": false
         }
       ]
@@ -306,24 +306,24 @@
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"TodoappMemberEmail_verificationsController\" should be PascalCase",
+          "message": "Class \"TodoappMemberPassword_resetsController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
             "line": 12
           },
-          "id": "naming-1774846135066-xvl0yqyqgdp",
+          "id": "naming-1775116212619-h1rzoecyo9",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"TodoappMemberPassword_resetsController\" should be PascalCase",
+          "message": "Class \"TodoappMemberEmail_verificationsController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
             "line": 12
           },
-          "id": "naming-1774846135064-yfjiclla05k",
+          "id": "naming-1775116212619-biy5c7yw5pj",
           "autoFixable": false
         },
         {
@@ -335,7 +335,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/todos/histories/attribute-changes/TodoappMemberTodosHistoriesAttribute_changesController.ts",
             "line": 12
           },
-          "id": "naming-1774846135077-gp0zh2708tr",
+          "id": "naming-1775116212621-v2hfb6jyi9k",
           "autoFixable": false
         }
       ]
@@ -353,79 +353,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/members/TodoappMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846135085-a2rx3w5fadh",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846135085-r4cmqyc8oll",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
-            "line": 16
-          },
-          "id": "jsdoc-1774846135086-bv2a75gcel6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846135085-3d2kopwsmjx",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846135085-36hjata2wqy",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberEmail_verificationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846135086-cm19pr9acs8",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberPassword_resetsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846135087-42hr4yal0re",
+          "id": "jsdoc-1775116212632-2bphojc3wma",
           "autoFixable": false
         },
         {
@@ -437,19 +365,79 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846135086-aug7s6z0fil",
+          "id": "jsdoc-1775116212632-97ij3es8lk",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberTodosTrashController\" missing JSDoc",
+          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/todos/trash/TodoappMemberTodosTrashController.ts",
-            "line": 15
+            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774846135089-or1jnxos4gq",
+          "id": "jsdoc-1775116212632-gombko0i2a7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1775116212633-zfbrxw1cfuq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775116212633-rpasn0asm3",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberEmail_verificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775116212633-rl3btsqres",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775116212635-rclsc623p0i",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1775116212633-kp7f05mwbxp",
           "autoFixable": false
         },
         {
@@ -461,7 +449,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/todos/histories/TodoappMemberTodosHistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846135087-mes7uyv8rgd",
+          "id": "jsdoc-1775116212634-f07sp4qzsoo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosTrashController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/todos/trash/TodoappMemberTodosTrashController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775116212634-xss50fj6ng",
           "autoFixable": false
         },
         {
@@ -473,7 +473,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/todos/histories/snapshot/TodoappMemberTodosHistoriesSnapshotController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846135091-n1l12pm5jig",
+          "id": "jsdoc-1775116212634-mse68jf8v4c",
           "autoFixable": false
         },
         {
@@ -485,7 +485,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/todo/src/controllers/todoApp/member/todos/histories/attribute-changes/TodoappMemberTodosHistoriesAttribute_changesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846135087-6gjkg9gp46x",
+          "id": "jsdoc-1775116212635-unvopvfqcke",
           "autoFixable": false
         }
       ]
@@ -504,7 +504,7 @@
             "file": "src/api/structures/ITodoAppTodoHistory.ts",
             "line": 141
           },
-          "id": "completeness-1774846135094-tk7yrf9x2xo",
+          "id": "completeness-1775116212642-wz3fj9hcddk",
           "autoFixable": false
         },
         {
@@ -516,7 +516,7 @@
             "file": "src/api/structures/ITodoAppTodoHistory.ts",
             "line": 149
           },
-          "id": "completeness-1774846135094-fub0mp0f7y",
+          "id": "completeness-1775116212642-ixo926gviz",
           "autoFixable": false
         },
         {
@@ -528,7 +528,7 @@
             "file": "src/api/structures/ITodoAppMemberSession.ts",
             "line": 85
           },
-          "id": "completeness-1774846135094-9usu389lgjc",
+          "id": "completeness-1775116212641-5w4gwn0ftrw",
           "autoFixable": false
         },
         {
@@ -540,7 +540,7 @@
             "file": "src/api/structures/ITodoAppMemberEmailVerification.ts",
             "line": 61
           },
-          "id": "completeness-1774846135094-dh79s1hhavu",
+          "id": "completeness-1775116212641-d52b0zr71g",
           "autoFixable": false
         }
       ]
@@ -563,7 +563,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846134879-2ss054w7trq",
+      "id": "type-error-1775116212419-8a0n6qe48x3",
       "autoFixable": false
     },
     {
@@ -575,7 +575,7 @@
         "file": "src/providers/postTodoAppAuthMemberJoin.ts",
         "line": 3465
       },
-      "id": "type-error-1774846134879-h2avcdq1bef",
+      "id": "type-error-1775116212419-ytt5g7v4gg",
       "autoFixable": false
     }
   ],
@@ -589,14 +589,14 @@
         "file": "src/providers/patchTodoAppMemberTodosTodoIdHistoriesHistoryIdAttributeChanges.ts",
         "line": 3307
       },
-      "id": "type-error-1774846134879-f24ho60vy8v",
+      "id": "type-error-1775116212419-c5grykqkzb",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:48:55.094Z",
-    "totalDurationMs": 4139,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T07:50:12.643Z",
+    "totalDurationMs": 3328,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 121
   },
   "penalties": {
@@ -623,5 +623,403 @@
     "structures": 21,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/patchTodoAppMembers.ts",
+          "line": 18,
+          "description": "The member search endpoint has no authorization enforcement. The TODO comment explicitly acknowledges this: 'Authorization check - only admins should access member search'. Any authenticated member can search and retrieve all other members' data including emails and display names. This is a critical data exposure vulnerability.",
+          "suggestion": "Pass the authenticated member/admin context into this provider and enforce role-based access control. If this endpoint is admin-only, verify the caller has admin privileges before executing the query. If it should be member-scoped, filter results to only return the requesting member's own data."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
+          "line": 52,
+          "description": "The email verification token detail endpoint (GET /:verificationId) returns the full verification token value to any authenticated member. The specification states this should be admin-only, but the controller uses MemberAuth (regular member authentication). Any member can retrieve any other member's verification tokens if they know the UUID, exposing sensitive security tokens.",
+          "suggestion": "Either restrict this endpoint to admin-only access with a proper admin guard, or enforce ownership validation in the provider to ensure members can only retrieve their own verification tokens. The provider patchTodoAppMemberEmailVerifications correctly scopes by member ID, but the individual GET endpoint may not."
+        },
+        {
+          "severity": "warning",
+          "type": "integrity-failures",
+          "file": "src/providers/postTodoAppAuthMemberRefresh.ts",
+          "line": 68,
+          "description": "Token refresh does not invalidate the old refresh token or update the session record with new tokens. The session record is never updated after generating new tokens, meaning the old refresh token remains valid and can be reused indefinitely (no token rotation). This allows replay attacks with stolen refresh tokens.",
+          "suggestion": "After generating new tokens, update the todo_app_member_sessions record with the new access_token and refresh_token values, and extend the expired_at timestamp. This ensures old tokens are invalidated when new ones are issued."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
+          "line": 57,
+          "description": "The guest join provider accepts an IP address from the request body (props.body.ip) and uses it preferentially over the actual server-detected IP (props.ip). This allows clients to spoof their IP address in session records, undermining security audit trails.",
+          "suggestion": "Always use the server-detected IP address (props.ip from NestJS @Ip() decorator) for session records. Do not accept IP addresses from client-supplied request body fields."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
+          "line": 44,
+          "description": "The email verification search endpoint (PATCH /) is documented as requiring 'administrative privileges' but uses MemberAuth (regular member authentication). While the provider correctly scopes results to the authenticated member's own tokens, the endpoint design mismatch between documentation and implementation could lead to confusion and future security regressions.",
+          "suggestion": "Align the authentication guard with the documented access requirements. If this is intended to be member-scoped (members see only their own tokens), update the documentation. If it should be admin-only, implement an admin guard."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "Controllers use console.log(error) for error handling across all files. This is the standard AutoBE pattern but does not provide structured logging with request context, user IDs, or severity levels. Additionally, login failures are not specifically logged for security monitoring.",
+          "suggestion": "Consider implementing structured logging with a proper logger service (e.g., NestJS Logger or Winston) that includes request context. Log authentication failures with relevant metadata (IP, email attempted) for security monitoring, without exposing passwords."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "No rate limiting is implemented on authentication endpoints (join, login, refresh). The login endpoint documentation mentions rate limiting but it is not present in the code.",
+          "suggestion": "Implement rate limiting on authentication endpoints using @nestjs/throttler or a similar middleware, especially on the login endpoint to prevent brute force attacks."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "Password complexity validation is not visible in the controller or provider layer. The IJoin type likely only validates that password is a string.",
+          "suggestion": "Add password complexity requirements (minimum length, character classes) using typia validation tags or a custom validation pipe on the ITodoAppMember.IJoin type."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getTodoAppMembersMemberId.ts",
+          "line": 16,
+          "description": "This endpoint retrieves any member's profile by ID without requiring authentication. Any unauthenticated caller can enumerate member profiles (email, display name, etc.) by guessing or iterating UUIDs. No MemberPayload/auth guard is present.",
+          "suggestion": "Require authentication for this endpoint. Add a MemberPayload parameter and validate via memberAuthorize, or restrict the returned fields to non-sensitive data if public access is intentional."
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 44,
+          "description": "Access tokens and refresh tokens are stored in plaintext in the database (todo_app_member_sessions table). If the database is compromised, all active sessions are immediately usable by an attacker.",
+          "suggestion": "Store only a hash (e.g., SHA-256) of the tokens in the database. On validation, hash the presented token and compare. This applies to both access_token and refresh_token columns."
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 60,
+          "description": "Same as login: access and refresh tokens are stored in plaintext in the session table. Additionally, the same JWT_SECRET_KEY is used for both access and refresh tokens, meaning a compromised refresh token could be used as an access token if token type validation is not enforced server-side.",
+          "suggestion": "Use separate secrets for access and refresh tokens, or enforce strict token type ('tokenType') validation on every use. Store only hashed tokens in the database."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 22,
+          "description": "JWT verification does not validate the 'type' claim or 'tokenType' claim at this layer. A refresh token (which has tokenType: 'refresh') could potentially be used as an access token if the calling code does not check. The memberAuthorize layer checks 'type === member' but does not reject refresh tokens.",
+          "suggestion": "In jwtAuthorize or memberAuthorize, explicitly reject tokens where tokenType === 'refresh'. Only access tokens should be accepted for API authentication."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/authorize/memberAuthorize.ts",
+          "line": 14,
+          "description": "Session validity is not checked during authorization. A token may be valid JWT-wise but the session could have been explicitly invalidated (e.g., logout). The code only checks member existence and soft-delete, not whether the specific session (session_id in payload) is still active or not expired.",
+          "suggestion": "After verifying the JWT, look up the session by payload.session_id and verify it exists and has not been invalidated (e.g., expired_at > now, not logged out). This prevents use of tokens after logout."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/patchTodoAppMemberSessions.ts",
+          "line": 47,
+          "description": "The orderBy field is constructed from user-supplied input (props.body.sort) without whitelist validation: `{ [orderByField]: orderByDirection }`. While Prisma provides some protection, an unexpected field name could cause unintended query behavior or information leakage through error messages.",
+          "suggestion": "Whitelist allowed sort fields explicitly: e.g., `const allowedSortFields = ['created_at', 'expired_at']; if (!allowedSortFields.includes(orderByField)) throw new HttpException('Invalid sort field', 400);`"
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 35,
+          "description": "Failed login attempts are not logged. This makes it impossible to detect brute-force attacks or credential stuffing in security monitoring.",
+          "suggestion": "Log failed authentication attempts with timestamp, IP address, and email (consider hashing the email for privacy). Integrate with a structured logging or SIEM solution."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to the login or registration endpoints, making them vulnerable to brute-force and credential stuffing attacks.",
+          "suggestion": "Apply rate limiting at the infrastructure level (e.g., API gateway, reverse proxy) or use a NestJS ThrottlerGuard on authentication endpoints."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 1,
+          "description": "No password complexity requirements are enforced beyond what typia type validation provides. Weak passwords are accepted.",
+          "suggestion": "Add password strength validation (minimum length, character classes) using a library like zxcvbn or custom typia constraints."
+        }
+      ],
+      "score": 65,
+      "summary": "[sampled 30/44 files] [2 chunks, 17→17 issues] The codebase has two critical access control issues: (1) the member search provider explicitly acknowledges missing authorization and allows any authenticated member to enumerate all users' data, and (2) email verification token details are accessible to any authenticated member despite being documented as admin-only. A significant integrity failure exists in the token refresh flow where old refresh tokens are never invalidated, enabling replay attacks. Additionally, the guest join provider allows IP spoofing by accepting client-supplied IP addresses. The ownership validation patterns in todo-related providers are generally well-implemented. Standard AutoBE patterns (console.log, missing rate limiting, password complexity) are noted as suggestions.",
+      "durationMs": 35726,
+      "tokensUsed": {
+        "input": 34017,
+        "output": 3018,
+        "inputCost": 0.102051,
+        "outputCost": 0.045270000000000005
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putTodoAppMemberTodosTodoId.ts",
+          "line": 6,
+          "description": "Importing from '@prisma/sdk' is incorrect. Prisma client is typically imported from '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postTodoAppMemberTodosTrashTodoIdRestore.ts",
+          "line": 46,
+          "description": "The function checks for a trash entry but doesn't verify that the todo is actually deleted (soft-deleted). It only checks the trash entry status, not the todo's deleted_at field.",
+          "suggestion": "Add a check to ensure the todo's deleted_at is not null before allowing restoration, or ensure the business logic aligns with the data model."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postTodoAppMemberTodosTodoIdRestore.ts",
+          "line": 15,
+          "description": "The function finds a todo by ID and member ID, but this would fail if the todo is soft-deleted (deleted_at not null). The query should include deleted_at: null or handle soft-deleted todos appropriately.",
+          "suggestion": "Update the where clause to include deleted_at: null or adjust based on the soft-delete logic."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 30,
+          "description": "The JWT payload includes a 'tokenType' property in the refresh token, but the access token does not. This inconsistency might cause issues if token validation expects consistent structure.",
+          "suggestion": "Ensure token payload structures are consistent or document the difference clearly."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 87,
+          "description": "The function constructs a 'memberEntity' object with hardcoded relations (memberSessions, passwordResets, etc.) to pass to the transformer. This is fragile and may not match the actual Prisma model relations.",
+          "suggestion": "Fetch the member with relations using Prisma's include instead of manually constructing an object."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/patchTodoAppMembers.ts",
+          "line": 18,
+          "description": "Contains a TODO comment about authorization that should come from props.customer.",
+          "suggestion": "Implement proper authorization or remove the TODO if out of scope."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/patchTodoAppMemberTodosTodoIdHistoriesHistoryIdAttributeChanges.ts",
+          "line": 11,
+          "description": "Commented out import statement inside function body: '// import { TodoAppTodoHistoryAttributeChangeAtSummaryTransformer } from ... // REMOVED'",
+          "suggestion": "Remove the commented import line."
+        },
+        {
+          "severity": "suggestion",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
+          "line": 13,
+          "description": "Assumes device_fingerprint is provided and unique for guest identification. In real scenarios, device fingerprinting can be unreliable or duplicate.",
+          "suggestion": "Consider adding additional mechanisms for guest identification or handling collisions."
+        },
+        {
+          "severity": "suggestion",
+          "type": "inconsistent-naming",
+          "file": "src/providers/postTodoAppAuthMemberRefresh.ts",
+          "line": 30,
+          "description": "The decoded token is cast to an object with properties 'type', 'id', 'session_id', 'created_at', but the JWT sign in login/join uses 'tokenType' for refresh tokens. This creates inconsistency.",
+          "suggestion": "Standardize the token payload property names (e.g., always use 'type' or 'tokenType')."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchTodoAppMemberEmailVerifications.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk' (though not used in this file). Also, the code references a 'todo_app_guests' table which doesn't exist in the requirements - only 'guest' is an actor type, not a database entity.",
+          "suggestion": "Remove the Prisma import if unused. The guest authorization should not query a database table since guests are unauthenticated users without stored records."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchTodoAppMemberEmailVerifications.ts",
+          "line": 1,
+          "description": "Function name 'patchTodoAppMemberEmailVerifications' suggests a PATCH/update operation, but the function implements a GET/list operation with filtering and pagination.",
+          "suggestion": "Rename function to 'getTodoAppMemberEmailVerifications' or implement actual PATCH logic to update email verifications."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/patchTodoAppMemberEmailVerifications.ts",
+          "line": 1,
+          "description": "Multiple unused imports across files: IEntity, ITodoAppMember, ArrayUtil, HttpException, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe. These imports are declared but not used in the functions.",
+          "suggestion": "Remove unused imports to clean up code and improve maintainability."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/getTodoAppMemberTodosTrashTodoIdAudit.ts",
+          "line": 30,
+          "description": "Error handling logic is confusing. Returns 403 for 'Todo not found or access denied' but 404 for 'Todo not found in trash'. Should be consistent and clearer about authorization vs. not found errors.",
+          "suggestion": "Simplify error handling: return 404 if todo doesn't exist or isn't owned by member, return 404 if not in trash. Or use 403 only for clear authorization violations."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/deleteTodoAppMemberTodosTrashTodoId.ts",
+          "line": 40,
+          "description": "Transaction deletes 'todo_app_todo_trash_items' then 'todo_app_todos', but cascade behavior is assumed. The order may cause foreign key constraint violations if not properly configured.",
+          "suggestion": "Verify Prisma schema cascade settings or adjust deletion order to respect foreign key constraints."
+        },
+        {
+          "severity": "suggestion",
+          "type": "inconsistent-naming",
+          "file": "src/providers/authorize/memberAuthorize.ts",
+          "line": 18,
+          "description": "Error message 'You're not enrolled' is unclear. Should indicate the member account doesn't exist or is deleted.",
+          "suggestion": "Use clearer error messages like 'Member account not found or has been deleted'."
+        }
+      ],
+      "score": 73,
+      "summary": "[2 chunks, 43→16 issues] The code shows a consistent pattern of hallucinated imports from '@prisma/sdk' across all files, which is a critical issue. There are several logic errors related to soft-delete handling and token payload consistency. Some TODOs and dead code exist. The overall structure follows AutoBE conventions correctly, but the Prisma import issue significantly impacts functionality.",
+      "durationMs": 78589,
+      "tokensUsed": {
+        "input": 30980,
+        "output": 4887,
+        "inputCost": 0.009294,
+        "outputCost": 0.00430056
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/todoApp/members/TodoappMembersController.ts",
+          "line": 1,
+          "description": "Controller defines PATCH /todoApp/members endpoint that has no corresponding OpenAPI operation in the spec. This is a phantom endpoint for member search functionality.",
+          "suggestion": "Remove this endpoint unless there's a corresponding OpenAPI operation for member search."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/todoApp/member/todos/histories/TodoappMemberTodosHistoriesController.ts",
+          "line": 1,
+          "description": "Controller defines PATCH /todoApp/member/todos/:todoId/histories endpoint but there is no corresponding OpenAPI path for searching todo histories. The spec likely defines a GET endpoint for listing histories, not PATCH.",
+          "suggestion": "Change to GET method if the spec defines a list endpoint, or remove if no such operation exists."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postTodoAppMemberTodosTrashTodoIdRestore.ts",
+          "line": 1,
+          "description": "Provider postTodoAppMemberTodosTrashTodoIdRestore exists but there is a duplicate provider postTodoAppMemberTodosTodoIdRestore with similar functionality. This suggests potential duplication or confusion about the correct endpoint path.",
+          "suggestion": "Consolidate to a single provider implementation based on the correct OpenAPI path specification."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/putTodoAppMemberTodosTodoId.ts",
+          "line": 24,
+          "description": "Business validation for due_date not before start_date is implemented but not explicitly required by the Prisma schema. While this is good defensive programming, it's not strictly required by the spec.",
+          "suggestion": "Keep as defensive programming but note it's not a hallucination."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchTodoAppMembers.ts",
+          "line": 1,
+          "description": "Controller route 'PATCH /members' has no corresponding OpenAPI endpoint in the provided spec. This appears to be a completely fabricated admin member search endpoint.",
+          "suggestion": "Remove this endpoint unless there's a corresponding OpenAPI operation for member search/list."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchTodoAppMemberTodosTrash.ts",
+          "line": 1,
+          "description": "Endpoint 'PATCH /member/todos/trash' appears to be a search endpoint for trash entries, but the spec doesn't define search parameters for trash. The implementation includes complex filtering logic not specified in the ground truth.",
+          "suggestion": "Verify if this search functionality is required by the spec; otherwise simplify to basic listing."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchTodoAppMemberTodosTodoIdHistories.ts",
+          "line": 1,
+          "description": "Endpoint 'PATCH /member/todos/{todoId}/histories' appears to be a search endpoint for todo histories, but the spec doesn't define search parameters for histories. The implementation includes search and date filtering not specified.",
+          "suggestion": "Verify if this search functionality is required by the spec; otherwise simplify to basic listing."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchTodoAppMemberTodosTodoIdHistoriesHistoryIdAttributeChanges.ts",
+          "line": 1,
+          "description": "Endpoint 'PATCH /member/todos/{todoId}/histories/{historyId}/attribute-changes' appears to be a search endpoint for attribute changes, but the spec doesn't define search parameters. The implementation includes complex filtering logic.",
+          "suggestion": "Verify if this search functionality is required by the spec; otherwise simplify to basic listing."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/deleteTodoAppMemberTodosTrashTodoId.ts",
+          "line": 40,
+          "description": "The implementation performs a cascade deletion of the todo and all related history records when permanently deleting from trash, but the spec doesn't specify this cascade behavior. This may be over-implementation.",
+          "suggestion": "Review spec to confirm if cascade deletion is intended or if soft delete should be maintained."
+        }
+      ],
+      "score": 69,
+      "summary": "[3 chunks, 23→9 issues] Multiple phantom endpoints detected across all controllers. The code implements many search/retrieval endpoints that have no basis in the provided OpenAPI specification. However, the implementation correctly uses the Prisma schema models and fields, and follows expected CRUD patterns for the entities that do exist in the spec.",
+      "durationMs": 107825,
+      "tokensUsed": {
+        "input": 63714,
+        "output": 3021,
+        "inputCost": 0.019114199999999998,
+        "outputCost": 0.0026584800000000004
+      },
+      "deepEvalScores": {
+        "faithfulness": 63,
+        "relevancy": 78,
+        "contextualPrecision": 77
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 86,
+    "phaseWeight": 0.85,
+    "phaseContribution": 73,
+    "agentScore": 70,
+    "agentWeight": 0.15,
+    "agentContribution": 10
+  }
 }

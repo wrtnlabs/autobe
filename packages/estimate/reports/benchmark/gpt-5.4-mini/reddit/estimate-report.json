@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit",
-  "totalScore": 87,
+  "totalScore": 82,
   "grade": "B",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846293511-kwjst47llf",
+          "id": "type-error-1775139255787-wmax4gcopkg",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/communityPlatform/admin/communities/bans/CommunityplatformAdminCommunitiesBansController.ts",
             "line": 972
           },
-          "id": "type-error-1774846293511-p2hcz7gcdfe",
+          "id": "type-error-1775139255787-erdee38hi7i",
           "autoFixable": false
         },
         {
@@ -43,11 +43,11 @@
             "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdBans.ts",
             "line": 1647
           },
-          "id": "type-error-1774846293511-acx2lc7l5an",
+          "id": "type-error-1775139255787-vmd3v700ij",
           "autoFixable": false
         }
       ],
-      "durationMs": 4808,
+      "durationMs": 4347,
       "metrics": {
         "totalFiles": 246,
         "filesWithErrors": 0,
@@ -181,7 +181,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846293698-ho2zcsm1dni",
+          "id": "complexity-1775139256003-1s16iz26bnn",
           "autoFixable": false
         },
         {
@@ -194,7 +194,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846293703-h9me3czbro",
+          "id": "complexity-1775139256007-3h6bds7crz8",
           "autoFixable": false
         },
         {
@@ -207,7 +207,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846293710-5pfmjtxei68",
+          "id": "complexity-1775139256009-5h75hnxv8r3",
           "autoFixable": false
         },
         {
@@ -220,7 +220,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846293706-ppgf3r30apj",
+          "id": "complexity-1775139256011-47khs47lof6",
           "autoFixable": false
         },
         {
@@ -233,7 +233,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846293707-j28iclvs72k",
+          "id": "complexity-1775139256013-u1m80m8dz8",
           "autoFixable": false
         },
         {
@@ -246,7 +246,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846293708-vk3c0sthfbr",
+          "id": "complexity-1775139256014-yeqyynchrzq",
           "autoFixable": false
         }
       ]
@@ -263,7 +263,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
             "line": 59
           },
-          "id": "duplication-1774846293816-tlj2c2vuzz",
+          "id": "duplication-1775139256135-10bsj4224crd",
           "autoFixable": false
         },
         {
@@ -275,7 +275,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
             "line": 60
           },
-          "id": "duplication-1774846293816-7nrsgoqrlai",
+          "id": "duplication-1775139256135-6cn3dvy5eas",
           "autoFixable": false
         },
         {
@@ -287,7 +287,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
             "line": 61
           },
-          "id": "duplication-1774846293816-tgmke1o23dd",
+          "id": "duplication-1775139256135-e2vozdae605",
           "autoFixable": false
         },
         {
@@ -299,7 +299,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
             "line": 62
           },
-          "id": "duplication-1774846293816-nftoajpiqus",
+          "id": "duplication-1775139256135-wtn6yuvgz3",
           "autoFixable": false
         },
         {
@@ -311,7 +311,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
             "line": 63
           },
-          "id": "duplication-1774846293816-bnlgd4v4j6",
+          "id": "duplication-1775139256135-i14vgx5zx6",
           "autoFixable": false
         },
         {
@@ -323,7 +323,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
             "line": 64
           },
-          "id": "duplication-1774846293816-b1pq3h77kjg",
+          "id": "duplication-1775139256135-pu8pj98z3t",
           "autoFixable": false
         },
         {
@@ -335,7 +335,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
             "line": 65
           },
-          "id": "duplication-1774846293816-r3gy1n8la9m",
+          "id": "duplication-1775139256135-cw5h5d2hbq7",
           "autoFixable": false
         },
         {
@@ -347,7 +347,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
             "line": 66
           },
-          "id": "duplication-1774846293816-gk8ebsyvhb9",
+          "id": "duplication-1775139256135-m5nz25s5lt",
           "autoFixable": false
         },
         {
@@ -359,7 +359,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 28
           },
-          "id": "duplication-1774846293816-cwqhi4zpk0w",
+          "id": "duplication-1775139256135-3nv4q0cde0q",
           "autoFixable": false
         },
         {
@@ -371,7 +371,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 29
           },
-          "id": "duplication-1774846293816-dermd2n5g5q",
+          "id": "duplication-1775139256135-un6wu9s2g4",
           "autoFixable": false
         },
         {
@@ -383,7 +383,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 30
           },
-          "id": "duplication-1774846293816-om1t3k32z3i",
+          "id": "duplication-1775139256135-h8b89t1a017",
           "autoFixable": false
         },
         {
@@ -395,7 +395,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 31
           },
-          "id": "duplication-1774846293816-plepi57ulu",
+          "id": "duplication-1775139256135-dpr2om20dlm",
           "autoFixable": false
         },
         {
@@ -407,7 +407,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 20
           },
-          "id": "duplication-1774846293816-jtfz6extt28",
+          "id": "duplication-1775139256135-k4qow2kfhwe",
           "autoFixable": false
         },
         {
@@ -419,7 +419,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 21
           },
-          "id": "duplication-1774846293816-0t4i0ssm9z6p",
+          "id": "duplication-1775139256135-d0d0ks0rc9",
           "autoFixable": false
         },
         {
@@ -431,7 +431,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 49
           },
-          "id": "duplication-1774846293816-w2rquh0vgch",
+          "id": "duplication-1775139256135-lu8vbo8qu7",
           "autoFixable": false
         },
         {
@@ -443,7 +443,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 50
           },
-          "id": "duplication-1774846293816-c61zglba41c",
+          "id": "duplication-1775139256135-vraj0gm29t",
           "autoFixable": false
         },
         {
@@ -455,7 +455,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 51
           },
-          "id": "duplication-1774846293816-9ybtki9w25q",
+          "id": "duplication-1775139256135-5ub3h81bzj6",
           "autoFixable": false
         },
         {
@@ -467,7 +467,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 52
           },
-          "id": "duplication-1774846293816-5ojhtt4ycwo",
+          "id": "duplication-1775139256135-3tjj0jbbruq",
           "autoFixable": false
         },
         {
@@ -479,7 +479,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthMemberRefresh.ts",
             "line": 53
           },
-          "id": "duplication-1774846293816-h9u66a0av2",
+          "id": "duplication-1775139256136-8l7he1o0803",
           "autoFixable": false
         },
         {
@@ -491,7 +491,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthMemberRefresh.ts",
             "line": 54
           },
-          "id": "duplication-1774846293816-x1lr8090jeh",
+          "id": "duplication-1775139256136-c6l46ke41gu",
           "autoFixable": false
         },
         {
@@ -503,7 +503,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
             "line": 22
           },
-          "id": "duplication-1774846293816-fn33vmls3ms",
+          "id": "duplication-1775139256136-yzwtriakdr",
           "autoFixable": false
         },
         {
@@ -515,7 +515,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
             "line": 23
           },
-          "id": "duplication-1774846293816-0s0a1frmxcde",
+          "id": "duplication-1775139256136-lnd29d8xkgk",
           "autoFixable": false
         },
         {
@@ -527,7 +527,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthAdminLogin.ts",
             "line": 58
           },
-          "id": "duplication-1774846293816-61t7mrq55tb",
+          "id": "duplication-1775139256136-1k5dras2bix",
           "autoFixable": false
         },
         {
@@ -539,7 +539,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthAdminLogin.ts",
             "line": 59
           },
-          "id": "duplication-1774846293816-xmzk3439u0k",
+          "id": "duplication-1775139256136-3cyjwwxj2h3",
           "autoFixable": false
         },
         {
@@ -551,7 +551,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
             "line": 12
           },
-          "id": "duplication-1774846293816-kds9gl2kpo",
+          "id": "duplication-1775139256136-ir495qnns7",
           "autoFixable": false
         },
         {
@@ -563,7 +563,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
             "line": 13
           },
-          "id": "duplication-1774846293816-gdn1pb2xnrj",
+          "id": "duplication-1775139256136-2b5vv4jpa28",
           "autoFixable": false
         },
         {
@@ -575,7 +575,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
             "line": 14
           },
-          "id": "duplication-1774846293816-5jkf2dlny1t",
+          "id": "duplication-1775139256136-w22nu2q4di",
           "autoFixable": false
         },
         {
@@ -587,7 +587,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
             "line": 15
           },
-          "id": "duplication-1774846293816-l4245iz436",
+          "id": "duplication-1775139256136-smi9d5o5sad",
           "autoFixable": false
         },
         {
@@ -599,7 +599,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
             "line": 16
           },
-          "id": "duplication-1774846293816-4luzk2011i8",
+          "id": "duplication-1775139256136-dw3fntziukn",
           "autoFixable": false
         },
         {
@@ -611,7 +611,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 72
           },
-          "id": "duplication-1774846293816-r6xbf02fg19",
+          "id": "duplication-1775139256136-0saevwk19hg",
           "autoFixable": false
         },
         {
@@ -623,7 +623,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 73
           },
-          "id": "duplication-1774846293816-6lj4d927tw9",
+          "id": "duplication-1775139256136-xuhr83el7a",
           "autoFixable": false
         },
         {
@@ -635,7 +635,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 74
           },
-          "id": "duplication-1774846293816-ckxbea8hmrl",
+          "id": "duplication-1775139256136-r9w9i8w03os",
           "autoFixable": false
         },
         {
@@ -647,7 +647,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 75
           },
-          "id": "duplication-1774846293816-vpqxuctz6p7",
+          "id": "duplication-1775139256136-b1gyw7xtm34",
           "autoFixable": false
         },
         {
@@ -659,7 +659,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 88
           },
-          "id": "duplication-1774846293816-8c0f8zwma6r",
+          "id": "duplication-1775139256136-phujhnppd7",
           "autoFixable": false
         },
         {
@@ -671,7 +671,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 89
           },
-          "id": "duplication-1774846293816-edgvsonv9qo",
+          "id": "duplication-1775139256136-xsax43xikk",
           "autoFixable": false
         },
         {
@@ -683,7 +683,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberPosts.ts",
             "line": 128
           },
-          "id": "duplication-1774846293816-sgra1a2rcpf",
+          "id": "duplication-1775139256136-k8ns9g8tfx",
           "autoFixable": false
         },
         {
@@ -695,7 +695,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberPosts.ts",
             "line": 152
           },
-          "id": "duplication-1774846293816-fcfr9j9kc3",
+          "id": "duplication-1775139256136-w5agys6ched",
           "autoFixable": false
         },
         {
@@ -707,7 +707,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesSubscribed.ts",
             "line": 82
           },
-          "id": "duplication-1774846293816-ao2esba0jkm",
+          "id": "duplication-1775139256136-juepngaosqh",
           "autoFixable": false
         },
         {
@@ -719,7 +719,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesSubscribed.ts",
             "line": 83
           },
-          "id": "duplication-1774846293816-65qibtsdbz9",
+          "id": "duplication-1775139256136-o9cud44nqm",
           "autoFixable": false
         },
         {
@@ -731,7 +731,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesSubscribed.ts",
             "line": 84
           },
-          "id": "duplication-1774846293816-q7wjauu92z",
+          "id": "duplication-1775139256136-pru962erfm",
           "autoFixable": false
         },
         {
@@ -743,7 +743,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesSubscribed.ts",
             "line": 85
           },
-          "id": "duplication-1774846293816-tmjn1vty7x",
+          "id": "duplication-1775139256136-oc8prqy446m",
           "autoFixable": false
         },
         {
@@ -755,7 +755,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 131
           },
-          "id": "duplication-1774846293816-pbepsyu1lsn",
+          "id": "duplication-1775139256136-plxcqnzsfkr",
           "autoFixable": false
         },
         {
@@ -767,7 +767,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 132
           },
-          "id": "duplication-1774846293816-n384s0z96z",
+          "id": "duplication-1775139256136-45c0hni7s6b",
           "autoFixable": false
         },
         {
@@ -779,7 +779,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 133
           },
-          "id": "duplication-1774846293816-4u3rj6pfgb",
+          "id": "duplication-1775139256136-u6dkvxcdh4i",
           "autoFixable": false
         },
         {
@@ -791,7 +791,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 134
           },
-          "id": "duplication-1774846293816-w6zmekw2uj",
+          "id": "duplication-1775139256136-9h1j0nmyfvt",
           "autoFixable": false
         },
         {
@@ -803,7 +803,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 135
           },
-          "id": "duplication-1774846293816-2kw0jmlbfml",
+          "id": "duplication-1775139256136-8fou8xxtdzr",
           "autoFixable": false
         },
         {
@@ -815,7 +815,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 136
           },
-          "id": "duplication-1774846293816-sfiwd29qb7j",
+          "id": "duplication-1775139256136-cn8s2hbrml",
           "autoFixable": false
         },
         {
@@ -827,7 +827,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 137
           },
-          "id": "duplication-1774846293816-0ah8354gdzr",
+          "id": "duplication-1775139256136-ul0uxzsovf",
           "autoFixable": false
         },
         {
@@ -839,7 +839,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 138
           },
-          "id": "duplication-1774846293816-n7rojw0sxuo",
+          "id": "duplication-1775139256136-jg6uhvbj8n",
           "autoFixable": false
         },
         {
@@ -851,7 +851,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 139
           },
-          "id": "duplication-1774846293816-npdhtbimge",
+          "id": "duplication-1775139256136-9i69z8rqbss",
           "autoFixable": false
         },
         {
@@ -863,7 +863,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 146
           },
-          "id": "duplication-1774846293816-hy2ev3ai4wa",
+          "id": "duplication-1775139256136-upo6t2ha5n",
           "autoFixable": false
         },
         {
@@ -875,7 +875,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 147
           },
-          "id": "duplication-1774846293816-1hurozla4o7",
+          "id": "duplication-1775139256136-svm7i4scipi",
           "autoFixable": false
         },
         {
@@ -887,7 +887,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
             "line": 148
           },
-          "id": "duplication-1774846293816-xf3hx4z44eb",
+          "id": "duplication-1775139256136-b8stdlgl95i",
           "autoFixable": false
         },
         {
@@ -899,7 +899,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 89
           },
-          "id": "duplication-1774846293816-jmvzd3dspem",
+          "id": "duplication-1775139256136-tb4rzcso9gs",
           "autoFixable": false
         },
         {
@@ -911,7 +911,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 91
           },
-          "id": "duplication-1774846293816-flids6sboyk",
+          "id": "duplication-1775139256136-6sswz16rib7",
           "autoFixable": false
         },
         {
@@ -923,7 +923,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 92
           },
-          "id": "duplication-1774846293816-8wfmraixxz9",
+          "id": "duplication-1775139256136-jtaeipmzoxa",
           "autoFixable": false
         },
         {
@@ -935,7 +935,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 93
           },
-          "id": "duplication-1774846293816-rr1og8scsh9",
+          "id": "duplication-1775139256136-n22iym8f5bh",
           "autoFixable": false
         },
         {
@@ -947,7 +947,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 94
           },
-          "id": "duplication-1774846293816-mimt72xhw1h",
+          "id": "duplication-1775139256136-q1b8ta7upck",
           "autoFixable": false
         },
         {
@@ -959,7 +959,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 95
           },
-          "id": "duplication-1774846293816-4mr7ltinr1",
+          "id": "duplication-1775139256136-y96dco8d6xc",
           "autoFixable": false
         },
         {
@@ -971,7 +971,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 96
           },
-          "id": "duplication-1774846293816-w3efk78ds5",
+          "id": "duplication-1775139256136-mvs2q1xzbno",
           "autoFixable": false
         },
         {
@@ -983,7 +983,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 97
           },
-          "id": "duplication-1774846293816-poaey693jv9",
+          "id": "duplication-1775139256136-b7tsidfale9",
           "autoFixable": false
         },
         {
@@ -995,7 +995,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 98
           },
-          "id": "duplication-1774846293816-oafzljf56hs",
+          "id": "duplication-1775139256136-aqw9go0rvu5",
           "autoFixable": false
         },
         {
@@ -1007,7 +1007,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 99
           },
-          "id": "duplication-1774846293816-2hv9km56rot",
+          "id": "duplication-1775139256136-gdbkbk73xe",
           "autoFixable": false
         },
         {
@@ -1019,7 +1019,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 100
           },
-          "id": "duplication-1774846293816-ela4l7zifcn",
+          "id": "duplication-1775139256136-b9rym78n82d",
           "autoFixable": false
         },
         {
@@ -1031,7 +1031,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 101
           },
-          "id": "duplication-1774846293816-xtmscqjld2",
+          "id": "duplication-1775139256136-bng07fx9o9u",
           "autoFixable": false
         },
         {
@@ -1043,7 +1043,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 102
           },
-          "id": "duplication-1774846293816-0o5nfcb32uuq",
+          "id": "duplication-1775139256136-fomzmtejmd7",
           "autoFixable": false
         },
         {
@@ -1055,7 +1055,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 128
           },
-          "id": "duplication-1774846293816-bt6mfn5qat5",
+          "id": "duplication-1775139256136-1zraxjbdikc",
           "autoFixable": false
         },
         {
@@ -1067,7 +1067,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 129
           },
-          "id": "duplication-1774846293816-kd60nb3kpf",
+          "id": "duplication-1775139256136-kzizrmc7dd",
           "autoFixable": false
         },
         {
@@ -1079,7 +1079,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
             "line": 130
           },
-          "id": "duplication-1774846293816-0i12az149fr",
+          "id": "duplication-1775139256136-fgvvluf3qv",
           "autoFixable": false
         },
         {
@@ -1091,7 +1091,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 76
           },
-          "id": "duplication-1774846293816-fmlqyzc3nn",
+          "id": "duplication-1775139256136-nyvwd9qbvm",
           "autoFixable": false
         },
         {
@@ -1103,7 +1103,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 77
           },
-          "id": "duplication-1774846293816-titt43jdu2a",
+          "id": "duplication-1775139256136-3qu42gm4e8k",
           "autoFixable": false
         },
         {
@@ -1115,7 +1115,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 78
           },
-          "id": "duplication-1774846293816-qepmvxdlcja",
+          "id": "duplication-1775139256136-ixyb9ti80i",
           "autoFixable": false
         },
         {
@@ -1127,7 +1127,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 79
           },
-          "id": "duplication-1774846293816-8ls9ou459tb",
+          "id": "duplication-1775139256136-xqavo4ycd8",
           "autoFixable": false
         },
         {
@@ -1139,7 +1139,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 80
           },
-          "id": "duplication-1774846293816-82y2fmm7u9u",
+          "id": "duplication-1775139256136-lb7an2s9ksq",
           "autoFixable": false
         },
         {
@@ -1151,7 +1151,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 81
           },
-          "id": "duplication-1774846293816-499k1whzp22",
+          "id": "duplication-1775139256136-8ijhxmy90ma",
           "autoFixable": false
         },
         {
@@ -1163,7 +1163,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 82
           },
-          "id": "duplication-1774846293816-ifro6ebypz",
+          "id": "duplication-1775139256136-ausy89c7ils",
           "autoFixable": false
         },
         {
@@ -1175,7 +1175,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 85
           },
-          "id": "duplication-1774846293816-dfc79ffw0m6",
+          "id": "duplication-1775139256136-lz6qhilacmp",
           "autoFixable": false
         },
         {
@@ -1187,7 +1187,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 86
           },
-          "id": "duplication-1774846293816-lot2l09vib",
+          "id": "duplication-1775139256136-ni1d1c5qf3",
           "autoFixable": false
         },
         {
@@ -1199,7 +1199,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 103
           },
-          "id": "duplication-1774846293816-4li4atihc66",
+          "id": "duplication-1775139256136-jcwf091bh9",
           "autoFixable": false
         },
         {
@@ -1211,7 +1211,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 117
           },
-          "id": "duplication-1774846293816-l3jfvjao7up",
+          "id": "duplication-1775139256136-ja7do4f736b",
           "autoFixable": false
         },
         {
@@ -1223,7 +1223,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 118
           },
-          "id": "duplication-1774846293816-78g60dep68f",
+          "id": "duplication-1775139256136-rt2e1hfxmi",
           "autoFixable": false
         },
         {
@@ -1235,7 +1235,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 119
           },
-          "id": "duplication-1774846293816-6xy79w6pfrm",
+          "id": "duplication-1775139256136-y25pgjrtlfg",
           "autoFixable": false
         },
         {
@@ -1247,7 +1247,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
             "line": 120
           },
-          "id": "duplication-1774846293816-3o7qa42c2fv",
+          "id": "duplication-1775139256136-gw78341er",
           "autoFixable": false
         },
         {
@@ -1259,7 +1259,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdReports.ts",
             "line": 49
           },
-          "id": "duplication-1774846293816-a5vghh95z24",
+          "id": "duplication-1775139256136-rno82c18rff",
           "autoFixable": false
         },
         {
@@ -1271,7 +1271,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdReports.ts",
             "line": 91
           },
-          "id": "duplication-1774846293816-it2n9l1wye8",
+          "id": "duplication-1775139256136-ke9748i59o",
           "autoFixable": false
         },
         {
@@ -1283,7 +1283,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberReportsReportId.ts",
             "line": 46
           },
-          "id": "duplication-1774846293816-9l38j9vst8",
+          "id": "duplication-1775139256136-9aggwk9k3il",
           "autoFixable": false
         },
         {
@@ -1295,7 +1295,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberReportsReportId.ts",
             "line": 47
           },
-          "id": "duplication-1774846293816-x8ykgstxbis",
+          "id": "duplication-1775139256136-7lt7m7i29ks",
           "autoFixable": false
         },
         {
@@ -1307,7 +1307,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberReportsReportId.ts",
             "line": 48
           },
-          "id": "duplication-1774846293816-8x3pa72l7c5",
+          "id": "duplication-1775139256136-y1a7qiv5s1",
           "autoFixable": false
         },
         {
@@ -1319,7 +1319,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 20
           },
-          "id": "duplication-1774846293816-4e8hno06dky",
+          "id": "duplication-1775139256136-3v8ob24jp6y",
           "autoFixable": false
         },
         {
@@ -1331,7 +1331,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 21
           },
-          "id": "duplication-1774846293816-eo7jyewswla",
+          "id": "duplication-1775139256136-tnkvcw13ywg",
           "autoFixable": false
         },
         {
@@ -1343,7 +1343,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 22
           },
-          "id": "duplication-1774846293816-sic0dag7zyp",
+          "id": "duplication-1775139256136-5hwoh1xn5ew",
           "autoFixable": false
         },
         {
@@ -1355,7 +1355,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 23
           },
-          "id": "duplication-1774846293816-g48kb9prx3k",
+          "id": "duplication-1775139256136-hy78h807m0n",
           "autoFixable": false
         },
         {
@@ -1367,7 +1367,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
             "line": 24
           },
-          "id": "duplication-1774846293816-pqaesm3ogx",
+          "id": "duplication-1775139256136-ur4z8j8f288",
           "autoFixable": false
         },
         {
@@ -1379,7 +1379,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommentsCommentId.ts",
             "line": 21
           },
-          "id": "duplication-1774846293816-p6dcymcpive",
+          "id": "duplication-1775139256136-21buireryae",
           "autoFixable": false
         },
         {
@@ -1391,7 +1391,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformGuestPostsPostId.ts",
             "line": 20
           },
-          "id": "duplication-1774846293816-p38qfsq2k7c",
+          "id": "duplication-1775139256136-l7tajfnmv6",
           "autoFixable": false
         },
         {
@@ -1403,7 +1403,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformGuestPostsPostId.ts",
             "line": 21
           },
-          "id": "duplication-1774846293816-bdvy0a03eee",
+          "id": "duplication-1775139256136-js5h6sodczp",
           "autoFixable": false
         },
         {
@@ -1415,7 +1415,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 16
           },
-          "id": "duplication-1774846293816-cft1pulo407",
+          "id": "duplication-1775139256136-ueo326pd7vb",
           "autoFixable": false
         },
         {
@@ -1427,7 +1427,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 17
           },
-          "id": "duplication-1774846293816-o4sns6oucx",
+          "id": "duplication-1775139256136-lmdfbw08au",
           "autoFixable": false
         },
         {
@@ -1439,7 +1439,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 18
           },
-          "id": "duplication-1774846293816-1rp25evmcuz",
+          "id": "duplication-1775139256136-c5wtxd16zxv",
           "autoFixable": false
         },
         {
@@ -1451,7 +1451,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 19
           },
-          "id": "duplication-1774846293816-8oia4emosx",
+          "id": "duplication-1775139256136-1f6sktbzypt",
           "autoFixable": false
         },
         {
@@ -1463,7 +1463,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 20
           },
-          "id": "duplication-1774846293816-tpalsm7gr5j",
+          "id": "duplication-1775139256136-393h80j1vlj",
           "autoFixable": false
         }
       ]
@@ -1480,7 +1480,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/password-resets/CommunityplatformAdminPassword_resetsController.ts",
             "line": 12
           },
-          "id": "naming-1774846293820-ntkd6mx6sv",
+          "id": "naming-1775139256138-6yqgca5j3ua",
           "autoFixable": false
         }
       ]
@@ -1498,115 +1498,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/communities/CommunityplatformCommunitiesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846293842-0hypjxwhn39b",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberSubscriptionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/subscriptions/CommunityplatformMemberSubscriptionsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846293843-k5qhm6jbfqr",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberReportsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/reports/CommunityplatformMemberReportsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846293843-hjyab5y2866",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/CommunityplatformMemberCommunitiesController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774846293843-3n5pi1ptvf3",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/auth/member/CommunityplatformAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846293847-b33bxa5geqb",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/auth/guest/CommunityplatformAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846293844-gzrmiuznerv",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/comments/CommunityplatformMemberCommentsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846293844-hkcyis0krzg",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformAuthAdminController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/auth/admin/CommunityplatformAuthAdminController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846293844-eyzinwpq0v4",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/posts/CommunityplatformMemberPostsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846293845-lxil5ys9p58",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformGuestPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/guest/posts/CommunityplatformGuestPostsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846293845-dkoy225x89",
+          "id": "jsdoc-1775139256159-or3i9d2q87",
           "autoFixable": false
         },
         {
@@ -1618,7 +1510,55 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/profile/CommunityplatformMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846293845-dr34duf6uqk",
+          "id": "jsdoc-1775139256159-2ce3vdc9u2w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/reports/CommunityplatformMemberReportsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775139256160-am6ctm1qa65",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/subscriptions/CommunityplatformMemberSubscriptionsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775139256160-3sep8qs0uz4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/posts/CommunityplatformMemberPostsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775139256164-8594izbwksb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/CommunityplatformMemberCommunitiesController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1775139256161-li4l404yff",
           "autoFixable": false
         },
         {
@@ -1630,7 +1570,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/guest/sessions/CommunityplatformGuestSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846293846-cadbgid59yv",
+          "id": "jsdoc-1775139256160-3nmo2dcwn35",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/comments/CommunityplatformMemberCommentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775139256161-v3b83prtfwm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformGuestPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/guest/posts/CommunityplatformGuestPostsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775139256169-0chsbwjh1qj7",
           "autoFixable": false
         },
         {
@@ -1642,7 +1606,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/guest/communities/CommunityplatformGuestCommunitiesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846293846-aok6q1l0iyj",
+          "id": "jsdoc-1775139256161-z3q39rgsjm",
           "autoFixable": false
         },
         {
@@ -1654,7 +1618,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/guest/comments/CommunityplatformGuestCommentsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846293846-40iknzkb9pd",
+          "id": "jsdoc-1775139256162-bfgnhfh5k9",
           "autoFixable": false
         },
         {
@@ -1666,7 +1630,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/reports/CommunityplatformAdminReportsController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774846293846-fo7b02kybgc",
+          "id": "jsdoc-1775139256162-qbwb5zlonzp",
           "autoFixable": false
         },
         {
@@ -1678,7 +1642,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/posts/CommunityplatformAdminPostsController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774846293847-xggvrhxt90g",
+          "id": "jsdoc-1775139256163-52zyoa7xird",
           "autoFixable": false
         },
         {
@@ -1690,7 +1654,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/password-resets/CommunityplatformAdminPassword_resetsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846293848-bp4wimi2o5j",
+          "id": "jsdoc-1775139256162-3auwb9480fo",
           "autoFixable": false
         },
         {
@@ -1702,7 +1666,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/communities/CommunityplatformAdminCommunitiesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846293847-q9nlpmqd5po",
+          "id": "jsdoc-1775139256162-iuhde1qkoeg",
           "autoFixable": false
         },
         {
@@ -1714,7 +1678,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/comments/CommunityplatformAdminCommentsController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774846293848-ebudj6lqoze",
+          "id": "jsdoc-1775139256163-9la479bpp1u",
           "autoFixable": false
         },
         {
@@ -1726,79 +1690,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/admins/CommunityplatformAdminAdminsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846293848-zslxybup88a",
+          "id": "jsdoc-1775139256164-aopmg27tqaf",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesSubscriptionsController\" missing JSDoc",
+          "message": "Class \"CommunityplatformAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/subscriptions/CommunityplatformMemberCommunitiesSubscriptionsController.ts",
-            "line": 13
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/auth/member/CommunityplatformAuthMemberController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774846293849-enz45a0x798",
+          "id": "jsdoc-1775139256164-xtsiv7n0l2m",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesModerationrolesController\" missing JSDoc",
+          "message": "Class \"CommunityplatformAuthGuestController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/moderationRoles/CommunityplatformMemberCommunitiesModerationrolesController.ts",
-            "line": 15
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/auth/guest/CommunityplatformAuthGuestController.ts",
+            "line": 9
           },
-          "id": "jsdoc-1774846293850-e4t9yxp3nds",
+          "id": "jsdoc-1775139256164-uei5580nkct",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesSubscribedController\" missing JSDoc",
+          "message": "Class \"CommunityplatformAuthAdminController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/subscribed/CommunityplatformMemberCommunitiesSubscribedController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/auth/admin/CommunityplatformAuthAdminController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774846293849-2lta8e4ursp",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesBansController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/bans/CommunityplatformMemberCommunitiesBansController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846293850-lulzlhgwu6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommentsVotesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/comments/votes/CommunityplatformMemberCommentsVotesController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846293851-ric0g269eaq",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommentsVoteController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/comments/vote/CommunityplatformMemberCommentsVoteController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846293851-agwdjehhqa7",
+          "id": "jsdoc-1775139256165-04nibe2vftuo",
           "autoFixable": false
         },
         {
@@ -1810,7 +1738,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/posts/votes/CommunityplatformMemberPostsVotesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846293852-b29yzqgasj9",
+          "id": "jsdoc-1775139256169-vjzuf4ho63r",
           "autoFixable": false
         },
         {
@@ -1822,7 +1750,79 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/posts/vote/CommunityplatformMemberPostsVoteController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846293851-46k8sp2rjhx",
+          "id": "jsdoc-1775139256168-pew0vftb05h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/subscriptions/CommunityplatformMemberCommunitiesSubscriptionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1775139256165-pclqjsuufjs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesSubscribedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/subscribed/CommunityplatformMemberCommunitiesSubscribedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775139256165-fp6ion8au2t",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesModerationrolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/moderationRoles/CommunityplatformMemberCommunitiesModerationrolesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775139256166-x7spkoxny9s",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/bans/CommunityplatformMemberCommunitiesBansController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1775139256167-tzcr2p7gnj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/comments/votes/CommunityplatformMemberCommentsVotesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775139256166-zfdkdrjjgzf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommentsVoteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/comments/vote/CommunityplatformMemberCommentsVoteController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775139256167-ne2se87uxa",
           "autoFixable": false
         },
         {
@@ -1834,7 +1834,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/communities/reports/CommunityplatformAdminCommunitiesReportsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846293852-322fcdmo3uq",
+          "id": "jsdoc-1775139256167-zjyrvhtcb9c",
           "autoFixable": false
         },
         {
@@ -1846,7 +1846,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/communities/moderationRoles/CommunityplatformAdminCommunitiesModerationrolesController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846293852-voiggr55l7",
+          "id": "jsdoc-1775139256168-nk2au4h7mls",
           "autoFixable": false
         },
         {
@@ -1858,7 +1858,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/communities/bans/CommunityplatformAdminCommunitiesBansController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846293853-4laq6pvh9qa",
+          "id": "jsdoc-1775139256168-u8rf6lsy18s",
           "autoFixable": false
         }
       ]
@@ -1877,7 +1877,7 @@
             "file": "src/api/structures/ICommunityPlatformMember.ts",
             "line": 302
           },
-          "id": "completeness-1774846293865-jnzd0e4xf7",
+          "id": "completeness-1775139256181-1leavqei2k6",
           "autoFixable": false
         },
         {
@@ -1889,7 +1889,7 @@
             "file": "src/api/structures/ICommunityPlatformGuest.ts",
             "line": 29
           },
-          "id": "completeness-1774846293865-uifyn8kpm4b",
+          "id": "completeness-1775139256182-93jvdq3f8au",
           "autoFixable": false
         },
         {
@@ -1901,7 +1901,7 @@
             "file": "src/api/structures/ICommunityPlatformGuest.ts",
             "line": 34
           },
-          "id": "completeness-1774846293865-z20txouyms",
+          "id": "completeness-1775139256182-kiwaglseqf",
           "autoFixable": false
         },
         {
@@ -1913,7 +1913,7 @@
             "file": "src/api/structures/ICommunityPlatformCommunitySubscription.ts",
             "line": 129
           },
-          "id": "completeness-1774846293865-7j688iv1rkj",
+          "id": "completeness-1775139256182-lrmlyt62qbp",
           "autoFixable": false
         },
         {
@@ -1925,7 +1925,7 @@
             "file": "src/api/structures/ICommunityPlatformCommunitySubscription.ts",
             "line": 137
           },
-          "id": "completeness-1774846293865-d2ebrrdwu5",
+          "id": "completeness-1775139256182-5o6t0i9341",
           "autoFixable": false
         }
       ]
@@ -1948,7 +1948,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846293511-kwjst47llf",
+      "id": "type-error-1775139255787-wmax4gcopkg",
       "autoFixable": false
     },
     {
@@ -1960,7 +1960,7 @@
         "file": "src/controllers/communityPlatform/admin/communities/bans/CommunityplatformAdminCommunitiesBansController.ts",
         "line": 972
       },
-      "id": "type-error-1774846293511-p2hcz7gcdfe",
+      "id": "type-error-1775139255787-erdee38hi7i",
       "autoFixable": false
     }
   ],
@@ -1974,14 +1974,14 @@
         "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdBans.ts",
         "line": 1647
       },
-      "id": "type-error-1774846293511-acx2lc7l5an",
+      "id": "type-error-1775139255787-vmd3v700ij",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:51:33.866Z",
-    "totalDurationMs": 5081,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T14:14:16.182Z",
+    "totalDurationMs": 4608,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 246
   },
   "penalties": {
@@ -2007,5 +2007,939 @@
     "structures": 31,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/communityPlatform/member/communities/CommunityplatformMemberCommunitiesController.ts",
+          "line": 120,
+          "description": "The community discovery endpoint (PATCH /communityPlatform/member/communities) requires @MemberAuth() but the specification states it should allow guest/unauthenticated access. This is a design inconsistency — either the guard is unnecessary and blocks legitimate public access, or the spec is wrong and the guard is needed. More critically, the authorization enforcement for the update endpoint (PUT /:communityId) relies entirely on the provider layer to check ownership; there is no guard-level RBAC to ensure only the community owner or admin can update.",
+          "suggestion": "If community browsing is public, remove @MemberAuth() from the index method or use an optional auth decorator. For the update endpoint, ensure the provider layer strictly validates that member.id === community.owner_id before applying changes, and consider adding an explicit ownership check at the controller level or via a dedicated guard."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/communityPlatform/member/communities/moderationRoles/CommunityplatformMemberCommunitiesModerationrolesController.ts",
+          "line": 60,
+          "description": "All moderation role management endpoints (create, update, delete, get) rely solely on the provider layer to enforce that the authenticated member is the community owner or has sufficient moderation authority. There is no controller-level or guard-level authorization check. If the provider implementation is incomplete or has a bug, any authenticated member could assign, modify, or remove moderation roles in any community.",
+          "suggestion": "Add explicit ownership/role validation in the provider layer and consider adding integration tests that verify cross-community access is rejected. Document the authorization contract clearly so future maintainers do not accidentally remove the check."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/communityPlatform/member/comments/CommunityplatformMemberCommentsController.ts",
+          "line": 180,
+          "description": "The comment update (PUT /:commentId) and delete (DELETE /:commentId) endpoints rely entirely on the provider layer to verify that the authenticated member is the comment author. There is no controller-level ownership guard. A bug in the provider could allow any authenticated member to edit or delete another member's comments.",
+          "suggestion": "Ensure the provider layer performs a strict ownership check (member.id === comment.community_platform_member_id) before any mutation. Add tests covering cross-user access attempts."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/communityPlatform/member/communities/moderationRoles/CommunityplatformMemberCommunitiesModerationrolesController.ts",
+          "line": 75,
+          "description": "All controllers use console.log(error) for error handling, which logs unstructured output and may expose sensitive stack trace information in production logs. This is the standard AutoBE pattern but lacks structured logging with severity levels, request context, and log aggregation support.",
+          "suggestion": "Replace console.log with a structured logger (e.g., NestJS Logger or Winston) that supports log levels, request correlation IDs, and redaction of sensitive fields. Apply this pattern across all controllers."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/communityPlatform/member/communities/CommunityplatformMemberCommunitiesController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to any of the write endpoints (community creation, moderation role assignment, voting, comment creation). This could allow abuse such as mass community creation or vote manipulation.",
+          "suggestion": "Apply rate limiting at the API gateway or using NestJS ThrottlerModule, especially on write endpoints and authentication-adjacent operations."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postCommunityPlatformAuthGuestRefresh.ts",
+          "line": 28,
+          "description": "Guest session refresh does not validate the refresh token from the request body. The provider fetches the first non-deleted guest session from the database without verifying it matches the token provided in props.body. Any authenticated guest can refresh any other guest's session, and the refresh token itself is never verified against the session.",
+          "suggestion": "Verify the refresh token using jwt.verify() first, extract the session_id from the payload, then look up the specific session by that ID. Ensure the session belongs to the guest identified in the token before issuing new tokens."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/putCommunityPlatformAdminPostsPostId.ts",
+          "line": 42,
+          "description": "Admin post update checks if the post's author ID matches the admin's ID (community_platform_member_id !== props.admin.id). Admins and members are stored in separate tables with separate ID spaces, so this check will almost always fail or produce incorrect results. An admin should be able to update any post without this ownership check, or the check logic is fundamentally broken.",
+          "suggestion": "Remove the ownership check for admin endpoints — admins should have platform-wide authority to update posts. If ownership restriction is intended, use a separate member-scoped endpoint."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/deleteCommunityPlatformAdminCommunitiesCommunityIdBansBanId.ts",
+          "line": 22,
+          "description": "The admin ban deletion endpoint checks for a moderation role using props.admin.id against community_platform_moderation_roles, but admins are stored in community_platform_admins, not as members with moderation roles. This check will always fail for platform admins, effectively blocking all admin ban deletions, or it could be bypassed if an admin ID coincidentally matches a member ID.",
+          "suggestion": "For platform-level admins, skip the moderation role check entirely. Admin authorization should be validated at the guard/decorator level, not by checking community moderation roles."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postCommunityPlatformMemberPostsPostIdVote.ts",
+          "line": 38,
+          "description": "The vote lookup when checking for an existing vote does not filter by post ID. The query finds any existing vote by the member regardless of which post it belongs to, meaning a member's vote on one post will prevent creating a vote on a different post, or updating a vote on a different post will be treated as updating the current post's vote.",
+          "suggestion": "Add a postTarget filter to the findFirst query: include a join/filter on community_platform_vote_posts where community_platform_post_id equals props.postId, similar to how patchCommunityPlatformMemberPostsPostIdVotes.ts does it."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getCommunityPlatformMemberCommunitiesCommunityIdBansBanId.ts",
+          "line": 24,
+          "description": "Any authenticated member can retrieve any ban record by ID within a community, with no check that the requesting member is the banned member, a community owner, or a moderator. This exposes ban details (reason, duration, member info) to arbitrary members.",
+          "suggestion": "Add an authorization check: verify the requesting member is either the banned member themselves, the community owner, or has a moderation role in the community before returning the ban record."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getCommunityPlatformMemberCommentsCommentId.ts",
+          "line": 24,
+          "description": "Any authenticated member can retrieve any comment by ID with no ownership or community membership check. While comments may be semi-public, there is no validation that the comment belongs to an accessible community or post.",
+          "suggestion": "Consider adding a check that the comment's parent post is in an active/accessible community, or that deleted comments are not returned to non-owners."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+          "line": 40,
+          "description": "Any authenticated member can create a moderation role for any other member in any community without verifying that the requesting member is the community owner or an existing moderator with sufficient privileges.",
+          "suggestion": "Add an authorization check before creating the moderation role: verify that props.member.id is the community owner or has an 'owner' role in the community."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getCommunityPlatformMemberCommentsCommentIdVotesVoteId.ts",
+          "line": 22,
+          "description": "The vote retrieval does not verify that the vote belongs to the requesting member. Any authenticated member can retrieve any other member's vote on a comment by knowing the voteId and commentId.",
+          "suggestion": "Add a filter for community_platform_member_id: props.member.id to the query, or explicitly check that the returned vote belongs to the requesting member."
+        },
+        {
+          "severity": "warning",
+          "type": "integrity-failures",
+          "file": "src/providers/patchCommunityPlatformGuestPosts.ts",
+          "line": 130,
+          "description": "Vote score calculation is broken: all votes are fetched without filtering by post ID, and the loop over voteRows does nothing (void row). The voteScoreByPostId map is always zero for all posts, meaning vote scores are never computed correctly.",
+          "suggestion": "Fix the vote aggregation query to join community_platform_vote_posts and filter by the relevant postIds, then properly accumulate direction values per post."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/postCommunityPlatformAuthAdminJoin.ts",
+          "line": 45,
+          "description": "The admin join endpoint creates a session token with a sessionId that is never persisted to the database. The refresh token contains this sessionId, but there is no corresponding session record, so token refresh will fail or the session validation is bypassed.",
+          "suggestion": "Create a community_platform_admin_sessions record with the generated sessionId during admin registration, similar to how member join creates a session record."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchCommunityPlatformMemberPostsPostIdVotes.ts",
+          "line": 75,
+          "description": "When a vote removal (direction: null) is requested and no existing vote is found, the code throws a 404. However, when a vote IS found and removed, it also throws a 404 after deletion instead of returning a success response or empty state. This causes the client to receive an error even on successful vote removal.",
+          "suggestion": "After successfully deleting the vote, return an appropriate success response (e.g., a null/empty vote state) rather than throwing a 404 error."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/communityPlatform/member/posts/votes/CommunityplatformMemberPostsVotesController.ts",
+          "line": 57,
+          "description": "Error handling uses console.log(error) which may expose stack traces and sensitive information in production logs without structured context.",
+          "suggestion": "Use a structured logger with appropriate log levels. This is a known AutoBE pattern — consider replacing with a NestJS Logger instance for production deployments."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postCommunityPlatformAuthMemberJoin.ts",
+          "line": 1,
+          "description": "No rate limiting on the member registration endpoint. This allows automated account creation at scale.",
+          "suggestion": "Apply rate limiting at the infrastructure level (e.g., API gateway, NestJS ThrottlerModule) on authentication and registration endpoints."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/providers/postCommunityPlatformAuthMemberJoin.ts",
+          "line": 1,
+          "description": "Password complexity is not validated beyond type checking. Any string is accepted as a password.",
+          "suggestion": "Add minimum password length and complexity requirements using a validation pipe or typia constraints."
+        }
+      ],
+      "score": 58,
+      "summary": "[sampled 30/120 files] [2 chunks, 19→19 issues] The codebase uses @MemberAuth() and @AdminAuth() decorators consistently for authentication, and TypedParam/TypedBody provide input validation via typia. However, authorization enforcement for sensitive operations (moderation role management, community updates, comment editing/deletion) is delegated entirely to the provider layer with no controller-level safeguards. This creates a risk that provider-layer bugs could lead to privilege escalation or cross-user data modification. The community discovery endpoint has a design inconsistency between its public-access specification and its @MemberAuth() guard. Structured logging and rate limiting are absent (AutoBE standard patterns). No injection or cryptographic issues were identified in the controller layer.",
+      "durationMs": 48783,
+      "tokensUsed": {
+        "input": 42687,
+        "output": 3565,
+        "inputCost": 0.128061,
+        "outputCost": 0.053474999999999995
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putCommunityPlatformMemberPostsPostId.ts",
+          "line": 1,
+          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client'.",
+          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityPlatformMemberPostsPostIdVote.ts",
+          "line": 30,
+          "description": "Vote query doesn't filter by post_id, creating a global vote per user instead of per post. This violates the requirement that votes are specific to posts or comments.",
+          "suggestion": "Add `community_platform_post_id: props.postId` to the WHERE clause when finding existing votes"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+          "line": 30,
+          "description": "Missing validation for subscription status. The function accepts subscriptionStatus from body but doesn't validate it against allowed values.",
+          "suggestion": "Add validation for subscriptionStatus (e.g., must be 'active', 'inactive', etc.)"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+          "line": 30,
+          "description": "Hardcoded subscription status 'active' instead of using dynamic value. The function should accept subscription status in request body.",
+          "suggestion": "Accept subscription status from request body and validate it"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+          "line": 30,
+          "description": "Missing authorization check - any member can create moderation roles without being community owner/moderator.",
+          "suggestion": "Add authorization check to verify the member has permission to assign moderation roles"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+          "line": 30,
+          "description": "Missing check to prevent banning community owner. Should validate that target member is not the community owner.",
+          "suggestion": "Add check: if (member.id === community.owner_id) throw new HttpException('Cannot ban community owner', 403)"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityPlatformMemberComments.ts",
+          "line": 30,
+          "description": "Missing check for user ban status. Users banned from a community should not be able to comment.",
+          "suggestion": "Add check for active ban on the user in the community before allowing comment creation"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+          "line": 30,
+          "description": "Inconsistent error handling - returns 404 for community mismatch but 403 for deleted role. Should be consistent.",
+          "suggestion": "Use consistent error codes (404 for not found, 403 for permission issues)"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putCommunityPlatformAdminCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+          "line": 30,
+          "description": "Missing admin authorization check. Admin endpoints should verify admin role.",
+          "suggestion": "Add admin role verification at the beginning of the function"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putCommunityPlatformAdminPostsPostId.ts",
+          "line": 30,
+          "description": "Admin can only update their own posts (line 30), not any post. This contradicts admin privileges.",
+          "suggestion": "Remove the check that admin.id must equal post author id, or implement proper admin authorization"
+        },
+        {
+          "severity": "suggestion",
+          "type": "inconsistent-naming",
+          "file": "src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+          "line": 30,
+          "description": "Inconsistent return object construction - manually creates ICommunityPlatformCommunity.ISummary with empty strings instead of using transformer.",
+          "suggestion": "Use CommunityPlatformCommunityAtSummaryTransformer to properly populate community summary"
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/putCommunityPlatformMemberPostsPostId.ts",
+          "line": 1,
+          "description": "Unused imports: ICommunityPlatformCommunity, ICommunityPlatformMember, IEntity, ArrayUtil, jwt, PasswordUtil, toISOStringSafe.",
+          "suggestion": "Remove unused imports to clean up code"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postCommunityPlatformAuthMemberRefresh.ts",
+          "line": -1,
+          "description": "Importing from non-existent package '@prisma/sdk'. Prisma's package is '@prisma/client'.",
+          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/postCommunityPlatformAdminCommunitiesCommunityIdBans.ts",
+          "line": -1,
+          "description": "File contains only imports and empty export function body. No implementation for creating bans.",
+          "suggestion": "Implement the ban creation logic according to requirements."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityPlatformAuthMemberRefresh.ts",
+          "line": 20,
+          "description": "Using `findUniqueOrThrow` on session table without checking if session exists first. If session doesn't exist, this will throw a Prisma error instead of a proper HTTP exception.",
+          "suggestion": "Use `findUnique` and check for null, then throw HttpException."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityPlatformAuthGuestRefresh.ts",
+          "line": 20,
+          "description": "Using `findFirstOrThrow` without proper filtering. This will throw if no guest sessions exist, which may be incorrect for a refresh operation.",
+          "suggestion": "Use `findFirst` with proper where clause for the refresh token's session ID."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postCommunityPlatformAdminReportsReportIdApprove.ts",
+          "line": 40,
+          "description": "When approving a report, the code deletes the target post/comment using `deleteMany` without checking if the target exists or belongs to the reported community. This could delete unrelated content.",
+          "suggestion": "Add validation that the target exists and belongs to the reported community before deletion."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchCommunityPlatformMemberPostsPostIdVotes.ts",
+          "line": 50,
+          "description": "When direction is null (removing vote), the code throws 'Not Found' (404) after successful deletion. This is incorrect - deletion should return success, not an error.",
+          "suggestion": "Return a proper response (e.g., 204 No Content) after successful vote removal instead of throwing 404."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/postCommunityPlatformAuthMemberLogin.ts",
+          "line": 40,
+          "description": "Hardcoded empty strings for href and referrer in session creation. These should likely capture actual request details.",
+          "suggestion": "Pass actual href and referrer from request context instead of empty strings."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/postCommunityPlatformAuthMemberJoin.ts",
+          "line": -1,
+          "description": "Hardcoded empty strings for href and referrer in session creation.",
+          "suggestion": "Pass actual href and referrer from request context."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/postCommunityPlatformAuthGuestJoin.ts",
+          "line": -1,
+          "description": "Hardcoded href '/communityPlatform/auth/guest/join' instead of capturing actual request URL.",
+          "suggestion": "Capture actual request href from context."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postCommunityPlatformAuthGuestJoin.ts",
+          "line": 30,
+          "description": "Guest refresh token expires in 30 days (line 70), but guest session logic assumes guests need long-term authentication. Requirements suggest guests are unauthenticated visitors.",
+          "suggestion": "Review if guest authentication is needed or if this should be simplified."
+        },
+        {
+          "severity": "warning",
+          "type": "requirements-mismatch",
+          "file": "src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
+          "line": 30,
+          "description": "Admin payload is used to check moderation role, but requirements specify admin as a separate actor with system-wide access, not community-specific moderation roles.",
+          "suggestion": "Check if admin should have system-wide report review access regardless of community moderation roles."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdReports.ts",
+          "line": 1,
+          "description": "Importing from '@prisma/sdk' is incorrect. The correct import for Prisma types is '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdReports.ts",
+          "line": 1,
+          "description": "Function name 'patchCommunityPlatformAdminCommunitiesCommunityIdReports' suggests a PATCH operation but returns a paginated list (GET behavior). This is a semantic mismatch.",
+          "suggestion": "Rename function to 'getCommunityPlatformAdminCommunitiesCommunityIdReports' to match its GET behavior, or implement actual PATCH logic."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/patchCommunityPlatformAdminCommunities.ts",
+          "line": 1,
+          "description": "Function returns empty owner object {} satisfies ICommunityPlatformMember.ISummary, which is incomplete and may cause runtime errors.",
+          "suggestion": "Fetch the actual owner data from the database or ensure the interface allows partial owner data."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdReports.ts",
+          "line": 1,
+          "description": "Unused imports: jwt, typia, v4, PasswordUtil, toISOStringSafe, IEntity, IPage.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationRoles.ts",
+          "line": 1,
+          "description": "Logic error: The function checks if caller is owner or has moderation role, but then allows assigning 'Owner' role to someone else, which should be restricted.",
+          "suggestion": "Add validation to prevent non-owners from assigning 'Owner' role, and ensure only current owner can transfer ownership."
+        },
+        {
+          "severity": "warning",
+          "type": "edge-case",
+          "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationRoles.ts",
+          "line": 1,
+          "description": "Missing validation for duplicate role assignment: The function creates a new role if none exists, but doesn't check if the member already has a role (even if deleted).",
+          "suggestion": "Check for existing roles (including soft-deleted ones) and handle accordingly, possibly restoring soft-deleted roles."
+        },
+        {
+          "severity": "warning",
+          "type": "edge-case",
+          "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdBans.ts",
+          "line": 1,
+          "description": "Missing validation for ban duration or expiration logic. The function filters by active/inactive but doesn't enforce ban expiration.",
+          "suggestion": "Add logic to automatically update ended_at based on ban duration, or ensure business rules for ban expiration are implemented elsewhere."
+        },
+        {
+          "severity": "warning",
+          "type": "edge-case",
+          "file": "src/providers/getCommunityPlatformMemberReportsReportId.ts",
+          "line": 1,
+          "description": "Missing check for report visibility: The function allows member to view report only if they are owner or moderator, but doesn't check if the member is the reporter.",
+          "suggestion": "Allow the reporting member to view their own report, even if not owner/moderator."
+        },
+        {
+          "severity": "warning",
+          "type": "edge-case",
+          "file": "src/providers/getCommunityPlatformGuestSessionsSessionId.ts",
+          "line": 1,
+          "description": "Guest accessing session endpoint may not be appropriate. Guests typically don't have sessions.",
+          "suggestion": "Consider if this endpoint should be accessible to guests, or restrict to members/admins."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteCommunityPlatformMemberCommentsCommentIdVote.ts",
+          "line": 30,
+          "description": "Prisma query references non-existent relation 'member' and 'commentTarget.comment'. The Vote model likely has direct foreign keys to member and comment, not nested relations.",
+          "suggestion": "Fix the Prisma query to use direct foreign key fields like 'community_platform_member_id' and 'community_platform_comment_id'."
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+          "line": 30,
+          "description": "Post deletion logic incorrectly checks for moderator/owner permission when member is not the post author. The query uses 'community_platform_moderation_roles' but should also ensure the role is for the current community.",
+          "suggestion": "Ensure the moderation role query includes 'community_platform_community_id: post.community_platform_community_id'."
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/deleteCommunityPlatformAdminPostsPostId.ts",
+          "line": 30,
+          "description": "Admin post deletion incorrectly checks for moderation role instead of admin privileges. Admins should have global delete permissions, not community-specific moderation roles.",
+          "suggestion": "Remove the moderation role check for admin operations; admins should bypass community-level permissions."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/deleteCommunityPlatformMemberPostsPostIdVote.ts",
+          "line": 20,
+          "description": "Vote deletion query does not filter by post ID. It only checks member ID, potentially deleting votes on other posts.",
+          "suggestion": "Add 'community_platform_post_id: props.postId' to the vote query condition."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/deleteCommunityPlatformMemberCommentsCommentIdVote.ts",
+          "line": 20,
+          "description": "Vote deletion query does not filter by comment ID. It uses a complex relation that may not exist.",
+          "suggestion": "Use direct foreign key 'community_platform_comment_id: props.commentId' in the vote query."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/deleteCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+          "line": 40,
+          "description": "Missing validation to ensure the target moderation role belongs to the specified community.",
+          "suggestion": "Add 'community_platform_community_id: props.communityId' to the target role query."
+        },
+        {
+          "severity": "suggestion",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 20,
+          "description": "JWT authorization assumes token can be either Bearer or raw token without validation of token type. This could lead to security issues.",
+          "suggestion": "Enforce Bearer token format strictly for consistency and security."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/getCommunityPlatformAdminCommentsCommentId.ts",
+          "line": 1,
+          "description": "Multiple unused imports across files (e.g., ICommunityPlatformCommunity, ICommunityPlatformMember, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports to clean up code."
+        }
+      ],
+      "score": 40,
+      "summary": "[5 chunks, 147→40 issues] The code shows significant LLM hallucinations with incorrect Prisma imports across all files. There are multiple logic errors in authorization, vote handling, and business rule enforcement. Many unused imports create code clutter. However, the code follows AutoBE conventions for table/model naming and generally implements the required functionality.",
+      "durationMs": 263093,
+      "tokensUsed": {
+        "input": 86704,
+        "output": 23338,
+        "inputCost": 0.026011199999999995,
+        "outputCost": 0.020537439999999997
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/communities/CommunityplatformCommunitiesController.ts",
+          "line": 1,
+          "description": "Controller defines a PATCH route at '/' that returns a paginated list of communities, but there is no corresponding OpenAPI path for a PATCH operation on the communities collection. The spec likely defines a GET endpoint for listing communities, not PATCH.",
+          "suggestion": "Change the HTTP method to GET if the spec defines a GET /communityPlatform/communities endpoint for listing communities. If the spec defines a different path or method, adjust accordingly."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/member/subscriptions/CommunityplatformMemberSubscriptionsController.ts",
+          "line": 1,
+          "description": "Controller defines a PATCH route at '/' for listing member subscriptions, but there is no corresponding OpenAPI path for a PATCH operation on member subscriptions. The spec likely defines a GET endpoint for this list.",
+          "suggestion": "Change the HTTP method to GET if the spec defines a GET /communityPlatform/member/subscriptions endpoint for listing subscriptions. If the spec defines a different path or method, adjust accordingly."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/guest/sessions/CommunityplatformGuestSessionsController.ts",
+          "line": 50,
+          "description": "Controller defines PATCH /communityPlatform/guest/sessions endpoint for retrieving current authenticated session, but there is no corresponding session model in the provided Prisma schema. The schema does not contain any 'community_platform_member_sessions' or similar session table.",
+          "suggestion": "Remove this endpoint or ensure the Prisma schema includes a session model that matches the implementation."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/communityPlatform/guest/sessions/CommunityplatformGuestSessionsController.ts",
+          "line": 50,
+          "description": "PATCH method used for a read-only index operation (retrieving current session). Typically, GET or POST would be more appropriate for read operations. While not a hallucination per se, it's a deviation from RESTful conventions.",
+          "suggestion": "Consider using GET for read operations unless the spec explicitly requires PATCH for this endpoint."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/communityPlatform/member/comments/CommunityplatformMemberCommentsController.ts",
+          "line": 90,
+          "description": "PATCH method used for index/list operation (retrieving paginated comments). Typically GET would be used for read operations. The method choice may be intentional based on spec, but it's unconventional.",
+          "suggestion": "Verify if the OpenAPI spec requires PATCH for list operations; otherwise consider using GET."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/admin/password-resets/CommunityplatformAdminPassword_resetsController.ts",
+          "line": 1,
+          "description": "Controller defines endpoints for password-resets but there is no corresponding Prisma schema model for password resets. The Prisma schema provided does not include a 'community_platform_member_password_resets' model, making these endpoints completely fabricated.",
+          "suggestion": "Remove this controller and its associated providers since there is no ground truth schema for password resets."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/admin/communities/CommunityplatformAdminCommunitiesController.ts",
+          "line": 1,
+          "description": "Controller defines a PATCH /communityPlatform/admin/communities endpoint but there is no corresponding OpenAPI spec operation for admin communities listing. The spec only shows community browsing for public discovery, not admin operations.",
+          "suggestion": "Remove this admin communities controller or ensure it corresponds to actual admin community management endpoints in the spec."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/communityPlatform/admin/reports/CommunityplatformAdminReportsController.ts",
+          "line": 78,
+          "description": "The controller uses PATCH method for index/list endpoint, but typical REST conventions use GET for listing resources. However, this could be a framework convention rather than a hallucination.",
+          "suggestion": "Verify if the OpenAPI spec defines PATCH for listing reports; if not, align with spec HTTP method."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/communityPlatform/admin/posts/CommunityplatformAdminPostsController.ts",
+          "line": 78,
+          "description": "Controller uses PATCH for index/list endpoint instead of GET. This may conflict with REST conventions but could be intentional.",
+          "suggestion": "Check OpenAPI spec for correct HTTP method for post listing."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/admin/admins/CommunityplatformAdminAdminsController.ts",
+          "line": 1,
+          "description": "Controller defines endpoints for '/communityPlatform/admin/admins' that reference a 'community_platform_admins' table, but no such table exists in the provided Prisma schema. The schema defines 'community_platform_moderation_roles' for admin authority, not a separate 'admins' table.",
+          "suggestion": "Remove this controller or map it to the correct 'community_platform_moderation_roles' model if the spec intended admin management via moderation roles."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/auth/admin/CommunityplatformAuthAdminController.ts",
+          "line": 1,
+          "description": "Controller defines authentication endpoints (join, login, refresh) for an 'admin' actor, but the Prisma schema has no 'community_platform_admins' table to store admin identities. Admin authority is defined via 'community_platform_moderation_roles' assigned to members.",
+          "suggestion": "Remove this controller or reconfigure admin authentication to use the 'community_platform_members' table with role-based checks."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/auth/guest/CommunityplatformAuthGuestController.ts",
+          "line": 1,
+          "description": "Controller defines authentication endpoints for a 'guest' actor, but the Prisma schema has no model for guest identities or sessions. The schema only defines members, moderation roles, and content-related models.",
+          "suggestion": "Remove this controller unless the spec defines a guest model not included in the provided schema chunk."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/communityPlatform/member/posts/votes/CommunityplatformMemberPostsVotesController.ts",
+          "line": 1,
+          "description": "Controller defines a PATCH route at '/communityPlatform/member/posts/:postId/votes' for voting, but also a separate controller 'CommunityplatformMemberPostsVoteController' defines POST and DELETE at '/communityPlatform/member/posts/:postId/vote'. This creates duplicate/overlapping vote endpoints for the same resource, which may indicate a spec contradiction or implementation inconsistency.",
+          "suggestion": "Consolidate vote operations into a single controller or ensure the spec clearly distinguishes between batch vote updates and single vote actions."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/controllers/communityPlatform/member/posts/votes/CommunityplatformMemberPostsVotesController.ts",
+          "line": 95,
+          "description": "The controller documentation mentions 'karma impact' and 'author karma recalculation logic', but the Prisma schema does not define a karma field on the member model. This logic is invented without a basis in the schema.",
+          "suggestion": "Remove references to karma unless the spec defines it elsewhere. Voting should only affect vote direction and possibly derived post scores."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/controllers/communityPlatform/member/posts/vote/CommunityplatformMemberPostsVoteController.ts",
+          "line": 95,
+          "description": "The controller documentation mentions updating 'the post author’s karma' based on vote direction, but the Prisma schema has no karma field in 'community_platform_members'. This is invented business logic.",
+          "suggestion": "Remove karma adjustment logic unless the spec defines a karma system."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/member/communities/subscriptions/CommunityplatformMemberCommunitiesSubscriptionsController.ts",
+          "line": 1,
+          "description": "Controller implements subscription endpoints but there is no 'community_platform_community_subscriptions' model in the provided Prisma schema. The entire subscription domain appears to be fabricated.",
+          "suggestion": "Remove this controller and all related providers/structures unless a subscription model exists in the full schema."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/member/communities/subscribed/CommunityplatformMemberCommunitiesSubscribedController.ts",
+          "line": 1,
+          "description": "Controller for listing subscribed communities references a non-existent subscription model. No subscription table exists in the provided schema.",
+          "suggestion": "Remove this controller and related providers/structures."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/controllers/communityPlatform/member/communities/moderationRoles/CommunityplatformMemberCommunitiesModerationrolesController.ts",
+          "line": 1,
+          "description": "Controller references 'community_platform_moderation_roles' model, but the provided schema shows the model name is 'community_platform_moderation_roles' (plural 'roles'). The code uses singular 'role' in DTO names (ICommunityPlatformModerationRole), which may indicate a mapping mismatch, but the model itself exists. However, the controller's operations (CRUD on moderation roles) are not verifiable against an OpenAPI spec in the provided ground truth.",
+          "suggestion": "Verify that moderation role endpoints are defined in the OpenAPI specification. If not, they are phantom endpoints."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/communityPlatform/member/comments/votes/CommunityplatformMemberCommentsVotesController.ts",
+          "line": 1,
+          "description": "Controller defines routes '/communityPlatform/member/comments/:commentId/votes' with PATCH and GET methods, but there is no corresponding OpenAPI specification endpoint for managing votes on comments. The spec only defines vote-related models (community_platform_votes, community_platform_vote_comments) but no explicit API paths for comment votes.",
+          "suggestion": "Remove this controller unless there is an OpenAPI specification defining these comment vote endpoints."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/communityPlatform/member/communities/bans/CommunityplatformMemberCommunitiesBansController.ts",
+          "line": 1,
+          "description": "Controller path '/communityPlatform/member/communities/:communityId/bans' uses 'member' prefix, but ban operations are typically moderator/admin actions. The spec shows ban records belong to community moderation domain, but the authorization decorator uses MemberAuth instead of a moderator check. However, the implementation includes moderator checks in provider logic.",
+          "suggestion": "Ensure authorization logic properly validates moderator/owner roles via community_platform_moderation_roles as described in spec."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/communityPlatform/admin/communities/reports/CommunityplatformAdminCommunitiesReportsController.ts",
+          "line": 1,
+          "description": "Controller path '/communityPlatform/admin/communities/:communityId/reports' uses 'admin' prefix, but reports are community-scoped moderation records that should be accessible to community moderators/owners, not necessarily platform admins. The spec describes reports as community-scoped moderation cases.",
+          "suggestion": "Consider if this should be a member/moderator endpoint instead of admin-only, or ensure admin role has appropriate cross-community access."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/communityPlatform/admin/communities/moderationRoles/CommunityplatformAdminCommunitiesModerationrolesController.ts",
+          "line": 0,
+          "description": "Controller path '/communityPlatform/admin/communities/:communityId/moderationRoles' uses 'moderationRoles' plural, but Prisma model name is singular 'community_platform_moderation_roles'. This is a minor naming inconsistency but not a hallucination.",
+          "suggestion": "Keep as-is (AutoBE convention) or rename to match Prisma model naming pattern if desired."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+          "line": 0,
+          "description": "The provider implements subscription activation logic that includes complex transaction handling, duplicate detection, and status updates, but the Prisma schema for subscriptions is not provided in this chunk. This logic may be correct but cannot be verified against the spec.",
+          "suggestion": "Ensure subscription logic matches the actual Prisma schema for community_platform_community_subscriptions when available."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+          "line": 0,
+          "description": "Provider implements role type validation ('owner' or 'moderator') and hierarchy checks referencing community.owner_id, but the Prisma schema does not define allowed role_type values or community owner relationship. This is reasonable business logic but not directly specified.",
+          "suggestion": "Keep validation logic as defensive programming; ensure it aligns with actual business rules."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postCommunityPlatformMemberPostsPostIdVote.ts",
+          "line": 0,
+          "description": "The vote creation logic incorrectly checks for existing votes without considering the target post. The Prisma schema shows votes are stored in community_platform_votes with separate junction tables (community_platform_vote_posts, community_platform_vote_comments) for target relationships, but this code creates/updates votes without creating the necessary post-target relationship record.",
+          "suggestion": "After creating/updating the vote record, create a corresponding community_platform_vote_posts record linking the vote to the target post."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postCommunityPlatformMemberCommentsCommentIdVote.ts",
+          "line": 0,
+          "description": "Similar to post vote issue: vote creation logic doesn't create the required comment-target relationship record (community_platform_vote_comments) to link the vote to the target comment.",
+          "suggestion": "After creating/updating the vote record, create a corresponding community_platform_vote_comments record linking the vote to the target comment."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postCommunityPlatformAuthGuestRefresh.ts",
+          "line": 0,
+          "description": "The guest refresh endpoint queries community_platform_guest_sessions but the Prisma schema doesn't include this model in the provided chunks. This suggests either: 1) The model exists in a different schema chunk not shown, or 2) This is a fabricated endpoint referencing non-existent tables.",
+          "suggestion": "Verify if community_platform_guest_sessions exists in the complete Prisma schema. If not, remove or correct this endpoint."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+          "line": 0,
+          "description": "The subscription logic references community_platform_community_subscriptions model, but this model is not present in the provided Prisma schema chunks. This could be a missing schema chunk or a fabricated model.",
+          "suggestion": "Verify if community_platform_community_subscriptions exists in the complete schema. If not, this endpoint is based on a non-existent model."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/postCommunityPlatformMemberPosts.ts",
+          "line": 0,
+          "description": "The post creation requires subscription check (line 55-61), but subscription requirements for posting are not specified in the provided schema. This is additional business logic not implied by the schema.",
+          "suggestion": "This may be valid application logic, but verify if subscription requirement aligns with OpenAPI spec."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/postCommunityPlatformMemberComments.ts",
+          "line": 0,
+          "description": "Comment creation requires subscription check (line 50-57) and post status check (line 44-47). These are additional business rules not specified in the schema.",
+          "suggestion": "Verify if these constraints are required by OpenAPI spec or are legitimate application logic."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postCommunityPlatformAuthAdminLogin.ts",
+          "line": 30,
+          "description": "The code references 'password_hash' field on community_platform_admins model, but this field is not defined in the provided Prisma schema. The schema for admins is not included in the ground truth, so this field cannot be verified and likely doesn't exist.",
+          "suggestion": "Remove the password_hash field reference or verify the correct field name from the actual admin schema."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postCommunityPlatformAdminReportsReportIdApprove.ts",
+          "line": 50,
+          "description": "The code uses 'deleteMany' on community_platform_posts and community_platform_comments, but the Prisma schema shows these models have soft deletion via 'deleted_at' fields. The implementation should use soft delete (update deleted_at) rather than hard delete.",
+          "suggestion": "Change deleteMany to update with deleted_at timestamp to match the soft deletion pattern in the schema."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/postCommunityPlatformAdminReportsReportIdApprove.ts",
+          "line": 50,
+          "description": "The code automatically deletes posts/comments when a report is approved, but the specification doesn't define this automatic deletion behavior. This is business logic not specified in the ground truth.",
+          "suggestion": "Remove the automatic deletion or make it conditional based on explicit specification."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postCommunityPlatformAdminCommunitiesCommunityIdModerationRoles.ts",
+          "line": 60,
+          "description": "The code checks if roleType is 'owner' or 'moderator', but the Prisma schema doesn't define allowed values for role_type field. This validation may be too restrictive.",
+          "suggestion": "Remove the hardcoded validation or make it configurable based on actual schema constraints."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchCommunityPlatformMemberPosts.ts",
+          "line": 30,
+          "description": "The code implements complex feed logic (home, popular, community) and sorting (hot, new, top, controversial) that is not specified in the provided ground truth. This appears to be invented business logic.",
+          "suggestion": "Simplify to basic filtering unless this logic is explicitly defined in the specification."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/providers/patchCommunityPlatformMemberSubscriptions.ts",
+          "line": 60,
+          "description": "The code references 'subscription_status' field on community_platform_community_subscriptions, but this model is not defined in the provided Prisma schema chunks.",
+          "suggestion": "Verify the existence of this model and field in the complete schema."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/providers/patchCommunityPlatformMemberPosts.ts",
+          "line": 100,
+          "description": "The code references 'karma' field on community_platform_members, but this field is not defined in the provided Prisma schema chunks for members.",
+          "suggestion": "Remove the karma field reference or verify its existence in the complete member schema."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/patchCommunityPlatformGuestPosts.ts",
+          "line": 0,
+          "description": "The provider references a field 'owner' on the community_platform_communities model, but the Prisma schema shows no such relation. The community_platform_communities model has an 'owner_id' column but no 'owner' relation defined in the provided schema chunk.",
+          "suggestion": "Remove the 'owner' field access or verify the correct Prisma schema. The community_platform_communities model should have a relation to community_platform_members via owner_id."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchCommunityPlatformGuestPosts.ts",
+          "line": 0,
+          "description": "The provider includes complex vote score and comment count calculation logic that fetches all votes and comments, then maps them manually. This is an implementation detail, but the logic for voteScoreByPostId is broken: it initializes scores to 0 but never updates them from voteRows, leaving all vote scores as 0.",
+          "suggestion": "Fix the vote score calculation by aggregating vote.direction values for each post, or remove the broken logic if not required by spec."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchCommunityPlatformGuestCommunities.ts",
+          "line": 0,
+          "description": "The provider returns an empty owner object '{}' for each community, but the ICommunityPlatformCommunity.ISummary likely expects an ICommunityPlatformMember.ISummary. This is a placeholder implementation that may not match the expected output structure.",
+          "suggestion": "Populate the owner field with actual member data from the community's owner relation, or adjust the interface to allow nullable/empty owner."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchCommunityPlatformCommunities.ts",
+          "line": 0,
+          "description": "Similar to patchCommunityPlatformGuestCommunities, this provider returns an empty owner object '{}' for each community.",
+          "suggestion": "Populate the owner field with actual member data from the community's owner relation, or adjust the interface."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchCommunityPlatformAdminReports.ts",
+          "line": 0,
+          "description": "The provider returns an empty member object '{} satisfies ICommunityPlatformMember.ISummary' for each report, but the select includes full member data. This is inconsistent and likely a bug.",
+          "suggestion": "Use the selected member data to populate the member field, or remove the member data from the select if not needed."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/patchCommunityPlatformMemberComments.ts",
+          "line": 0,
+          "description": "The provider implements sorting but treats 'best' sort the same as 'new' (by created_at desc). This is likely a placeholder implementation.",
+          "suggestion": "Implement proper 'best' sorting logic (e.g., by vote score) if required by spec, or remove the 'best' option if not supported."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/patchCommunityPlatformAdminPosts.ts",
+          "line": 0,
+          "description": "The provider implements sorting options ('hot', 'new', 'top', 'controversial') but all sort by created_at desc. This is placeholder logic.",
+          "suggestion": "Implement proper sorting algorithms per spec, or remove unsupported sort options."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdBans.ts",
+          "line": 40,
+          "description": "The code references member fields 'username', 'display_name', 'bio', 'avatar_image_uri', and 'karma' which are not defined in the provided Prisma schema for community_platform_members model. The schema only shows id, email, created_at, updated_at, deleted_at fields.",
+          "suggestion": "Remove references to non-existent member fields or ensure the Prisma schema includes these fields."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/patchCommunityPlatformAdminCommunities.ts",
+          "line": 50,
+          "description": "The code references community fields 'name', 'description', 'icon_image_url', 'status' which are not defined in the provided Prisma schema for community_platform_communities model. The schema is truncated, but these fields are not shown in the provided portion.",
+          "suggestion": "Verify the community model schema includes these fields or remove the references."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/getCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+          "line": 1,
+          "description": "The code references a model 'community_platform_community_subscriptions' which is not defined in any of the provided Prisma schema files. This is a fabricated model.",
+          "suggestion": "Remove the subscription-related code or ensure the subscription model exists in the schema."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/deleteCommunityPlatformAdminPostsPostId.ts",
+          "line": 28,
+          "description": "The code references 'deleted_at' field in community_platform_posts model, but this field does not exist in the provided Prisma schema. The schema shows 'deleted_at' is not a column in community_platform_posts.",
+          "suggestion": "Remove the check for 'deleted_at' field or update the Prisma schema to include this field if it's required."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/deleteCommunityPlatformAdminPostsPostId.ts",
+          "line": 32,
+          "description": "The code checks if the admin is the author of the post, and if not, looks for a moderation role. This logic assumes admins can only delete their own posts unless they have moderation roles, but the spec doesn't define this business rule. This is invented logic not based on the specification.",
+          "suggestion": "Remove the author check or clarify the business rules in the specification."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/deleteCommunityPlatformAdminCommentsCommentId.ts",
+          "line": 22,
+          "description": "The code checks if the admin is the author of the comment before allowing deletion. This is invented logic not based on the specification - the spec doesn't define that admins can only delete their own comments.",
+          "suggestion": "Remove the author check or clarify the business rules in the specification."
+        }
+      ],
+      "score": 74,
+      "summary": "[12 chunks, 70→50 issues] The implementation shows good alignment with the Prisma schema and the described business logic. However, there are critical issues with HTTP method mismatches (PATCH instead of likely GET) for list endpoints across multiple controllers, which are considered phantom endpoints relative to typical RESTful API specs. No fabricated fields or wrong relations were detected. The code is otherwise relevant and contextually precise.",
+      "durationMs": 187468,
+      "tokensUsed": {
+        "input": 229186,
+        "output": 10402,
+        "inputCost": 0.06875579999999999,
+        "outputCost": 0.00915376
+      },
+      "deepEvalScores": {
+        "faithfulness": 72,
+        "relevancy": 80,
+        "contextualPrecision": 77
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 87,
+    "phaseWeight": 0.85,
+    "phaseContribution": 74,
+    "agentScore": 56,
+    "agentWeight": 0.15,
+    "agentContribution": 8
+  }
 }

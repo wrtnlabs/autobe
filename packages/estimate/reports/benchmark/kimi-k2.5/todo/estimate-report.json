@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo",
-  "totalScore": 89,
+  "totalScore": 86,
   "grade": "B",
   "phases": {
     "gate": {
@@ -19,11 +19,11 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846230304-uze8uugix6a",
+          "id": "type-error-1775138401424-647ww2kjq3l",
           "autoFixable": false
         }
       ],
-      "durationMs": 2316,
+      "durationMs": 2888,
       "metrics": {
         "totalFiles": 87,
         "filesWithErrors": 0,
@@ -157,7 +157,7 @@
             "line": 16
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846230359-9vwi6xzvf3",
+          "id": "complexity-1775138401540-zzblmxe226m",
           "autoFixable": false
         },
         {
@@ -170,7 +170,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846230354-l812ntgmh5d",
+          "id": "complexity-1775138401544-c93xkji6hp5",
           "autoFixable": false
         }
       ]
@@ -196,7 +196,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846230394-zmugnfn2d",
+          "id": "jsdoc-1775138401577-6b2fpwaggk3",
           "autoFixable": false
         },
         {
@@ -208,7 +208,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846230394-vd1l61soyxc",
+          "id": "jsdoc-1775138401577-4e67omlj7eb",
           "autoFixable": false
         },
         {
@@ -220,7 +220,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846230394-u0id06qxcaj",
+          "id": "jsdoc-1775138401577-mguv2b5poj",
           "autoFixable": false
         },
         {
@@ -232,7 +232,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846230395-3fupym90utf",
+          "id": "jsdoc-1775138401578-vpwl1p8uqpc",
           "autoFixable": false
         },
         {
@@ -244,7 +244,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846230394-c6p9k85bg5",
+          "id": "jsdoc-1775138401577-1n3lway2s0h",
           "autoFixable": false
         },
         {
@@ -256,7 +256,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846230395-ed8j3b5h8nw",
+          "id": "jsdoc-1775138401578-mok6wupqc3",
           "autoFixable": false
         },
         {
@@ -268,7 +268,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/password/MultiusertodoMemberPasswordController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846230395-jamscw1s7dq",
+          "id": "jsdoc-1775138401578-uzn8m2va3hc",
           "autoFixable": false
         },
         {
@@ -280,7 +280,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/account/MultiusertodoMemberAccountController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846230395-6ba7s37qy7k",
+          "id": "jsdoc-1775138401578-s6rrgm7lmo",
           "autoFixable": false
         },
         {
@@ -292,7 +292,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/histories/MultiusertodoMemberTodosHistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846230396-qm2ro1bn7lj",
+          "id": "jsdoc-1775138401579-tfpwkdvq82a",
           "autoFixable": false
         }
       ]
@@ -311,7 +311,7 @@
             "file": "src/api/structures/IMultiUserTodoMember.ts",
             "line": 136
           },
-          "id": "completeness-1774846230399-8iiqs9uxc7m",
+          "id": "completeness-1775138401582-molnldhg2ys",
           "autoFixable": false
         }
       ]
@@ -334,15 +334,15 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846230304-uze8uugix6a",
+      "id": "type-error-1775138401424-647ww2kjq3l",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:50:30.399Z",
-    "totalDurationMs": 2505,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T14:00:01.583Z",
+    "totalDurationMs": 2971,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 87
   },
   "penalties": {
@@ -364,5 +364,619 @@
     "structures": 11,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "cryptographic-failures",
+          "file": "src/providers/putMultiUserTodoMemberPassword.ts",
+          "line": 30,
+          "description": "Password comparison uses hash-then-compare instead of bcrypt.compare(). The code hashes the provided current_password and compares the resulting hash string directly with the stored hash. This is incorrect for bcrypt because bcrypt generates a new random salt each time, so two hashes of the same password will never be equal. This means password verification will always fail, effectively locking users out of password changes. Additionally, if a non-bcrypt deterministic hash is used, this approach is vulnerable to timing attacks.",
+          "suggestion": "Use PasswordUtil.verify(props.body.current_password, member.password_hash) which should internally call bcrypt.compare() for constant-time comparison. Replace the hash-then-compare pattern with a proper verify call."
+        },
+        {
+          "severity": "critical",
+          "type": "integrity-failures",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 67,
+          "description": "The guest refresh token rotation is incomplete. While a new refresh token is generated, the session record in multi_user_todo_guest_sessions is only updated with the new expired_at but NOT with the new refresh token value. The old refresh token remains valid in the JWT (until its own expiry), and the session lookup uses session_id from the decoded token rather than the refresh token string itself. This means the old refresh token can be reused for replay attacks as long as it hasn't expired.",
+          "suggestion": "Store the new refresh token in the session record and validate incoming refresh tokens against the stored value. Update the session with both the new refresh_token and expired_at fields to enforce single-use token rotation."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 22,
+          "description": "The todoId parameter in the controller (MultiusertodoMemberTodosController.ts, update method, line ~170) is typed as plain `string` without the `tags.Format<'uuid'>` constraint, unlike the `at` and `erase` methods which also use plain string. The provider function signature does declare `tags.Format<'uuid'>` but the controller passes an unvalidated string. This inconsistency could allow malformed IDs to reach the database layer.",
+          "suggestion": "Ensure the `todoId` parameter in the `update` and `erase` controller methods uses `string & tags.Format<'uuid'>` type annotation, consistent with the `at` method, to enforce UUID validation at the framework level."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 20,
+          "description": "The member refresh token lookup queries the database by the raw refresh_token string value without first verifying the JWT signature. An attacker who can forge or guess a refresh token string could potentially find a matching session. The JWT should be verified first to ensure it was issued by this server before using its claims to look up the session.",
+          "suggestion": "Verify the JWT signature of the refresh token before querying the database (similar to how postMultiUserTodoAuthGuestRefresh.ts does it). Extract the session_id from verified claims and look up the session by ID, then cross-check the stored refresh_token matches."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 55,
+          "description": "The client-supplied `props.body.ip` takes precedence over the server-detected IP address (`props.ip`) when creating the session record: `ip: props.body.ip ?? props.ip`. This allows clients to spoof their IP address in session records, undermining IP-based security auditing and monitoring.",
+          "suggestion": "Always use the server-detected IP address (`props.ip`) for session records. Remove the ability for clients to supply their own IP address, or at minimum reverse the precedence to use server IP as primary."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+          "line": 1,
+          "description": "All controllers use console.log(error) for error handling without structured logging. Failed authentication attempts (login, refresh) are not specifically logged for security monitoring. This is the standard AutoBE pattern but limits security incident detection.",
+          "suggestion": "Consider implementing structured logging with severity levels and audit trails for authentication events (login success/failure, token refresh, password changes). Use a logging library like Winston or Pino."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+          "line": 1,
+          "description": "No rate limiting is implemented on authentication endpoints (login, join, refresh). The login endpoint comment mentions 'Rate limit 5 attempts per IP per minute' but this is not implemented in code.",
+          "suggestion": "Implement rate limiting using @nestjs/throttler or a similar library, especially for login and token refresh endpoints to prevent brute force attacks."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+          "line": 1,
+          "description": "Password complexity validation beyond minimum length is not enforced. The specification mentions minimum 8 characters but no complexity requirements (uppercase, numbers, special characters) are validated.",
+          "suggestion": "Add password complexity validation using typia constraints or a dedicated password validation library to enforce stronger password policies."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 30,
+          "description": "The session query filters by `multi_user_todo_member_id: props.guest.id`, but the table appears to be `multi_user_todo_member_sessions` while the authenticated entity is a guest. This may allow a guest to query member sessions if the ID space overlaps, or conversely may always return empty results. The field name mismatch (`member_id` vs guest context) suggests a potential authorization logic error.",
+          "suggestion": "Verify that the correct foreign key field is used for guest session filtering. If guests have their own session table (`multi_user_todo_guest_sessions`), use that table and the appropriate foreign key (`multi_user_todo_guest_id`)."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
+          "line": 28,
+          "description": "The session is fetched by `findUniqueOrThrow` without any ownership filter in the query itself. Ownership is checked post-fetch via `session.member.id !== props.guest.id`. This means the database always fetches the record regardless of ownership, and the authorization relies solely on the in-memory check. While functionally correct, a timing or logic error in the transformer could expose data. Additionally, `session.member` implies this is a member session, not a guest session — a guest checking member sessions is a potential access control confusion.",
+          "suggestion": "Include the ownership filter directly in the Prisma query (`where: { id: props.sessionId, multi_user_todo_guest_id: props.guest.id }`) to enforce authorization at the database level and eliminate the post-fetch check."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/authorize/memberAuthorize.ts",
+          "line": 13,
+          "description": "The error message in ForbiddenException reveals the actual token type: `You're not ${payload.type}`. This leaks internal token type information to the client, which could aid attackers in crafting valid tokens of the correct type.",
+          "suggestion": "Use a generic error message such as 'Insufficient permissions' or 'Access denied' instead of revealing the token type."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 95,
+          "description": "The `limit` parameter from user input is passed directly to Prisma's `take` without an upper bound. A client could request an extremely large page size (e.g., `limit: 1000000`), causing excessive database load and potential denial of service.",
+          "suggestion": "Enforce a maximum limit, e.g., `const limit = Math.min(props.body.limit ?? 20, 100)` to cap the number of records returned per request."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 27,
+          "description": "The default `limit` is set to 100 and there is no maximum cap enforced. Combined with user-controlled `limit` input, this could allow excessive data retrieval or denial of service.",
+          "suggestion": "Enforce a maximum limit, e.g., `const limit = Math.min(props.body.limit ?? 20, 100)`."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 30,
+          "description": "The catch block silently swallows the JWT verification error and throws a generic UnauthorizedException. Failed authentication attempts are not logged, making it difficult to detect brute-force or token-stuffing attacks.",
+          "suggestion": "Log failed JWT verification attempts (without exposing the token value) to enable security monitoring and alerting."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 1,
+          "description": "The guest join endpoint creates a new guest account on every call with no rate limiting. This could be abused to create unlimited guest accounts.",
+          "suggestion": "Apply rate limiting at the infrastructure or middleware level for this endpoint."
+        },
+        {
+          "severity": "suggestion",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 57,
+          "description": "Both access and refresh tokens are signed with the same `JWT_SECRET_KEY`. If the secret is compromised, both token types are affected. Additionally, there is no algorithm explicitly specified in the `jwt.sign` options, defaulting to HS256.",
+          "suggestion": "Consider using separate secrets for access and refresh tokens, and explicitly specify the algorithm (e.g., `algorithm: 'HS256'`) in jwt.sign options for clarity and to prevent algorithm confusion attacks."
+        }
+      ],
+      "score": 70,
+      "summary": "[2 chunks, 18→16 issues] The codebase implements a multi-user todo application with JWT-based authentication for both members and guests. Two critical issues were found: (1) incorrect password verification using hash-then-compare instead of bcrypt.compare(), which would break password change functionality and potentially allow authentication bypass depending on the hash algorithm; (2) incomplete refresh token rotation for guest sessions where the old token remains usable. A notable warning involves client-supplied IP spoofing in session records and inconsistent UUID validation on path parameters. The member refresh flow also lacks JWT signature verification before database lookup. The overall architecture shows good security intent with ownership checks, soft-delete handling, and token rotation concepts, but the implementation has significant gaps in cryptographic operations.",
+      "durationMs": 37577,
+      "tokensUsed": {
+        "input": 31864,
+        "output": 3470,
+        "inputCost": 0.09559199999999998,
+        "outputCost": 0.05205
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putMultiUserTodoMemberPassword.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistories.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoIdHistoriesHistoryId.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteMultiUserTodoMemberSessions.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteMultiUserTodoMemberAccount.ts",
+          "line": 1,
+          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 50,
+          "description": "Logic error: The code incorrectly fetches completed_at from database when todo is already complete, but should preserve the existing completed_at value. The current logic fetches it again unnecessarily.",
+          "suggestion": "Simplify the completed_at logic: finalCompletedAt = finalIsComplete ? (currentTodo.is_complete ? currentTodo.completed_at : new Date()) : null"
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 1,
+          "description": "Incomplete implementation: The profile update function only updates updated_at timestamp but doesn't actually update any profile fields (like display name) from the request body.",
+          "suggestion": "Add logic to update actual profile fields from props.body (e.g., display_name) according to requirements"
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 30,
+          "description": "Logic error: Setting deleted_at to a string instead of Date object. The database expects DateTime type.",
+          "suggestion": "Change deleted_at: new Date().toISOString() to deleted_at: new Date()"
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 1,
+          "description": "Unrealistic assumption: The function accepts 'ip', 'href', and 'referrer' in the request body, but these should typically come from request headers/metadata, not user input.",
+          "suggestion": "Remove ip, href, referrer from IMultiUserTodoMember.IJoin interface and extract them from request metadata instead"
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 1,
+          "description": "Unrealistic assumption: The function accepts 'ip', 'href', and 'referrer' in the request body, but these should typically come from request headers/metadata, not user input.",
+          "suggestion": "Remove ip, href, referrer from IMultiUserTodoGuest.IJoin interface and extract them from request metadata instead"
+        },
+        {
+          "severity": "warning",
+          "type": "copy-paste",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 1,
+          "description": "Copy-paste error: Function name is patchMultiUserTodoGuestSessions but it queries multi_user_todo_member_sessions table and uses member authorization logic. This appears to be a copy-paste from member sessions endpoint.",
+          "suggestion": "Either rename function to patchMultiUserTodoMemberSessions or change implementation to query multi_user_todo_guest_sessions table"
+        },
+        {
+          "severity": "warning",
+          "type": "copy-paste",
+          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
+          "line": 1,
+          "description": "Copy-paste error: Function name is getMultiUserTodoGuestSessionsSessionId but it queries multi_user_todo_member_sessions table and checks member.id. This appears to be a copy-paste from member sessions endpoint.",
+          "suggestion": "Either rename function to getMultiUserTodoMemberSessionsSessionId or change implementation to query multi_user_todo_guest_sessions table"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, jwt, typia, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, IMultiUserTodoMember, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/putMultiUserTodoMemberPassword.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/postMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, HttpException, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, IMultiUserTodoMember, ArrayUtil, Prisma, typia, v4, PasswordUtil are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, Prisma, typia, v4 are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, Prisma, typia, v4, PasswordUtil are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, HttpException, Prisma, jwt, typia, PasswordUtil are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistories.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, IMultiUserTodoHistory, IMultiUserTodoTodo, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, IMultiUserTodoTodo, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, IMultiUserTodoMemberSession, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoIdHistoriesHistoryId.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, IMultiUserTodoTodo, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, IMultiUserTodoMember, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/deleteMultiUserTodoMemberSessions.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/deleteMultiUserTodoMemberAccount.ts",
+          "line": 1,
+          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
+          "suggestion": "Remove unused imports to clean up the code"
+        },
+        {
+          "severity": "suggestion",
+          "type": "inconsistent-naming",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Inconsistent naming: The function name uses 'put' prefix but it's performing a PATCH-like operation (partial update). According to REST conventions, PUT should replace entire resource.",
+          "suggestion": "Consider renaming to patchMultiUserTodoMemberTodosTodoId if implementing partial updates, or implement full resource replacement"
+        }
+      ],
+      "score": 70,
+      "summary": "The code has critical issues with hallucinated imports (@prisma/sdk instead of @prisma/client) across all files, several logic errors, and copy-paste mistakes. However, it follows AutoBE conventions correctly with prefixed table names and models. The core functionality appears to be implemented but needs significant fixes for imports and logic.",
+      "durationMs": 303435,
+      "tokensUsed": {
+        "input": 16894,
+        "output": 4775,
+        "inputCost": 0.005068199999999999,
+        "outputCost": 0.004202
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+          "line": 1,
+          "description": "Controller implements guest session endpoints that query member sessions (multi_user_todo_member_sessions) instead of guest sessions (multi_user_todo_guest_sessions). The spec defines guest sessions in model multi_user_todo_guest_sessions, but the controller references IMultiUserTodoMemberSession and queries member sessions.",
+          "suggestion": "Replace with proper guest session endpoints that query multi_user_todo_guest_sessions table and use IMultiUserTodoGuestSession DTOs."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+          "line": 40,
+          "description": "Endpoint GET /multiUserTodo/guest/sessions/:sessionId claims to retrieve guest sessions but uses IMultiUserTodoMemberSession type and queries member sessions. The spec defines separate models for guest_sessions and member_sessions.",
+          "suggestion": "Create proper guest session retrieval endpoint using multi_user_todo_guest_sessions model and appropriate DTOs."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/controllers/multiUserTodo/member/todos/histories/MultiusertodoMemberTodosHistoriesController.ts",
+          "line": 44,
+          "description": "The spec comment says 'Return error if todo is soft-deleted (deleted_at is not null)' but the Prisma schema shows history entries should be accessible for todos in all states including trash. This contradicts the schema documentation.",
+          "suggestion": "Remove the restriction on accessing history for soft-deleted todos, as history should be preserved and accessible even when todo is in trash."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "The provider imports unused dependencies (ArrayUtil, jwt, PasswordUtil) that are not needed for the update todo operation.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 1,
+          "description": "The provider 'patchMultiUserTodoGuestSessions' implements a route for guest sessions, but the Prisma schema only defines 'multi_user_todo_guest_sessions' model. There is no corresponding OpenAPI endpoint for guest session listing/pagination in the provided spec. This appears to be a completely fabricated endpoint.",
+          "suggestion": "Remove this provider unless there is a corresponding OpenAPI operation for listing guest sessions."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
+          "line": 1,
+          "description": "The provider 'getMultiUserTodoGuestSessionsSessionId' implements a GET endpoint for retrieving a specific guest session, but there is no corresponding OpenAPI operation for retrieving guest sessions by ID in the provided spec. This appears to be a fabricated endpoint.",
+          "suggestion": "Remove this provider unless there is a corresponding OpenAPI operation for retrieving guest sessions."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 30,
+          "description": "The provider queries 'multi_user_todo_member_sessions' table using 'multi_user_todo_member_id: props.guest.id', but the guest payload has 'id' referring to 'multi_user_todo_guests.id', not member sessions. This uses a non-existent relation between guests and member sessions.",
+          "suggestion": "The query should target 'multi_user_todo_guest_sessions' table with 'multi_user_todo_guest_id' field instead."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
+          "line": 30,
+          "description": "The provider queries 'multi_user_todo_member_sessions' table and checks 'session.member.id !== props.guest.id', but guests don't have relations to member sessions. This uses a non-existent field/relation.",
+          "suggestion": "The query should target 'multi_user_todo_guest_sessions' table with 'multi_user_todo_guest_id' field instead."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 30,
+          "description": "The provider sets 'deleted_at' to a string (new Date().toISOString()), but the Prisma schema defines 'deleted_at' as DateTime. This may cause type mismatch.",
+          "suggestion": "Use 'new Date()' instead of 'new Date().toISOString()' for DateTime field."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 30,
+          "description": "The provider accepts 'ip', 'href', and 'referrer' from the request body, but these are typically derived from request metadata, not user input. This could allow clients to spoof these audit fields.",
+          "suggestion": "Use the 'ip' parameter from function arguments (which should come from request metadata) and consider not allowing body overrides for these security audit fields."
+        }
+      ],
+      "score": 75,
+      "summary": "[2 chunks, 11→10 issues] Significant hallucinations detected: guest session controller incorrectly implements member session endpoints instead of guest session endpoints. Other issues include minor invented logic and unused imports. The core todo functionality appears faithful to spec, but the guest session implementation is fundamentally wrong.",
+      "durationMs": 34591,
+      "tokensUsed": {
+        "input": 33814,
+        "output": 1670,
+        "inputCost": 0.010144199999999999,
+        "outputCost": 0.0014696
+      },
+      "deepEvalScores": {
+        "faithfulness": 75,
+        "relevancy": 80,
+        "contextualPrecision": 75
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 89,
+    "phaseWeight": 0.85,
+    "phaseContribution": 76,
+    "agentScore": 72,
+    "agentWeight": 0.15,
+    "agentContribution": 11
+  }
 }

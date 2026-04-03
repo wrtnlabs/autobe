@@ -4,7 +4,11 @@ import { runBbsScenarios } from "./bbs.scenarios";
 import { runGauzyScenarios } from "./gauzy.scenarios";
 import { HttpRunner } from "./http-runner";
 import { runRedditScenarios } from "./reddit.scenarios";
-import { type ScenarioCategory, type ScenarioResult, safeSuite } from "./scenario-helpers";
+import {
+  type ScenarioCategory,
+  type ScenarioResult,
+  safeSuite,
+} from "./scenario-helpers";
 import { runShoppingScenarios } from "./shopping.scenarios";
 import { runTodoScenarios } from "./todo.scenarios";
 import { buildRouteMap } from "./url-resolver";

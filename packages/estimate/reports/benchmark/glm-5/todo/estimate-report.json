@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo",
-  "totalScore": 88,
+  "totalScore": 86,
   "grade": "B",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846558964-v018osajm9",
+          "id": "type-error-1775112102259-818h73tggfs",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/decorators/MemberAuth.ts",
             "line": 189
           },
-          "id": "type-error-1774846558964-ts08bt9ytcq",
+          "id": "type-error-1775112102259-knf3hg4gjbe",
           "autoFixable": false
         },
         {
@@ -43,11 +43,11 @@
             "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
             "line": 3658
           },
-          "id": "type-error-1774846558964-ouiivx0934",
+          "id": "type-error-1775112102259-pevmxfp2k49",
           "autoFixable": false
         }
       ],
-      "durationMs": 4629,
+      "durationMs": 2835,
       "metrics": {
         "totalFiles": 84,
         "filesWithErrors": 0,
@@ -184,7 +184,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
             "line": 110
           },
-          "id": "duplication-1774846559079-z3f8yjpf3nq",
+          "id": "duplication-1775112102419-lntd64cze5j",
           "autoFixable": false
         },
         {
@@ -196,7 +196,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
             "line": 111
           },
-          "id": "duplication-1774846559079-tstah7bknhj",
+          "id": "duplication-1775112102419-mv7yrcmg7j",
           "autoFixable": false
         },
         {
@@ -208,7 +208,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
             "line": 10
           },
-          "id": "duplication-1774846559079-edhhhe54jdu",
+          "id": "duplication-1775112102419-njlgohtf8ye",
           "autoFixable": false
         },
         {
@@ -220,7 +220,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
             "line": 11
           },
-          "id": "duplication-1774846559079-hl4j0j9gc6",
+          "id": "duplication-1775112102419-md1vhl53ny",
           "autoFixable": false
         },
         {
@@ -232,7 +232,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 49
           },
-          "id": "duplication-1774846559079-9gg7pqd4saa",
+          "id": "duplication-1775112102419-0n7x6t0yn5i",
           "autoFixable": false
         },
         {
@@ -244,7 +244,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 50
           },
-          "id": "duplication-1774846559079-q7308h54x7o",
+          "id": "duplication-1775112102419-7layfl661kj",
           "autoFixable": false
         },
         {
@@ -256,7 +256,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 51
           },
-          "id": "duplication-1774846559079-cl16jam8kl5",
+          "id": "duplication-1775112102419-cmohp8g0n6j",
           "autoFixable": false
         },
         {
@@ -268,7 +268,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 52
           },
-          "id": "duplication-1774846559079-kiacv655pme",
+          "id": "duplication-1775112102419-xrp6qt0upba",
           "autoFixable": false
         },
         {
@@ -280,7 +280,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 53
           },
-          "id": "duplication-1774846559079-b6nu7s8plb4",
+          "id": "duplication-1775112102419-aq8mygq5xg5",
           "autoFixable": false
         },
         {
@@ -292,7 +292,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 54
           },
-          "id": "duplication-1774846559079-g5boj27fwji",
+          "id": "duplication-1775112102419-1iljr18w9jy",
           "autoFixable": false
         },
         {
@@ -304,7 +304,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 67
           },
-          "id": "duplication-1774846559079-epm0m5evtv",
+          "id": "duplication-1775112102419-9mh01tn3rb",
           "autoFixable": false
         },
         {
@@ -316,7 +316,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 68
           },
-          "id": "duplication-1774846559079-g1mympxhcou",
+          "id": "duplication-1775112102419-sufq0juxz8",
           "autoFixable": false
         },
         {
@@ -328,7 +328,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 69
           },
-          "id": "duplication-1774846559079-dci2m7i9hk",
+          "id": "duplication-1775112102419-znp43wtf0jh",
           "autoFixable": false
         },
         {
@@ -340,7 +340,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 70
           },
-          "id": "duplication-1774846559079-wl4e57e93ql",
+          "id": "duplication-1775112102419-b88o6u2lgtc",
           "autoFixable": false
         },
         {
@@ -352,7 +352,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 71
           },
-          "id": "duplication-1774846559079-nxy8cpgx5c",
+          "id": "duplication-1775112102419-yyajjgw1n78",
           "autoFixable": false
         },
         {
@@ -364,7 +364,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 72
           },
-          "id": "duplication-1774846559079-x31giadi9fo",
+          "id": "duplication-1775112102419-di3fb28vebu",
           "autoFixable": false
         },
         {
@@ -376,7 +376,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 73
           },
-          "id": "duplication-1774846559079-ledqnpcbdib",
+          "id": "duplication-1775112102419-v35xkhufywd",
           "autoFixable": false
         },
         {
@@ -388,7 +388,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 74
           },
-          "id": "duplication-1774846559079-2qseh7wzf82",
+          "id": "duplication-1775112102419-nug7fqetct",
           "autoFixable": false
         },
         {
@@ -400,7 +400,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 75
           },
-          "id": "duplication-1774846559079-wo5chk760ae",
+          "id": "duplication-1775112102419-euceotk8aj",
           "autoFixable": false
         },
         {
@@ -412,7 +412,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 76
           },
-          "id": "duplication-1774846559079-pkpga8si81h",
+          "id": "duplication-1775112102419-mwboeyk51xj",
           "autoFixable": false
         },
         {
@@ -424,7 +424,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 11
           },
-          "id": "duplication-1774846559079-431re9780te",
+          "id": "duplication-1775112102419-oeewa6fvhx",
           "autoFixable": false
         },
         {
@@ -436,7 +436,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 12
           },
-          "id": "duplication-1774846559079-gvgg4093kf",
+          "id": "duplication-1775112102419-s70g87rqbyp",
           "autoFixable": false
         },
         {
@@ -448,7 +448,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 13
           },
-          "id": "duplication-1774846559079-lajs32ghog",
+          "id": "duplication-1775112102419-c604a5kmcbb",
           "autoFixable": false
         },
         {
@@ -460,7 +460,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 14
           },
-          "id": "duplication-1774846559079-3zins5xeu1u",
+          "id": "duplication-1775112102419-piy5or3x8a",
           "autoFixable": false
         },
         {
@@ -472,7 +472,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 15
           },
-          "id": "duplication-1774846559079-ahzuoffw18n",
+          "id": "duplication-1775112102419-0un7kmw4y1mf",
           "autoFixable": false
         },
         {
@@ -484,7 +484,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 52
           },
-          "id": "duplication-1774846559079-boriuj5ky09",
+          "id": "duplication-1775112102419-rpbhwhtvjf",
           "autoFixable": false
         },
         {
@@ -496,7 +496,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 53
           },
-          "id": "duplication-1774846559079-5ndfpqvyhzt",
+          "id": "duplication-1775112102419-e68xkpj6vmu",
           "autoFixable": false
         },
         {
@@ -508,7 +508,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 54
           },
-          "id": "duplication-1774846559079-bct57axxv09",
+          "id": "duplication-1775112102419-pwdtifuoj7",
           "autoFixable": false
         },
         {
@@ -520,7 +520,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 55
           },
-          "id": "duplication-1774846559079-itrhaxich5c",
+          "id": "duplication-1775112102419-2aabfuyjoyt",
           "autoFixable": false
         },
         {
@@ -532,7 +532,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 56
           },
-          "id": "duplication-1774846559079-sdxy84pkl1s",
+          "id": "duplication-1775112102419-hdd22qhlvw",
           "autoFixable": false
         },
         {
@@ -544,7 +544,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 57
           },
-          "id": "duplication-1774846559079-9rjp9uzhcai",
+          "id": "duplication-1775112102419-uu7w6dc7vz",
           "autoFixable": false
         },
         {
@@ -556,7 +556,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 58
           },
-          "id": "duplication-1774846559079-hgzd6tfq1g",
+          "id": "duplication-1775112102419-c68eyyp2ci",
           "autoFixable": false
         },
         {
@@ -568,7 +568,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 59
           },
-          "id": "duplication-1774846559079-udsasl9r0sk",
+          "id": "duplication-1775112102419-6o6slzu260p",
           "autoFixable": false
         },
         {
@@ -580,7 +580,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 60
           },
-          "id": "duplication-1774846559079-xoc45ykyrxb",
+          "id": "duplication-1775112102419-9o1jnkwfqov",
           "autoFixable": false
         },
         {
@@ -592,7 +592,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 61
           },
-          "id": "duplication-1774846559079-uav4x8je9vs",
+          "id": "duplication-1775112102419-014diurpkzx4",
           "autoFixable": false
         },
         {
@@ -604,7 +604,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 62
           },
-          "id": "duplication-1774846559079-wimwbqz9i6j",
+          "id": "duplication-1775112102419-og8x9kbmznb",
           "autoFixable": false
         },
         {
@@ -616,7 +616,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 63
           },
-          "id": "duplication-1774846559079-sklkxglxkbs",
+          "id": "duplication-1775112102419-878evbch4p",
           "autoFixable": false
         },
         {
@@ -628,7 +628,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 64
           },
-          "id": "duplication-1774846559079-14y1a1w3j9p",
+          "id": "duplication-1775112102419-pcejiitn0ye",
           "autoFixable": false
         }
       ]
@@ -645,48 +645,24 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"PrivatetodoappAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846559086-gs2wcbzwnij",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"PrivatetodoappAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/guest/PrivatetodoappAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846559089-002xxa9j3cwbd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
           "message": "Class \"PrivatetodoappMemberSessionsController\" missing JSDoc",
           "location": {
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/sessions/PrivatetodoappMemberSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846559087-0i3jaeo0939",
+          "id": "jsdoc-1775112102424-s2ad0vd7hb",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"PrivatetodoappMemberProfileController\" missing JSDoc",
+          "message": "Class \"PrivatetodoappAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/profile/PrivatetodoappMemberProfileController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774846559086-52w07ecoor3",
+          "id": "jsdoc-1775112102427-2n116ancgi6",
           "autoFixable": false
         },
         {
@@ -698,7 +674,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
             "line": 16
           },
-          "id": "jsdoc-1774846559087-1nghzbr41lj",
+          "id": "jsdoc-1775112102426-1026s1e8ge9l",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/guest/PrivatetodoappAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1775112102424-09dksnygd8c7",
           "autoFixable": false
         },
         {
@@ -710,7 +698,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774846559088-4qsow33d7fb",
+          "id": "jsdoc-1775112102429-z1ucegfsvvq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/profile/PrivatetodoappMemberProfileController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775112102425-b936g2o8yqf",
           "autoFixable": false
         },
         {
@@ -722,7 +722,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/editHistories/PrivatetodoappMemberTodosEdithistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846559088-5igxpp7i59i",
+          "id": "jsdoc-1775112102426-ay3ea2myahv",
           "autoFixable": false
         }
       ]
@@ -741,7 +741,7 @@
             "file": "src/api/structures/IPrivateTodoAppTodoEditHistory.ts",
             "line": 61
           },
-          "id": "completeness-1774846559091-6l6tpq08bbj",
+          "id": "completeness-1775112102432-l1g4a4p29hh",
           "autoFixable": false
         }
       ]
@@ -764,7 +764,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846558964-v018osajm9",
+      "id": "type-error-1775112102259-818h73tggfs",
       "autoFixable": false
     },
     {
@@ -776,7 +776,7 @@
         "file": "src/decorators/MemberAuth.ts",
         "line": 189
       },
-      "id": "type-error-1774846558964-ts08bt9ytcq",
+      "id": "type-error-1775112102259-knf3hg4gjbe",
       "autoFixable": false
     },
     {
@@ -788,15 +788,15 @@
         "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
         "line": 3658
       },
-      "id": "type-error-1774846558964-ouiivx0934",
+      "id": "type-error-1775112102259-pevmxfp2k49",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:55:59.092Z",
-    "totalDurationMs": 4739,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T06:41:42.433Z",
+    "totalDurationMs": 2943,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 84
   },
   "penalties": {
@@ -818,5 +818,307 @@
     "structures": 11,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "warning",
+          "type": "integrity-failures",
+          "file": "src/providers/postPrivateTodoAppAuthMemberRefresh.ts",
+          "line": 55,
+          "description": "Refresh token rotation is not implemented. The same session_id is reused and the old refresh token is never invalidated. If a refresh token is stolen, it can be used indefinitely until the session expires, enabling token replay attacks.",
+          "suggestion": "Implement refresh token rotation: store a token identifier or hash in the session record, invalidate the old refresh token on use, and issue a new one. Reject any refresh attempt with a previously-used token."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postPrivateTodoAppMemberTodosTodoIdToggle.ts",
+          "line": 30,
+          "description": "The toggle endpoint reveals whether a todo exists for another user by returning 403 (Access denied) vs 404 (Not found). The controller spec says to return 403 for another user's todo, which allows user enumeration of todo IDs.",
+          "suggestion": "Return 404 for both non-existent todos and todos belonging to other users to prevent resource enumeration. Do not distinguish between 'not found' and 'belongs to another user' in the response."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
+          "line": 35,
+          "description": "The restore endpoint returns 403 (Access denied) when a todo belongs to another user, revealing that the todo ID exists in the system. This enables resource enumeration.",
+          "suggestion": "Return 404 for both non-existent todos and todos belonging to other users to prevent resource enumeration."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+          "line": 35,
+          "description": "After updating the todo, the final fetch uses findUniqueOrThrow without re-checking user_id ownership. If a race condition or logic error occurs, data from another user could theoretically be returned.",
+          "suggestion": "Include user_id: props.member.id in the final fetch query to ensure the returned record still belongs to the authenticated member."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "All controllers use console.log(error) for error handling. This is the standard AutoBE pattern but does not provide structured logging with request context, user ID, or severity levels, making security incident investigation difficult.",
+          "suggestion": "Consider adopting a structured logging library (e.g., Winston, Pino) with request correlation IDs and user context for production deployments."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). This allows brute-force attacks against credentials and token endpoints.",
+          "suggestion": "Apply rate limiting middleware (e.g., @nestjs/throttler) to authentication endpoints, especially login and refresh."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "Password complexity validation beyond basic type checking is not enforced at the controller/provider level. Weak passwords may be accepted.",
+          "suggestion": "Add password complexity validation (minimum length, character requirements) using a validation pipe or library such as zxcvbn."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+          "line": 33,
+          "description": "Soft-deleted account check occurs AFTER password verification. A timing-based enumeration attack could confirm whether a deleted account's password is correct by observing different error codes (401 vs 403). The deleted_at check should occur before or simultaneously with password verification to avoid leaking account state.",
+          "suggestion": "Check deleted_at as part of the initial database query filter, or return a generic 401 for all failure cases including deleted accounts."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postPrivateTodoAppAuthGuestJoin.ts",
+          "line": 27,
+          "description": "The guest join flow creates a member record in private_todo_app_members (not a guest table) and issues a JWT with type 'member', but the function is named 'GuestJoin' and returns IPrivateTodoAppGuest.IAuthorized. This type confusion could allow guest-registered users to bypass member-only authorization checks if the type field in the JWT is trusted without additional validation.",
+          "suggestion": "Ensure the guest join flow uses the correct table (private_todo_app_guests) and issues tokens with type 'guest', or clarify the intended design. The current implementation creates a member account via the guest endpoint, which may be an unintended privilege escalation path."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 24,
+          "description": "The guest session validation does not check that the session belongs to the guest (missing guest_id filter). The query only checks session id and expiry, not that session.guest_id === payload.id. A valid guest token with a stolen/guessed session_id from another guest could pass validation.",
+          "suggestion": "Add `private_todo_app_guest_id: payload.id` to the session findFirst where clause, matching the pattern used in memberAuthorize.ts which correctly checks `member_id: payload.id`."
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+          "line": 55,
+          "description": "Both access and refresh tokens are signed with the same JWT_SECRET_KEY and the only differentiation is a 'tokenType' field in the payload. If an attacker obtains a refresh token, they could potentially use it as an access token if the consuming endpoint does not strictly validate the tokenType claim.",
+          "suggestion": "Use separate secrets for access and refresh tokens, or enforce strict tokenType validation in jwtAuthorize/memberAuthorize before accepting any token."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+          "line": 47,
+          "description": "The client-supplied `props.body.ip` takes precedence over the server-detected `props.ip` via `props.body.ip ?? props.ip`. This allows clients to spoof their IP address in session records, undermining session tracking and audit capabilities.",
+          "suggestion": "Use only the server-detected IP (`props.ip`) for session recording. Do not trust client-supplied IP values."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postPrivateTodoAppAuthGuestJoin.ts",
+          "line": 57,
+          "description": "Same as login: `props.body.ip ?? props.ip` allows client-supplied IP spoofing in session records.",
+          "suggestion": "Use only the server-detected IP for session recording."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+          "line": 38,
+          "description": "Failed login attempts are not logged. This makes it impossible to detect brute-force attacks or account enumeration attempts after the fact.",
+          "suggestion": "Log failed authentication attempts with timestamp, IP address, and email (hashed or partial) for security monitoring purposes."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postPrivateTodoAppAuthMemberJoin.ts",
+          "line": 1,
+          "description": "No rate limiting on registration or login endpoints. These endpoints are susceptible to brute-force and account enumeration attacks.",
+          "suggestion": "Implement rate limiting at the infrastructure level (e.g., API gateway, reverse proxy) or use a NestJS throttling guard (@nestjs/throttler)."
+        }
+      ],
+      "score": 71,
+      "summary": "[2 chunks, 17→15 issues] The codebase demonstrates good baseline security practices: member-scoped data isolation via user_id filtering, JWT-based authentication with MemberAuth guards on all protected endpoints, and ownership checks before mutations. The main concerns are: (1) refresh token replay vulnerability due to missing token rotation/invalidation, (2) resource enumeration via inconsistent 403 vs 404 responses in toggle and restore providers, and (3) a minor ownership re-check gap in the todo update final fetch. Authentication endpoints lack rate limiting (deployment concern). Overall the access control architecture is sound but needs the token lifecycle and error response consistency hardened.",
+      "durationMs": 30856,
+      "tokensUsed": {
+        "input": 35890,
+        "output": 2821,
+        "inputCost": 0.10766999999999999,
+        "outputCost": 0.042315
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postPrivateTodoAppAuthGuestJoin.ts",
+          "line": 11,
+          "description": "Handler function `postPrivateTodoAppAuthGuestJoin` creates a member account, not a guest account. According to requirements, guests cannot create accounts. This function is likely a hallucinated endpoint that doesn't match the documented authentication flows.",
+          "suggestion": "Remove this endpoint or rename it to `postPrivateTodoAppAuthMemberJoin` (which already exists) to avoid duplicate functionality."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postPrivateTodoAppAuthGuestRefresh.ts",
+          "line": 10,
+          "description": "Guest refresh endpoint references guest database tables (`private_todo_app_guests`, `private_todo_app_guest_sessions`) that don't exist in the requirements. Requirements only specify User (member) actors; there are no guest tables.",
+          "suggestion": "Remove this endpoint since guests have no persistent state and no refresh token mechanism."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 12,
+          "description": "Guest authorization function references non-existent guest tables (`private_todo_app_guests`, `private_todo_app_guest_sessions`). Requirements state guests are unauthenticated visitors who cannot access member features.",
+          "suggestion": "Remove guest authorization logic; guests should not have JWT tokens or persistent sessions."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postPrivateTodoAppAuthMemberRefresh.ts",
+          "line": 67,
+          "description": "Refresh token payload includes a redundant `tokenType: \"refresh\"` property, but the access token payload does not include `tokenType`. This may cause token validation inconsistency.",
+          "suggestion": "Either remove the `tokenType` field from refresh token payload or add a consistent token type field to access token payload."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/deletePrivateTodoAppMemberTodosTodoId.ts",
+          "line": 22,
+          "description": "Soft delete logic throws 404 if todo is already deleted (`deleted_at !== null`), but requirements state 'members have access to their deleted todos through the trash view'. Already deleted todos should be accessible via trash endpoints.",
+          "suggestion": "Change error to 400 ('Todo is already deleted') or allow soft-delete only on non-deleted todos without mixing with 'not found' errors."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 21,
+          "description": "BEARER_PREFIX constant defined inside function scope, not imported/module scoped. This is a stylistic placeholder that could cause duplication.",
+          "suggestion": "Move BEARER_PREFIX to module scope or a shared constants file."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+          "line": 86,
+          "description": "Edit history creation creates separate entries for each changed field, but requirements don't specify format. This could lead to multiple history entries per edit rather than a single entry capturing all changes.",
+          "suggestion": "Consider creating one edit history entry with all changed fields to match typical audit log patterns."
+        },
+        {
+          "severity": "suggestion",
+          "type": "inconsistent-naming",
+          "file": "src/providers/patchPrivateTodoAppMemberTrash.ts",
+          "line": 42,
+          "description": "Method named `patch` but performs GET/list operation (no mutation). Should be `getPrivateTodoAppMemberTrash` or similar.",
+          "suggestion": "Rename endpoint to reflect read-only nature (GET) or ensure it actually performs patch/update operation."
+        },
+        {
+          "severity": "suggestion",
+          "type": "dead-code",
+          "file": "src/providers/postPrivateTodoAppAuthMemberRefresh.ts",
+          "line": 59,
+          "description": "Unused variable `now` declared but not used in token generation (uses `new Date()` separately).",
+          "suggestion": "Remove redundant `now` variable or use it consistently."
+        }
+      ],
+      "score": 70,
+      "summary": "Code contains critical hallucinations: guest endpoints that shouldn't exist, missing consistency between requirements and implementation. Authorization logic generally works, but some guest-related tables are hallucinated. Some logic errors in delete and refresh token handling. Overall, core member operations are functional but with inconsistencies.",
+      "durationMs": 15908,
+      "tokensUsed": {
+        "input": 18184,
+        "output": 1098,
+        "inputCost": 0.0054551999999999995,
+        "outputCost": 0.00096624
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/privateTodoApp/member/sessions/PrivatetodoappMemberSessionsController.ts",
+          "line": 0,
+          "description": "Controller defines a PATCH route at '/' for listing sessions, but there is no corresponding OpenAPI path specification provided. This appears to be a completely fabricated endpoint.",
+          "suggestion": "Remove this endpoint unless there is a corresponding OpenAPI spec path for listing member sessions."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
+          "line": 0,
+          "description": "The controller defines a POST route at '/:todoId/toggle' for toggling todo completion. While this is a plausible operation, it's not explicitly defined in the provided Prisma schema or OpenAPI spec. The spec only defines CRUD operations; toggle is an invented business logic.",
+          "suggestion": "Ensure this operation is defined in the OpenAPI specification. If not, it should be removed or considered an extension beyond the spec."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/privateTodoApp/member/todos/editHistories/PrivatetodoappMemberTodosEdithistoriesController.ts",
+          "line": 61,
+          "description": "Controller defines a PATCH route at '/privateTodoApp/member/todos/:todoId/editHistories' for listing edit histories, but there is no corresponding OpenAPI path for this operation. The spec only defines GET endpoints for edit histories, not PATCH.",
+          "suggestion": "Change the HTTP method to GET or verify if the OpenAPI spec defines a PATCH operation for listing edit histories."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postPrivateTodoAppAuthGuestJoin.ts",
+          "line": 1,
+          "description": "Provider 'postPrivateTodoAppAuthGuestJoin' creates a member (private_todo_app_members) instead of a guest, contradicting the spec. The function name suggests guest join but implements member registration.",
+          "suggestion": "Rename the provider to reflect member registration or implement actual guest creation as per the Prisma schema (private_todo_app_guests)."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+          "line": 56,
+          "description": "The provider accesses 'props.body.ip' and 'props.body.href' which are not defined in the provided spec. The IPrivateTodoAppMember.ILogin interface likely doesn't include these fields.",
+          "suggestion": "Remove references to 'props.body.ip' and 'props.body.href' or ensure they are part of the ILogin DTO."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+          "line": 62,
+          "description": "The provider creates multiple edit history entries (one per changed field) instead of a single entry capturing all changes at once. The spec describes 'a single edit event' recording which fields were altered, but doesn't specify the exact implementation. This is a minor deviation.",
+          "suggestion": "Consider consolidating into a single edit history entry with all changed fields, but this is an implementation detail."
+        }
+      ],
+      "score": 89,
+      "summary": "[2 chunks, 8→6 issues] The implementation mostly aligns with the spec but includes several phantom endpoints (PATCH routes for listing) that have no basis in the provided OpenAPI paths. There's also one potentially invented operation (toggle) not explicitly in the spec. No fabricated fields or wrong relations were detected. The code is generally relevant and contextually precise.",
+      "durationMs": 61893,
+      "tokensUsed": {
+        "input": 37052,
+        "output": 1275,
+        "inputCost": 0.0111156,
+        "outputCost": 0.0011220000000000002
+      },
+      "deepEvalScores": {
+        "faithfulness": 85,
+        "relevancy": 95,
+        "contextualPrecision": 93
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 88,
+    "phaseWeight": 0.85,
+    "phaseContribution": 75,
+    "agentScore": 77,
+    "agentWeight": 0.15,
+    "agentContribution": 12
+  }
 }

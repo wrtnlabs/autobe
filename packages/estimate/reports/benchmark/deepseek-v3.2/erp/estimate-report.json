@@ -15,7 +15,7 @@
           "severity": "critical",
           "category": "syntax",
           "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-          "id": "syntax-1774846110876-s54bihstob",
+          "id": "syntax-1775114004143-ni1liobi8fq",
           "autoFixable": false
         }
       ],
@@ -161,16 +161,16 @@
       "severity": "critical",
       "category": "syntax",
       "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-      "id": "syntax-1774846110876-s54bihstob",
+      "id": "syntax-1775114004143-ni1liobi8fq",
       "autoFixable": false
     }
   ],
   "warnings": [],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:48:30.877Z",
-    "totalDurationMs": 12,
-    "estimateVersion": "0.30.4",
+    "evaluatedAt": "2026-04-02T07:13:24.149Z",
+    "totalDurationMs": 22,
+    "estimateVersion": "0.30.5",
     "evaluatedFiles": 0
   },
   "performanceMetrics": {
@@ -185,5 +185,41 @@
     "structures": 0,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 0,
+    "phaseWeight": 1,
+    "phaseContribution": 0,
+    "agentScore": null,
+    "agentWeight": 0,
+    "agentContribution": 0
+  }
 }
