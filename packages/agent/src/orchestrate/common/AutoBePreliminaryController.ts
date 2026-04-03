@@ -373,6 +373,11 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           value: result.value,
           raw,
         });
+        if (
+          this.previousWrites.length >=
+          AutoBeConfigConstant.PRELIMINARY_WRITE_LIMIT
+        )
+          break;
       }
 
       await orchestratePreliminary(ctx, {
@@ -391,10 +396,9 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         break;
     }
 
-    if (this.completed.value !== null) {
-      const last: IPreviousWrite | undefined = this.previousWrites.at(-1);
-      if (last !== undefined) return last.value;
-    }
+    const last: IPreviousWrite | undefined = this.previousWrites.at(-1);
+    if (last !== undefined) return last.value;
+
     throw new AutoBePreliminaryExhaustedError();
   }
 }
