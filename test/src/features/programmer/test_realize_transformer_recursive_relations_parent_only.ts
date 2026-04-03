@@ -5,14 +5,9 @@ import typia, { tags } from "typia";
 
 /**
  * # A DTO with a nullable N:1 self-reference (parent property).
- * <<<<<<< HEAD
- * getRecursiveRelations must detect the parent property and return null for
- * children.
  *
  * GetRecursiveRelations must detect the parent property and return null for
  * children.
- *
- * > > > > > > > 1579336277e8e2b58d4c1858e485a486078ba1cc
  */
 interface ICategory {
   id: string & tags.Format<"uuid">;

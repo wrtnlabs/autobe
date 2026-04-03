@@ -4,15 +4,8 @@ import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
 /**
- * # <<<<<<< HEAD
  * A DTO with a 1:N self-reference (children array property) but no parent
  * property. hasSelfRefArray must detect the array of self-refs.
- *
- * A DTO with a 1:N self-reference (children array property) but no parent
- * property. hasSelfRefArray must detect the array of self-refs.
- *
- * > > > > > > > 1579336277e8e2b58d4c1858e485a486078ba1cc getRecursiveRelations must return
- * > > > > > > > parent = null, children = "children".
  */
 interface IFolder {
   id: string & tags.Format<"uuid">;
