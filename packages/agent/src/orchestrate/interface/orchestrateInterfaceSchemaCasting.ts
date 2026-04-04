@@ -92,6 +92,8 @@ async function process(
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
+    state: ctx.state(),
     application:
       typia.json.application<IAutoBeInterfaceSchemaCastingApplication>(),
     source: SOURCE,
@@ -109,7 +111,6 @@ async function process(
       database: "text",
       databaseProperty: true,
     },
-    state: ctx.state(),
     all: {
       interfaceOperations: props.document.operations,
       interfaceSchemas: props.document.components.schemas,

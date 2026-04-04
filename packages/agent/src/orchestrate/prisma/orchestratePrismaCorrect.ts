@@ -128,6 +128,7 @@ async function execute(
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
     application: typia.json.application<IAutoBeDatabaseCorrectApplication>(),
     source: SOURCE,
     kinds: [

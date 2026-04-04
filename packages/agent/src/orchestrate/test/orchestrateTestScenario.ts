@@ -141,6 +141,7 @@ async function process(
     application: typia.json.application<IAutoBeTestScenarioApplication>(),
     source: SOURCE,
     kinds: ["analysisSections", "interfaceOperations", "interfaceSchemas"],
+    dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
     all: {
       interfaceOperations: props.document.operations,

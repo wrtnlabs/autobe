@@ -27,9 +27,9 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBePreliminaryEvent<
+export interface AutoBePreliminaryAcquireEvent<
   Function extends AutoBePreliminaryKind = AutoBePreliminaryKind,
-> extends AutoBeEventBase<"preliminary"> {
+> extends AutoBeEventBase<"preliminaryAcquire"> {
   /**
    * Source agent or operation that triggered preliminary validation.
    *
@@ -39,7 +39,7 @@ export interface AutoBePreliminaryEvent<
    * validation. The source typically represents operations like schema
    * generation, interface design, or test creation.
    */
-  source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+  source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
 
   /**
    * Unique identifier of the source event that triggered validation.

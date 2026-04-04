@@ -75,6 +75,7 @@ async function process(
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
+    dispatch: (e) => ctx.dispatch(e),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceAuthorizationApplication.IWrite | null> =

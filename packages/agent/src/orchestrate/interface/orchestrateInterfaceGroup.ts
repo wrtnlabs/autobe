@@ -29,6 +29,8 @@ export async function orchestrateInterfaceGroup(
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
+    state: ctx.state(),
     application: typia.json.application<IAutoBeInterfaceGroupApplication>(),
     source: SOURCE,
     kinds: [
@@ -38,7 +40,6 @@ export async function orchestrateInterfaceGroup(
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
-    state: ctx.state(),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceGroupApplication.IWrite | null> = {

@@ -62,6 +62,7 @@ export const test_schema_preliminary_enum = async () => {
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
     ],
+    dispatch: (e) => agent.getContext().dispatch(e),
     state: agent.getContext().state(),
   });
   preliminary.fixApplication(application, true);

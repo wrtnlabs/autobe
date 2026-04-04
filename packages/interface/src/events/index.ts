@@ -16,7 +16,8 @@ export * from "./AutoBeVendorRequestEvent";
 export * from "./AutoBeVendorResponseEvent";
 export * from "./AutoBeJsonValidateErrorEvent";
 export * from "./AutoBeJsonParseErrorEvent";
-export * from "./AutoBePreliminaryEvent";
+export * from "./AutoBePreliminaryAcquireEvent";
+export * from "./AutoBePreliminaryRewriteEvent";
 
 /** @internal */
 export * from "./AutoBeEventOfSerializable";
@@ -36,7 +37,7 @@ export * from "./AutoBeAnalyzeWriteSectionEvent";
 export * from "./AutoBeAnalyzeSectionReviewEvent";
 export * from "./AutoBeAnalyzeScenarioReviewEvent";
 
-// PRISMA
+// DATABASE
 export * from "./AutoBeDatabaseAuthorizationEvent";
 export * from "./AutoBeDatabaseAuthorizationReviewEvent";
 export * from "./AutoBeDatabaseCompleteEvent";

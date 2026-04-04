@@ -128,12 +128,12 @@ interface IProgrammer<
   controller(next: {
     function: RealizeFunction;
     preliminary: AutoBePreliminaryController<PreliminaryKind>;
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
     build(next: Complete): void;
   }): ILlmController;
   preliminary(props: {
     function: RealizeFunction;
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
   }): AutoBePreliminaryController<PreliminaryKind>;
   location: string;
 }

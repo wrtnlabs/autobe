@@ -213,7 +213,8 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   jsonParseError: 0,
   jsonValidateError: 0,
   consentFunctionCall: 0,
-  preliminary: 0,
+  preliminaryAcquire: 0,
+  preliminaryRewrite: 0,
   // DESCRIBE
   imageDescribeStart: 1_000,
   imageDescribeDraft: 300,

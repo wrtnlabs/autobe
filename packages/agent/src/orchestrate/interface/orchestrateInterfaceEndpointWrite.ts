@@ -84,6 +84,8 @@ export const orchestrateInterfaceEndpointWrite = async (
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
+    state: ctx.state(),
     application:
       typia.json.application<IAutoBeInterfaceEndpointWriteApplication>(),
     kinds: [
@@ -94,7 +96,6 @@ export const orchestrateInterfaceEndpointWrite = async (
       "previousInterfaceOperations",
     ],
     source: SOURCE,
-    state: ctx.state(),
     local: {
       analysisSections: ragSections,
       databaseSchemas: props.group.databaseSchemas

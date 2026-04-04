@@ -69,6 +69,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
           });
         return new AutoBePreliminaryController({
           source: next.source,
+          dispatch: (e) => ctx.dispatch(e),
           application:
             typia.json.application<IAutoBeRealizeOperationCorrectApplication>(),
           kinds: [

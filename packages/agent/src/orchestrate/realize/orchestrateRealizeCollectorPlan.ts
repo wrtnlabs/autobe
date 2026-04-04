@@ -100,6 +100,7 @@ async function process(
     | "interfaceSchemas"
     | "interfaceOperations"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
     source: SOURCE,
     application:

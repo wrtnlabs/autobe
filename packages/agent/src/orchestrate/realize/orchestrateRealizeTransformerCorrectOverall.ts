@@ -70,6 +70,7 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
           application:
             typia.json.application<IAutoBeRealizeTransformerCorrectApplication>(),
           kinds: ["databaseSchemas"],
+          dispatch: (e) => ctx.dispatch(e),
           state: ctx.state(),
           local: {
             databaseSchemas: ctx

@@ -76,7 +76,7 @@ export namespace ArchiveLogger {
         `  - partial data: ${JSON.stringify(event.failure.data)}`,
         `  - life: ${event.life}`,
       );
-    else if (event.type === "preliminary") {
+    else if (event.type === "preliminaryAcquire") {
       content.push(
         `  - source: ${event.source}`,
         `  - source_id: ${event.source_id}`,

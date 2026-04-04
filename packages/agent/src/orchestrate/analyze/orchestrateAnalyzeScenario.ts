@@ -29,6 +29,7 @@ export const orchestrateAnalyzeScenario = async (
       source: SOURCE,
       kinds: ["previousAnalysisSections"],
       state: ctx.state(),
+      dispatch: (e) => ctx.dispatch(e),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IWrite | null> = {

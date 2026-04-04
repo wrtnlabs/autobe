@@ -126,6 +126,7 @@ async function process(
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
     application:
       typia.json.application<IAutoBeInterfaceSchemaReviewApplication>(),
     source: SOURCE,

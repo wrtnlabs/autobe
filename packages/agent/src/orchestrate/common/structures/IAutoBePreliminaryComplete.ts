@@ -1,10 +1,14 @@
 /**
  * Finalize the write loop by accepting your most recent `write` as-is.
  *
- * After submitting a `write`, review it yourself. If you are satisfied, call
- * `complete` to finalize. If you want to improve it, submit another `write`
- * instead. You have a maximum of 3 write attempts, but this is a safety cap —
- * not a target to fill.
+ * After submitting a `write`, review it yourself and call `complete` to
+ * finalize.
+ *
+ * Reserve additional `write` attempts exclusively for critical flaws —
+ * structural errors, missing requirements, or broken logic that would cause
+ * downstream failure. Minor imperfections are acceptable and expected. You have
+ * a maximum of 3 write attempts, but this is a safety cap — not a target to
+ * fill.
  *
  * Only valid after at least one `write` submission — rejected otherwise.
  *

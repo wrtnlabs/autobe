@@ -60,6 +60,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
       source: SOURCE,
       kinds: ["previousAnalysisSections"],
       state: ctx.state(),
+      dispatch: (e) => ctx.dispatch(e),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite | null> =

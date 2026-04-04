@@ -114,6 +114,7 @@ Task: ${task}
     | "previousInterfaceSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
     application:
       typia.json.application<IAutoBeInterfaceSchemaComplementApplication>(),
     source: SOURCE,

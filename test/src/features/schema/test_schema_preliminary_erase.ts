@@ -59,6 +59,7 @@ export const test_schema_preliminary_erase = async () => {
       "previousInterfaceSchemas",
     ],
     state: agent.getContext().state(),
+    dispatch: (e) => agent.getContext().dispatch(e),
   });
   preliminary.fixApplication(application, true);
 

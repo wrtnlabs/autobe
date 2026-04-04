@@ -102,6 +102,7 @@ async function process(
   const preliminary: AutoBePreliminaryController<
     "analysisSections" | "databaseSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
     source: SOURCE,
     application:

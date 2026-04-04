@@ -67,6 +67,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
           application:
             typia.json.application<IAutoBeRealizeCollectorCorrectApplication>(),
           kinds: ["databaseSchemas"],
+          dispatch: (e) => ctx.dispatch(e),
           state: ctx.state(),
           local: {
             databaseSchemas: ctx

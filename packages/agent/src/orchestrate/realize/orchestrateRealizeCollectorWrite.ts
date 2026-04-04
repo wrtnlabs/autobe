@@ -89,6 +89,7 @@ async function process(
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
   const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
     new AutoBePreliminaryController({
+      dispatch: (e) => ctx.dispatch(e),
       state: ctx.state(),
       source: SOURCE,
       application:

@@ -78,6 +78,7 @@ export async function orchestrateRealizeAuthorizationCorrect(
     const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
       new AutoBePreliminaryController({
         source: SOURCE,
+        dispatch: (e) => ctx.dispatch(e),
         application:
           typia.json.application<IAutoBeRealizeAuthorizationCorrectApplication>(),
         kinds: ["databaseSchemas"],

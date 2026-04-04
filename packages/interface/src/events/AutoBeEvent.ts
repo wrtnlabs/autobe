@@ -41,7 +41,8 @@ import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewE
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
 import { AutoBeJsonParseErrorEvent } from "./AutoBeJsonParseErrorEvent";
 import { AutoBeJsonValidateErrorEvent } from "./AutoBeJsonValidateErrorEvent";
-import { AutoBePreliminaryEvent } from "./AutoBePreliminaryEvent";
+import { AutoBePreliminaryAcquireEvent } from "./AutoBePreliminaryAcquireEvent";
+import { AutoBePreliminaryRewriteEvent } from "./AutoBePreliminaryRewriteEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "./AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationCorrectEvent } from "./AutoBeRealizeAuthorizationCorrectEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "./AutoBeRealizeAuthorizationStartEvent";
@@ -98,10 +99,13 @@ export type AutoBeEvent =
   | AutoBeVendorRequestEvent
   | AutoBeVendorResponseEvent
   | AutoBeVendorTimeoutEvent
+  // FUNCTION CALLING
   | AutoBeJsonValidateErrorEvent
   | AutoBeJsonParseErrorEvent
   | AutoBeConsentFunctionCallEvent
-  | AutoBePreliminaryEvent
+  // PRELIMINARY
+  | AutoBePreliminaryAcquireEvent
+  | AutoBePreliminaryRewriteEvent
   // DESCRIBE
   | AutoBeImageDescribeStartEvent
   | AutoBeImageDescribeDraftEvent

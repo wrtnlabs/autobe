@@ -6,6 +6,7 @@ import {
   AutoBeEventSource,
   AutoBePreliminaryAcquisition,
   AutoBePreliminaryKind,
+  AutoBePreliminaryRewriteEvent,
 } from "@autobe/interface";
 import {
   IJsonSchemaApplication,
@@ -44,10 +45,14 @@ import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCol
  */
 export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   // METADATA
-  private readonly source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+  private readonly source: Exclude<
+    AutoBeEventSource,
+    "facade" | "preliminaryAcquire"
+  >;
   private readonly source_id: string;
   private readonly kinds: Kind[];
   private readonly argumentTypeNames: string[];
+  private readonly dispatch: (event: AutoBePreliminaryRewriteEvent) => void;
 
   // PRELIMINARY DATA
   private readonly all: Pick<IAutoBePreliminaryCollection, Kind>;
@@ -73,6 +78,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.source = props.source;
     this.source_id = v7();
     this.kinds = props.kinds;
+    this.dispatch = props.dispatch;
 
     // biome-ignore-start lint: intended
     this.config = {
@@ -170,7 +176,10 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    *
    * @returns Source event type (e.g., `"realizeWrite"`, `"interfaceSchema"`).
    */
-  public getSource(): Exclude<AutoBeEventSource, "facade" | "preliminary"> {
+  public getSource(): Exclude<
+    AutoBeEventSource,
+    "facade" | "preliminaryAcquire"
+  > {
     return this.source;
   }
 
@@ -370,37 +379,43 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           this.completed.value = false;
 
           // store write result and raw arguments
-          const raw: any = history.arguments.request;
           this.previousWrites.push({
             value: result.value,
-            raw,
+            raw: history.arguments,
           });
+          if (this.previousWrites.length > 1) {
+            this.dispatch({
+              id: v7(),
+              type: "preliminaryRewrite",
+              source: this.source,
+              thinking: history.arguments.thinking as string,
+              oldbie: this.previousWrites.at(-2)!.raw,
+              newbie: history.arguments,
+              created_at: new Date().toISOString(),
+            } satisfies AutoBePreliminaryRewriteEvent);
+          }
           if (
             this.previousWrites.length >=
             AutoBeConfigConstant.PRELIMINARY_WRITE_LIMIT
           )
             break;
+        } else {
+          // orchestrate next iteration
+          await orchestratePreliminary(ctx, {
+            source_id: this.source_id,
+            source: this.source,
+            preliminary: this,
+            trial: i + 1,
+            histories: result.histories,
+            completed: this.completed,
+          });
+          if (this.completed.value === true && this.previousWrites.length !== 0)
+            break;
         }
-
-        // orchestrate next iteration
-        await orchestratePreliminary(ctx, {
-          source_id: this.source_id,
-          source: this.source,
-          preliminary: this,
-          trial: i + 1,
-          histories: result.histories,
-          completed: this.completed,
-        });
-        if (this.completed.value === true && this.previousWrites.length !== 0)
-          break;
       }
     } catch (error) {
       if (this.previousWrites.length === 0) throw error;
     }
-
-    // console.log("----------------------------------");
-    // console.log(this.getSource(), this.previousWrites.length, this.completed);
-    // console.log("----------------------------------");
 
     // check success
     const last: IPreviousWrite | undefined = this.previousWrites.at(-1);
@@ -413,10 +428,12 @@ export namespace AutoBePreliminaryController {
   /** Constructor props for `AutoBePreliminaryController`. */
   export interface IProps<Kind extends AutoBePreliminaryKind> {
     /** Orchestration source creating this controller. */
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
 
     /** LLM application schema for function calling validation. */
     application: IJsonSchemaApplication;
+
+    dispatch: (event: AutoBePreliminaryRewriteEvent) => void;
 
     /**
      * Data types to enable (e.g., `["databaseSchemas",
@@ -458,5 +475,5 @@ export namespace AutoBePreliminaryController {
 
 interface IPreviousWrite {
   value: any;
-  raw: any;
+  raw: Record<string, unknown>;
 }

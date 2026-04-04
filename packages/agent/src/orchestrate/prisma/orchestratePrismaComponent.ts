@@ -87,6 +87,7 @@ async function process(
   const preliminary: AutoBePreliminaryController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
     application: typia.json.application<IAutoBeDatabaseComponentApplication>(),
     source: SOURCE,
     kinds: [

@@ -29,7 +29,7 @@ import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
 import { AutoBeInterfaceSchemaRefineEvent } from "./AutoBeInterfaceSchemaRefineEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
 import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
-import { AutoBePreliminaryEvent } from "./AutoBePreliminaryEvent";
+import { AutoBePreliminaryAcquireEvent } from "./AutoBePreliminaryAcquireEvent";
 import { AutoBeRealizeAuthorizationCorrectEvent } from "./AutoBeRealizeAuthorizationCorrectEvent";
 import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizationWriteEvent";
 import { AutoBeRealizeCorrectEvent } from "./AutoBeRealizeCorrectEvent";
@@ -72,7 +72,7 @@ import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
  */
 export type AutoBeEventSource =
   | "facade"
-  | AutoBePreliminaryEvent["type"]
+  | AutoBePreliminaryAcquireEvent["type"]
   // describe
   | AutoBeImageDescribeDraftEvent["type"]
   | AutoBeImageDescribeCompleteEvent["type"]

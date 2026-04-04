@@ -106,6 +106,7 @@ async function process(
     source: SOURCE,
     kinds: ["analysisSections", "interfaceOperations", "interfaceSchemas"],
     state: ctx.state(),
+    dispatch: (e) => ctx.dispatch(e),
   });
 
   return await preliminary.orchestrate(ctx, async (out) => {

@@ -86,6 +86,7 @@ async function process(
   const dtoTypeName: string = props.plan.dtoTypeName;
   const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
     new AutoBePreliminaryController({
+      dispatch: (e) => ctx.dispatch(e),
       state: ctx.state(),
       source: SOURCE,
       application:

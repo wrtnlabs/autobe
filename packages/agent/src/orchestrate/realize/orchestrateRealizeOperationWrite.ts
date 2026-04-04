@@ -115,6 +115,7 @@ async function process(
       "realizeCollectors",
       "realizeTransformers",
     ],
+    dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
     all: {
       realizeCollectors: props.collectors,

@@ -129,7 +129,7 @@ export namespace AutoBeExampleBenchmark {
             if (
               event.type !== "jsonValidateError" &&
               event.type !== "jsonParseError" &&
-              event.type !== "preliminary" &&
+              event.type !== "preliminaryAcquire" &&
               event.type !== "consentFunctionCall"
             )
               phaseState.snapshot = s;

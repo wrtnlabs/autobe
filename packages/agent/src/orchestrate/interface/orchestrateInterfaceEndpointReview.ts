@@ -95,6 +95,7 @@ export const orchestrateInterfaceEndpointReview = async (
           .database?.result.data.files.map((f) => f.models)
           .flat() ?? [],
     },
+    dispatch: (e) => ctx.dispatch(e),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const result: AutoBeContext.IResult = await ctx.conversate({

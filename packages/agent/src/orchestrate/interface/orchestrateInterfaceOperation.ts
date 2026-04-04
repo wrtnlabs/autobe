@@ -170,6 +170,8 @@ async function process(
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
+    state: ctx.state(),
     application: typia.json.application<IAutoBeInterfaceOperationApplication>(),
     source: SOURCE,
     kinds: [
@@ -179,7 +181,6 @@ async function process(
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
-    state: ctx.state(),
     local: {
       analysisSections: ragSections,
     },

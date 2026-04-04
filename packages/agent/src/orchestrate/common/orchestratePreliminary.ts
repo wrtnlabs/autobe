@@ -26,7 +26,7 @@ export const orchestratePreliminary = async <
   ctx: AutoBeContext,
   props: {
     source_id: string;
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
     histories: MicroAgenticaHistory[];
     preliminary: AutoBePreliminaryController<Kind>;
     completed: IPointer<boolean>;
@@ -321,7 +321,7 @@ const isRealizeTransformers = (
 const orchestrateAnalysisSections = (
   ctx: AutoBeContext,
   props: {
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
     source_id: string;
     trial: number;
     all: IAnalysisSectionEntry[];
@@ -354,7 +354,7 @@ const orchestrateAnalysisSections = (
       props.local.push(section);
   }
   ctx.dispatch({
-    type: "preliminary",
+    type: "preliminaryAcquire",
     id: v7(),
     function: props.previous ? "previousAnalysisSections" : "analysisSections",
     source: props.source,
@@ -371,7 +371,7 @@ const orchestrateAnalysisSections = (
 const orchestratePrismaSchemas = (
   ctx: AutoBeContext,
   props: {
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
     source_id: string;
     trial: number;
     all: AutoBeDatabase.IModel[];
@@ -404,7 +404,7 @@ const orchestratePrismaSchemas = (
       props.local.push(model);
   }
   ctx.dispatch({
-    type: "preliminary",
+    type: "preliminaryAcquire",
     id: v7(),
     function: props.previous ? "previousDatabaseSchemas" : "databaseSchemas",
     source: props.source,
@@ -419,7 +419,7 @@ const orchestratePrismaSchemas = (
 const orchestrateInterfaceOperations = (
   ctx: AutoBeContext,
   props: {
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
     source_id: string;
     trial: number;
     all: AutoBeOpenApi.IOperation[];
@@ -460,7 +460,7 @@ const orchestrateInterfaceOperations = (
     if (operation !== undefined) props.local.push(operation);
   }
   ctx.dispatch({
-    type: "preliminary",
+    type: "preliminaryAcquire",
     id: v7(),
     function: props.previous
       ? "previousInterfaceOperations"
@@ -477,7 +477,7 @@ const orchestrateInterfaceOperations = (
 const orchestrateInterfaceSchemas = (
   ctx: AutoBeContext,
   props: {
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
     source_id: string;
     trial: number;
     all: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
@@ -521,7 +521,7 @@ const orchestrateInterfaceSchemas = (
 
   if (dispatch === true)
     ctx.dispatch({
-      type: "preliminary",
+      type: "preliminaryAcquire",
       id: v7(),
       function: props.previous
         ? "previousInterfaceSchemas"
@@ -538,7 +538,7 @@ const orchestrateInterfaceSchemas = (
 const orchestrateRealizeCollectors = (
   ctx: AutoBeContext,
   props: {
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
     source_id: string;
     trial: number;
     all: AutoBeRealizeCollectorFunction[];
@@ -563,7 +563,7 @@ const orchestrateRealizeCollectors = (
       props.local.push(collector);
   }
   ctx.dispatch({
-    type: "preliminary",
+    type: "preliminaryAcquire",
     id: v7(),
     function: "realizeCollectors",
     source: props.source,
@@ -578,7 +578,7 @@ const orchestrateRealizeCollectors = (
 const orchestrateRealizeTransformers = (
   ctx: AutoBeContext,
   props: {
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
     source_id: string;
     trial: number;
     all: AutoBeRealizeTransformerFunction[];
@@ -603,7 +603,7 @@ const orchestrateRealizeTransformers = (
       props.local.push(transformer);
   }
   ctx.dispatch({
-    type: "preliminary",
+    type: "preliminaryAcquire",
     id: v7(),
     function: "realizeTransformers",
     source: props.source,
