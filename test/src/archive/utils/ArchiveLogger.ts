@@ -76,7 +76,7 @@ export namespace ArchiveLogger {
         `  - partial data: ${JSON.stringify(event.failure.data)}`,
         `  - life: ${event.life}`,
       );
-    else if (event.type === "preliminaryAcquire") {
+    else if (event.type === "preliminaryAcquire")
       content.push(
         `  - source: ${event.source}`,
         `  - source_id: ${event.source_id}`,
@@ -85,7 +85,17 @@ export namespace ArchiveLogger {
         `  - existing: ${event.existing.length}, ${JSON.stringify(event.existing)}`,
         `  - requested: ${event.requested.length}, ${JSON.stringify(event.requested)}`,
       );
-    }
+    else if (event.type === "preliminaryRewrite")
+      content.push(
+        `  - source: ${event.source}`,
+        `  - oldbie: ${JSON.stringify(event.oldbie)}`,
+        `  - newbie: ${JSON.stringify(event.newbie)}`,
+        `  - thinking:`,
+        event.thinking
+          .split("\n")
+          .map((line) => `    ${line}`)
+          .join("\n"),
+      );
     //----
     // COMPLETES
     //----

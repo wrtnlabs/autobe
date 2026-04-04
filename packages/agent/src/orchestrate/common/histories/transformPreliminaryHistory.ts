@@ -68,8 +68,7 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
   // previous written value
   const previousWrite: Record<string, any> | null =
     preliminary.getPreviousWrite();
-  if (previousWrite !== null) {
-    console.log("there is a previous write", JSON.stringify(previousWrite));
+  if (previousWrite !== null)
     messages.push(
       createFunctionCallingMessage({
         controller: preliminary.getSource(),
@@ -77,7 +76,6 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
         arguments: previousWrite,
       }),
     );
-  }
   return messages;
 };
 
