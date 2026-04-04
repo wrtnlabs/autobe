@@ -125,7 +125,7 @@ async function process(
       analysisSections: ragSections,
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeInterfaceOperationReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IWrite | null> =
       {
         value: null,
@@ -158,7 +158,7 @@ async function process(
           }
         : null;
     if (content !== null) AutoBeInterfaceOperationProgrammer.fix(content);
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       operation: props.operation,
@@ -173,8 +173,9 @@ async function process(
       total: props.progress.total,
       completed: ++props.progress.completed,
     } satisfies AutoBeInterfaceOperationReviewEvent);
-    return out(result)(content ?? false);
   });
+  ctx.dispatch(event);
+  return event.content ?? false;
 }
 
 function createReviewController(props: {

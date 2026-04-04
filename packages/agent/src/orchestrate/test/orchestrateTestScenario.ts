@@ -5,6 +5,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestScenario,
+  AutoBeTestScenarioEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { NamingConvention } from "@typia/utils";
@@ -167,7 +168,7 @@ async function process(
     },
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeTestScenarioEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<AutoBeTestScenario[] | null> = {
       value: null,
     };
@@ -199,8 +200,7 @@ async function process(
 
     pointer.value.splice(3);
 
-    // Dispatch event
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       metric: result.metric,
@@ -212,8 +212,9 @@ async function process(
       step: ctx.state().interface?.step ?? 0,
       created_at: new Date().toISOString(),
     });
-    return out(result)(pointer.value);
   });
+  ctx.dispatch(event);
+  return event.scenarios;
 }
 
 function createController(props: {

@@ -92,7 +92,7 @@ async function process(
       kinds: ["databaseSchemas"],
       state: ctx.state(),
     });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeRealizeAuthorizationWriteEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeAuthorizationWriteApplication.IWrite | null> =
       {
         value: null,
@@ -141,7 +141,7 @@ async function process(
         content: pointer.value.provider.content,
       },
     };
-    ctx.dispatch({
+    return out(result)({
       type: "realizeAuthorizationWrite",
       id: v7(),
       created_at: new Date().toISOString(),
@@ -153,18 +153,16 @@ async function process(
       total: props.progress.total,
       step: ctx.state().test?.step ?? 0,
     } satisfies AutoBeRealizeAuthorizationWriteEvent);
-
-    const prismaCompiled: IAutoBePrismaCompileResult | undefined =
-      ctx.state().database?.compiled;
-    const prismaClient: Record<string, string> =
-      prismaCompiled?.type === "success" ? prismaCompiled.client : {};
-    return out(result)(
-      await orchestrateRealizeAuthorizationCorrect(ctx, {
-        template: props.templates,
-        authorization,
-        prismaClient,
-      }),
-    );
+  });
+  ctx.dispatch(event);
+  const prismaCompiled: IAutoBePrismaCompileResult | undefined =
+    ctx.state().database?.compiled;
+  const prismaClient: Record<string, string> =
+    prismaCompiled?.type === "success" ? prismaCompiled.client : {};
+  return await orchestrateRealizeAuthorizationCorrect(ctx, {
+    template: props.templates,
+    authorization: event.authorization,
+    prismaClient,
   });
 }
 

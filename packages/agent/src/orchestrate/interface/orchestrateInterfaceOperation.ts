@@ -185,7 +185,7 @@ async function process(
       analysisSections: ragSections,
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeInterfaceOperationEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceOperationApplication.IWrite | null> =
       {
         value: null,
@@ -246,7 +246,7 @@ async function process(
           );
     ++props.progress.completed;
 
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       analysis: pointer.value.analysis,
@@ -259,8 +259,9 @@ async function process(
       step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceOperationEvent);
-    return out(result)(matrix);
   });
+  ctx.dispatch(event);
+  return event.operations;
 }
 
 function createController(props: {

@@ -51,7 +51,7 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
       state: ctx.state(),
       dispatch: (e) => ctx.dispatch(e),
     });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeAnalyzeWriteSectionEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeAnalyzeWriteSectionApplicationWrite | null> =
       {
         value: null,
@@ -112,9 +112,10 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
       retry: props.retry,
       created_at: new Date().toISOString(),
     };
-    ctx.dispatch(event);
     return out(result)(event);
   });
+  ctx.dispatch(event);
+  return event;
 };
 
 function createController(props: {

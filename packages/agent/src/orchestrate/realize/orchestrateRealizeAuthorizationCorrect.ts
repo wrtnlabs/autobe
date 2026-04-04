@@ -3,6 +3,7 @@ import {
   AutoBeEventSource,
   AutoBeRealizeAuthorization,
   AutoBeRealizeAuthorizationCorrect,
+  AutoBeRealizeAuthorizationCorrectEvent,
   IAutoBeCompiler,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
@@ -84,7 +85,7 @@ export async function orchestrateRealizeAuthorizationCorrect(
         kinds: ["databaseSchemas"],
         state: ctx.state(),
       });
-    return await preliminary.orchestrate(ctx, async (out) => {
+    const event: AutoBeRealizeAuthorizationCorrectEvent = await preliminary.orchestrate(ctx, async (out) => {
       const pointer: IPointer<IAutoBeRealizeAuthorizationCorrectApplication.IWrite | null> =
         {
           value: null,
@@ -133,7 +134,7 @@ export async function orchestrateRealizeAuthorizationCorrect(
         actor: props.authorization.actor,
       };
 
-      ctx.dispatch({
+      return out(result)({
         ...pointer.value,
         type: "realizeAuthorizationCorrect",
         id: v7(),
@@ -145,18 +146,17 @@ export async function orchestrateRealizeAuthorizationCorrect(
         tokenUsage: result.tokenUsage,
         step: ctx.state().test?.step ?? 0,
       });
-      return out(result)(
-        await orchestrateRealizeAuthorizationCorrect(
-          ctx,
-          {
-            authorization: correct,
-            prismaClient: props.prismaClient,
-            template: props.template,
-          },
-          life - 1,
-        ),
-      );
     });
+    ctx.dispatch(event);
+    return await orchestrateRealizeAuthorizationCorrect(
+      ctx,
+      {
+        authorization: event.authorization,
+        prismaClient: props.prismaClient,
+        template: props.template,
+      },
+      life - 1,
+    );
   } catch {
     return await orchestrateRealizeAuthorizationCorrect(ctx, props, life - 1);
   }

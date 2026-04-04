@@ -123,7 +123,7 @@ async function process(
       ),
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeRealizePlanEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeCollectorPlanApplication.IWrite | null> =
       {
         value: null,
@@ -169,9 +169,10 @@ async function process(
       step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
     };
-    ctx.dispatch(event);
-    return out(result)(plans);
+    return out(result)(event);
   });
+  ctx.dispatch(event);
+  return event.plans as AutoBeRealizeCollectorPlan[];
 }
 
 function createController(props: {

@@ -107,7 +107,7 @@ async function step(
       database: "ast",
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeDatabaseSchemaReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeDatabaseSchemaReviewApplication.IWrite | null> =
       {
         value: null,
@@ -150,9 +150,10 @@ async function step(
       total: props.progress.total,
       step: ctx.state().analyze?.step ?? 0,
     };
-    ctx.dispatch(event);
     return out(result)(event);
   });
+  ctx.dispatch(event);
+  return event;
 }
 
 function createController(props: {

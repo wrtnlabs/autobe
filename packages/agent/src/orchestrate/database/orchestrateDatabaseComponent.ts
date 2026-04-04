@@ -1,6 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabaseComponent,
+  AutoBeDatabaseComponentEvent,
   AutoBeDatabaseGroup,
   AutoBeEventSource,
   AutoBeProgressEventBase,
@@ -101,7 +102,7 @@ async function process(
     },
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeDatabaseComponentEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeDatabaseComponentApplication.IWrite | null> =
       {
         value: null,
@@ -129,7 +130,7 @@ async function process(
       ...props.group,
       tables: pointer.value.tables,
     };
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
@@ -143,8 +144,9 @@ async function process(
       total: props.progress.total,
       completed: ++props.progress.completed,
     });
-    return out(result)(component);
   });
+  ctx.dispatch(event);
+  return event.component;
 }
 
 function createController(props: {

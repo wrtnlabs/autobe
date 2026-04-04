@@ -130,9 +130,7 @@ async function process(
     },
   });
 
-  const value = await preliminary.orchestrate<
-    AutoBeOpenApi.IJsonSchemaDescriptive.IObject | false
-  >(ctx, async (out) => {
+  const event: AutoBeInterfaceSchemaCastingEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IWrite | null> =
       {
         value: null,
@@ -167,7 +165,7 @@ async function process(
           ) as AutoBeOpenApi.IJsonSchemaDescriptive.IObject)
         : null;
 
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       typeName: props.typeName,
@@ -184,10 +182,9 @@ async function process(
       completed: ++props.progress.completed,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemaCastingEvent);
-
-    return out(result)(refinedSchema ?? false);
   });
-  return value || null;
+  ctx.dispatch(event);
+  return event.refined || null;
 }
 
 function createController(

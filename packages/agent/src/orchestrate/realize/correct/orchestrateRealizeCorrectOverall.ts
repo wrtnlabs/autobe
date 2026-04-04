@@ -398,7 +398,7 @@ const process = async <
   },
 ): Promise<ICorrectionResult<RealizeFunction>> => {
   props.preliminary.reset();
-  return await props.preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeRealizeCorrectEvent = await props.preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<Complete | null> = {
       value: null,
     };
@@ -428,7 +428,7 @@ const process = async <
         pointer.value.revise.final ?? pointer.value.draft,
       ),
     });
-    ctx.dispatch({
+    return out(result)({
       id: v7(),
       type: "realizeCorrect",
       kind: "overall",
@@ -441,14 +441,12 @@ const process = async <
       metric: result.metric,
       tokenUsage: result.tokenUsage,
     } satisfies AutoBeRealizeCorrectEvent);
-    return out(result)({
-      type: "success" as const,
-      function: {
-        ...props.function,
-        content,
-      },
-    });
   });
+  ctx.dispatch(event);
+  return {
+    type: "success" as const,
+    function: event.function as RealizeFunction,
+  };
 };
 
 const compileWithFiltering = async <

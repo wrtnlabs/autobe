@@ -1,6 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyze,
+  AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseComponent,
   AutoBeDatabaseGroup,
   AutoBeEventSource,
@@ -65,7 +66,7 @@ async function process(
     state: ctx.state(),
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeDatabaseAuthorizationEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeDatabaseAuthorizationApplication.IWrite | null> =
       {
         value: null,
@@ -98,7 +99,7 @@ async function process(
         },
       ],
     );
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
@@ -110,8 +111,9 @@ async function process(
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
     });
-    return out(result)(component);
   });
+  ctx.dispatch(event);
+  return event.component;
 }
 
 function createController(props: {

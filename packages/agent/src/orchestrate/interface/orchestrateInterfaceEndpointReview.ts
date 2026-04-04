@@ -97,7 +97,7 @@ export const orchestrateInterfaceEndpointReview = async (
     },
     dispatch: (e) => ctx.dispatch(e),
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeInterfaceEndpointReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -118,7 +118,7 @@ export const orchestrateInterfaceEndpointReview = async (
     });
     if (pointer.value === null) return out(result)(null);
 
-    ctx.dispatch({
+    return out(result)({
       id: v7(),
       type: SOURCE,
       kind: props.programmer.kind,
@@ -134,14 +134,13 @@ export const orchestrateInterfaceEndpointReview = async (
       metric: result.metric,
       tokenUsage: result.tokenUsage,
     } satisfies AutoBeInterfaceEndpointReviewEvent);
-    return out(result)(
-      AutoBeInterfaceEndpointReviewProgrammer.execute({
-        kind: props.programmer.kind,
-        actors: ctx.state().analyze?.actors ?? [],
-        designs: props.designs,
-        revises: pointer.value.revises,
-      }),
-    );
+  });
+  ctx.dispatch(event);
+  return AutoBeInterfaceEndpointReviewProgrammer.execute({
+    kind: props.programmer.kind,
+    actors: ctx.state().analyze?.actors ?? [],
+    designs: props.designs,
+    revises: event.revises,
   });
 };
 

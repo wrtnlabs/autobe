@@ -169,7 +169,7 @@ async function process(
       })(),
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeInterfaceSchemaReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IWrite | null> =
       {
         value: null,
@@ -196,13 +196,7 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
-    // Apply revises to generate the modified schema content
-    const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
-      AutoBeInterfaceSchemaReviewProgrammer.execute({
-        schema: props.reviewSchema,
-        revises: pointer.value.revises,
-      });
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       typeName: props.typeName,
@@ -218,7 +212,11 @@ async function process(
       completed: ++props.progress.completed,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemaReviewEvent);
-    return out(result)(content);
+  });
+  ctx.dispatch(event);
+  return AutoBeInterfaceSchemaReviewProgrammer.execute({
+    schema: props.reviewSchema,
+    revises: event.revises,
   });
 }
 

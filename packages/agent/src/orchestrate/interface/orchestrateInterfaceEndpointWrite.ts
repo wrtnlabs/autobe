@@ -103,7 +103,7 @@ export const orchestrateInterfaceEndpointWrite = async (
         .filter((m) => m !== undefined),
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeInterfaceEndpointEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceEndpointWriteApplication.IWrite | null> =
       {
         value: null,
@@ -146,7 +146,7 @@ export const orchestrateInterfaceEndpointWrite = async (
           actors,
         }),
       );
-    ctx.dispatch({
+    return out(result)({
       id: v7(),
       type: SOURCE,
       kind: props.programmer.kind,
@@ -162,8 +162,9 @@ export const orchestrateInterfaceEndpointWrite = async (
       completed: ++props.progress.completed,
       total: props.progress.total,
     } satisfies AutoBeInterfaceEndpointEvent);
-    return out(result)(designs);
   });
+  ctx.dispatch(event);
+  return event.designs;
 };
 
 const createController = (props: {

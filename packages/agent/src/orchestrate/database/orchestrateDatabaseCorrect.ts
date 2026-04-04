@@ -157,10 +157,10 @@ async function execute(
       database: "ast",
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseCorrectApplication.IWrite | null> = {
-      value: null,
-    };
+  const pointer: IPointer<IAutoBeDatabaseCorrectApplication.IWrite | null> = {
+    value: null,
+  };
+  const event: AutoBeDatabaseCorrectEvent = await preliminary.orchestrate(ctx, async (out) => {
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -190,7 +190,7 @@ async function execute(
         }),
       })),
     };
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       failure,
@@ -202,11 +202,12 @@ async function execute(
       step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
     } satisfies AutoBeDatabaseCorrectEvent);
-    return out(result)({
-      ...pointer.value,
-      correction,
-    });
   });
+  ctx.dispatch(event);
+  return {
+    ...pointer.value!,
+    correction: event.correction,
+  };
 }
 
 interface IExecutionResult extends IAutoBeDatabaseCorrectApplication.IWrite {

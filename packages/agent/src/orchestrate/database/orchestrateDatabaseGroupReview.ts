@@ -37,7 +37,7 @@ export async function orchestrateDatabaseGroupReview(
     state: ctx.state(),
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeDatabaseGroupReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeDatabaseGroupReviewApplication.IWrite | null> =
       { value: null };
 
@@ -75,10 +75,10 @@ export async function orchestrateDatabaseGroupReview(
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
     };
-    ctx.dispatch(event);
-
-    return out(result)(reviewedGroups);
+    return out(result)(event);
   });
+  ctx.dispatch(event);
+  return event.groups;
 }
 
 function createController(props: {

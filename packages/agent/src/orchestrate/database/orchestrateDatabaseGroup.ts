@@ -1,5 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
-import { AutoBeDatabaseGroup, AutoBeEventSource } from "@autobe/interface";
+import {
+  AutoBeDatabaseGroup,
+  AutoBeDatabaseGroupEvent,
+  AutoBeEventSource,
+} from "@autobe/interface";
 import { IPointer } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
@@ -28,38 +32,42 @@ export async function orchestrateDatabaseGroup(
     ],
     state: ctx.state(),
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseGroupApplication.IWrite | null> = {
-      value: null,
-    };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      ...transformDatabaseGroupHistory(ctx.state(), {
-        instruction,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeDatabaseGroupEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeDatabaseGroupApplication.IWrite | null> = {
+        value: null,
+      };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          pointer,
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        ...transformDatabaseGroupHistory(ctx.state(), {
+          instruction,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      created_at: start.toISOString(),
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      groups: pointer.value.groups,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-    });
-    return out(result)(pointer.value.groups);
-  });
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
+        created_at: start.toISOString(),
+        analysis: pointer.value.analysis,
+        rationale: pointer.value.rationale,
+        groups: pointer.value.groups,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+      });
+    },
+  );
+  ctx.dispatch(event);
+  return event.groups;
 }
 
 function createController(props: {

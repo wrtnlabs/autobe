@@ -144,7 +144,7 @@ async function process(
       })(),
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeInterfaceSchemaRefineEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceSchemaRefineApplication.IWrite | null> =
       {
         value: null,
@@ -171,16 +171,7 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
-    // Apply refines to generate the enriched schema content
-    const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
-      AutoBeInterfaceSchemaRefineProgrammer.execute({
-        schema: props.schema,
-        databaseSchema: pointer.value.databaseSchema,
-        specification: pointer.value.specification,
-        description: pointer.value.description,
-        revises: pointer.value.revises,
-      });
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       typeName: props.typeName,
@@ -199,7 +190,14 @@ async function process(
       completed: ++props.progress.completed,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemaRefineEvent);
-    return out(result)(content);
+  });
+  ctx.dispatch(event);
+  return AutoBeInterfaceSchemaRefineProgrammer.execute({
+    schema: props.schema,
+    databaseSchema: event.databaseSchema,
+    specification: event.specification,
+    description: event.description,
+    revises: event.revises,
   });
 }
 

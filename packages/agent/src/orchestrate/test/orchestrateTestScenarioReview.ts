@@ -109,7 +109,7 @@ async function process(
     dispatch: (e) => ctx.dispatch(e),
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeTestScenarioReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<AutoBeTestScenario | "erase" | null> = {
       value: null,
     };
@@ -152,9 +152,10 @@ async function process(
       step: ctx.state().interface?.step ?? 0,
     };
 
-    ctx.dispatch(event);
-    return out(result)(event.improved ?? props.scenario);
+    return out(result)(event);
   });
+  ctx.dispatch(event);
+  return event.improved ?? props.scenario;
 }
 
 /**

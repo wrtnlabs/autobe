@@ -101,7 +101,7 @@ async function process(
         ),
       },
     });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeRealizeWriteEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeRealizeCollectorWriteApplication.IWrite | null> =
       {
         value: null,
@@ -139,7 +139,7 @@ async function process(
       location,
       content,
     };
-    ctx.dispatch({
+    return out(result)({
       id: v7(),
       type: "realizeWrite",
       function: functor,
@@ -151,8 +151,9 @@ async function process(
       step: ctx.state().analyze?.step ?? 0,
       created_at: new Date().toISOString(),
     } satisfies AutoBeRealizeWriteEvent);
-    return out(result)(functor);
   });
+  ctx.dispatch(event);
+  return event.function as AutoBeRealizeCollectorFunction;
 }
 
 function createController(

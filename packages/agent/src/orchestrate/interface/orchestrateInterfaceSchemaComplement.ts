@@ -163,7 +163,7 @@ Task: ${task}
         }),
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  const event: AutoBeInterfaceSchemaComplementEvent = await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceSchemaComplementApplication.IWrite | null> =
       {
         value: null,
@@ -194,7 +194,7 @@ Task: ${task}
     const schema: AutoBeOpenApi.IJsonSchema = AutoBeJsonSchemaFactory.fixDesign(
       pointer.value.design,
     );
-    ctx.dispatch({
+    return out(result)({
       type: SOURCE,
       id: v7(),
       typeName: props.typeName,
@@ -209,8 +209,9 @@ Task: ${task}
       total: props.progress.total,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemaComplementEvent);
-    return out(result)(schema);
   });
+  ctx.dispatch(event);
+  return event.schema;
 }
 
 function createController(
