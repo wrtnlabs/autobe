@@ -42,45 +42,49 @@ export const orchestrateAnalyzeWriteUnit = async (
       state: ctx.state(),
       dispatch: (e) => ctx.dispatch(e),
     });
-  const event: AutoBeAnalyzeWriteUnitEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationWrite | null> = {
-      value: null,
-    };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteUnitHistory(ctx, {
-        scenario: props.scenario,
-        file: props.file,
-        moduleEvent: props.moduleEvent,
-        moduleIndex: props.moduleIndex,
-        feedback: props.feedback,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeAnalyzeWriteUnitEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          pointer,
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformAnalyzeWriteUnitHistory(ctx, {
+          scenario: props.scenario,
+          file: props.file,
+          moduleEvent: props.moduleEvent,
+          moduleIndex: props.moduleIndex,
+          feedback: props.feedback,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeAnalyzeWriteUnitEvent = {
-      type: SOURCE,
-      id: v7(),
-      moduleIndex: pointer.value.moduleIndex,
-      unitSections: pointer.value.unitSections,
-      acquisition: preliminary.getAcquisition(),
-      tokenUsage: result.tokenUsage,
-      metric: result.metric,
-      step: (ctx.state().analyze?.step ?? -1) + 1,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      retry: props.retry,
-      created_at: new Date().toISOString(),
-    };
-    return out(result)(event);
-  });
+      const event: AutoBeAnalyzeWriteUnitEvent = {
+        type: SOURCE,
+        id: v7(),
+        moduleIndex: pointer.value.moduleIndex,
+        unitSections: pointer.value.unitSections,
+        acquisition: preliminary.getAcquisition(),
+        tokenUsage: result.tokenUsage,
+        metric: result.metric,
+        step: (ctx.state().analyze?.step ?? -1) + 1,
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        retry: props.retry,
+        created_at: new Date().toISOString(),
+      };
+      return out(result)(event);
+    },
+  );
   ctx.dispatch(event);
   return event;
 };

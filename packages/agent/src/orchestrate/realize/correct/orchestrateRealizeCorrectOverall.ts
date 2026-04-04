@@ -398,50 +398,53 @@ const process = async <
   },
 ): Promise<ICorrectionResult<RealizeFunction>> => {
   props.preliminary.reset();
-  const event: AutoBeRealizeCorrectEvent = await props.preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<Complete | null> = {
-      value: null,
-    };
-    const controller: ILlmController = props.programmer.controller({
-      preliminary: props.preliminary,
-      build(next: Complete) {
-        pointer.value = next;
-      },
-      function: props.function,
-      source: SOURCE,
-    });
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller,
-      enforceFunctionCall: true,
-      ...(await props.programmer.histories({
+  const event: AutoBeRealizeCorrectEvent = await props.preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<Complete | null> = {
+        value: null,
+      };
+      const controller: ILlmController = props.programmer.controller({
         preliminary: props.preliminary,
+        build(next: Complete) {
+          pointer.value = next;
+        },
         function: props.function,
-        failures: props.failures,
-      })),
-    });
-    if (pointer.value === null) return out(result)(null);
+        source: SOURCE,
+      });
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller,
+        enforceFunctionCall: true,
+        ...(await props.programmer.histories({
+          preliminary: props.preliminary,
+          function: props.function,
+          failures: props.failures,
+        })),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    const content: string = await props.programmer.replaceImportStatements({
-      function: props.function,
-      code: sanitizeGeneratedCode(
-        pointer.value.revise.final ?? pointer.value.draft,
-      ),
-    });
-    return out(result)({
-      id: v7(),
-      type: "realizeCorrect",
-      kind: "overall",
-      function: {
-        ...props.function,
-        content,
-      },
-      created_at: new Date().toISOString(),
-      step: ctx.state().analyze?.step ?? 0,
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-    } satisfies AutoBeRealizeCorrectEvent);
-  });
+      const content: string = await props.programmer.replaceImportStatements({
+        function: props.function,
+        code: sanitizeGeneratedCode(
+          pointer.value.revise.final ?? pointer.value.draft,
+        ),
+      });
+      return out(result)({
+        id: v7(),
+        type: "realizeCorrect",
+        kind: "overall",
+        function: {
+          ...props.function,
+          content,
+        },
+        created_at: new Date().toISOString(),
+        step: ctx.state().analyze?.step ?? 0,
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+      } satisfies AutoBeRealizeCorrectEvent);
+    },
+  );
   ctx.dispatch(event);
   return {
     type: "success" as const,

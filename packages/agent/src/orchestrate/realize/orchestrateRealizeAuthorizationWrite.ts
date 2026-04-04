@@ -92,68 +92,69 @@ async function process(
       kinds: ["databaseSchemas"],
       state: ctx.state(),
     });
-  const event: AutoBeRealizeAuthorizationWriteEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeAuthorizationWriteApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: "realizeAuthorizationWrite",
-      controller: createController({
-        build: (next) => {
-          pointer.value = next;
-        },
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformRealizeAuthorizationWriteHistory({
-        actor: props.actor,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeRealizeAuthorizationWriteEvent =
+    await preliminary.orchestrate(ctx, async (out) => {
+      const pointer: IPointer<IAutoBeRealizeAuthorizationWriteApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: "realizeAuthorizationWrite",
+        controller: createController({
+          build: (next) => {
+            pointer.value = next;
+          },
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformRealizeAuthorizationWriteHistory({
+          actor: props.actor,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    const compiler: IAutoBeCompiler = await ctx.compiler();
-    const authorization: AutoBeRealizeAuthorization = {
-      actor: props.actor,
-      decorator: {
-        location: AuthorizationFileSystem.decoratorPath(
-          pointer.value.decorator.name,
-        ),
-        name: pointer.value.decorator.name,
-        content: pointer.value.decorator.content,
-      },
-      payload: {
-        location: AuthorizationFileSystem.payloadPath(
-          pointer.value.payload.name,
-        ),
-        name: pointer.value.payload.name,
-        content: await compiler.typescript.beautify(
-          pointer.value.payload.content,
-        ),
-      },
-      provider: {
-        location: AuthorizationFileSystem.providerPath(
-          pointer.value.provider.name,
-        ),
-        name: pointer.value.provider.name,
-        content: pointer.value.provider.content,
-      },
-    };
-    return out(result)({
-      type: "realizeAuthorizationWrite",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      authorization: authorization,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
-      step: ctx.state().test?.step ?? 0,
-    } satisfies AutoBeRealizeAuthorizationWriteEvent);
-  });
+      const compiler: IAutoBeCompiler = await ctx.compiler();
+      const authorization: AutoBeRealizeAuthorization = {
+        actor: props.actor,
+        decorator: {
+          location: AuthorizationFileSystem.decoratorPath(
+            pointer.value.decorator.name,
+          ),
+          name: pointer.value.decorator.name,
+          content: pointer.value.decorator.content,
+        },
+        payload: {
+          location: AuthorizationFileSystem.payloadPath(
+            pointer.value.payload.name,
+          ),
+          name: pointer.value.payload.name,
+          content: await compiler.typescript.beautify(
+            pointer.value.payload.content,
+          ),
+        },
+        provider: {
+          location: AuthorizationFileSystem.providerPath(
+            pointer.value.provider.name,
+          ),
+          name: pointer.value.provider.name,
+          content: pointer.value.provider.content,
+        },
+      };
+      return out(result)({
+        type: "realizeAuthorizationWrite",
+        id: v7(),
+        created_at: new Date().toISOString(),
+        authorization: authorization,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        completed: ++props.progress.completed,
+        total: props.progress.total,
+        step: ctx.state().test?.step ?? 0,
+      } satisfies AutoBeRealizeAuthorizationWriteEvent);
+    });
   ctx.dispatch(event);
   const prismaCompiled: IAutoBePrismaCompileResult | undefined =
     ctx.state().database?.compiled;

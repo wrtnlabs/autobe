@@ -163,53 +163,53 @@ Task: ${task}
         }),
     },
   });
-  const event: AutoBeInterfaceSchemaComplementEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaComplementApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController(ctx, {
+  const event: AutoBeInterfaceSchemaComplementEvent =
+    await preliminary.orchestrate(ctx, async (out) => {
+      const pointer: IPointer<IAutoBeInterfaceSchemaComplementApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController(ctx, {
+          typeName: props.typeName,
+          operations: props.document.operations,
+          build: (next) => {
+            pointer.value = next;
+          },
+          preliminary,
+        }),
+        promptCacheKey: props.promptCacheKey,
+        enforceFunctionCall: true,
+        ...transformInterfaceSchemaComplementHistory({
+          document: props.document,
+          instruction: props.instruction,
+          preliminary,
+          typeName: props.typeName,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
+
+      ++props.progress.completed;
+
+      const schema: AutoBeOpenApi.IJsonSchema =
+        AutoBeJsonSchemaFactory.fixDesign(pointer.value.design);
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
         typeName: props.typeName,
-        operations: props.document.operations,
-        build: (next) => {
-          pointer.value = next;
-        },
-        preliminary,
-      }),
-      promptCacheKey: props.promptCacheKey,
-      enforceFunctionCall: true,
-      ...transformInterfaceSchemaComplementHistory({
-        document: props.document,
-        instruction: props.instruction,
-        preliminary,
-        typeName: props.typeName,
-      }),
+        analysis: pointer.value.analysis,
+        rationale: pointer.value.rationale,
+        schema,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+        completed: props.progress.completed,
+        total: props.progress.total,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeInterfaceSchemaComplementEvent);
     });
-    if (pointer.value === null) return out(result)(null);
-
-    ++props.progress.completed;
-
-    const schema: AutoBeOpenApi.IJsonSchema = AutoBeJsonSchemaFactory.fixDesign(
-      pointer.value.design,
-    );
-    return out(result)({
-      type: SOURCE,
-      id: v7(),
-      typeName: props.typeName,
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      schema,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-      completed: props.progress.completed,
-      total: props.progress.total,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceSchemaComplementEvent);
-  });
   ctx.dispatch(event);
   return event.schema;
 }

@@ -107,51 +107,54 @@ async function step(
       database: "ast",
     },
   });
-  const event: AutoBeDatabaseSchemaReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseSchemaReviewApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        preliminary,
-        build: (next) => {
-          pointer.value = next;
-        },
-        targetComponent: props.component,
-        model: props.model,
-        otherModels: props.otherModels,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformDatabaseSchemaReviewHistory({
-        component: props.component,
-        model: props.model,
-        otherModels: props.otherModels,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeDatabaseSchemaReviewEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeDatabaseSchemaReviewApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          preliminary,
+          build: (next) => {
+            pointer.value = next;
+          },
+          targetComponent: props.component,
+          model: props.model,
+          otherModels: props.otherModels,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformDatabaseSchemaReviewHistory({
+          component: props.component,
+          model: props.model,
+          otherModels: props.otherModels,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeDatabaseSchemaReviewEvent = {
-      type: SOURCE,
-      id: v7(),
-      created_at: start.toISOString(),
-      namespace: props.component.namespace,
-      review: pointer.value.review,
-      plan: pointer.value.plan,
-      modelName: props.model.name,
-      content: pointer.value.content,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
-      step: ctx.state().analyze?.step ?? 0,
-    };
-    return out(result)(event);
-  });
+      const event: AutoBeDatabaseSchemaReviewEvent = {
+        type: SOURCE,
+        id: v7(),
+        created_at: start.toISOString(),
+        namespace: props.component.namespace,
+        review: pointer.value.review,
+        plan: pointer.value.plan,
+        modelName: props.model.name,
+        content: pointer.value.content,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        completed: ++props.progress.completed,
+        total: props.progress.total,
+        step: ctx.state().analyze?.step ?? 0,
+      };
+      return out(result)(event);
+    },
+  );
   ctx.dispatch(event);
   return event;
 }

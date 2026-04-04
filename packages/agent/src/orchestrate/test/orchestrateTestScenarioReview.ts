@@ -109,51 +109,54 @@ async function process(
     dispatch: (e) => ctx.dispatch(e),
   });
 
-  const event: AutoBeTestScenarioReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeTestScenario | "erase" | null> = {
-      value: null,
-    };
+  const event: AutoBeTestScenarioReviewEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<AutoBeTestScenario | "erase" | null> = {
+        value: null,
+      };
 
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        dict: props.dict,
-        operation: props.operation,
-        scenario: props.scenario,
-        authorizations,
-        preliminary,
-        build: (improved) => {
-          pointer.value = improved;
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformTestScenarioReviewHistory({
-        state: ctx.state(),
-        scenario: props.scenario,
-        instruction: props.instruction,
-        preliminary,
-      }),
-    });
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          dict: props.dict,
+          operation: props.operation,
+          scenario: props.scenario,
+          authorizations,
+          preliminary,
+          build: (improved) => {
+            pointer.value = improved;
+          },
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformTestScenarioReviewHistory({
+          state: ctx.state(),
+          scenario: props.scenario,
+          instruction: props.instruction,
+          preliminary,
+        }),
+      });
 
-    // Create event with original and improved scenarios
-    const event: AutoBeTestScenarioReviewEvent = {
-      type: SOURCE,
-      id: v7(),
-      created_at: new Date().toISOString(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      endpoint: props.scenario.endpoint,
-      original: props.scenario,
-      improved: pointer.value,
-      acquisition: preliminary.getAcquisition(),
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      step: ctx.state().interface?.step ?? 0,
-    };
+      // Create event with original and improved scenarios
+      const event: AutoBeTestScenarioReviewEvent = {
+        type: SOURCE,
+        id: v7(),
+        created_at: new Date().toISOString(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        endpoint: props.scenario.endpoint,
+        original: props.scenario,
+        improved: pointer.value,
+        acquisition: preliminary.getAcquisition(),
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        step: ctx.state().interface?.step ?? 0,
+      };
 
-    return out(result)(event);
-  });
+      return out(result)(event);
+    },
+  );
   ctx.dispatch(event);
   return event.improved ?? props.scenario;
 }

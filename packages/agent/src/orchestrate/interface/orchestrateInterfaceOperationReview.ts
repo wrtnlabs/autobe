@@ -125,55 +125,56 @@ async function process(
       analysisSections: ragSections,
     },
   });
-  const event: AutoBeInterfaceOperationReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createReviewController({
-        preliminary,
-        databaseSchemas: files,
-        operation: props.operation,
-        build: (next: IAutoBeInterfaceOperationReviewApplication.IWrite) => {
-          pointer.value = next;
-        },
-      }),
-      enforceFunctionCall: false,
-      ...transformInterfaceOperationReviewHistory({
-        preliminary,
-        operation: props.operation,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeInterfaceOperationReviewEvent =
+    await preliminary.orchestrate(ctx, async (out) => {
+      const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createReviewController({
+          preliminary,
+          databaseSchemas: files,
+          operation: props.operation,
+          build: (next: IAutoBeInterfaceOperationReviewApplication.IWrite) => {
+            pointer.value = next;
+          },
+        }),
+        enforceFunctionCall: false,
+        ...transformInterfaceOperationReviewHistory({
+          preliminary,
+          operation: props.operation,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    const content: AutoBeOpenApi.IOperation | null =
-      pointer.value.content !== null
-        ? {
-            ...props.operation,
-            description: pointer.value.content.description,
-            requestBody: pointer.value.content.requestBody,
-            responseBody: pointer.value.content.responseBody,
-          }
-        : null;
-    if (content !== null) AutoBeInterfaceOperationProgrammer.fix(content);
-    return out(result)({
-      type: SOURCE,
-      id: v7(),
-      operation: props.operation,
-      review: pointer.value.review,
-      plan: pointer.value.plan,
-      content,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      created_at: new Date().toISOString(),
-      step: ctx.state().analyze?.step ?? 0,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-    } satisfies AutoBeInterfaceOperationReviewEvent);
-  });
+      const content: AutoBeOpenApi.IOperation | null =
+        pointer.value.content !== null
+          ? {
+              ...props.operation,
+              description: pointer.value.content.description,
+              requestBody: pointer.value.content.requestBody,
+              responseBody: pointer.value.content.responseBody,
+            }
+          : null;
+      if (content !== null) AutoBeInterfaceOperationProgrammer.fix(content);
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
+        operation: props.operation,
+        review: pointer.value.review,
+        plan: pointer.value.plan,
+        content,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        created_at: new Date().toISOString(),
+        step: ctx.state().analyze?.step ?? 0,
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+      } satisfies AutoBeInterfaceOperationReviewEvent);
+    });
   ctx.dispatch(event);
   return event.content ?? false;
 }

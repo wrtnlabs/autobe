@@ -134,71 +134,74 @@ async function process(
       analysisSections: ragSections,
     },
   });
-  const event: AutoBeRealizeWriteEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const dto: Record<string, string> =
-      await AutoBeRealizeOperationProgrammer.writeStructures(
-        ctx,
-        props.scenario.operation,
-      );
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: "realizeWrite",
-      controller: createController({
-        functionName: props.scenario.functionName,
-        build: (next) => {
-          pointer.value = next;
-        },
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformRealizeOperationWriteHistory({
-        state: ctx.state(),
-        scenario: props.scenario,
-        authorization: props.authorization,
-        totalAuthorizations: props.totalAuthorizations,
-        collectors: props.collectors,
-        transformers: props.transformers,
-        dto,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
-
-    const functor: AutoBeRealizeOperationFunction = {
-      type: "operation",
-      endpoint: {
-        method: props.scenario.operation.method,
-        path: props.scenario.operation.path,
-      },
-      location: props.scenario.location,
-      name: props.scenario.functionName,
-      content: await AutoBeRealizeOperationProgrammer.replaceImportStatements(
-        ctx,
+  const event: AutoBeRealizeWriteEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IWrite | null> =
         {
-          operation: props.scenario.operation,
-          schemas: props.document.components.schemas,
-          code: pointer.value.revise.final ?? pointer.value.draft,
-          payload: props.authorization?.payload.name,
+          value: null,
+        };
+      const dto: Record<string, string> =
+        await AutoBeRealizeOperationProgrammer.writeStructures(
+          ctx,
+          props.scenario.operation,
+        );
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: "realizeWrite",
+        controller: createController({
+          functionName: props.scenario.functionName,
+          build: (next) => {
+            pointer.value = next;
+          },
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformRealizeOperationWriteHistory({
+          state: ctx.state(),
+          scenario: props.scenario,
+          authorization: props.authorization,
+          totalAuthorizations: props.totalAuthorizations,
+          collectors: props.collectors,
+          transformers: props.transformers,
+          dto,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
+
+      const functor: AutoBeRealizeOperationFunction = {
+        type: "operation",
+        endpoint: {
+          method: props.scenario.operation.method,
+          path: props.scenario.operation.path,
         },
-      ),
-    };
-    return out(result)({
-      id: v7(),
-      type: "realizeWrite",
-      function: functor,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeRealizeWriteEvent);
-  });
+        location: props.scenario.location,
+        name: props.scenario.functionName,
+        content: await AutoBeRealizeOperationProgrammer.replaceImportStatements(
+          ctx,
+          {
+            operation: props.scenario.operation,
+            schemas: props.document.components.schemas,
+            code: pointer.value.revise.final ?? pointer.value.draft,
+            payload: props.authorization?.payload.name,
+          },
+        ),
+      };
+      return out(result)({
+        id: v7(),
+        type: "realizeWrite",
+        function: functor,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        completed: ++props.progress.completed,
+        total: props.progress.total,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeRealizeWriteEvent);
+    },
+  );
   ctx.dispatch(event);
   return event.function as AutoBeRealizeOperationFunction;
 }

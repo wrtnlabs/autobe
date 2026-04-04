@@ -168,51 +168,54 @@ async function process(
     },
   });
 
-  const event: AutoBeTestScenarioEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeTestScenario[] | null> = {
-      value: null,
-    };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        dict: props.dict,
-        operation: props.operation,
-        authorizations,
-        preliminary,
-        build: (scenarios) => {
-          // Normalize function name to snake_case
-          for (const s of scenarios)
-            s.functionName = NamingConvention.snake(s.functionName);
-          pointer.value ??= [];
-          pointer.value.push(...scenarios);
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformTestScenarioHistory({
-        state: ctx.state(),
-        operation: props.operation,
-        instruction: props.instruction,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeTestScenarioEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<AutoBeTestScenario[] | null> = {
+        value: null,
+      };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          dict: props.dict,
+          operation: props.operation,
+          authorizations,
+          preliminary,
+          build: (scenarios) => {
+            // Normalize function name to snake_case
+            for (const s of scenarios)
+              s.functionName = NamingConvention.snake(s.functionName);
+            pointer.value ??= [];
+            pointer.value.push(...scenarios);
+          },
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformTestScenarioHistory({
+          state: ctx.state(),
+          operation: props.operation,
+          instruction: props.instruction,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    pointer.value.splice(3);
+      pointer.value.splice(3);
 
-    return out(result)({
-      type: SOURCE,
-      id: v7(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      scenarios: pointer.value,
-      acquisition: preliminary.getAcquisition(),
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      step: ctx.state().interface?.step ?? 0,
-      created_at: new Date().toISOString(),
-    });
-  });
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        scenarios: pointer.value,
+        acquisition: preliminary.getAcquisition(),
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        step: ctx.state().interface?.step ?? 0,
+        created_at: new Date().toISOString(),
+      });
+    },
+  );
   ctx.dispatch(event);
   return event.scenarios;
 }

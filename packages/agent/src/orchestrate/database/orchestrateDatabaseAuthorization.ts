@@ -66,52 +66,54 @@ async function process(
     state: ctx.state(),
   });
 
-  const event: AutoBeDatabaseAuthorizationEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseAuthorizationApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
-        actors: props.actors,
-        prefix: props.prefix,
-      }),
-      enforceFunctionCall: true,
-      ...transformDatabaseAuthorizationHistory({
-        actors: props.actors,
-        prefix: props.prefix,
-        group: props.group,
-        instruction: props.instruction,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
-
-    // Remove duplicated tables using shared utility
-    const [component] = AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(
-      [
+  const event: AutoBeDatabaseAuthorizationEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeDatabaseAuthorizationApplication.IWrite | null> =
         {
-          ...props.group,
-          tables: pointer.value.tables,
-        },
-      ],
-    );
-    return out(result)({
-      type: SOURCE,
-      id: v7(),
-      created_at: new Date().toISOString(),
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      component,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-    });
-  });
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          pointer,
+          preliminary,
+          actors: props.actors,
+          prefix: props.prefix,
+        }),
+        enforceFunctionCall: true,
+        ...transformDatabaseAuthorizationHistory({
+          actors: props.actors,
+          prefix: props.prefix,
+          group: props.group,
+          instruction: props.instruction,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
+
+      // Remove duplicated tables using shared utility
+      const [component] =
+        AutoBeDatabaseComponentProgrammer.removeDuplicatedTable([
+          {
+            ...props.group,
+            tables: pointer.value.tables,
+          },
+        ]);
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
+        created_at: new Date().toISOString(),
+        analysis: pointer.value.analysis,
+        rationale: pointer.value.rationale,
+        component,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+      });
+    },
+  );
   ctx.dispatch(event);
   return event.component;
 }

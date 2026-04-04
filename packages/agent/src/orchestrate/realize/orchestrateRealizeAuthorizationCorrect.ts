@@ -85,68 +85,69 @@ export async function orchestrateRealizeAuthorizationCorrect(
         kinds: ["databaseSchemas"],
         state: ctx.state(),
       });
-    const event: AutoBeRealizeAuthorizationCorrectEvent = await preliminary.orchestrate(ctx, async (out) => {
-      const pointer: IPointer<IAutoBeRealizeAuthorizationCorrectApplication.IWrite | null> =
-        {
-          value: null,
-        };
-      const result: AutoBeContext.IResult = await ctx.conversate({
-        source: "realizeAuthorizationCorrect",
-        controller: createController({
-          build: (next) => {
-            pointer.value = next;
+    const event: AutoBeRealizeAuthorizationCorrectEvent =
+      await preliminary.orchestrate(ctx, async (out) => {
+        const pointer: IPointer<IAutoBeRealizeAuthorizationCorrectApplication.IWrite | null> =
+          {
+            value: null,
+          };
+        const result: AutoBeContext.IResult = await ctx.conversate({
+          source: "realizeAuthorizationCorrect",
+          controller: createController({
+            build: (next) => {
+              pointer.value = next;
+            },
+            preliminary,
+          }),
+          enforceFunctionCall: true,
+          ...transformRealizeAuthorizationCorrectHistory({
+            authorization: props.authorization,
+            template: props.template,
+            diagnostics: compiled.diagnostics,
+            preliminary,
+          }),
+        });
+        if (pointer.value === null) return out(result)(null);
+
+        const correct: AutoBeRealizeAuthorizationCorrect = {
+          ...pointer.value,
+          decorator: {
+            ...pointer.value.decorator,
+            location: AuthorizationFileSystem.decoratorPath(
+              pointer.value.decorator.name,
+            ),
           },
-          preliminary,
-        }),
-        enforceFunctionCall: true,
-        ...transformRealizeAuthorizationCorrectHistory({
-          authorization: props.authorization,
-          template: props.template,
-          diagnostics: compiled.diagnostics,
-          preliminary,
-        }),
-      });
-      if (pointer.value === null) return out(result)(null);
+          provider: {
+            ...pointer.value.provider,
+            location: AuthorizationFileSystem.providerPath(
+              pointer.value.provider.name,
+            ),
+          },
+          payload: {
+            name: pointer.value.payload.name,
+            location: AuthorizationFileSystem.payloadPath(
+              pointer.value.payload.name,
+            ),
+            content: await compiler.typescript.beautify(
+              pointer.value.payload.content,
+            ),
+          },
+          actor: props.authorization.actor,
+        };
 
-      const correct: AutoBeRealizeAuthorizationCorrect = {
-        ...pointer.value,
-        decorator: {
-          ...pointer.value.decorator,
-          location: AuthorizationFileSystem.decoratorPath(
-            pointer.value.decorator.name,
-          ),
-        },
-        provider: {
-          ...pointer.value.provider,
-          location: AuthorizationFileSystem.providerPath(
-            pointer.value.provider.name,
-          ),
-        },
-        payload: {
-          name: pointer.value.payload.name,
-          location: AuthorizationFileSystem.payloadPath(
-            pointer.value.payload.name,
-          ),
-          content: await compiler.typescript.beautify(
-            pointer.value.payload.content,
-          ),
-        },
-        actor: props.authorization.actor,
-      };
-
-      return out(result)({
-        ...pointer.value,
-        type: "realizeAuthorizationCorrect",
-        id: v7(),
-        created_at: new Date().toISOString(),
-        authorization: correct,
-        result: compiled,
-        acquisition: preliminary.getAcquisition(),
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        step: ctx.state().test?.step ?? 0,
+        return out(result)({
+          ...pointer.value,
+          type: "realizeAuthorizationCorrect",
+          id: v7(),
+          created_at: new Date().toISOString(),
+          authorization: correct,
+          result: compiled,
+          acquisition: preliminary.getAcquisition(),
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          step: ctx.state().test?.step ?? 0,
+        });
       });
-    });
     ctx.dispatch(event);
     return await orchestrateRealizeAuthorizationCorrect(
       ctx,

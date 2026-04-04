@@ -185,81 +185,84 @@ async function process(
       analysisSections: ragSections,
     },
   });
-  const event: AutoBeInterfaceOperationEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceOperationApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        preliminary,
-        build: (complete) => {
-          pointer.value = complete;
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceOperationHistory({
-        endpoint: props.design.endpoint,
-        instruction: props.instruction,
-        prefix,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeInterfaceOperationEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeInterfaceOperationApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          preliminary,
+          build: (complete) => {
+            pointer.value = complete;
+          },
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfaceOperationHistory({
+          endpoint: props.design.endpoint,
+          instruction: props.instruction,
+          prefix,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    AutoBeInterfaceOperationProgrammer.fix(pointer.value.operation);
-    for (const p of pointer.value.operation.parameters)
-      p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
+      AutoBeInterfaceOperationProgrammer.fix(pointer.value.operation);
+      for (const p of pointer.value.operation.parameters)
+        p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
 
-    // Use authorizationActors from endpoint design (not from LLM)
-    const authorizationActors: string[] = props.design.authorizationActors;
-    const matrix: AutoBeOpenApi.IOperation[] =
-      authorizationActors.length === 0
-        ? [
-            {
-              ...pointer.value.operation,
-              path:
-                "/" +
-                [prefix, ...pointer.value.operation.path.split("/")]
-                  .filter((it) => it !== "")
-                  .join("/"),
-              authorizationActor: null,
-              authorizationType: null,
-              prerequisites: [],
-            } satisfies AutoBeOpenApi.IOperation,
-          ]
-        : authorizationActors.map(
-            (actor) =>
-              ({
-                ...pointer.value!.operation,
+      // Use authorizationActors from endpoint design (not from LLM)
+      const authorizationActors: string[] = props.design.authorizationActors;
+      const matrix: AutoBeOpenApi.IOperation[] =
+        authorizationActors.length === 0
+          ? [
+              {
+                ...pointer.value.operation,
                 path:
                   "/" +
-                  [prefix, actor, ...pointer.value!.operation.path.split("/")]
+                  [prefix, ...pointer.value.operation.path.split("/")]
                     .filter((it) => it !== "")
                     .join("/"),
-                authorizationActor: actor,
+                authorizationActor: null,
                 authorizationType: null,
                 prerequisites: [],
-              }) satisfies AutoBeOpenApi.IOperation,
-          );
-    ++props.progress.completed;
+              } satisfies AutoBeOpenApi.IOperation,
+            ]
+          : authorizationActors.map(
+              (actor) =>
+                ({
+                  ...pointer.value!.operation,
+                  path:
+                    "/" +
+                    [prefix, actor, ...pointer.value!.operation.path.split("/")]
+                      .filter((it) => it !== "")
+                      .join("/"),
+                  authorizationActor: actor,
+                  authorizationType: null,
+                  prerequisites: [],
+                }) satisfies AutoBeOpenApi.IOperation,
+            );
+      ++props.progress.completed;
 
-    return out(result)({
-      type: SOURCE,
-      id: v7(),
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      operations: matrix,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      ...props.progress,
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceOperationEvent);
-  });
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
+        analysis: pointer.value.analysis,
+        rationale: pointer.value.rationale,
+        operations: matrix,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        ...props.progress,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeInterfaceOperationEvent);
+    },
+  );
   ctx.dispatch(event);
   return event.operations;
 }

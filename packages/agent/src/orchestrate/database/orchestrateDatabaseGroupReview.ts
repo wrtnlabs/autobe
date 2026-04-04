@@ -37,46 +37,49 @@ export async function orchestrateDatabaseGroupReview(
     state: ctx.state(),
   });
 
-  const event: AutoBeDatabaseGroupReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseGroupReviewApplication.IWrite | null> =
-      { value: null };
+  const event: AutoBeDatabaseGroupReviewEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeDatabaseGroupReviewApplication.IWrite | null> =
+        { value: null };
 
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          pointer,
+          preliminary,
+          groups: props.groups,
+        }),
+        enforceFunctionCall: true,
+        ...transformDatabaseGroupReviewHistory({
+          groups: props.groups,
+          instruction: props.instruction,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
+
+      // Apply revises to the group list
+      const reviewedGroups = AutoBeDatabaseGroupReviewProgrammer.execute({
         groups: props.groups,
-      }),
-      enforceFunctionCall: true,
-      ...transformDatabaseGroupReviewHistory({
-        groups: props.groups,
-        instruction: props.instruction,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+        revises: pointer.value.revises,
+      });
 
-    // Apply revises to the group list
-    const reviewedGroups = AutoBeDatabaseGroupReviewProgrammer.execute({
-      groups: props.groups,
-      revises: pointer.value.revises,
-    });
-
-    const event: AutoBeDatabaseGroupReviewEvent = {
-      type: SOURCE,
-      id: v7(),
-      created_at: start.toISOString(),
-      review: pointer.value.review,
-      revises: pointer.value.revises,
-      groups: reviewedGroups,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-    };
-    return out(result)(event);
-  });
+      const event: AutoBeDatabaseGroupReviewEvent = {
+        type: SOURCE,
+        id: v7(),
+        created_at: start.toISOString(),
+        review: pointer.value.review,
+        revises: pointer.value.revises,
+        groups: reviewedGroups,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+      };
+      return out(result)(event);
+    },
+  );
   ctx.dispatch(event);
   return event.groups;
 }

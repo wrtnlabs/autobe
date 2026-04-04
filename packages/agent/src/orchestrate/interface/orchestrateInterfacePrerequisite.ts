@@ -125,52 +125,55 @@ async function process(
       interfaceOperations: [props.operation],
     },
   });
-  const event: AutoBeInterfacePrerequisiteEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfacePrerequisiteApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        dict: props.dict,
-        document: props.document,
-        operation: props.operation,
-        preliminary,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfacePrerequisiteHistory({
-        document: props.document,
-        operation: props.operation,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeInterfacePrerequisiteEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeInterfacePrerequisiteApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          dict: props.dict,
+          document: props.document,
+          operation: props.operation,
+          preliminary,
+          build: (next) => {
+            pointer.value = next;
+          },
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfacePrerequisiteHistory({
+          document: props.document,
+          operation: props.operation,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeInterfacePrerequisiteEvent = {
-      type: SOURCE,
-      id: v7(),
-      endpoint: {
-        path: props.operation.path,
-        method: props.operation.method,
-      },
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      prerequisites: pointer.value.prerequisites,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      step: ctx.state().database?.step ?? 0,
-      created_at: new Date().toISOString(),
-    };
-    return out(result)(event);
-  });
+      const event: AutoBeInterfacePrerequisiteEvent = {
+        type: SOURCE,
+        id: v7(),
+        endpoint: {
+          path: props.operation.path,
+          method: props.operation.method,
+        },
+        analysis: pointer.value.analysis,
+        rationale: pointer.value.rationale,
+        prerequisites: pointer.value.prerequisites,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        step: ctx.state().database?.step ?? 0,
+        created_at: new Date().toISOString(),
+      };
+      return out(result)(event);
+    },
+  );
   ctx.dispatch(event);
   return event;
 }

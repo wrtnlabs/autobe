@@ -117,53 +117,56 @@ async function process(
       ),
     },
   });
-  const event: AutoBeRealizePlanEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeTransformerPlanApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: "realizePlan",
-      controller: createController({
-        prismaSchemaNames: props.prismaSchemaNames,
-        dtoTypeName: props.dtoTypeName,
-        build: (next) => {
-          pointer.value = next;
-        },
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformRealizeTransformerPlanHistory({
-        state: ctx.state(),
-        preliminary,
-        dtoTypeName: props.dtoTypeName,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeRealizePlanEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeRealizeTransformerPlanApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: "realizePlan",
+        controller: createController({
+          prismaSchemaNames: props.prismaSchemaNames,
+          dtoTypeName: props.dtoTypeName,
+          build: (next) => {
+            pointer.value = next;
+          },
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformRealizeTransformerPlanHistory({
+          state: ctx.state(),
+          preliminary,
+          dtoTypeName: props.dtoTypeName,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    const plans: AutoBeRealizeTransformerPlan[] = pointer.value.plans
-      .filter((p) => p.databaseSchemaName !== null)
-      .map((p) => ({
-        type: "transformer",
-        dtoTypeName: p.dtoTypeName,
-        thinking: p.thinking,
-        databaseSchemaName: p.databaseSchemaName!,
-      }));
-    const event: AutoBeRealizePlanEvent = {
-      type: "realizePlan",
-      id: v4(),
-      plans,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: new Date().toISOString(),
-    };
-    return out(result)(event);
-  });
+      const plans: AutoBeRealizeTransformerPlan[] = pointer.value.plans
+        .filter((p) => p.databaseSchemaName !== null)
+        .map((p) => ({
+          type: "transformer",
+          dtoTypeName: p.dtoTypeName,
+          thinking: p.thinking,
+          databaseSchemaName: p.databaseSchemaName!,
+        }));
+      const event: AutoBeRealizePlanEvent = {
+        type: "realizePlan",
+        id: v4(),
+        plans,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        completed: ++props.progress.completed,
+        total: props.progress.total,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      };
+      return out(result)(event);
+    },
+  );
   ctx.dispatch(event);
   return event.plans as AutoBeRealizeTransformerPlan[];
 }

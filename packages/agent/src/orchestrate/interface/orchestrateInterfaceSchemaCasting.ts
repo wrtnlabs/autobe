@@ -130,59 +130,60 @@ async function process(
     },
   });
 
-  const event: AutoBeInterfaceSchemaCastingEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController(ctx, {
+  const event: AutoBeInterfaceSchemaCastingEvent =
+    await preliminary.orchestrate(ctx, async (out) => {
+      const pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController(ctx, {
+          typeName: props.typeName,
+          operations: props.document.operations,
+          schema: props.originalSchema,
+          preliminary,
+          pointer,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfaceSchemaCastingHistory({
+          state: ctx.state(),
+          instruction: props.instruction,
+          typeName: props.typeName,
+          refineOperations: props.refineOperations,
+          originalSchema: props.originalSchema,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
+
+      // Fix schema if refined
+      const refinedSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject | null =
+        pointer.value.casting !== null
+          ? (AutoBeJsonSchemaFactory.fixDesign(
+              pointer.value.casting,
+            ) as AutoBeOpenApi.IJsonSchemaDescriptive.IObject)
+          : null;
+
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
         typeName: props.typeName,
-        operations: props.document.operations,
-        schema: props.originalSchema,
-        preliminary,
-        pointer,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaCastingHistory({
-        state: ctx.state(),
-        instruction: props.instruction,
-        typeName: props.typeName,
-        refineOperations: props.refineOperations,
-        originalSchema: props.originalSchema,
-        preliminary,
-      }),
+        original: props.originalSchema,
+        observation: pointer.value.observation,
+        reasoning: pointer.value.reasoning,
+        verdict: pointer.value.verdict,
+        refined: refinedSchema,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeInterfaceSchemaCastingEvent);
     });
-    if (pointer.value === null) return out(result)(null);
-
-    // Fix schema if refined
-    const refinedSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject | null =
-      pointer.value.casting !== null
-        ? (AutoBeJsonSchemaFactory.fixDesign(
-            pointer.value.casting,
-          ) as AutoBeOpenApi.IJsonSchemaDescriptive.IObject)
-        : null;
-
-    return out(result)({
-      type: SOURCE,
-      id: v7(),
-      typeName: props.typeName,
-      original: props.originalSchema,
-      observation: pointer.value.observation,
-      reasoning: pointer.value.reasoning,
-      verdict: pointer.value.verdict,
-      refined: refinedSchema,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceSchemaCastingEvent);
-  });
   ctx.dispatch(event);
   return event.refined || null;
 }

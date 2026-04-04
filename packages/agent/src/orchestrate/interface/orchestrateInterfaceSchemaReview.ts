@@ -169,50 +169,53 @@ async function process(
       })(),
     },
   });
-  const event: AutoBeInterfaceSchemaReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController(ctx, {
-        typeName: props.typeName,
-        operations: props.document.operations,
-        schema: props.reviewSchema,
-        preliminary,
-        pointer,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaReviewHistory({
-        state: ctx.state(),
-        instruction: props.instruction,
-        typeName: props.typeName,
-        reviewOperations: props.reviewOperations,
-        reviewSchema: props.reviewSchema,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeInterfaceSchemaReviewEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController(ctx, {
+          typeName: props.typeName,
+          operations: props.document.operations,
+          schema: props.reviewSchema,
+          preliminary,
+          pointer,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfaceSchemaReviewHistory({
+          state: ctx.state(),
+          instruction: props.instruction,
+          typeName: props.typeName,
+          reviewOperations: props.reviewOperations,
+          reviewSchema: props.reviewSchema,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    return out(result)({
-      type: SOURCE,
-      id: v7(),
-      typeName: props.typeName,
-      schema: props.reviewSchema,
-      review: pointer.value.review,
-      excludes: pointer.value.excludes,
-      revises: pointer.value.revises,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceSchemaReviewEvent);
-  });
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
+        typeName: props.typeName,
+        schema: props.reviewSchema,
+        review: pointer.value.review,
+        excludes: pointer.value.excludes,
+        revises: pointer.value.revises,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeInterfaceSchemaReviewEvent);
+    },
+  );
   ctx.dispatch(event);
   return AutoBeInterfaceSchemaReviewProgrammer.execute({
     schema: props.reviewSchema,

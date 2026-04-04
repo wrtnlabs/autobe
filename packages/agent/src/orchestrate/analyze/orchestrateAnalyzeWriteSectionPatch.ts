@@ -51,69 +51,72 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
       state: ctx.state(),
       dispatch: (e) => ctx.dispatch(e),
     });
-  const event: AutoBeAnalyzeWriteSectionEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteSectionApplicationWrite | null> =
-      {
-        value: null,
+  const event: AutoBeAnalyzeWriteSectionEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeAnalyzeWriteSectionApplicationWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          pointer,
+          preliminary,
+          scenarioEntityNames: props.scenarioEntityNames,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformAnalyzeWriteSectionPatchHistory(ctx, {
+          scenario: props.scenario,
+          file: props.file,
+          moduleEvent: props.moduleEvent,
+          unitEvent: props.unitEvent,
+          moduleIndex: props.moduleIndex,
+          unitIndex: props.unitIndex,
+          previousSectionEvent: props.previousSectionEvent,
+          feedback: props.feedback,
+          preliminary,
+          sectionIndices: props.sectionIndices,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
+
+      // Section-level merge: preserve originals for non-targeted sections
+      let finalSectionSections = pointer.value.sectionSections;
+      if (
+        props.sectionIndices != null &&
+        props.sectionIndices.length > 0 &&
+        props.previousSectionEvent.sectionSections.length ===
+          pointer.value.sectionSections.length
+      ) {
+        const targetSet = new Set(props.sectionIndices);
+        finalSectionSections = pointer.value.sectionSections.map(
+          (section, idx) =>
+            targetSet.has(idx)
+              ? section
+              : props.previousSectionEvent.sectionSections[idx]!,
+        );
+      }
+
+      const event: AutoBeAnalyzeWriteSectionEvent = {
+        type: SOURCE,
+        id: v7(),
+        moduleIndex: pointer.value.moduleIndex,
+        unitIndex: pointer.value.unitIndex,
+        sectionSections: finalSectionSections,
+        acquisition: preliminary.getAcquisition(),
+        tokenUsage: result.tokenUsage,
+        metric: result.metric,
+        step: (ctx.state().analyze?.step ?? -1) + 1,
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        retry: props.retry,
+        created_at: new Date().toISOString(),
       };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
-        scenarioEntityNames: props.scenarioEntityNames,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteSectionPatchHistory(ctx, {
-        scenario: props.scenario,
-        file: props.file,
-        moduleEvent: props.moduleEvent,
-        unitEvent: props.unitEvent,
-        moduleIndex: props.moduleIndex,
-        unitIndex: props.unitIndex,
-        previousSectionEvent: props.previousSectionEvent,
-        feedback: props.feedback,
-        preliminary,
-        sectionIndices: props.sectionIndices,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
-
-    // Section-level merge: preserve originals for non-targeted sections
-    let finalSectionSections = pointer.value.sectionSections;
-    if (
-      props.sectionIndices != null &&
-      props.sectionIndices.length > 0 &&
-      props.previousSectionEvent.sectionSections.length ===
-        pointer.value.sectionSections.length
-    ) {
-      const targetSet = new Set(props.sectionIndices);
-      finalSectionSections = pointer.value.sectionSections.map(
-        (section, idx) =>
-          targetSet.has(idx)
-            ? section
-            : props.previousSectionEvent.sectionSections[idx]!,
-      );
-    }
-
-    const event: AutoBeAnalyzeWriteSectionEvent = {
-      type: SOURCE,
-      id: v7(),
-      moduleIndex: pointer.value.moduleIndex,
-      unitIndex: pointer.value.unitIndex,
-      sectionSections: finalSectionSections,
-      acquisition: preliminary.getAcquisition(),
-      tokenUsage: result.tokenUsage,
-      metric: result.metric,
-      step: (ctx.state().analyze?.step ?? -1) + 1,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      retry: props.retry,
-      created_at: new Date().toISOString(),
-    };
-    return out(result)(event);
-  });
+      return out(result)(event);
+    },
+  );
   ctx.dispatch(event);
   return event;
 };

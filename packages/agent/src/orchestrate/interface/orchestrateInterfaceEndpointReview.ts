@@ -97,44 +97,45 @@ export const orchestrateInterfaceEndpointReview = async (
     },
     dispatch: (e) => ctx.dispatch(e),
   });
-  const event: AutoBeInterfaceEndpointReviewEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        actors: ctx.state().analyze?.actors ?? [],
-        designs: props.designs,
-        preliminary,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...props.programmer.history({
-        group: props.group,
-        designs: props.designs,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeInterfaceEndpointReviewEvent =
+    await preliminary.orchestrate(ctx, async (out) => {
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          actors: ctx.state().analyze?.actors ?? [],
+          designs: props.designs,
+          preliminary,
+          build: (next) => {
+            pointer.value = next;
+          },
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...props.programmer.history({
+          group: props.group,
+          designs: props.designs,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    return out(result)({
-      id: v7(),
-      type: SOURCE,
-      kind: props.programmer.kind,
-      group: props.group.name,
-      designs: props.designs,
-      review: pointer.value.review,
-      revises: pointer.value.revises,
-      acquisition: preliminary.getAcquisition(),
-      created_at: new Date().toISOString(),
-      step: ctx.state().analyze?.step ?? 0,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-    } satisfies AutoBeInterfaceEndpointReviewEvent);
-  });
+      return out(result)({
+        id: v7(),
+        type: SOURCE,
+        kind: props.programmer.kind,
+        group: props.group.name,
+        designs: props.designs,
+        review: pointer.value.review,
+        revises: pointer.value.revises,
+        acquisition: preliminary.getAcquisition(),
+        created_at: new Date().toISOString(),
+        step: ctx.state().analyze?.step ?? 0,
+        completed: ++props.progress.completed,
+        total: props.progress.total,
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+      } satisfies AutoBeInterfaceEndpointReviewEvent);
+    });
   ctx.dispatch(event);
   return AutoBeInterfaceEndpointReviewProgrammer.execute({
     kind: props.programmer.kind,

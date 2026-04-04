@@ -102,49 +102,52 @@ async function process(
     },
   });
 
-  const event: AutoBeDatabaseComponentEvent = await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseComponentApplication.IWrite | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
-        prefix: props.prefix,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformDatabaseComponentsHistory(ctx.state(), {
-        instruction: props.instruction,
-        prefix: props.prefix,
-        preliminary,
-        group: props.group,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeDatabaseComponentEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeDatabaseComponentApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          pointer,
+          preliminary,
+          prefix: props.prefix,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformDatabaseComponentsHistory(ctx.state(), {
+          instruction: props.instruction,
+          prefix: props.prefix,
+          preliminary,
+          group: props.group,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    // Build complete component from group skeleton + tables
-    const component: AutoBeDatabaseComponent = {
-      ...props.group,
-      tables: pointer.value.tables,
-    };
-    return out(result)({
-      type: SOURCE,
-      id: v7(),
-      created_at: new Date().toISOString(),
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      component,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-    });
-  });
+      // Build complete component from group skeleton + tables
+      const component: AutoBeDatabaseComponent = {
+        ...props.group,
+        tables: pointer.value.tables,
+      };
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
+        created_at: new Date().toISOString(),
+        analysis: pointer.value.analysis,
+        rationale: pointer.value.rationale,
+        component,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+      });
+    },
+  );
   ctx.dispatch(event);
   return event.component;
 }
