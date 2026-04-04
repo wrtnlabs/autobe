@@ -397,7 +397,6 @@ const process = async <
     progress: AutoBeProgressEventBase;
   },
 ): Promise<ICorrectionResult<RealizeFunction>> => {
-  props.preliminary.reset();
   const event: AutoBeRealizeCorrectEvent = await props.preliminary.orchestrate(
     ctx,
     async (out) => {

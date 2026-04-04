@@ -4,10 +4,18 @@ import {
 } from "@agentica/core";
 import {
   AutoBeEventSource,
+  AutoBeFunctionCallingMetric,
   AutoBePreliminaryAcquisition,
   AutoBePreliminaryKind,
   AutoBePreliminaryRewriteEvent,
+  AutoBeProcessAggregate,
+  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import {
+  AutoBeFunctionCallingMetricFactory,
+  AutoBeProcessAggregateFactory,
+  TokenUsageComputer,
+} from "@autobe/utils";
 import {
   IJsonSchemaApplication,
   ILlmApplication,
@@ -142,11 +150,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       local: this.local as IAutoBePreliminaryCollection,
       prerequisite: false,
     });
-  }
-
-  public reset(): void {
-    this.previousWrites = [];
-    this.completed.value = false;
   }
 
   /**
@@ -357,14 +360,31 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       ) => (value: T | null) => IAutoBeOrchestrateResult<T>,
     ) => Promise<IAutoBeOrchestrateResult<T>>,
   ): Promise<T | never> {
+    // initialize
+    this.previousWrites = [];
+    this.completed.value = false satisfies boolean as boolean;
+    const aggregate: AutoBeProcessAggregate =
+      AutoBeProcessAggregateFactory.createAggregate();
+
     try {
       for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
+        // take a process
         const result: IAutoBeOrchestrateResult<T> = await process(
           (x) => (value) => ({
             ...x,
             value,
           }),
         );
+
+        // swap consumption to aggregate
+        AutoBeFunctionCallingMetricFactory.increment(
+          aggregate.metric,
+          result.metric,
+        );
+        TokenUsageComputer.increment(aggregate.tokenUsage, result.tokenUsage);
+        result.tokenUsage = aggregate.tokenUsage;
+        result.metric = aggregate.metric;
+
         if (result.value !== null) {
           const executes: AgenticaExecuteHistory[] = result.histories.filter(
             (h) => h.type === "execute",
@@ -380,7 +400,9 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
 
           // store write result and raw arguments
           this.previousWrites.push({
-            value: result.value,
+            value: result.value as T,
+            metric: result.metric,
+            tokenUsage: result.tokenUsage,
             raw: history.arguments,
           });
           if (this.previousWrites.length > 1) {
@@ -419,7 +441,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
 
     // check success
     const last: IPreviousWrite | undefined = this.previousWrites.at(-1);
-    if (last !== undefined) return last.value;
+    if (last !== undefined) return last.value as T;
 
     throw new AutoBePreliminaryExhaustedError();
   }
@@ -474,6 +496,8 @@ export namespace AutoBePreliminaryController {
 }
 
 interface IPreviousWrite {
-  value: any;
+  value: unknown;
+  metric: AutoBeFunctionCallingMetric;
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
   raw: Record<string, unknown>;
 }
