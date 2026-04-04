@@ -58,26 +58,22 @@ export const orchestrateInterfaceSchemaDecouple = async (
     progress.total += cycles.length;
     await executeCachedBatch(
       ctx,
-      cycles.map(
-        (c) => async (promptCacheKey) => {
-          const counter = new Singleton(
-            () => ++progress.completed,
-          );
-          try {
-            return await process(ctx, {
-              schemas: props.schemas,
-              operations: props.operations,
-              cycle: c,
-              progress,
-              counter,
-              promptCacheKey,
-            });
-          } catch (error) {
-            counter.get();
-            throw error;
-          }
-        },
-      ),
+      cycles.map((c) => async (promptCacheKey) => {
+        const counter = new Singleton(() => ++progress.completed);
+        try {
+          return await process(ctx, {
+            schemas: props.schemas,
+            operations: props.operations,
+            cycle: c,
+            progress,
+            counter,
+            promptCacheKey,
+          });
+        } catch (error) {
+          counter.get();
+          throw error;
+        }
+      }),
     );
   }
 };
