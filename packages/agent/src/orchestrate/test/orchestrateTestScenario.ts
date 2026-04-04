@@ -9,7 +9,7 @@ import {
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { NamingConvention } from "@typia/utils";
-import { HashMap, HashSet, IPointer } from "tstl";
+import { HashMap, HashSet, IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -61,18 +61,20 @@ export const orchestrateTestScenario = async (
   const matrix: AutoBeTestScenario[][] = await executeCachedBatch(
     ctx,
     document.operations.map((operation) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++progress.completed);
       try {
         return await process(ctx, {
           dict,
           document,
           operation,
           progress,
+          counter,
           promptCacheKey,
           instruction,
         });
       } catch (error) {
+        counter.get();
         console.log(operation, error);
-        --progress.total;
         return [];
       }
     }),
@@ -108,6 +110,7 @@ async function process(
     operation: AutoBeOpenApi.IOperation;
     document: AutoBeOpenApi.IDocument;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
     instruction: string;
   },
@@ -210,7 +213,7 @@ async function process(
         scenarios: pointer.value,
         acquisition: preliminary.getAcquisition(),
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         step: ctx.state().interface?.step ?? 0,
         created_at: new Date().toISOString(),
       });

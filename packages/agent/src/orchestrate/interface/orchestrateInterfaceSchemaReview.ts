@@ -8,7 +8,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -49,6 +49,7 @@ export async function orchestrateInterfaceSchemaReview(
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++props.progress.completed);
       const predicate = (key: string) =>
         key === it ||
         (AutoBeJsonSchemaValidator.isPage(key) &&
@@ -62,7 +63,7 @@ export async function orchestrateInterfaceSchemaReview(
       try {
         const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schemas[it];
         if (AutoBeOpenApiTypeChecker.isObject(value) === false) {
-          ++props.progress.completed;
+          counter.get();
           return;
         }
         const reviewed: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
@@ -74,11 +75,12 @@ export async function orchestrateInterfaceSchemaReview(
             reviewSchema: value,
             progress: props.progress,
             promptCacheKey,
+            counter,
           });
         x[it] = reviewed;
       } catch (error) {
         console.log("interfaceSchemaReview failure", it, error);
-        --props.progress.total;
+        counter.get();
       }
     }),
   );
@@ -95,6 +97,7 @@ async function process(
     reviewSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
   const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
@@ -211,7 +214,7 @@ async function process(
         tokenUsage: result.tokenUsage,
         step: ctx.state().analyze?.step ?? 0,
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         created_at: new Date().toISOString(),
       } satisfies AutoBeInterfaceSchemaReviewEvent);
     },

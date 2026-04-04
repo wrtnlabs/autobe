@@ -6,7 +6,7 @@ import {
   AutoBeInterfaceGroup,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -67,6 +67,7 @@ export const orchestrateInterfaceEndpointReview = async (
       { log: false, logPrefix: "interfaceEndpointReview" },
     );
 
+  const counter = new Singleton(() => ++props.progress.completed);
   const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IWrite | null> =
     { value: null };
   const preliminary: AutoBePreliminaryController<
@@ -97,8 +98,9 @@ export const orchestrateInterfaceEndpointReview = async (
     },
     dispatch: (e) => ctx.dispatch(e),
   });
-  const event: AutoBeInterfaceEndpointReviewEvent =
-    await preliminary.orchestrate(ctx, async (out) => {
+  let event: AutoBeInterfaceEndpointReviewEvent;
+  try {
+    event = await preliminary.orchestrate(ctx, async (out) => {
       const result: AutoBeContext.IResult = await ctx.conversate({
         source: SOURCE,
         controller: createController({
@@ -130,12 +132,16 @@ export const orchestrateInterfaceEndpointReview = async (
         acquisition: preliminary.getAcquisition(),
         created_at: new Date().toISOString(),
         step: ctx.state().analyze?.step ?? 0,
-        completed: ++props.progress.completed,
+        completed: counter.get(),
         total: props.progress.total,
         metric: result.metric,
         tokenUsage: result.tokenUsage,
       } satisfies AutoBeInterfaceEndpointReviewEvent);
     });
+  } catch (error) {
+    counter.get();
+    throw error;
+  }
   ctx.dispatch(event);
   return AutoBeInterfaceEndpointReviewProgrammer.execute({
     kind: props.programmer.kind,

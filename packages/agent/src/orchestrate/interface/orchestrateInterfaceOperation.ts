@@ -9,7 +9,7 @@ import {
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { NamingConvention } from "@typia/utils";
-import { HashMap, IPointer, Pair } from "tstl";
+import { HashMap, IPointer, Pair, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -46,10 +46,12 @@ export async function orchestrateInterfaceOperation(
     await executeCachedBatch(
       ctx,
       props.designs.map((design) => async (promptCacheKey) => {
+        const counter = new Singleton(() => ++progress.completed);
         try {
           const row: AutoBeOpenApi.IOperation[] = await forceRetry(
             () =>
               process(ctx, {
+                counter,
                 design,
                 progress,
                 promptCacheKey,
@@ -61,6 +63,7 @@ export async function orchestrateInterfaceOperation(
           return row;
         } catch (error) {
           console.log("operation", design, error);
+          counter.get();
           throw error;
         }
       }),
@@ -135,6 +138,7 @@ export async function orchestrateInterfaceOperation(
 async function process(
   ctx: AutoBeContext,
   props: {
+    counter: Singleton<number>;
     design: AutoBeInterfaceEndpointDesign;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
@@ -246,7 +250,7 @@ async function process(
                   prerequisites: [],
                 }) satisfies AutoBeOpenApi.IOperation,
             );
-      ++props.progress.completed;
+      props.counter.get();
 
       return out(result)({
         type: SOURCE,

@@ -9,7 +9,7 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -61,6 +61,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
       state: ctx.state(),
       dispatch: (e) => ctx.dispatch(e),
     });
+  const counter = new Singleton(() => ++props.progress.completed);
   const event: AutoBeAnalyzeSectionReviewEvent = await preliminary.orchestrate(
     ctx,
     async (out) => {
@@ -99,7 +100,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
         metric: result.metric,
         step: (ctx.state().analyze?.step ?? -1) + 1,
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: counter.get(),
         retry: props.retry,
         created_at: new Date().toISOString(),
       };

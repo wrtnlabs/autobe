@@ -5,7 +5,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeInterfacePrerequisiteEvent } from "@autobe/interface/src/events/AutoBeInterfacePrerequisiteEvent";
-import { HashMap, IPointer } from "tstl";
+import { HashMap, IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -38,6 +38,7 @@ export async function orchestrateInterfacePrerequisite(
     await executeCachedBatch(
       ctx,
       candidates.map((it) => async (promptCacheKey) => {
+        const counter = new Singleton(() => ++progress.completed);
         try {
           return await process(ctx, {
             dict,
@@ -45,8 +46,10 @@ export async function orchestrateInterfacePrerequisite(
             operation: it,
             progress,
             promptCacheKey,
+            counter,
           });
         } catch {
+          counter.get();
           return null;
         }
       }),
@@ -62,6 +65,7 @@ async function process(
     operation: AutoBeOpenApi.IOperation;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeInterfacePrerequisiteEvent | null> {
   const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
@@ -167,7 +171,7 @@ async function process(
         metric: result.metric,
         tokenUsage: result.tokenUsage,
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         step: ctx.state().database?.step ?? 0,
         created_at: new Date().toISOString(),
       };

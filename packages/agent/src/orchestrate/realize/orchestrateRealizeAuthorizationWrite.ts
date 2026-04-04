@@ -8,7 +8,7 @@ import {
   IAutoBeCompiler,
   IAutoBePrismaCompileResult,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -51,9 +51,10 @@ export async function orchestrateRealizeAuthorizationWrite(
   });
   const authorizations: AutoBeRealizeAuthorization[] = await executeCachedBatch(
     ctx,
-    actors.map(
-      (a) => (promptCacheKey) =>
-        forceRetry(() =>
+    actors.map((a) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++progress.completed);
+      try {
+        return await forceRetry(() =>
           process(ctx, {
             actor: a,
             templates: InternalFileSystem.DEFAULT.map((el) => ({
@@ -61,9 +62,14 @@ export async function orchestrateRealizeAuthorizationWrite(
             })).reduce((acc, cur) => Object.assign(acc, cur), {}),
             progress,
             promptCacheKey,
+            counter,
           }),
-        ),
-    ),
+        );
+      } catch (error) {
+        counter.get();
+        throw error;
+      }
+    }),
   );
   ctx.dispatch({
     type: "realizeAuthorizationComplete",
@@ -81,6 +87,7 @@ async function process(
     templates: Record<string, string>;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeRealizeAuthorization> {
   const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
@@ -150,7 +157,7 @@ async function process(
         acquisition: preliminary.getAcquisition(),
         metric: result.metric,
         tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         total: props.progress.total,
         step: ctx.state().test?.step ?? 0,
       } satisfies AutoBeRealizeAuthorizationWriteEvent);

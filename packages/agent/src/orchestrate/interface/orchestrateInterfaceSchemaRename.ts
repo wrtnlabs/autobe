@@ -7,7 +7,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { OpenApiTypeChecker } from "@typia/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, OpenApi } from "typia";
 import { v7 } from "uuid";
 
@@ -159,6 +159,7 @@ const divideAndConquer = async (
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeInterfaceSchemaRefactor[]> => {
+  const counter = new Singleton(() => ++props.progress.completed);
   try {
     const pointer: IPointer<IAutoBeInterfaceSchemaRenameApplication.IProps | null> =
       {
@@ -172,7 +173,7 @@ const divideAndConquer = async (
       ...transformInterfaceSchemaRenameHistory(props),
     });
     if (pointer.value === null) {
-      ++props.progress.completed;
+      counter.get();
       return [];
     }
 
@@ -182,14 +183,14 @@ const divideAndConquer = async (
       id: v7(),
       refactors: pointer.value.refactors,
       total: props.progress.total,
-      completed: ++props.progress.completed,
+      completed: counter.get(),
       metric,
       tokenUsage,
       created_at: new Date().toISOString(),
     } satisfies AutoBeInterfaceSchemaRenameEvent);
     return pointer.value.refactors;
   } catch {
-    ++props.progress.completed;
+    counter.get();
     return [];
   }
 };

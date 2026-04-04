@@ -6,7 +6,7 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -51,12 +51,14 @@ export async function orchestrateDatabaseSchema(
     await executeCachedBatch(
       ctx,
       designPairs.map((task) => async (promptCacheKey) => {
+        const counter = new Singleton(() => ++props.progress.completed);
         try {
           const otherComponents: AutoBeDatabaseComponent[] =
             props.components.filter((c) => c !== task.component);
           const event: AutoBeDatabaseSchemaEvent = await process(ctx, {
             instruction: props.instruction,
             progress: props.progress,
+            counter,
             component: task.component,
             design: task.design,
             otherComponents,
@@ -66,7 +68,7 @@ export async function orchestrateDatabaseSchema(
           ctx.dispatch(event);
           return event;
         } catch (error) {
-          --props.progress.total;
+          counter.get();
           console.log("database schema error", task.design.name, error);
 
           const count: number | undefined = props.failed.get(task.design.name);
@@ -86,6 +88,7 @@ async function process(
   props: {
     instruction: string;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     component: AutoBeDatabaseComponent;
     design: AutoBeDatabaseComponentTableDesign;
     otherComponents: AutoBeDatabaseComponent[];
@@ -147,7 +150,7 @@ async function process(
       acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
+      completed: props.counter.get(),
       total: props.progress.total,
       step: ctx.state().analyze?.step ?? 0,
     } satisfies AutoBeDatabaseSchemaEvent);

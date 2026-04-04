@@ -6,7 +6,7 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -42,14 +42,21 @@ export async function orchestrateDatabaseComponent(
   const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
     ctx,
     domainGroups.map((group) => async (promptCacheKey) => {
-      const component: AutoBeDatabaseComponent = await process(ctx, {
-        group,
-        instruction: props.instruction,
-        prefix,
-        progress,
-        promptCacheKey,
-      });
-      return component;
+      const counter = new Singleton(() => ++progress.completed);
+      try {
+        const component: AutoBeDatabaseComponent = await process(ctx, {
+          group,
+          instruction: props.instruction,
+          prefix,
+          progress,
+          counter,
+          promptCacheKey,
+        });
+        return component;
+      } catch (error) {
+        counter.get();
+        throw error;
+      }
     }),
   );
   return AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(components);
@@ -62,6 +69,7 @@ async function process(
     instruction: string;
     prefix: string | null;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseComponent> {
@@ -144,7 +152,7 @@ async function process(
         tokenUsage: result.tokenUsage,
         step: ctx.state().analyze?.step ?? 0,
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
       });
     },
   );

@@ -6,7 +6,7 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -48,6 +48,7 @@ export async function orchestrateDatabaseSchemaReview(
     await executeCachedBatch(
       ctx,
       tableTasks.map((task) => async (promptCacheKey) => {
+        const counter = new Singleton(() => ++props.progress.completed);
         try {
           return await step(ctx, {
             application: props.application,
@@ -57,10 +58,11 @@ export async function orchestrateDatabaseSchemaReview(
               .flatMap((f) => f.models)
               .filter((m) => m.name !== task.model.name),
             progress: props.progress,
+            counter,
             promptCacheKey,
           });
         } catch {
-          ++props.progress.completed;
+          counter.get();
           return null;
         }
       }),
@@ -76,6 +78,7 @@ async function step(
     model: AutoBeDatabase.IModel;
     otherModels: AutoBeDatabase.IModel[];
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseSchemaReviewEvent> {
@@ -148,7 +151,7 @@ async function step(
         acquisition: preliminary.getAcquisition(),
         metric: result.metric,
         tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         total: props.progress.total,
         step: ctx.state().analyze?.step ?? 0,
       };

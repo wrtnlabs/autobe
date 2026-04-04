@@ -6,7 +6,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -32,14 +32,16 @@ export async function orchestrateInterfaceOperationReview(
     await executeCachedBatch(
       ctx,
       props.operations.map((operation) => async (promptCacheKey) => {
+        const counter = new Singleton(() => ++props.progress.completed);
         try {
           return await process(ctx, {
             operation,
             promptCacheKey,
             progress: props.progress,
+            counter,
           });
         } catch {
-          ++props.progress.completed;
+          counter.get();
           return false;
         }
       }),
@@ -53,6 +55,7 @@ async function process(
     operation: AutoBeOpenApi.IOperation;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeOpenApi.IOperation | false> {
   const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
@@ -172,7 +175,7 @@ async function process(
         created_at: new Date().toISOString(),
         step: ctx.state().analyze?.step ?? 0,
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
       } satisfies AutoBeInterfaceOperationReviewEvent);
     });
   ctx.dispatch(event);

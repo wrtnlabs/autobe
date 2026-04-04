@@ -8,7 +8,7 @@ import {
   AutoBeRealizeTransformerFunction,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -45,21 +45,29 @@ export async function orchestrateRealizeOperationWrite(
   );
   return await executeCachedBatch(
     ctx,
-    scenarios.map(
-      (s) => (promptCacheKey) =>
-        forceRetry(() =>
-          process(ctx, {
-            document,
-            totalAuthorizations: props.authorizations,
-            collectors: props.collectors,
-            transformers: props.transformers,
-            authorization: s.decoratorEvent ?? null,
-            scenario: s,
-            progress: props.progress,
-            promptCacheKey,
-          }),
-        ),
-    ),
+    scenarios.map((s) => {
+      const counter = new Singleton(() => ++props.progress.completed);
+      return async (promptCacheKey: string) => {
+        try {
+          return await forceRetry(() =>
+            process(ctx, {
+              document,
+              totalAuthorizations: props.authorizations,
+              collectors: props.collectors,
+              transformers: props.transformers,
+              authorization: s.decoratorEvent ?? null,
+              scenario: s,
+              progress: props.progress,
+              counter,
+              promptCacheKey,
+            }),
+          );
+        } catch (error) {
+          counter.get();
+          throw error;
+        }
+      };
+    }),
   );
 }
 
@@ -73,6 +81,7 @@ async function process(
     scenario: IAutoBeRealizeScenarioResult;
     transformers: AutoBeRealizeTransformerFunction[];
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeOperationFunction> {
@@ -195,7 +204,7 @@ async function process(
         acquisition: preliminary.getAcquisition(),
         metric: result.metric,
         tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         total: props.progress.total,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),

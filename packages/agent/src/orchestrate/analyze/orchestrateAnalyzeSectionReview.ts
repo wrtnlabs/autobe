@@ -9,7 +9,7 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -55,6 +55,7 @@ export const orchestrateAnalyzeSectionReview = async (
     retry: number;
   },
 ): Promise<AutoBeAnalyzeSectionReviewEvent> => {
+  const counter = new Singleton(() => ++props.progress.completed);
   const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
     new AutoBePreliminaryController({
       application:
@@ -107,7 +108,7 @@ export const orchestrateAnalyzeSectionReview = async (
         metric: result.metric,
         step: (ctx.state().analyze?.step ?? -1) + 1,
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: counter.get(),
         retry: props.retry,
         created_at: new Date().toISOString(),
       };

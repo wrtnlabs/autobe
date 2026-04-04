@@ -7,7 +7,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -55,16 +55,23 @@ export async function orchestrateInterfaceSchemaCasting(
         );
 
       const originalSchema: AutoBeOpenApi.IJsonSchema = props.schemas[it];
-      const refined: AutoBeOpenApi.IJsonSchema | null = await process(ctx, {
-        instruction: props.instruction,
-        document: props.document,
-        typeName: it,
-        refineOperations,
-        originalSchema,
-        progress: props.progress,
-        promptCacheKey,
-      });
-      if (refined !== null) x[it] = refined;
+      const counter = new Singleton(() => ++props.progress.completed);
+      try {
+        const refined: AutoBeOpenApi.IJsonSchema | null = await process(ctx, {
+          instruction: props.instruction,
+          document: props.document,
+          typeName: it,
+          refineOperations,
+          originalSchema,
+          progress: props.progress,
+          counter,
+          promptCacheKey,
+        });
+        if (refined !== null) x[it] = refined;
+      } catch (error) {
+        counter.get();
+        throw error;
+      }
     }),
   );
   return x;
@@ -79,6 +86,7 @@ async function process(
     refineOperations: AutoBeOpenApi.IOperation[];
     originalSchema: AutoBeOpenApi.IJsonSchema;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchema | null> {
@@ -180,7 +188,7 @@ async function process(
         tokenUsage: result.tokenUsage,
         step: ctx.state().analyze?.step ?? 0,
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         created_at: new Date().toISOString(),
       } satisfies AutoBeInterfaceSchemaCastingEvent);
     });

@@ -7,7 +7,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -59,14 +59,24 @@ export const orchestrateInterfaceSchemaDecouple = async (
     await executeCachedBatch(
       ctx,
       cycles.map(
-        (c) => (promptCacheKey) =>
-          process(ctx, {
-            schemas: props.schemas,
-            operations: props.operations,
-            cycle: c,
-            progress,
-            promptCacheKey,
-          }),
+        (c) => async (promptCacheKey) => {
+          const counter = new Singleton(
+            () => ++progress.completed,
+          );
+          try {
+            return await process(ctx, {
+              schemas: props.schemas,
+              operations: props.operations,
+              cycle: c,
+              progress,
+              counter,
+              promptCacheKey,
+            });
+          } catch (error) {
+            counter.get();
+            throw error;
+          }
+        },
       ),
     );
   }
@@ -79,6 +89,7 @@ async function process(
     operations: AutoBeOpenApi.IOperation[];
     cycle: AutoBeInterfaceSchemaDecoupleCycle;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<void> {
@@ -125,7 +136,7 @@ async function process(
     tokenUsage: result.tokenUsage,
     step: ctx.state().analyze?.step ?? 0,
     total: props.progress.total,
-    completed: ++props.progress.completed,
+    completed: props.counter.get(),
     created_at: new Date().toISOString(),
   } satisfies AutoBeInterfaceSchemaDecoupleEvent);
 }

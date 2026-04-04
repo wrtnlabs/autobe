@@ -57,10 +57,7 @@ export namespace AutoBeTestFunctionProgrammer {
       result,
       created_at: new Date().toISOString(),
       step: props.step,
-      completed:
-        result.type === "success"
-          ? ++props.progress.completed
-          : props.progress.completed,
+      completed: ++props.progress.completed,
       total: props.progress.total,
     } satisfies AutoBeTestValidateEvent<Function>;
   }

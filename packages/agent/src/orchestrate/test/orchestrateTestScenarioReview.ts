@@ -7,7 +7,7 @@ import {
   AutoBeTestScenario,
   AutoBeTestScenarioReviewEvent,
 } from "@autobe/interface";
-import { HashMap, IPointer } from "tstl";
+import { HashMap, IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -51,6 +51,7 @@ export async function orchestrateTestScenarioReview(
   const matrix: Array<AutoBeTestScenario | "erase"> = await executeCachedBatch(
     ctx,
     props.scenarios.map((scenario) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++props.progress.completed);
       try {
         return await process(ctx, {
           dict: props.dict,
@@ -58,11 +59,12 @@ export async function orchestrateTestScenarioReview(
           operation: props.dict.get(scenario.endpoint),
           scenario,
           progress: props.progress,
+          counter,
           instruction: props.instruction,
           promptCacheKey,
         });
       } catch {
-        --props.progress.total;
+        counter.get();
         return scenario;
       }
     }),
@@ -92,6 +94,7 @@ async function process(
     operation: AutoBeOpenApi.IOperation;
     scenario: AutoBeTestScenario;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     instruction: string;
     promptCacheKey: string;
   },
@@ -150,7 +153,7 @@ async function process(
         improved: pointer.value,
         acquisition: preliminary.getAcquisition(),
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         step: ctx.state().interface?.step ?? 0,
       };
 

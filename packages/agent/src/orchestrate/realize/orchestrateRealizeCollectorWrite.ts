@@ -9,7 +9,7 @@ import {
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -55,18 +55,20 @@ export async function orchestrateRealizeCollectorWrite(
   props.progress.total += props.plans.length;
   const result: AutoBeRealizeCollectorFunction[] = await executeCachedBatch(
     ctx,
-    props.plans.map(
-      (x) => (promptCacheKey) =>
+    props.plans.map((x) => {
+      const counter = new Singleton(() => ++props.progress.completed);
+      return (promptCacheKey: string) =>
         forceRetry(() =>
           process(ctx, {
             document: history.document,
             progress: props.progress,
+            counter,
             neighbors: getNeighbors(x),
             plan: x,
             promptCacheKey,
           }),
-        ),
-    ),
+        );
+    }),
   );
   return result;
 }
@@ -79,6 +81,7 @@ async function process(
     neighbors: AutoBeRealizeCollectorPlan[];
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeRealizeCollectorFunction> {
   const models: AutoBeDatabase.IModel[] = ctx
@@ -148,7 +151,7 @@ async function process(
         acquisition: preliminary.getAcquisition(),
         metric: result.metric,
         tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         total: props.progress.total,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),

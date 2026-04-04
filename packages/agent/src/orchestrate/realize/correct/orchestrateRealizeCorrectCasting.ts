@@ -5,7 +5,7 @@ import {
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -117,6 +117,7 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
       ctx,
       errorLocations.map(
         (location) => async (): Promise<ICorrectionResult<RealizeFunction>> => {
+          const counter = new Singleton(() => ++props.progress.completed);
           const localFunction: RealizeFunction = props.functions.find(
             (f) => f.location === location,
           )!;
@@ -145,7 +146,7 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
             );
           } catch (error) {
             console.log("realizeCorrectCasting", localFunction.location, error);
-            ++props.progress.completed;
+            counter.get();
             return {
               type: "exception",
               function: localFunction,

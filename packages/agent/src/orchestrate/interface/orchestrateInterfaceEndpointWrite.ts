@@ -8,7 +8,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { HashMap, IPointer, Pair } from "tstl";
+import { HashMap, IPointer, Pair, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -47,6 +47,7 @@ export const orchestrateInterfaceEndpointWrite = async (
     programmer: IProgrammer;
     group: AutoBeInterfaceGroup;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
@@ -161,7 +162,7 @@ export const orchestrateInterfaceEndpointWrite = async (
         tokenUsage: result.tokenUsage,
         created_at: start.toISOString(),
         step: ctx.state().analyze?.step ?? 0,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         total: props.progress.total,
       } satisfies AutoBeInterfaceEndpointEvent);
     },

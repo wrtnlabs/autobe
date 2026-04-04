@@ -8,7 +8,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { NamingConvention } from "@typia/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -34,17 +34,24 @@ export async function orchestrateInterfaceAuthorization(
   return await executeCachedBatch(
     ctx,
     actors.map((a) => async (promptCacheKey) => {
-      const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
-        actor: a,
-        progress,
-        promptCacheKey,
-        instruction: props.instruction,
-      });
-      ctx.dispatch(event);
-      return {
-        name: a.name,
-        operations: event.operations,
-      };
+      const counter = new Singleton(() => ++progress.completed);
+      try {
+        const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
+          actor: a,
+          progress,
+          counter,
+          promptCacheKey,
+          instruction: props.instruction,
+        });
+        ctx.dispatch(event);
+        return {
+          name: a.name,
+          operations: event.operations,
+        };
+      } catch (error) {
+        counter.get();
+        throw error;
+      }
     }),
   );
 }
@@ -55,6 +62,7 @@ async function process(
     instruction: string;
     actor: AutoBeAnalyze.IActor;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
@@ -121,7 +129,7 @@ async function process(
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
       total: props.progress.total,
-      completed: ++props.progress.completed,
+      completed: props.counter.get(),
     } satisfies AutoBeInterfaceAuthorizationEvent);
   });
 }

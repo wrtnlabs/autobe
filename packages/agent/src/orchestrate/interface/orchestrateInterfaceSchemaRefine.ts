@@ -7,7 +7,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -45,6 +45,7 @@ export async function orchestrateInterfaceSchemaRefine(
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++props.progress.completed);
       const predicate = (key: string) => key === it;
       const operations: AutoBeOpenApi.IOperation[] =
         props.document.operations.filter(
@@ -55,7 +56,7 @@ export async function orchestrateInterfaceSchemaRefine(
       try {
         const schema: AutoBeOpenApi.IJsonSchema = props.schemas[it];
         if (AutoBeOpenApiTypeChecker.isObject(schema) === false) {
-          --props.progress.total;
+          counter.get();
           return;
         }
         const refined: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
@@ -67,11 +68,12 @@ export async function orchestrateInterfaceSchemaRefine(
             schema,
             progress: props.progress,
             promptCacheKey,
+            counter,
           });
         x[it] = refined;
       } catch (error) {
         console.log("interfaceSchemaRefine failure", it, error);
-        --props.progress.total;
+        counter.get();
       }
     }),
   );
@@ -88,6 +90,7 @@ async function process(
     schema: AutoBeOpenApi.IJsonSchema.IObject;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
   const preliminary: AutoBePreliminaryController<
@@ -189,7 +192,7 @@ async function process(
         tokenUsage: result.tokenUsage,
         step: ctx.state().analyze?.step ?? 0,
         total: props.progress.total,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         created_at: new Date().toISOString(),
       } satisfies AutoBeInterfaceSchemaRefineEvent);
     },

@@ -7,7 +7,7 @@ import {
   AutoBeRealizePlanEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v4 } from "uuid";
 
@@ -47,18 +47,24 @@ export async function orchestrateRealizeCollectorPlan(
 
   const result: AutoBeRealizeCollectorPlan[][] = await executeCachedBatch(
     ctx,
-    Array.from(dtoTypeNames).map(
-      (it) => (promptCacheKey) =>
-        forceRetry(() =>
+    Array.from(dtoTypeNames).map((it) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++props.progress.completed);
+      try {
+        return await forceRetry(() =>
           process(ctx, {
             document,
             dtoTypeName: it,
             prismaSchemaNames,
             promptCacheKey,
             progress: props.progress,
+            counter,
           }),
-        ),
-    ),
+        );
+      } catch (error) {
+        counter.get();
+        throw error;
+      }
+    }),
   );
   return result.flat();
 }
@@ -71,6 +77,7 @@ async function process(
     prismaSchemaNames: Set<string>;
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeRealizeCollectorPlan[]> {
   const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
@@ -166,7 +173,7 @@ async function process(
         acquisition: preliminary.getAcquisition(),
         metric: result.metric,
         tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         total: props.progress.total,
         step: ctx.state().analyze?.step ?? 0,
         created_at: new Date().toISOString(),

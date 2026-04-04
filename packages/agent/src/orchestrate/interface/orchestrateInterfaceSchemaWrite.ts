@@ -7,7 +7,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -56,6 +56,7 @@ export async function orchestrateInterfaceSchemaWrite(
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++progress.completed);
       const predicate = (key: string) =>
         key === it ||
         (AutoBeJsonSchemaValidator.isPage(key) &&
@@ -73,11 +74,12 @@ export async function orchestrateInterfaceSchemaWrite(
           promptCacheKey,
           typeName: it,
           instruction: props.instruction,
+          counter,
         });
         x[it] = row;
       } catch (error) {
-        --progress.total;
         console.log("interfaceSchema failure", it, error);
+        counter.get();
       }
     }),
   );
@@ -93,6 +95,7 @@ async function process(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     instruction: string;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeOpenApi.IJsonSchema> {
   const preliminary: AutoBePreliminaryController<
@@ -183,7 +186,7 @@ async function process(
         acquisition: preliminary.getAcquisition(),
         metric: result.metric,
         tokenUsage: result.tokenUsage,
-        completed: ++props.progress.completed,
+        completed: props.counter.get(),
         total: props.progress.total,
         step: ctx.state().database?.step ?? 0,
         created_at: new Date().toISOString(),
