@@ -90,7 +90,6 @@ function createController(props: {
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
     if (result.success === false) {
-      console.log("validation failure", JSON.stringify(result.data, null, 2));
       return result;
     }
 
