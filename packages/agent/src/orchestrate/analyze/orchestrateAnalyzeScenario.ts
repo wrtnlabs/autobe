@@ -16,7 +16,6 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformAnalyzeScenarioHistory } from "./histories/transformAnalyzeScenarioHistory";
 import { buildFixedAnalyzeScenarioFiles } from "./structures/FixedAnalyzeTemplate";
 import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
-import { tryParseStringAsRecord } from "./utils/repairUtils";
 
 export const orchestrateAnalyzeScenario = async (
   ctx: AutoBeContext,
@@ -86,7 +85,6 @@ function createController(props: {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
-    input = repairMissingRequestType(input);
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
     if (result.success === false) {
@@ -120,149 +118,3 @@ function createController(props: {
 }
 
 const SOURCE = "analyzeScenario" satisfies AutoBeEventSource;
-
-const repairMissingRequestType = (input: unknown): unknown => {
-  if (isRecord(input) === false) return input;
-
-  input = repairFlattenedRequestPayload(input);
-  if (isRecord(input) === false) return input;
-  const root: Record<string, unknown> = input;
-  // LLMs (e.g. Qwen) sometimes send `request` as a JSON string
-  root.request = tryParseStringAsRecord(root.request);
-  if (isRecord(root.request) === false) return input;
-  const rawRequest: Record<string, unknown> = root.request;
-
-  const request: Record<string, unknown> =
-    normalizeAnalyzeScenarioRequest(rawRequest);
-  input = {
-    ...root,
-    request,
-  };
-  if (typeof request.type === "string" && request.type.length !== 0)
-    return input;
-
-  if (Array.isArray(request.sectionIds) && request.sectionIds.length > 0) {
-    return {
-      ...root,
-      request: {
-        ...request,
-        type: "getPreviousAnalysisSections",
-      },
-    };
-  }
-
-  if (
-    typeof request.reason === "string" &&
-    typeof request.prefix === "string" &&
-    Array.isArray(request.actors) &&
-    Array.isArray(request.entities) &&
-    Object.prototype.hasOwnProperty.call(request, "language")
-  ) {
-    return {
-      ...root,
-      request: {
-        ...request,
-        type: "write",
-      },
-    };
-  }
-  return input;
-};
-
-const repairFlattenedRequestPayload = (
-  input: Record<string, unknown>,
-): Record<string, unknown> => {
-  if (isRecord(input.request)) return input;
-
-  const completeLike =
-    typeof input.type === "string" &&
-    input.type === "write" &&
-    typeof input.reason === "string" &&
-    typeof input.prefix === "string";
-  if (completeLike) {
-    const {
-      thinking,
-      type,
-      reason,
-      prefix,
-      actors,
-      language,
-      entities,
-      features,
-      ...rest
-    } = input;
-    return {
-      ...rest,
-      ...(thinking !== undefined ? { thinking } : {}),
-      request: {
-        type,
-        reason,
-        prefix,
-        actors,
-        language,
-        entities,
-        features,
-      },
-    };
-  }
-
-  const previousLike =
-    typeof input.type === "string" &&
-    input.type === "getPreviousAnalysisSections" &&
-    input.sectionIds !== undefined;
-  if (previousLike) {
-    const { thinking, type, sectionIds, ...rest } = input;
-    return {
-      ...rest,
-      ...(thinking !== undefined ? { thinking } : {}),
-      request: {
-        type,
-        sectionIds,
-      },
-    };
-  }
-  return input;
-};
-
-const normalizeAnalyzeScenarioRequest = (
-  input: Record<string, unknown>,
-): Record<string, unknown> => {
-  const output: Record<string, unknown> = { ...input };
-
-  for (const key of ["actors", "entities", "features", "sectionIds"] as const) {
-    if (typeof output[key] === "string") {
-      const parsed: unknown = parseLooseStructuredString(output[key]);
-      if (parsed !== undefined) output[key] = parsed;
-    }
-  }
-  return output;
-};
-
-const parseLooseStructuredString = (input: string): unknown => {
-  const text: string = input.trim();
-  if (text.length === 0) return undefined;
-  if (
-    (text.startsWith("[") === false && text.startsWith("{") === false) ||
-    (text.endsWith("]") === false && text.endsWith("}") === false)
-  )
-    return undefined;
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    // qwen sometimes emits pseudo-JSON with single quotes
-    const normalized = text
-      .replace(/'/g, '"')
-      .replace(/\bNone\b/g, "null")
-      .replace(/\bTrue\b/g, "true")
-      .replace(/\bFalse\b/g, "false");
-    try {
-      return JSON.parse(normalized);
-    } catch {
-      return undefined;
-    }
-  }
-};
-
-const isRecord = (input: unknown): input is Record<string, unknown> =>
-  typeof input === "object" && input !== null && Array.isArray(input) === false;

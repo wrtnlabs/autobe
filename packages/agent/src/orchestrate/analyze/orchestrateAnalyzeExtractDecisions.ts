@@ -5,17 +5,15 @@ import {
   AutoBeEventSource,
 } from "@autobe/interface";
 import { IPointer } from "tstl";
-import typia, { ILlmApplication, IValidation } from "typia";
+import typia, { ILlmApplication } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { transformAnalyzeExtractDecisionsHistory } from "./histories/transformAnalyzeExtractDecisionsHistory";
 import {
   IAutoBeAnalyzeExtractDecisionsApplication,
-  IAutoBeAnalyzeExtractDecisionsApplicationProps,
   IAutoBeAnalyzeExtractDecisionsApplicationWrite,
 } from "./structures/IAutoBeAnalyzeExtractDecisionsApplication";
 import { IFileDecisions } from "./utils/detectDecisionConflicts";
-import { isRecord, tryParseStringAsRecord } from "./utils/repairUtils";
 
 /**
  * Extract key decisions from a single file's section content.
@@ -64,23 +62,7 @@ function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplicationWrite | null>;
 }): IAgenticaController.IClass {
   const application: ILlmApplication =
-    typia.llm.application<IAutoBeAnalyzeExtractDecisionsApplication>({
-      validate: {
-        process: (
-          input: unknown,
-        ): IValidation<IAutoBeAnalyzeExtractDecisionsApplicationProps> => {
-          if (isRecord(input) && typeof input.request === "string") {
-            input = {
-              ...input,
-              request: tryParseStringAsRecord(input.request),
-            };
-          }
-          return typia.validate<IAutoBeAnalyzeExtractDecisionsApplicationProps>(
-            input,
-          );
-        },
-      },
-    });
+    typia.llm.application<IAutoBeAnalyzeExtractDecisionsApplication>();
   return {
     protocol: "class",
     name: SOURCE,

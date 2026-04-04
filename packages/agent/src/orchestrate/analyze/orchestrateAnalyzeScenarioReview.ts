@@ -6,7 +6,7 @@ import {
   AutoBeEventSource,
 } from "@autobe/interface";
 import { IPointer } from "tstl";
-import typia, { ILlmApplication, IValidation } from "typia";
+import typia, { ILlmApplication } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -14,9 +14,7 @@ import { transformAnalyzeScenarioReviewHistory } from "./histories/transformAnal
 import {
   IAutoBeAnalyzeScenarioReviewApplication,
   IAutoBeAnalyzeScenarioReviewApplicationComplete,
-  IAutoBeAnalyzeScenarioReviewApplicationProps,
 } from "./structures/IAutoBeAnalyzeScenarioReviewApplication";
-import { isRecord, tryParseStringAsRecord } from "./utils/repairUtils";
 
 /**
  * Orchestrate scenario review: validate scenario output against user's original
@@ -89,23 +87,7 @@ function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeScenarioReviewApplicationComplete | null>;
 }): IAgenticaController.IClass {
   const application: ILlmApplication =
-    typia.llm.application<IAutoBeAnalyzeScenarioReviewApplication>({
-      validate: {
-        process: (
-          input: unknown,
-        ): IValidation<IAutoBeAnalyzeScenarioReviewApplicationProps> => {
-          if (isRecord(input) && typeof input.request === "string") {
-            input = {
-              ...input,
-              request: tryParseStringAsRecord(input.request),
-            };
-          }
-          return typia.validate<IAutoBeAnalyzeScenarioReviewApplicationProps>(
-            input,
-          );
-        },
-      },
-    });
+    typia.llm.application<IAutoBeAnalyzeScenarioReviewApplication>();
   return {
     protocol: "class",
     name: SOURCE,
