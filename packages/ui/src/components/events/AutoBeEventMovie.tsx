@@ -138,6 +138,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "jsonValidateError":
     case "consentFunctionCall":
     case "preliminaryAcquire":
+    case "preliminaryRewrite":
     case "analyzeWriteModule":
     case "analyzeWriteUnit":
     case "analyzeWriteSection":
