@@ -70,7 +70,3 @@ export namespace IAutoBeDatabaseSchemaApplication {
     definition: AutoBeDatabaseSchemaDefinition;
   }
 }
-
-/** @deprecated Use IAutoBeDatabaseSchemaApplication.IWrite instead. */
-export type IAutoBeDatabaseSchemaApplicationComplete =
-  IAutoBeDatabaseSchemaApplication.IWrite;

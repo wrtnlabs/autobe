@@ -55,7 +55,3 @@ export namespace IAutoBeInterfaceEndpointWriteApplication {
     designs: AutoBeInterfaceEndpointDesign[];
   }
 }
-
-/** @deprecated Use IAutoBeInterfaceEndpointWriteApplication.IWrite instead. */
-export type IAutoBeInterfaceEndpointWriteApplicationComplete =
-  IAutoBeInterfaceEndpointWriteApplication.IWrite;

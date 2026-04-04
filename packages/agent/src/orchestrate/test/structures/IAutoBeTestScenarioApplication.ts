@@ -90,7 +90,3 @@ export namespace IAutoBeTestScenarioApplication {
     scenarios: AutoBeTestScenario[];
   }
 }
-
-/** @deprecated Use IAutoBeTestScenarioApplication.IWrite instead. */
-export type IAutoBeTestScenarioApplicationComplete =
-  IAutoBeTestScenarioApplication.IWrite;

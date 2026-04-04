@@ -88,7 +88,3 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
     "specification" | "description" | "requestBody" | "responseBody"
   > {}
 }
-
-/** @deprecated Use IAutoBeInterfaceOperationReviewApplication.IWrite instead. */
-export type IAutoBeInterfaceOperationReviewApplicationComplete =
-  IAutoBeInterfaceOperationReviewApplication.IWrite;

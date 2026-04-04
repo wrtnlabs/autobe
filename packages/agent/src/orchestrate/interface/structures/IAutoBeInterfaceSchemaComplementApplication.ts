@@ -61,7 +61,3 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
     design: AutoBeInterfaceSchemaDesign;
   }
 }
-
-/** @deprecated Use IAutoBeInterfaceSchemaComplementApplication.IWrite instead. */
-export type IAutoBeInterfaceSchemaComplementApplicationComplete =
-  IAutoBeInterfaceSchemaComplementApplication.IWrite;

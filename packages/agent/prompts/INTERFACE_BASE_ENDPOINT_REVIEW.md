@@ -16,7 +16,9 @@ You must provide a revision for **EVERY** endpoint in the provided list. No omis
 - `erase`: Endpoint should not exist
 - `create`: Missing endpoint should be added → provide `design`
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied, or submit another `write` to improve.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied.
+
+Reserve revision writes exclusively for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure. Minor imperfections are acceptable; do not waste revision attempts on them.
 
 ## 3. Common Mistakes to Fix
 

@@ -58,7 +58,3 @@ export namespace IAutoBeDatabaseSchemaReviewApplication {
     content: AutoBeDatabaseSchemaDefinition | null;
   }
 }
-
-/** @deprecated Use IAutoBeDatabaseSchemaReviewApplication.IWrite instead. */
-export type IAutoBeDatabaseSchemaReviewApplicationComplete =
-  IAutoBeDatabaseSchemaReviewApplication.IWrite;

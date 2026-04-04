@@ -54,7 +54,3 @@ export namespace IAutoBeDatabaseGroupApplication {
     groups: AutoBeDatabaseGroup[] & tags.MinItems<1>;
   }
 }
-
-/** @deprecated Use IAutoBeDatabaseGroupApplication.IWrite instead. */
-export type IAutoBeDatabaseGroupApplicationComplete =
-  IAutoBeDatabaseGroupApplication.IWrite;

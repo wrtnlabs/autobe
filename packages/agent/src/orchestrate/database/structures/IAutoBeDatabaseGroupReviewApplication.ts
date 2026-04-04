@@ -56,7 +56,3 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
     revises: AutoBeDatabaseGroupRevise[];
   }
 }
-
-/** @deprecated Use IAutoBeDatabaseGroupReviewApplication.IWrite instead. */
-export type IAutoBeDatabaseGroupReviewApplicationComplete =
-  IAutoBeDatabaseGroupReviewApplication.IWrite;

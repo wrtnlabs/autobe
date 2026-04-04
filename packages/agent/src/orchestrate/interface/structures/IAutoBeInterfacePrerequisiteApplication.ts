@@ -58,7 +58,3 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
     prerequisites: AutoBeOpenApi.IPrerequisite[];
   }
 }
-
-/** @deprecated Use IAutoBeInterfacePrerequisiteApplication.IWrite instead. */
-export type IAutoBeInterfacePrerequisiteApplicationComplete =
-  IAutoBeInterfacePrerequisiteApplication.IWrite;

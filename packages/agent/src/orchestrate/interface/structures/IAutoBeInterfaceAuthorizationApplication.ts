@@ -48,7 +48,3 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
     operations: AutoBeOpenApi.IOperation[] & tags.MinItems<1>;
   }
 }
-
-/** @deprecated Use IAutoBeInterfaceAuthorizationApplication.IWrite instead. */
-export type IAutoBeInterfaceAuthorizationApplicationComplete =
-  IAutoBeInterfaceAuthorizationApplication.IWrite;

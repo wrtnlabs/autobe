@@ -53,7 +53,3 @@ export namespace IAutoBeDatabaseComponentApplication {
     tables: AutoBeDatabaseComponentTableDesign[];
   }
 }
-
-/** @deprecated Use IAutoBeDatabaseComponentApplication.IWrite instead. */
-export type IAutoBeDatabaseComponentApplicationComplete =
-  IAutoBeDatabaseComponentApplication.IWrite;

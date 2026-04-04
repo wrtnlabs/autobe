@@ -58,7 +58,3 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
     revises: AutoBeDatabaseComponentTableRevise[];
   }
 }
-
-/** @deprecated Use IAutoBeDatabaseComponentReviewApplication.IWrite instead. */
-export type IAutoBeDatabaseComponentReviewApplicationComplete =
-  IAutoBeDatabaseComponentReviewApplication.IWrite;

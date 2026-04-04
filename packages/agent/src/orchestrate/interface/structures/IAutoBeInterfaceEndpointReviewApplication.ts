@@ -59,7 +59,3 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
     revises: AutoBeInterfaceEndpointRevise[];
   }
 }
-
-/** @deprecated Use IAutoBeInterfaceEndpointReviewApplication.IWrite instead. */
-export type IAutoBeInterfaceEndpointReviewApplicationComplete =
-  IAutoBeInterfaceEndpointReviewApplication.IWrite;

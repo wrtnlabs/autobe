@@ -83,7 +83,3 @@ export namespace IAutoBeInterfaceOperationApplication {
     "authorizationType" | "authorizationActor" | "prerequisites"
   > {}
 }
-
-/** @deprecated Use IAutoBeInterfaceOperationApplication.IWrite instead. */
-export type IAutoBeInterfaceOperationApplicationComplete =
-  IAutoBeInterfaceOperationApplication.IWrite;

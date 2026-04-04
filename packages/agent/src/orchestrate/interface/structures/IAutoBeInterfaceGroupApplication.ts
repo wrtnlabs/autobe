@@ -54,7 +54,3 @@ export namespace IAutoBeInterfaceGroupApplication {
     groups: AutoBeInterfaceGroup[] & tags.MinItems<1>;
   }
 }
-
-/** @deprecated Use IAutoBeInterfaceGroupApplication.IWrite instead. */
-export type IAutoBeInterfaceGroupApplicationComplete =
-  IAutoBeInterfaceGroupApplication.IWrite;

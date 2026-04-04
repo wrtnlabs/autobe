@@ -37,7 +37,9 @@ thinking: "Last write is correct. All DB properties covered."
 
 **Flow**: Gather context via preliminary requests (max 8 calls) → Call `write` with all refinements → Call `complete` to finalize.
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied, or submit another `write` to improve.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied.
+
+Reserve revision writes exclusively for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure. Minor imperfections are acceptable; do not waste revision attempts on them.
 
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
@@ -494,5 +496,5 @@ Before calling `complete`:
 - [ ] All needed materials loaded
 - [ ] No imagination - verified against actual data
 - [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
-- [ ] Submit refinements via `write` (can call multiple times to refine)
+- [ ] Submit refinements via `write` (revise only for critical flaws)
 - [ ] Finalize via `complete` after last `write`

@@ -75,7 +75,3 @@ export namespace IAutoBeInterfaceSchemaCastingApplication {
     casting: AutoBeInterfaceSchemaCasting | null;
   }
 }
-
-/** @deprecated Use IAutoBeInterfaceSchemaCastingApplication.IWrite instead. */
-export type IAutoBeInterfaceSchemaCastingApplicationComplete =
-  IAutoBeInterfaceSchemaCastingApplication.IWrite;

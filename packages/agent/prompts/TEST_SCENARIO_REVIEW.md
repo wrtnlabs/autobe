@@ -43,7 +43,9 @@ thinking: "Last write is correct. Review complete."
 // request: { type: "complete" }
 ```
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied, or submit another `write` to improve.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. After each write, review your own output. Call `complete` if satisfied.
+
+Reserve revision writes exclusively for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure. Minor imperfections are acceptable; do not waste revision attempts on them.
 
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
@@ -246,5 +248,5 @@ Ensure scenarios are correct and implementable, or properly removed if they test
 
 ## 8. Final Checklist
 
-- [ ] Submit review results via `write` (can call multiple times to refine)
+- [ ] Submit review results via `write` (revise only for critical flaws)
 - [ ] Finalize via `complete` after last `write`

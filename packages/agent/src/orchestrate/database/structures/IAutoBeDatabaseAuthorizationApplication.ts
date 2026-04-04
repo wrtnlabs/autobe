@@ -67,7 +67,3 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
     tables: AutoBeDatabaseComponentTableDesign[] & tags.MinItems<1>;
   }
 }
-
-/** @deprecated Use IAutoBeDatabaseAuthorizationApplication.IWrite instead. */
-export type IAutoBeDatabaseAuthorizationApplicationComplete =
-  IAutoBeDatabaseAuthorizationApplication.IWrite;

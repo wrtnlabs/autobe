@@ -127,7 +127,3 @@ export namespace IAutoBeTestScenarioReviewApplication {
     content: AutoBeTestScenario | "erase" | null;
   }
 }
-
-/** @deprecated Use IAutoBeTestScenarioReviewApplication.IWrite instead. */
-export type IAutoBeTestScenarioReviewApplicationComplete =
-  IAutoBeTestScenarioReviewApplication.IWrite;

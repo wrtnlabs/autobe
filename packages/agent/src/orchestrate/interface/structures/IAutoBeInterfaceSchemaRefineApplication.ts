@@ -99,7 +99,3 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
     revises: AutoBeInterfaceSchemaPropertyRefine[];
   }
 }
-
-/** @deprecated Use IAutoBeInterfaceSchemaRefineApplication.IWrite instead. */
-export type IAutoBeInterfaceSchemaRefineApplicationComplete =
-  IAutoBeInterfaceSchemaRefineApplication.IWrite;
