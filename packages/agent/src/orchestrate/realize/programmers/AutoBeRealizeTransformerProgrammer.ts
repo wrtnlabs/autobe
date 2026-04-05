@@ -802,7 +802,7 @@ ${properties}
       return false;
     };
     const hasSelfRefArray = (s: AutoBeOpenApi.IJsonSchema): boolean => {
-      if (AutoBeOpenApiTypeChecker.isArray(s)) hasSelfRef(s.items);
+      if (AutoBeOpenApiTypeChecker.isArray(s)) return hasSelfRef(s.items);
       else if (AutoBeOpenApiTypeChecker.isOneOf(s))
         return s.oneOf.some((sub) => hasSelfRefArray(sub));
       return false;
