@@ -23,7 +23,7 @@ LOCAL INDEX-FIRST RULE (ALREADY LOADED)
 4. **Write**: Call `process({ request: { type: "write", analysis: "...", rationale: "...", designs: [...] } })` with your designed endpoints
 5. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
 
 **ABSOLUTE PROHIBITIONS**:
 - NEVER request all schemas/files just to be thorough
@@ -314,7 +314,25 @@ process({
 - `authorizationType`: Always `null` (auth endpoints handled by Authorization Agent)
 - `authorizationActors`: Array of actors who can call this endpoint
 
-## 8. Final Checklist
+## 8. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+**Review method**: In your `thinking` field, walk through each endpoint one by one — state the path + method and your verdict (correct / needs fix / remove). Do not assess the batch as a whole; check each endpoint individually.
+
+### Endpoint Validation
+- No redundant actor prefix in path (e.g., `/admin/admin-panel` → `/admin/panel`)
+- No actor ID in path for self-access operations (JWT provides identity)
+- Every endpoint is justified by business requirements — no speculative endpoints
+- No CRUD collision: each table has at most one endpoint per operation type
+
+### Semantic Deduplication
+- No two endpoints with different paths but identical business semantics
+
+### Cross-Check Against Rules Above
+- Table-specific rules (Section 3): actor, session, snapshot restrictions
+
+## 9. Final Checklist
 
 ### Path Design
 - [ ] All resource names are PLURAL

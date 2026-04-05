@@ -26,7 +26,7 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * For completion: is the DTO transformable or non-transformable? What
      * actors, entities, and prefix were chosen based on requirements?
      */
-    thinking?: string | null;
+    thinking?: string | null | undefined;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the

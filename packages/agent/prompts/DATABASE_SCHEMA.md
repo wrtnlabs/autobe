@@ -354,7 +354,7 @@ process({
 })
 ```
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
 
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
@@ -393,7 +393,41 @@ FINAL DESIGN:
 
 ---
 
-## 9. Final Checklist
+## 9. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+### Normalization
+- No JSON/array data serialized as strings — use proper Prisma types or relations
+- No transitive dependencies (3NF violations)
+- 1:1 dependent entities use separate tables with unique foreign keys, not nullable fields on the parent
+- No multiple foreign keys to the same target without clear semantic distinction
+
+### Relationship Correctness
+- No unintended circular references
+- All implied relationships have foreign key columns
+- Foreign key types match the referenced primary key type
+- Cascade behaviors are appropriate (onDelete, onUpdate)
+
+### Naming Conventions
+- Table names: snake_case, plural (e.g., `shopping_customers`, `bbs_articles`)
+- Field names: snake_case (e.g., `created_at`, `shopping_customer_id`)
+- Relation/oppositeName: camelCase (e.g., `customer`, `passwordResets`)
+
+### Stance Classification
+- Cross-check stance against Section 1.2: actor tables → `"actor"`, session tables → `"session"`, snapshot tables → `"snapshot"`, user-managed → `"primary"`, parent-dependent → `"subsidiary"`
+
+### Index Correctness
+- Cross-check index rules against Section 4 "Prohibited Patterns": no duplicate plain+gin, no duplicate unique+plain, no subset indexes, no duplicate composites
+
+### Required Fields
+- Every model has `id` (primary key)
+- Every model has `created_at` (DateTime)
+- Models with mutation have `updated_at` and/or `deleted_at` where soft-delete applies
+
+---
+
+## 10. Final Checklist
 
 **Table Creation:**
 - [ ] EXACTLY ONE table named `targetTable`
@@ -435,5 +469,5 @@ FINAL DESIGN:
 
 **Execution:**
 - [ ] `thinking` field completed
-- [ ] Submit model via `write` (revise only for critical flaws)
+- [ ] Submit model via `write` (review against Self-Review Checklist before completing)
 - [ ] Finalize via `complete` after last `write`

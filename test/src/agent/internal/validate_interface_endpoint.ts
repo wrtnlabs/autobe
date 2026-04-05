@@ -35,16 +35,16 @@ export const validate_interface_endpoint = async (props: {
     completed: 0,
     total: group.groups.length * 2,
   };
-  const reviewProgress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: group.groups.length * 2,
-  };
+  // const reviewProgress: AutoBeProgressEventBase = {
+  //   completed: 0,
+  //   total: group.groups.length * 2,
+  // };
   const baseEndpoints: AutoBeInterfaceEndpointDesign[] =
     await orchestrateInterfaceBaseEndpoint(props.agent.getContext(), {
       instruction: "",
       groups: group.groups,
       progress,
-      reviewProgress,
+      // reviewProgress,
       authorizeOperations: authorizations.map((a) => a.operations).flat(),
     });
   const actionEndpoints: AutoBeInterfaceEndpointDesign[] =
@@ -53,7 +53,7 @@ export const validate_interface_endpoint = async (props: {
       groups: group.groups,
       baseEndpoints,
       progress,
-      reviewProgress,
+      // reviewProgress,
       authorizeOperations: authorizations.map((a) => a.operations).flat(),
     });
   const endpoints: AutoBeInterfaceEndpointDesign[] = [

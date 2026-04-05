@@ -9,10 +9,7 @@ import typia, { ILlmApplication } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { transformAnalyzeExtractDecisionsHistory } from "./histories/transformAnalyzeExtractDecisionsHistory";
-import {
-  IAutoBeAnalyzeExtractDecisionsApplication,
-  IAutoBeAnalyzeExtractDecisionsApplicationWrite,
-} from "./structures/IAutoBeAnalyzeExtractDecisionsApplication";
+import { IAutoBeAnalyzeExtractDecisionsApplication } from "./structures/IAutoBeAnalyzeExtractDecisionsApplication";
 import { IFileDecisions } from "./utils/detectDecisionConflicts";
 
 /**
@@ -32,7 +29,7 @@ export const orchestrateAnalyzeExtractDecisions = async (
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   },
 ): Promise<IFileDecisions> => {
-  const pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplicationWrite | null> =
+  const pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplication.IProps | null> =
     {
       value: null,
     };
@@ -59,7 +56,7 @@ export const orchestrateAnalyzeExtractDecisions = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplicationWrite | null>;
+  pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplication.IProps | null>;
 }): IAgenticaController.IClass {
   const application: ILlmApplication =
     typia.llm.application<IAutoBeAnalyzeExtractDecisionsApplication>();
@@ -69,7 +66,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "write") props.pointer.value = input.request;
+        props.pointer.value = input;
       },
     } satisfies IAutoBeAnalyzeExtractDecisionsApplication,
   };

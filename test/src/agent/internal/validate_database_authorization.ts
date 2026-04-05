@@ -1,6 +1,5 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestrateDatabaseAuthorization } from "@autobe/agent/src/orchestrate/database/orchestrateDatabaseAuthorization";
-import { orchestrateDatabaseAuthorizationReview } from "@autobe/agent/src/orchestrate/database/orchestrateDatabaseAuthorizationReview";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeDatabaseComponent,
@@ -31,18 +30,12 @@ export const validate_database_authorization = async (props: {
     });
   if (component === null) return null;
 
-  const reviewed: AutoBeDatabaseComponent =
-    await orchestrateDatabaseAuthorizationReview(props.agent.getContext(), {
-      instruction: "",
-      component,
-    });
-
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
     files: {
-      ["prisma.authorization.json"]: JSON.stringify(reviewed),
+      ["prisma.authorization.json"]: JSON.stringify(component),
     },
   });
-  return reviewed;
+  return component;
 };

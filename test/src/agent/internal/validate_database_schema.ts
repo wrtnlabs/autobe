@@ -7,7 +7,7 @@ import {
   AutoBeExampleProject,
 } from "@autobe/interface";
 
-import { validate_database_component_review } from "./validate_database_component_review";
+import { validate_database_component } from "./validate_database_component";
 
 export const validate_database_schema = async (props: {
   agent: AutoBeAgent;
@@ -18,8 +18,8 @@ export const validate_database_schema = async (props: {
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
-      file: "prisma.component.review.json",
-    })) ?? (await validate_database_component_review(props));
+      file: "prisma.component.json",
+    })) ?? (await validate_database_component(props));
 
   const events: AutoBeDatabaseSchemaEvent[] = await orchestrateDatabaseSchema(
     props.agent.getContext(),

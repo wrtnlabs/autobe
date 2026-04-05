@@ -110,7 +110,7 @@ process({
 })
 ```
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
 
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
@@ -118,7 +118,24 @@ You may submit `write` up to 3 times (initial + 2 revisions), but this is a safe
 
 ---
 
-## 4. Final Checklist
+## 4. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+### Per-Actor Coverage
+For each actor defined in the scenario:
+- A main account table exists (stores identity data)
+- A session table exists (manages authentication tokens)
+- Support tables exist where needed (password reset, email verification, etc.)
+
+### Auth-Only Boundary
+- This component contains ONLY authentication/authorization tables
+- No business domain tables (products, articles, orders, etc.) should be here
+- Business entities belong in their respective domain components
+
+---
+
+## 5. Final Checklist
 
 **Actor Kind Compliance:**
 - [ ] Kind correctly identified (guest/member/admin)
@@ -136,5 +153,5 @@ You may submit `write` up to 3 times (initial + 2 revisions), but this is a safe
 - [ ] `analysis` documents auth requirements
 - [ ] `rationale` explains design decisions
 - [ ] Each table has name + description
-- [ ] Submit tables via `write` (revise only for critical flaws)
+- [ ] Submit tables via `write` (review against Self-Review Checklist before completing)
 - [ ] Finalize via `complete` after last `write`

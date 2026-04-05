@@ -34,12 +34,6 @@ pnpm run archive:go --vendor qwen/qwen3.5-9b --useToolChoice false --project red
 pnpm run archive:go --vendor qwen/qwen3.5-9b --useToolChoice false --project shopping > archive.qwen-qwen3.5-9b.shopping.log
 pnpm run archive:go --vendor qwen/qwen3.5-9b --useToolChoice false --project erp > archive.qwen-qwen3.5-9b.erp.log
 
-# qwen/qwen3-coder-next (0.12) -> working
-pnpm run archive:go --vendor qwen/qwen3-coder-next --project todo > archive.qwen-qwen3-coder-next.todo.log
-pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qwen-qwen3-coder-next.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-coder-next --project shopping > archive.qwen-qwen3-coder-next.shopping.log
-pnpm run archive:go --vendor qwen/qwen3-coder-next --project erp > archive.qwen-qwen3-coder-next.erp.log
-
 ######################################################
 # KIMI
 ######################################################

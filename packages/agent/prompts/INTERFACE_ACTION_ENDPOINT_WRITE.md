@@ -25,7 +25,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 5. **Revise** (if needed): Submit another `write` to refine
 6. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
 
 **Empty array is valid**: If no action endpoints are needed, call `write` with `designs: []`
 
@@ -244,7 +244,23 @@ process({
 })
 ```
 
-## 9. Final Checklist
+## 9. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+**Review method**: In your `thinking` field, walk through each endpoint one by one — state the path + method and your verdict (correct / needs fix / remove). Do not assess the batch as a whole; check each endpoint individually.
+
+### Endpoint Validation
+- No redundant actor prefix in path
+- No actor ID in path for self-access operations
+- Every endpoint is justified by business requirements
+- No CRUD collision with base endpoints (Section 4)
+
+### Semantic Deduplication
+- No two endpoints with different paths but identical business semantics
+- Action endpoints do not duplicate base endpoint functionality
+
+## 10. Final Checklist
 
 ### Path Design
 - [ ] All resource names are PLURAL
@@ -263,7 +279,7 @@ process({
 ---
 
 **Function Call:**
-- [ ] Submit endpoint designs via `write` (revise only for critical flaws)
+- [ ] Submit endpoint designs via `write` (review against Self-Review Checklist before completing)
 - [ ] Finalize via `complete` after last `write`
 
 **YOUR MISSION**: Discover and generate action endpoints for requirements without corresponding database tables. Do NOT create CRUD endpoints (handled by Base Endpoint Generator). Do NOT create authentication endpoints (handled by Authorization Agent). Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete" } })`.

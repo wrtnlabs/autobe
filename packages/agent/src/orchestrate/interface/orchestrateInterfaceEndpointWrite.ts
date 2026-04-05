@@ -34,11 +34,6 @@ interface IProgrammer {
       | "previousInterfaceOperations"
     >;
   }): IAutoBeOrchestrateHistory;
-  review(next: {
-    group: AutoBeInterfaceGroup;
-    designs: AutoBeInterfaceEndpointDesign[];
-    promptCacheKey: string;
-  }): Promise<AutoBeInterfaceEndpointDesign[]>;
 }
 
 export const orchestrateInterfaceEndpointWrite = async (

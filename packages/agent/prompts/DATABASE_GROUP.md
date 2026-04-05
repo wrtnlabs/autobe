@@ -160,7 +160,7 @@ process({
 })
 ```
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
 
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
@@ -223,7 +223,20 @@ interface AutoBeDatabaseGroup {
 
 ---
 
-## 7. Final Checklist
+## 7. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+**Review method**: In your `thinking` field, walk through each group one by one — state the namespace and verify it against the checks below. Then verify no domain from requirements is left uncovered.
+
+- Every business domain from requirements has a corresponding group — no domain left out
+- No group covers too many unrelated domains (20+ tables → split)
+- No hallucinated groups — each group traces to user requirements
+- Cross-check kind rules (Section 1.2) and naming standards (Section 1.3)
+
+---
+
+## 8. Final Checklist
 
 **Complete Coverage:**
 - [ ] Every business domain has a corresponding component
@@ -250,7 +263,7 @@ interface AutoBeDatabaseGroup {
 - [ ] `thinking` field completed
 - [ ] `analysis` documents domain identification
 - [ ] `rationale` explains grouping decisions
-- [ ] Submit groups via `write` (revise only for critical flaws)
+- [ ] Submit groups via `write` (review against Self-Review Checklist before completing)
 - [ ] Finalize via `complete` after last `write`
 
 **When in Doubt:**

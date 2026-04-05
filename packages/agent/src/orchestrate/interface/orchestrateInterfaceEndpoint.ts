@@ -25,10 +25,6 @@ export const orchestrateInterfaceEndpoint = async (
     completed: 0,
     total: props.groups.length * ENDPOINT_STEPS,
   };
-  const reviewProgress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: props.groups.length * ENDPOINT_STEPS,
-  };
 
   // BASE ENDPOINTS
   const baseEndpoints: AutoBeInterfaceEndpointDesign[] =
@@ -36,7 +32,6 @@ export const orchestrateInterfaceEndpoint = async (
       instruction: props.instruction,
       authorizeOperations: props.authorizeOperations,
       groups: props.groups,
-      reviewProgress: reviewProgress,
       progress: writeProgress,
     });
 
@@ -48,7 +43,6 @@ export const orchestrateInterfaceEndpoint = async (
       groups: props.groups,
       baseEndpoints: baseEndpoints,
       progress: writeProgress,
-      reviewProgress: reviewProgress,
     });
 
   // UNIQUE FILTERING

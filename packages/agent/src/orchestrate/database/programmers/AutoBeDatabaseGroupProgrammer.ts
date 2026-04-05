@@ -4,12 +4,13 @@ import { IValidation } from "typia";
 
 export namespace AutoBeDatabaseGroupProgrammer {
   /**
-   * Validates the group kind counts.
+   * Validates the group kind counts and namespace uniqueness.
    *
    * Enforces the following rules:
    *
    * - Exactly 1 authorization group required
    * - At least 1 domain group required
+   * - All namespaces must be unique across groups
    *
    * @param props Validation context with errors array and groups to validate
    */
@@ -41,6 +42,26 @@ export namespace AutoBeDatabaseGroupProgrammer {
           }
         `,
       });
+    }
+
+    // Validation: namespace uniqueness across all groups
+    const seen = new Set<string>();
+    for (let i = 0; i < props.groups.length; i++) {
+      const ns = props.groups[i]!.namespace;
+      if (seen.has(ns))
+        props.errors.push({
+          path: `${props.path}[${i}].namespace`,
+          expected: `a unique namespace (no duplicates)`,
+          value: ns,
+          description: StringUtil.trim`
+            Duplicate namespace "${ns}" found. Each group must have a
+            unique namespace.
+
+            Fix: Merge groups that share namespace "${ns}" into a single
+            group, or rename one of them to a distinct namespace.
+          `,
+        });
+      else seen.add(ns);
     }
 
     // Validation: at least 1 domain group required

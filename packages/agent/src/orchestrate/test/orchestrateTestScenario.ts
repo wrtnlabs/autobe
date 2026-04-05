@@ -21,7 +21,6 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformTestScenarioHistory } from "./histories/transformTestScenarioHistory";
-import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
 import { AutoBeTestScenarioProgrammer } from "./programmers/AutoBeTestScenarioProgrammer";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { getPrerequisites } from "./utils/getPrerequisites";
@@ -81,16 +80,8 @@ export const orchestrateTestScenario = async (
   );
   const scenarios: AutoBeTestScenario[] = matrix.flat();
 
-  return await orchestrateTestScenarioReview(ctx, {
-    dict,
-    document,
-    scenarios,
-    progress: {
-      total: scenarios.length,
-      completed: 0,
-    },
-    instruction,
-  });
+  // review removed — write agents self-review during rewrite loop
+  return scenarios;
 };
 
 /**

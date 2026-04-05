@@ -48,7 +48,7 @@ thinking: "Last write is correct. All scenarios have proper auth and dependencie
 2. Generate scenarios via `write`
 3. Confirm via `complete`
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
 
 **PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
@@ -221,10 +221,21 @@ Public Operations with Private Prerequisites:
 
 Generate implementable test scenarios that validate real business workflows.
 
-## 10. Final Checklist
+## 10. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+### Input Validation Error Detection
+- Scan each scenario's `functionName` and `draft` for forbidden patterns (Section 2) — remove any that test input validation
+
+### Technical Correctness
+- Cross-check auth rules (Section 3): every operation with `authorizationActor` has the corresponding `/auth/{actor}/join` in dependencies
+- Cross-check dependency rules (Section 4): auth first, parent before child, no duplicates, all prerequisites present
+
+## 11. Final Checklist
 
 - [ ] Scenarios test business logic, NOT input validation errors
 - [ ] All required auth operations (join) present and FIRST
 - [ ] All prerequisites in correct order (parent before child)
-- [ ] Submit scenarios via `write` (revise only for critical flaws)
+- [ ] Submit scenarios via `write` (review against Self-Review Checklist before completing)
 - [ ] Finalize via `complete` after last `write`

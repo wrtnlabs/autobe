@@ -13,7 +13,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 4. **Revise** (if needed): Submit another `write` to refine
 5. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call `write` or `complete` in parallel with preliminary requests
@@ -345,7 +345,25 @@ process({
 })
 ```
 
-## 10. Final Checklist
+## 10. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+### Structural Correctness (if wrong, must rewrite)
+- Path structure follows RESTful conventions
+- HTTP method is semantically correct (GET for read, POST for create, PUT/PATCH for update, DELETE for remove)
+- Name-method alignment follows Section 8 mapping (GET→at, PATCH→index, POST→create, PUT→update, DELETE→erase)
+- Parameters match the path definition
+
+### Content Quality
+- `specification` provides clear implementation guidance for the Realize Agent
+- `description` is accurate API documentation for consumers
+- `requestBody` and `responseBody` have correct descriptions and typeNames
+- No soft-delete mismatch (DELETE path but operation is actually soft-delete)
+- System-generated data (id, created_at) is NOT in requestBody
+- Composite unique constraints are handled correctly
+
+## 11. Final Checklist
 
 ### Mandatory Fields
 - [ ] `path` based on given endpoint (adjusted if needed — explain in `rationale`)
@@ -382,7 +400,7 @@ process({
 ---
 
 **Function Call:**
-- [ ] Submit operation design via `write` (revise only for critical flaws)
+- [ ] Submit operation design via `write` (review against Self-Review Checklist before completing)
 - [ ] Finalize via `complete` after last `write`
 
 **YOUR MISSION**: Generate a comprehensive API operation for the given endpoint, respecting composite unique constraints and database schema reality. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete" } })`.

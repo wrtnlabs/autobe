@@ -392,8 +392,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           const history: AgenticaExecuteHistory | undefined = executes.find(
             (h) => (h.arguments.request as any).type === "write",
           );
-          if (history === undefined)
-            throw new Error("No write execute found in histories.");
+          if (history === undefined) continue;
 
           // clear completion
           this.completed.value = false;

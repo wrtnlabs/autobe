@@ -15,11 +15,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateUnitSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeWriteUnitHistory } from "./histories/transformAnalyzeWriteUnitHistory";
-import {
-  IAutoBeAnalyzeWriteUnitApplication,
-  IAutoBeAnalyzeWriteUnitApplicationProps,
-  IAutoBeAnalyzeWriteUnitApplicationWrite,
-} from "./structures/IAutoBeAnalyzeWriteUnitApplication";
+import { IAutoBeAnalyzeWriteUnitApplication } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
 
 export const orchestrateAnalyzeWriteUnit = async (
   ctx: AutoBeContext,
@@ -47,7 +43,7 @@ export const orchestrateAnalyzeWriteUnit = async (
   const event: AutoBeAnalyzeWriteUnitEvent = await preliminary.orchestrate(
     ctx,
     async (out) => {
-      const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationWrite | null> =
+      const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplication.IWrite | null> =
         {
           value: null,
         };
@@ -92,14 +88,14 @@ export const orchestrateAnalyzeWriteUnit = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationWrite | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteUnitApplication.IWrite | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteUnitApplicationProps> => {
-    const result: IValidation<IAutoBeAnalyzeWriteUnitApplicationProps> =
-      typia.validate<IAutoBeAnalyzeWriteUnitApplicationProps>(input);
+  ): IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeWriteUnitApplication.IProps>(input);
     if (result.success === false) return result;
 
     // Validate English-only content for complete requests

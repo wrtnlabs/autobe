@@ -9,7 +9,6 @@ import {
   AutoBeDatabaseHistory,
   AutoBeDatabaseSchemaDefinition,
   AutoBeDatabaseSchemaEvent,
-  AutoBeDatabaseSchemaReviewEvent,
   AutoBeProgressEventBase,
   IAutoBeCompiler,
   IAutoBeDatabaseValidation,
@@ -22,14 +21,10 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
 import { orchestrateDatabaseAuthorization } from "./orchestrateDatabaseAuthorization";
-import { orchestrateDatabaseAuthorizationReview } from "./orchestrateDatabaseAuthorizationReview";
 import { orchestrateDatabaseComponent } from "./orchestrateDatabaseComponent";
-import { orchestrateDatabaseComponentReview } from "./orchestrateDatabaseComponentReview";
 import { orchestrateDatabaseCorrect } from "./orchestrateDatabaseCorrect";
 import { orchestrateDatabaseGroup } from "./orchestrateDatabaseGroup";
-import { orchestrateDatabaseGroupReview } from "./orchestrateDatabaseGroupReview";
 import { orchestrateDatabaseSchema } from "./orchestrateDatabaseSchema";
-import { orchestrateDatabaseSchemaReview } from "./orchestrateDatabaseSchemaReview";
 
 export const orchestrateDatabase = async (
   ctx: AutoBeContext,
@@ -109,14 +104,7 @@ const orchestrateGroup = async (
   ctx: AutoBeContext,
   props: IAutoBeFacadeApplicationProps,
 ): Promise<AutoBeDatabaseGroup[]> => {
-  const groups: AutoBeDatabaseGroup[] = await orchestrateDatabaseGroup(
-    ctx,
-    props.instruction,
-  );
-  return await orchestrateDatabaseGroupReview(ctx, {
-    instruction: props.instruction,
-    groups,
-  });
+  return await orchestrateDatabaseGroup(ctx, props.instruction);
 };
 
 const orchestrateAuthorization = async (
@@ -126,19 +114,10 @@ const orchestrateAuthorization = async (
     groups: AutoBeDatabaseGroup[];
   },
 ): Promise<AutoBeDatabaseComponent | null> => {
-  const authorization: AutoBeDatabaseComponent | null =
-    await orchestrateDatabaseAuthorization(ctx, {
-      instruction: props.instruction,
-      groups: props.groups,
-    });
-  if (authorization === null) return null;
-
-  const reviewed: AutoBeDatabaseComponent | null =
-    await orchestrateDatabaseAuthorizationReview(ctx, {
-      instruction: props.instruction,
-      component: authorization,
-    });
-  return reviewed ?? authorization;
+  return await orchestrateDatabaseAuthorization(ctx, {
+    instruction: props.instruction,
+    groups: props.groups,
+  });
 };
 
 const orchestrateComponent = async (
@@ -158,13 +137,7 @@ const orchestrateComponent = async (
       instruction: props.instruction,
       groups: props.groups,
     });
-  return [
-    ...(authorization ? [authorization] : []),
-    ...(await orchestrateDatabaseComponentReview(ctx, {
-      instruction: props.instruction,
-      components,
-    })),
-  ];
+  return [...(authorization ? [authorization] : []), ...components];
 };
 
 const orchestrateSchema = async (
@@ -184,7 +157,6 @@ const orchestrateSchema = async (
   }));
 
   // completion set
-  const reviewed: Set<string> = new Set();
   const written: Set<string> = new Set();
   const failed: Map<string, number> = new Map();
   const complete = () =>
@@ -254,39 +226,22 @@ const orchestrateSchema = async (
   // THE LOOP
   //----
   const writeProgress: AutoBeProgressEventBase = { total: 0, completed: 0 };
-  const reviewProgress: AutoBeProgressEventBase = { total: 0, completed: 0 };
   while (complete() === false) {
-    do {
-      const events: AutoBeDatabaseSchemaEvent[] =
-        await orchestrateDatabaseSchema(ctx, {
-          instruction: props.instruction,
-          components,
-          written,
-          failed,
-          progress: writeProgress,
-        });
-      for (const e of events)
-        define({
-          namespace: e.namespace,
-          definition: e.definition,
-        });
-    } while (complete() === false);
-
-    const events: AutoBeDatabaseSchemaReviewEvent[] =
-      await orchestrateDatabaseSchemaReview(ctx, {
-        application: application(),
+    const events: AutoBeDatabaseSchemaEvent[] = await orchestrateDatabaseSchema(
+      ctx,
+      {
+        instruction: props.instruction,
         components,
-        reviewed,
-        progress: reviewProgress,
+        written,
+        failed,
+        progress: writeProgress,
+      },
+    );
+    for (const e of events)
+      define({
+        namespace: e.namespace,
+        definition: e.definition,
       });
-    for (const e of events) {
-      reviewed.add(e.modelName);
-      if (e.content !== null)
-        define({
-          namespace: e.namespace,
-          definition: e.content,
-        });
-    }
   }
   return application();
 };

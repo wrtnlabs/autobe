@@ -1,6 +1,5 @@
 import {
   AutoBeDatabaseValidateEvent,
-  AutoBeInterfaceOperationReviewEvent,
   AutoBeRealizeAuthorizationValidateEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestValidateEvent,
@@ -12,7 +11,6 @@ import { EventCard, EventContent, EventHeader } from "./common";
 export interface IAutoBeValidateEventMovieProps {
   event:
     | AutoBeDatabaseValidateEvent
-    | AutoBeInterfaceOperationReviewEvent
     | AutoBeTestValidateEvent
     | AutoBeRealizeValidateEvent
     | AutoBeRealizeAuthorizationValidateEvent;
@@ -204,42 +202,6 @@ function getState(event: IAutoBeValidateEventMovieProps["event"]): IState {
         ),
         isError: !isAuthSuccess,
         isSuccess: isAuthSuccess,
-        step: event.step,
-      };
-    case "interfaceOperationReview":
-      return {
-        title: "Interface Operations Review",
-        description: (
-          <>
-            API operations are being reviewed for quality and consistency.
-            <br />
-            <br />
-            <strong>Method:</strong> {event.operation.method.toUpperCase()}
-            <br />
-            <strong>Path:</strong> {event.operation.path}
-            <br />
-            <strong>Status:</strong> Review in progress
-            <br />
-            <br />
-            <strong>Review Summary:</strong>
-            <br />
-            <div
-              style={{
-                maxHeight: "100px",
-                overflow: "hidden",
-                fontSize: "0.75rem",
-                color: "#64748b",
-                marginTop: "0.5rem",
-              }}
-            >
-              {event.review.length > 200
-                ? `${event.review.substring(0, 200)}...`
-                : event.review}
-            </div>
-          </>
-        ),
-        isError: false,
-        isSuccess: true,
         step: event.step,
       };
     default:

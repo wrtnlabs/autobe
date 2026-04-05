@@ -22,7 +22,6 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
-import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
 import { AutoBeInterfaceAuthorizationProgrammer } from "./programmers/AutoBeInterfaceAuthorizationProgrammer";
 import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
@@ -87,24 +86,7 @@ export async function orchestrateInterfaceOperation(
       AutoBeOpenApiEndpointComparator.equals,
     );
 
-  // review
-  const reviewProgress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: written.length,
-  };
-  const reviewed: AutoBeOpenApi.IOperation[] =
-    await orchestrateInterfaceOperationReview(ctx, {
-      operations: written,
-      progress: reviewProgress,
-    });
-  for (const r of reviewed)
-    unique.set(
-      {
-        path: r.path,
-        method: r.method,
-      },
-      r,
-    );
+  // review removed — write agents self-review during rewrite loop
   const operations: AutoBeOpenApi.IOperation[] = unique
     .toJSON()
     .map((it) => it.second);
