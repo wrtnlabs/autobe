@@ -66,13 +66,13 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
   const messages: IMicroAgenticaHistoryJson[] = [...systems, ...others];
 
   // previous written value
-  const previousWrite: Record<string, any> | null =
+  const previousWrite: Record<string, unknown> | null =
     preliminary.getPreviousWrite();
   if (previousWrite !== null)
     messages.push(
       createFunctionCallingMessage({
         controller: preliminary.getSource(),
-        kind: "write" as any,
+        kind: "write",
         arguments: previousWrite,
       }),
     );
@@ -725,7 +725,7 @@ const createFunctionCallingMessage = <
 >(props: {
   controller: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
   kind: Kind | "write";
-  arguments: Record<string, any>;
+  arguments: Record<string, unknown>;
 }): IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.IExecute => ({
   type: "execute",
   id: v7(),

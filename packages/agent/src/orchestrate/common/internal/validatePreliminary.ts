@@ -81,7 +81,7 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
       }>(data) as IValidation<IAutoBePreliminaryRequest<Kind, true>>;
     return {
       success: false,
-      data: data as any,
+      data,
       errors: [
         {
           path: "$input.request",

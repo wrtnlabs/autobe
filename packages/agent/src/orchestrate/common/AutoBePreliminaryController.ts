@@ -390,7 +390,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
             (h) => h.type === "execute",
           );
           const history: AgenticaExecuteHistory | undefined = executes.find(
-            (h) => (h.arguments.request as any).type === "write",
+            (h) => (h.arguments.request as { type: "write" }).type === "write",
           );
           if (history === undefined) continue;
 
