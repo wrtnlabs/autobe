@@ -1274,13 +1274,9 @@ AutoBE의 데이터베이스 단계는 **7개의 전문 오케스트레이터**�
 ```
 orchestratePrisma() [총괄]
   ├─ orchestratePrismaGroup()           → 도메인 그룹 스켈레톤
-  ├─ orchestratePrismaGroupReview()     → 그룹 리뷰
   ├─ orchestratePrismaAuthorization()   → 인증 테이블
   ├─ orchestratePrismaComponent()       → 컴포넌트별 테이블 추출
-  ├─ orchestratePrismaComponentReview() → 컴포넌트 리뷰
-  ├─ orchestratePrismaSchema()          → 개별 테이블 생성 (이중 루프)
-  │   ├─ Write Cycle: 미작성 테이블 생성
-  │   └─ Review Cycle: 작성된 테이블 리뷰/교정
+  ├─ orchestratePrismaSchema()          → 개별 테이블 생성 (self-review 내장)
   └─ orchestratePrismaCorrect()         → 검증 루프 (최대 30회)
 ```
 

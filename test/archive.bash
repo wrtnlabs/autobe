@@ -28,12 +28,6 @@ pnpm run archive:go --vendor qwen/qwen3.5-27b --useToolChoice false --project re
 pnpm run archive:go --vendor qwen/qwen3.5-27b --useToolChoice false --project shopping > archive.qwen-qwen3.5-27b.shopping.log
 pnpm run archive:go --vendor qwen/qwen3.5-27b --useToolChoice false --project erp > archive.qwen-qwen3.5-27b.erp.log
 
-# qwen/qwen3.5-9b (0.05)
-pnpm run archive:go --vendor qwen/qwen3.5-9b --useToolChoice false --project todo > archive.qwen-qwen3.5-9b.todo.log
-pnpm run archive:go --vendor qwen/qwen3.5-9b --useToolChoice false --project reddit > archive.qwen-qwen3.5-9b.reddit.log
-pnpm run archive:go --vendor qwen/qwen3.5-9b --useToolChoice false --project shopping > archive.qwen-qwen3.5-9b.shopping.log
-pnpm run archive:go --vendor qwen/qwen3.5-9b --useToolChoice false --project erp > archive.qwen-qwen3.5-9b.erp.log
-
 ######################################################
 # KIMI
 ######################################################
