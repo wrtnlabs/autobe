@@ -76,7 +76,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   private completed: IPointer<boolean> = {
     value: false,
   };
-  private is_rewrite_loop: boolean = false;
 
   /**
    * Initializes controller with data collections and auto-complements
@@ -90,11 +89,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.source_id = v7();
     this.kinds = props.kinds;
     this.dispatch = props.dispatch;
-
-    // completion tracking
-    this.is_rewrite_loop =
-      props.application.components.schemas?.["IAutoBePreliminaryComplete"] !==
-      undefined;
 
     // biome-ignore-start lint: intended
     this.config = {
@@ -423,7 +417,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           }
           if (
             this.previousWrites.length >=
-            (this.is_rewrite_loop
+            (this.kinds.includes("complete" as Kind)
               ? AutoBeConfigConstant.PRELIMINARY_WRITE_LIMIT
               : 1)
           )
