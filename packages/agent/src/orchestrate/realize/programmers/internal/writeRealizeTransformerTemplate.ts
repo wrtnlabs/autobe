@@ -48,10 +48,10 @@ function isScalarProperty(schema: AutoBeOpenApi.IJsonSchema): boolean {
   if (AutoBeOpenApiTypeChecker.isNumber(schema)) return true;
   if (AutoBeOpenApiTypeChecker.isInteger(schema)) return true;
   if (AutoBeOpenApiTypeChecker.isBoolean(schema)) return true;
+  if (AutoBeOpenApiTypeChecker.isConstant(schema)) return true;
+  if (AutoBeOpenApiTypeChecker.isNull(schema)) return true;
   if (AutoBeOpenApiTypeChecker.isOneOf(schema))
-    return schema.oneOf.every(
-      (s) => AutoBeOpenApiTypeChecker.isNull(s) || isScalarProperty(s),
-    );
+    return schema.oneOf.every((s) => isScalarProperty(s));
   return false;
 }
 
@@ -102,8 +102,12 @@ function writeNormalTemplate(props: {
         );
         return `  ${k}: {${hint}},`;
       }
-      if (nr.isArray)
-        return `  ${k}: await ArrayUtil.asyncMap(input.${nr.relationKey}, ${nr.transformerName}.transform),`;
+      if (nr.isArray) {
+        const call = `await ArrayUtil.asyncMap(input.${nr.relationKey}, ${nr.transformerName}.transform)`;
+        if (nr.isNullable)
+          return `  ${k}: input.${nr.relationKey} ? ${call} : null,`;
+        return `  ${k}: ${call},`;
+      }
       if (nr.isNullable)
         return `  ${k}: input.${nr.relationKey} ? await ${nr.transformerName}.transform(input.${nr.relationKey}) : null,`;
       return `  ${k}: await ${nr.transformerName}.transform(input.${nr.relationKey}),`;
