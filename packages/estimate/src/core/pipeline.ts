@@ -6,14 +6,7 @@ import {
   SyntaxEvaluator,
   TypeEvaluator,
 } from "../evaluators/gate";
-import {
-  ComplexityEvaluator,
-  DuplicationEvaluator,
-  JsDocEvaluator,
-  NamingEvaluator,
-  PerformanceEvaluator,
-  SchemaSyncEvaluator,
-} from "../evaluators/quality";
+import { PerformanceEvaluator } from "../evaluators/quality";
 import {
   ApiCompletenessEvaluator,
   DocumentQualityEvaluator,
@@ -34,20 +27,15 @@ import type {
   EvaluationResult,
   Issue,
   PhaseResult,
-  ReferenceInfo,
 } from "../types";
 import {
   GATE_ERROR_THRESHOLD,
-  GATE_MULTIPLIER_FLOOR,
   GATE_PENALTY_PER_PERCENT,
-  MAX_COMBINED_PENALTY,
-  PHASE_WEIGHTS,
   PRISMA_PENALTY_CAP,
   TYPE_CRITICAL_RATIO,
   createEmptyPhaseResult,
   createIssue,
   generateExplanation,
-  scoreToGrade,
 } from "../types";
 import { buildContext } from "./context-builder";
 import {
@@ -58,8 +46,8 @@ import {
   restorePhaseResult,
   saveCache,
 } from "./incremental";
-
-const { version } = require("../../package.json");
+import { collectReferenceInfo, createEmptyReference } from "./reference-collector";
+import { buildResult } from "./score-calculator";
 
 const phaseStrategies = [
   {
@@ -90,8 +78,6 @@ const phaseStrategies = [
 ] as const;
 
 type PhaseKey = (typeof phaseStrategies)[number]["key"];
-
-/** Assembled phase results — alias for EvaluationResult.Phases */
 type EvaluationPhases = EvaluationResult.Phases;
 
 export class EvaluationPipeline {
@@ -119,7 +105,7 @@ export class EvaluationPipeline {
     this.log(`  - Tests: ${this.context.files.tests.length}`);
     this.log(`  - Prisma: ${this.context.files.prismaSchemas.length}`);
 
-    // Incremental diff — used to skip unchanged phases
+    // Incremental diff
     const cache = loadCache(input.inputPath);
     let diff: IncrementalDiff | null = null;
     if (cache) {
@@ -142,7 +128,7 @@ export class EvaluationPipeline {
       this.log("\n[Incremental] No cache found — full evaluation");
     }
 
-    // Langfuse trace (null if not configured)
+    // Langfuse trace
     const trace = createEvalTrace({
       model: path.basename(path.dirname(input.inputPath)),
       project: input.options?.project || path.basename(input.inputPath),
@@ -150,7 +136,7 @@ export class EvaluationPipeline {
     });
     setActiveTrace(trace);
 
-    // ── Gate ──────────────────────────────────────────────
+    // Gate
     this.log("\n[Gate] Running basic validation...");
     const gateSpan = trace
       ? startPhaseSpan(trace, "gate", { runTests: !!input.options?.runTests })
@@ -164,27 +150,25 @@ export class EvaluationPipeline {
         phaseStrategies.map((s) => [s.key, createEmptyPhaseResult(s.key)]),
       ) as Record<PhaseKey, PhaseResult>;
 
-      const result = this.buildResult(
+      const result = buildResult({
         input,
-        this.context,
-        { gate: gateResult, ...emptyPhases },
-        this.createEmptyReference(),
+        context: this.context,
+        phases: { gate: gateResult, ...emptyPhases },
+        reference: createEmptyReference(),
         startTime,
-      );
+        verbose: this.verbose,
+      });
       if (trace) recordScores(trace, result);
       return result;
     }
 
-    // ── Scoring phases ───────────────────────────────────
-    // When incremental diff is available and doesn't require full eval,
-    // skip phases whose file dependencies haven't changed.
+    // Scoring phases
     const canUseIncremental =
       diff !== null && !diff.requiresFullEval && cache?.phaseResults;
 
     this.log("\n[Scoring] Running evaluation phases...");
     const phaseResults = await Promise.all(
       phaseStrategies.map(async (strategy) => {
-        // Try to reuse cached result if dependencies haven't changed
         if (canUseIncremental && diff && canReusePhase(strategy.key, diff)) {
           const cached = cache?.phaseResults?.[strategy.key];
           if (cached) {
@@ -219,7 +203,7 @@ export class EvaluationPipeline {
       ),
     } as EvaluationPhases;
 
-    // ── Golden Set ───────────────────────────────────────
+    // Golden Set
     if (input.options?.golden && input.options?.project) {
       const goldenResult = this.context.goldenResult;
       if (goldenResult) {
@@ -238,20 +222,16 @@ export class EvaluationPipeline {
       }
     }
 
-    // ── Contract Tests (auto-generated from swagger.json) ──
+    // Contract Tests
     const contractResult = this.context.contractResult;
     if (contractResult) {
-      // Merge contract metrics into goldenSet if present,
-      // otherwise use contract result as goldenSet phase
       if (phases.goldenSet) {
-        // Append contract metrics to existing golden set
         phases.goldenSet.metrics = {
           ...phases.goldenSet.metrics,
           ...contractResult.metrics,
         };
         phases.goldenSet.issues.push(...contractResult.issues);
       } else if (input.options?.runTests) {
-        // Use contract result as goldenSet when no hardcoded scenarios
         phases.goldenSet = contractResult;
       }
 
@@ -261,20 +241,21 @@ export class EvaluationPipeline {
       }
     }
 
-    // ── Reference info ───────────────────────────────────
+    // Reference info
     this.log("\n[Reference] Collecting code quality metrics...");
     const [reference, perfMetrics] = await Promise.all([
-      this.collectReferenceInfo(this.context),
+      collectReferenceInfo(this.context, (msg) => this.log(msg)),
       new PerformanceEvaluator().collectMetrics(this.context),
     ]);
 
-    const result = this.buildResult(
+    const result = buildResult({
       input,
-      this.context,
+      context: this.context,
       phases,
       reference,
       startTime,
-      {
+      verbose: this.verbose,
+      performanceMetrics: {
         totalSizeKB: perfMetrics.totalSizeKB,
         totalFiles: perfMetrics.totalFiles,
         totalLines: perfMetrics.totalLines,
@@ -288,12 +269,11 @@ export class EvaluationPipeline {
         structures: perfMetrics.fileCounts.structures,
         tests: perfMetrics.fileCounts.tests,
       },
-    );
+    });
 
-    // Record all scores on trace
     if (trace) recordScores(trace, result);
 
-    // Save incremental cache for next run (including phase results)
+    // Save incremental cache
     const phaseResultMap: Record<string, PhaseResult> = {};
     for (const [i, strategy] of phaseStrategies.entries()) {
       phaseResultMap[strategy.key] = phaseResults[i];
@@ -327,7 +307,6 @@ export class EvaluationPipeline {
       );
     }
 
-    // Check for incomplete pipeline output (e.g., only prisma files, no NestJS code)
     if (
       context.files.controllers.length === 0 &&
       context.files.providers.length === 0
@@ -399,7 +378,6 @@ export class EvaluationPipeline {
     const prismaResult = await new PrismaEvaluator().evaluate(context);
     issues.push(...prismaResult.issues);
 
-    // Prisma penalty: critical/warning issues from Prisma validation
     const prismaCriticalCount = prismaResult.issues.filter(
       (i) => i.severity === "critical",
     ).length;
@@ -428,8 +406,7 @@ export class EvaluationPipeline {
       }
     }
 
-    // Final gate score combines syntax + type penalties
-    // Exclude infrastructure warnings (SDK version mismatches, not model code issues)
+    // Gate score
     const INFRA_PATTERNS = [
       "NestiaSimulator",
       "PlainFetcher",
@@ -442,10 +419,7 @@ export class EvaluationPipeline {
     const typeWarningCount = typeResult.issues.filter(
       (i) => i.severity === "warning" && !isInfraWarning(i),
     ).length;
-    // Scale penalty by warning-to-file ratio:
-    //   ratio < 0.1  → mild penalty (up to 10)
-    //   ratio 0.1–1  → moderate penalty (up to 30)
-    //   ratio > 1    → severe penalty (up to 50)
+
     const warningRatio = totalFiles > 0 ? typeWarningCount / totalFiles : 0;
     const typePenalty =
       warningRatio <= 0.1
@@ -492,99 +466,6 @@ export class EvaluationPipeline {
     return result;
   }
 
-  private async collectReferenceInfo(
-    context: EvaluationContext,
-  ): Promise<ReferenceInfo> {
-    const referenceEvaluators = [
-      {
-        key: "complexity",
-        Evaluator: ComplexityEvaluator,
-        label: "complexity",
-      },
-      {
-        key: "duplication",
-        Evaluator: DuplicationEvaluator,
-        label: "duplication",
-      },
-      { key: "naming", Evaluator: NamingEvaluator, label: "naming" },
-      { key: "jsdoc", Evaluator: JsDocEvaluator, label: "JSDoc" },
-      {
-        key: "schemaSync",
-        Evaluator: SchemaSyncEvaluator,
-        label: "schema sync",
-      },
-    ] as const;
-
-    const results = await Promise.all(
-      referenceEvaluators.map(async ({ key, Evaluator, label }) => {
-        this.log(`  - Analyzing ${label}...`);
-        const result = await new Evaluator().evaluate(context);
-        return { key, result };
-      }),
-    );
-
-    const resultMap = Object.fromEntries(
-      results.map(({ key, result }) => [key, result]),
-    );
-
-    const complexityResult = resultMap.complexity;
-    const complexFunctions = complexityResult.issues.filter(
-      (i: Issue) => i.severity === "critical",
-    ).length;
-    const maxComplexity =
-      (complexityResult.metrics?.maxComplexity as number) || 0;
-
-    return {
-      complexity: {
-        totalFunctions:
-          (complexityResult.metrics?.totalFunctions as number) || 0,
-        complexFunctions,
-        maxComplexity,
-        issues: complexityResult.issues,
-      },
-      duplication: {
-        totalBlocks: resultMap.duplication.issues.length,
-        issues: resultMap.duplication.issues,
-      },
-      naming: {
-        totalIssues: resultMap.naming.issues.length,
-        issues: resultMap.naming.issues,
-      },
-      jsdoc: {
-        totalMissing: resultMap.jsdoc.issues.length,
-        totalApis: (resultMap.jsdoc.metrics?.totalPublicApis as number) || 0,
-        issues: resultMap.jsdoc.issues,
-      },
-      schemaSync: {
-        totalTypes: (resultMap.schemaSync.metrics?.totalTypes as number) || 0,
-        emptyTypes: (resultMap.schemaSync.metrics?.emptyTypes as number) || 0,
-        mismatchedProperties:
-          (resultMap.schemaSync.metrics?.mismatchedProperties as number) || 0,
-        issues: resultMap.schemaSync.issues,
-      },
-    };
-  }
-
-  private createEmptyReference(): ReferenceInfo {
-    return {
-      complexity: {
-        totalFunctions: 0,
-        complexFunctions: 0,
-        maxComplexity: 0,
-        issues: [],
-      },
-      duplication: { totalBlocks: 0, issues: [] },
-      naming: { totalIssues: 0, issues: [] },
-      jsdoc: { totalMissing: 0, totalApis: 0, issues: [] },
-      schemaSync: {
-        totalTypes: 0,
-        emptyTypes: 0,
-        mismatchedProperties: 0,
-        issues: [],
-      },
-    };
-  }
-
   private createGateFailure(
     issues: Issue[],
     failedAt: string,
@@ -600,299 +481,6 @@ export class EvaluationPipeline {
       issues,
       durationMs: Math.round(performance.now() - startTime),
       metrics: { failedAt, ...extra },
-    };
-  }
-
-  private buildResult(
-    input: EvaluationInput,
-    context: EvaluationContext,
-    phases: EvaluationPhases,
-    reference: ReferenceInfo,
-    startTime: number,
-    performanceMetrics?: Record<string, number | string>,
-  ): EvaluationResult {
-    const scoringIssues = [
-      phases.gate.issues,
-      ...phaseStrategies.map((s) => phases[s.key].issues),
-    ].flat();
-
-    const issueMap = new Map<string, Issue>();
-    for (const issue of scoringIssues) {
-      const key = `${issue.code}:${issue.location?.file || ""}:${issue.location?.line || ""}`;
-      if (!issueMap.has(key)) {
-        issueMap.set(key, issue);
-      }
-    }
-    const uniqueIssues = [...issueMap.values()];
-
-    const criticalIssues = uniqueIssues.filter(
-      (i) => i.severity === "critical",
-    );
-    const warnings = uniqueIssues.filter((i) => i.severity === "warning");
-    const suggestions = uniqueIssues.filter((i) => i.severity === "suggestion");
-
-    let totalScore: number;
-    let penalties: EvaluationResult["penalties"];
-
-    if (!phases.gate.passed) {
-      // H-1: Partial credit for gate failure based on severity
-      const gateMetrics = phases.gate.metrics || {};
-      const failedAt = gateMetrics.failedAt as string | undefined;
-      if (
-        failedAt === "no-source" ||
-        failedAt === "no-nestjs-artifacts" ||
-        failedAt === "runtime"
-      ) {
-        totalScore = 0; // completely broken — no code or server won't start
-      } else {
-        // Syntax/type failure: partial credit based on how many files are ok
-        const errorRatio = (gateMetrics.errorRatio as number) || 50;
-        totalScore = Math.min(
-          30,
-          Math.max(0, Math.round(30 * (1 - errorRatio / 100))),
-        );
-      }
-    } else {
-      // Calculate weighted score
-      // When goldenSet is present, include it as a regular phase with its weight.
-      // When absent, exclude it and normalize remaining weights to 1.0.
-      const hasGoldenSet = !!phases.goldenSet;
-      const activePhases = hasGoldenSet
-        ? [
-            ...phaseStrategies,
-            { key: "goldenSet" as const, label: "Golden Set" },
-          ]
-        : phaseStrategies;
-
-      const activeSum = activePhases.reduce(
-        (sum, s) => sum + PHASE_WEIGHTS[s.key],
-        0,
-      );
-      const normFactor = activeSum > 0 ? 1 / activeSum : 1;
-
-      const safeScore = (v: number | undefined | null) => {
-        const n = v ?? 0;
-        return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : 0;
-      };
-      let rawScore = activePhases.reduce(
-        (sum, s) =>
-          sum +
-          safeScore(phases[s.key]?.score) * PHASE_WEIGHTS[s.key] * normFactor,
-        0,
-      );
-      // Apply gate as a soft multiplier with smooth interpolation.
-      // Gate failed → raw multiplier (score/100).
-      // Gate passed → linear ramp from 0.85 (at gate=0) to 1.0 (at gate=100).
-      rawScore = Math.min(100, rawScore); // clamp before multiplier
-      const gateScore = phases.gate.score ?? 100;
-      const rawGateMultiplier = gateScore / 100;
-      // Gate passed with no penalty → multiplier 1.0 (perfect phases should yield 100).
-      // Gate passed with penalties → soft ramp from 0.85 (gate=0) to 1.0 (gate=100).
-      // Gate failed → raw multiplier (score/100).
-      const gateMultiplier = phases.gate.passed
-        ? gateScore === 100
-          ? 1.0
-          : GATE_MULTIPLIER_FLOOR +
-            rawGateMultiplier * (1 - GATE_MULTIPLIER_FLOOR)
-        : rawGateMultiplier;
-      totalScore = Math.max(0, Math.round(rawScore * gateMultiplier));
-
-      const penaltyData: NonNullable<EvaluationResult["penalties"]> = {};
-
-      // M-5: Calculate all penalties first, then apply proportionally to avoid order dependence
-      const INFRA_WARNING_PATTERNS = [
-        "NestiaSimulator",
-        "PlainFetcher",
-        "MyGlobal",
-        "unsupported extension",
-      ];
-      const isGatePenalizedWarning = (w: Issue) =>
-        /^TS\d+$/.test(w.code) || /^P\d+$/.test(w.code);
-      const realWarnings = warnings.filter(
-        (w) =>
-          !INFRA_WARNING_PATTERNS.some((p) => w.message.includes(p)) &&
-          !isGatePenalizedWarning(w),
-      );
-      const totalFiles = context.files.typescript.length || 1;
-
-      // 1. Warning penalty (max 20)
-      const warningRatio = realWarnings.length / totalFiles;
-      const warningThreshold = Math.min(
-        0.35,
-        0.2 + Math.max(0, totalFiles - 50) * 0.001,
-      );
-      let rawWarningPenalty = 0;
-      if (warningRatio > warningThreshold) {
-        rawWarningPenalty = Math.min(
-          20,
-          Math.round((warningRatio - warningThreshold) * 8),
-        );
-      }
-
-      // 2. Duplication penalty (max 5)
-      const dupThreshold = Math.max(
-        30,
-        Math.min(80, Math.round(totalFiles * 0.5)),
-      );
-      let rawDupPenalty = 0;
-      if (reference.duplication.totalBlocks > dupThreshold) {
-        rawDupPenalty = Math.min(
-          5,
-          Math.round((reference.duplication.totalBlocks - dupThreshold) / 20),
-        );
-      }
-
-      // 3. JSDoc penalty (max 5)
-      let rawJsdocPenalty = 0;
-      let jsdocRatio = 0;
-      if (reference.jsdoc.totalMissing > 0) {
-        const jsdocDenom =
-          reference.jsdoc.totalApis || reference.jsdoc.totalMissing;
-        jsdocRatio =
-          jsdocDenom > 0 ? reference.jsdoc.totalMissing / jsdocDenom : 0;
-        if (jsdocRatio > 0.3) {
-          const normalizedRatio = Math.min(1, (jsdocRatio - 0.3) / 0.7);
-          rawJsdocPenalty = Math.min(5, Math.round(normalizedRatio * 5));
-        }
-      }
-
-      // 4. Schema sync penalty (max 10)
-      let rawSyncPenalty = 0;
-      // If no types exist at all, apply minimum penalty (missing schema)
-      if (reference.schemaSync.totalTypes === 0) {
-        rawSyncPenalty = 3;
-      }
-      const syncTotal = Math.max(reference.schemaSync.totalTypes, 10);
-      const emptyRatio = reference.schemaSync.emptyTypes / syncTotal;
-      const mismatchRatio =
-        reference.schemaSync.mismatchedProperties / syncTotal;
-      const emptyThreshold = Math.min(
-        0.25,
-        0.15 + Math.max(0, syncTotal - 30) * 0.001,
-      );
-      const mismatchThreshold = Math.min(
-        0.15,
-        0.05 + Math.max(0, syncTotal - 30) * 0.001,
-      );
-      if (emptyRatio > emptyThreshold) {
-        rawSyncPenalty += Math.min(5, Math.round(emptyRatio * 10));
-      }
-      if (mismatchRatio > mismatchThreshold) {
-        rawSyncPenalty += Math.min(5, Math.round(mismatchRatio * 10));
-      }
-
-      // 5. Suggestion overflow penalty (max 10)
-      let rawSuggestionPenalty = 0;
-      const suggestionCount = suggestions.length;
-      const suggestionThreshold = Math.min(
-        1000,
-        500 + Math.max(0, totalFiles - 50) * 3,
-      );
-      if (suggestionCount > suggestionThreshold) {
-        const suggestionDivisor = Math.min(
-          400,
-          150 + Math.max(0, totalFiles - 50) * 1.5,
-        );
-        rawSuggestionPenalty = Math.min(
-          10,
-          Math.round(
-            (suggestionCount - suggestionThreshold) / suggestionDivisor,
-          ),
-        );
-      }
-
-      // Apply proportionally: cap total at 20 (C-4: reduced from 30)
-      const rawPenalties = [
-        rawWarningPenalty,
-        rawDupPenalty,
-        rawJsdocPenalty,
-        rawSyncPenalty,
-        rawSuggestionPenalty,
-      ];
-      const rawTotal = rawPenalties.reduce((s, p) => s + p, 0);
-      const scale =
-        rawTotal > MAX_COMBINED_PENALTY ? MAX_COMBINED_PENALTY / rawTotal : 1.0;
-
-      // Compute effective total from exact scaled sum, then distribute
-      // rounded values for display. This avoids rounding drift where
-      // individually rounded penalties sum to more than the cap.
-      const effectivePenalty = Math.min(
-        MAX_COMBINED_PENALTY,
-        Math.round(rawTotal * scale),
-      );
-      const warningPenalty = Math.round(rawWarningPenalty * scale);
-      const dupPenalty = Math.round(rawDupPenalty * scale);
-      const jsdocPenalty = Math.round(rawJsdocPenalty * scale);
-      const syncPenalty = Math.round(rawSyncPenalty * scale);
-      const suggestionPenalty = Math.round(rawSuggestionPenalty * scale);
-
-      totalScore = Math.max(0, totalScore - effectivePenalty);
-
-      if (warningPenalty > 0) {
-        penaltyData.warning = {
-          amount: warningPenalty,
-          ratio: `${(warningRatio * 100).toFixed(0)}%`,
-        };
-      }
-      if (dupPenalty > 0) {
-        penaltyData.duplication = {
-          amount: dupPenalty,
-          blocks: reference.duplication.totalBlocks,
-        };
-      }
-      if (jsdocPenalty > 0) {
-        penaltyData.jsdoc = {
-          amount: jsdocPenalty,
-          missing: reference.jsdoc.totalMissing,
-          ratio: `${(jsdocRatio * 100).toFixed(0)}%`,
-        };
-      }
-      if (syncPenalty > 0) {
-        penaltyData.schemaSync = {
-          amount: syncPenalty,
-          emptyTypes: reference.schemaSync.emptyTypes,
-          mismatchedProperties: reference.schemaSync.mismatchedProperties,
-        };
-      }
-      if (suggestionPenalty > 0) {
-        penaltyData.suggestionOverflow = {
-          amount: suggestionPenalty,
-          count: suggestionCount,
-        };
-      }
-
-      if (this.verbose && effectivePenalty > 0) {
-        console.log(
-          `  Penalties: -${effectivePenalty} (raw ${rawTotal}, cap ${MAX_COMBINED_PENALTY}, scale ${scale.toFixed(2)})`,
-        );
-      }
-
-      penalties = Object.keys(penaltyData).length > 0 ? penaltyData : undefined;
-    }
-
-    return {
-      targetPath: input.inputPath,
-      totalScore,
-      grade: scoreToGrade(totalScore),
-      phases,
-      reference,
-      summary: {
-        totalIssues: uniqueIssues.length,
-        criticalCount: criticalIssues.length,
-        warningCount: warnings.length,
-        suggestionCount: suggestions.length,
-      },
-      criticalIssues,
-      warnings,
-      suggestions,
-      meta: {
-        evaluatedAt: new Date().toISOString(),
-        totalDurationMs: Math.round(performance.now() - startTime),
-        estimateVersion: version,
-        evaluatedFiles: context.files.typescript.length,
-      },
-      penalties,
-      performanceMetrics,
     };
   }
 
