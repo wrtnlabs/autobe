@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 const NAV_ITEMS = [
   { href: "/docs", label: "Guide Documents", icon: "📖" },
   { href: "/blog", label: "Blog Articles", icon: "📝" },
-  { href: "/benchmark/index.html", label: "Benchmark", icon: "📊" },
+  { href: "/benchmark/index.html", label: "Estimate", icon: "📊" },
 ];
 
 export default function VerticalNav() {
