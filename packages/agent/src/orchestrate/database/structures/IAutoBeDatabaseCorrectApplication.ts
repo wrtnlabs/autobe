@@ -1,6 +1,5 @@
 import { AutoBeDatabase } from "@autobe/interface";
 
-import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
@@ -13,12 +12,10 @@ export interface IAutoBeDatabaseCorrectApplication {
    * Workflow:
    *
    * 1. Request preliminary context if needed (getAnalysisSections, etc.)
-   * 2. Submit corrected models via `write` — can be called multiple times to
-   *    refine corrections
-   * 3. Finalize via `complete` after you are satisfied with the submitted models
+   * 2. Submit corrected models via `write`
    *
-   * @param props Request containing preliminary data request, write submission,
-   *   or completion signal
+   * @param props Request containing preliminary data request or write
+   *   submission
    */
   process(props: IAutoBeDatabaseCorrectApplication.IProps): void;
 }
@@ -30,35 +27,24 @@ export namespace IAutoBeDatabaseCorrectApplication {
      * For preliminary requests: what critical information is missing and why?
      * Be brief — state the gap, don't list everything you have.
      *
-     * For write submissions: summarize what errors you are fixing and how. If
-     * this is a revision, explain what changed from the previous submission.
-     *
-     * For completion: why you consider the last write submission final.
+     * For write submissions: summarize what errors you are fixing and how.
      */
     thinking: string;
 
     /**
      * Action to perform.
      *
-     * - Preliminary `getXxx` types are removed from the union once exhausted.
-     * - `complete` is only available after at least one `write` submission.
+     * Preliminary `getXxx` types are removed from the union once exhausted.
      */
     request:
       | IWrite
-      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /**
-   * Submit corrected models.
-   *
-   * This is an intermediate step — you can submit multiple times to refine your
-   * corrections. The last submitted models will be used when you call
-   * `complete`.
-   */
+  /** Submit corrected models. */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

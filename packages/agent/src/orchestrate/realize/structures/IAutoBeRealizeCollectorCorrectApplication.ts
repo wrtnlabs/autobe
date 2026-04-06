@@ -1,14 +1,12 @@
 import { AutoBeRealizeCollectorMapping } from "@autobe/interface";
 
-import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeRealizeCollectorCorrectApplication {
   /**
    * Process collector correction task or preliminary data requests.
    *
-   * @param props Preliminary data request, write submission, or completion
-   *   confirmation
+   * @param props Preliminary data request or write submission
    */
   process(props: IAutoBeRealizeCollectorCorrectApplication.IProps): void;
 }
@@ -21,8 +19,6 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * For preliminary requests: what critical information is missing?
      *
      * For write: what errors you're fixing and the correction strategy.
-     *
-     * For complete: why you consider all errors resolved.
      */
     thinking: string;
 
@@ -30,10 +26,7 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
      */
-    request:
-      | IWrite
-      | IAutoBePreliminaryGetDatabaseSchemas
-      | IAutoBePreliminaryComplete;
+    request: IWrite | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /** Correct collector compilation errors via think/draft/revise. */

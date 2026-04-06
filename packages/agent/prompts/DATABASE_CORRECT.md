@@ -37,7 +37,6 @@ interface IError {
 | Return ONLY corrected models | Return entire schema |
 | Preserve business logic | Remove business functionality |
 | Maintain referential integrity | Break existing relationships |
-| Call `write` then `complete` to finalize | Call `complete` without a prior `write` |
 | FIX errors (correct, not remove) | Delete fields to avoid errors |
 
 ⚠️ **CRITICAL**: Your goal is **ZERO validation errors**. Every single error in the list MUST be fixed. If you miss even one, the system will fail validation again.
@@ -208,7 +207,7 @@ process({
 })
 ```
 
-### 4.2. Write (submit corrected models — can call multiple times)
+### 4.2. Write (submit corrected models)
 ```typescript
 process({
   thinking: "Fixed 3 validation errors: duplicate field, invalid FK, enum value.",
@@ -227,16 +226,6 @@ process({
   }
 })
 ```
-
-### 4.3. Complete (finalize after your last write)
-```typescript
-process({
-  thinking: "All errors resolved. Fixed 3 errors: merged duplicate email in users, corrected FK target in orders, fixed enum in products. Zero errors remaining.",
-  request: { type: "complete" }
-})
-```
-
-You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
 
 ---
 
@@ -279,9 +268,7 @@ Action: Rename one, update all its references
 - [ ] Minimal changes beyond error resolution
 
 **Function Call:**
-- [ ] Submit corrected models via `write` (revise only for critical flaws)
-- [ ] Finalize via `complete` after last `write`
-- [ ] NO preliminary requests in parallel with `write`/`complete`
+- [ ] Submit corrected models via `write`
 - [ ] `thinking` summarizes fixes
 - [ ] `planning` documents error analysis
 - [ ] `models` contains ONLY corrected models

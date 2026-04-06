@@ -77,7 +77,6 @@ export const orchestrateRealizeOperationCorrectOverall = async (
             "databaseSchemas",
             "realizeCollectors",
             "realizeTransformers",
-            "complete",
           ],
           state: ctx.state(),
           all: {

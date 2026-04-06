@@ -33,7 +33,6 @@ export function transformRealizeOperationCorrectHistory(props: {
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"
-    | "complete"
   >;
 }): IAutoBeOrchestrateHistory {
   const document: AutoBeOpenApi.IDocument = props.state.interface!.document;

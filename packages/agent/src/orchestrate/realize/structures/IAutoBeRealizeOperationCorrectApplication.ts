@@ -1,4 +1,3 @@
-import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
@@ -8,8 +7,7 @@ export interface IAutoBeRealizeOperationCorrectApplication {
   /**
    * Process provider correction task or preliminary data requests.
    *
-   * @param props Preliminary data request, write submission, or completion
-   *   confirmation
+   * @param props Preliminary data request or write submission
    */
   process(props: IAutoBeRealizeOperationCorrectApplication.IProps): void;
 }
@@ -22,8 +20,6 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
      * For preliminary requests: what critical information is missing and why?
      *
      * For write: what errors you're fixing and the correction strategy.
-     *
-     * For complete: why you consider all errors resolved.
      */
     thinking: string;
 
@@ -36,8 +32,7 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetRealizeCollectors
-      | IAutoBePreliminaryGetRealizeTransformers
-      | IAutoBePreliminaryComplete;
+      | IAutoBePreliminaryGetRealizeTransformers;
   }
 
   /** Correct provider compilation errors via think/draft/revise. */

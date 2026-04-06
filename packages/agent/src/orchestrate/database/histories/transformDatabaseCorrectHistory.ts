@@ -13,7 +13,6 @@ export const transformDatabaseCorrectHistory = (props: {
     | "databaseSchemas"
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
-    | "complete"
   >;
 }): IAutoBeOrchestrateHistory => ({
   histories: [

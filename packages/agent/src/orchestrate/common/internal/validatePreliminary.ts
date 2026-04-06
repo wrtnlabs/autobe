@@ -20,8 +20,8 @@ import { IAutoBePreliminaryGetRealizeTransformers } from "../structures/IAutoBeP
 
 export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   controller: AutoBePreliminaryController<Kind>,
-  data: IAutoBePreliminaryRequest<Kind | "complete">,
-): IValidation<IAutoBePreliminaryRequest<Kind | "complete">> => {
+  data: IAutoBePreliminaryRequest<Kind>,
+): IValidation<IAutoBePreliminaryRequest<Kind>> => {
   // discriminator
   const type: Exclude<
     IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],

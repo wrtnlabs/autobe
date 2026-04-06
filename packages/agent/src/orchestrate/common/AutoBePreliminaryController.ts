@@ -168,8 +168,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    *   found.
    */
   public validate(
-    input: IAutoBePreliminaryRequest<Kind | "complete">,
-  ): IValidation<IAutoBePreliminaryRequest<Kind | "complete">> {
+    input: IAutoBePreliminaryRequest<Kind>,
+  ): IValidation<IAutoBePreliminaryRequest<Kind>> {
     return validatePreliminary(this, input);
   }
 
