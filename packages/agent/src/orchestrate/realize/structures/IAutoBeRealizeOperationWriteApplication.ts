@@ -3,6 +3,7 @@ import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/I
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
+import { IAutoBeBackwardPropagate } from "./IAutoBeBackwardPropagate";
 
 /**
  * Generates provider functions implementing business logic for API endpoints
@@ -37,6 +38,7 @@ export namespace IAutoBeRealizeOperationWriteApplication {
      */
     request:
       | IWrite
+      | IAutoBeBackwardPropagate
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetRealizeCollectors

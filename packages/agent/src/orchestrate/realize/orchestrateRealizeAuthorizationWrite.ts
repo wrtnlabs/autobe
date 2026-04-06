@@ -34,7 +34,7 @@ export async function orchestrateRealizeAuthorizationWrite(
   ctx.dispatch({
     type: "realizeAuthorizationStart",
     id: v7(),
-    step: ctx.state().test?.step ?? 0,
+    step: ctx.state().interface?.step ?? 0,
     created_at: new Date().toISOString(),
   });
 
@@ -75,7 +75,7 @@ export async function orchestrateRealizeAuthorizationWrite(
     type: "realizeAuthorizationComplete",
     id: v7(),
     created_at: new Date().toISOString(),
-    step: ctx.state().test?.step ?? 0,
+    step: ctx.state().interface?.step ?? 0,
   });
   return authorizations;
 }
@@ -159,7 +159,7 @@ async function process(
         tokenUsage: result.tokenUsage,
         completed: props.counter.get(),
         total: props.progress.total,
-        step: ctx.state().test?.step ?? 0,
+        step: ctx.state().interface?.step ?? 0,
       } satisfies AutoBeRealizeAuthorizationWriteEvent);
     });
   ctx.dispatch(event);

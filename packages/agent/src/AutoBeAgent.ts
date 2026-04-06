@@ -357,9 +357,9 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
 
   public getPhase(): AutoBePhase | null {
     if (this.state_.analyze === null) return null;
+    else if (this.state_.test?.step === this.state_.analyze.step) return "test";
     else if (this.state_.realize?.step === this.state_.analyze.step)
       return "realize";
-    else if (this.state_.test?.step === this.state_.analyze.step) return "test";
     else if (this.state_.interface?.step === this.state_.analyze.step)
       return "interface";
     else if (this.state_.database?.step === this.state_.analyze.step)

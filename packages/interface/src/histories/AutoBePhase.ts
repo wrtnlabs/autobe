@@ -29,19 +29,19 @@
  *    - Defines endpoints, operations, request/response schemas, authorization
  *    - Ensures type-safe API contract aligned with database
  *    - Output: `AutoBeInterfaceHistory` with OpenAPI document
- * 4. **test**: E2E Test Generation Phase
- *
- *    - Generates comprehensive E2E test suites for all API operations
- *    - Creates test scenarios, test functions, and authorization test setup
- *    - Ensures 100% operation coverage with realistic test data
- *    - Output: `AutoBeTestHistory` with test code files
- * 5. **realize**: Implementation Phase
+ * 4. **realize**: Implementation Phase
  *
  *    - Generates actual NestJS controller and service implementation code
  *    - Creates collector functions (data fetching), transformer functions (data
  *         processing)
  *    - Implements authorization decorators, guards, and business logic
  *    - Output: `AutoBeRealizeHistory` with implementation code
+ * 5. **test**: E2E Test Generation Phase
+ *
+ *    - Generates comprehensive E2E test suites for all API operations
+ *    - Creates test scenarios, test functions, and authorization test setup
+ *    - Ensures 100% operation coverage with realistic test data
+ *    - Output: `AutoBeTestHistory` with test code files
  *
  * **Waterfall + Spiral Model**:
  *
@@ -69,5 +69,5 @@ export type AutoBePhase =
   | "analyze"
   | "database"
   | "interface"
-  | "test"
-  | "realize";
+  | "realize"
+  | "test";

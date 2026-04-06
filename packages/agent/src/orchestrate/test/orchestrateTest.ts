@@ -47,7 +47,7 @@ export const orchestrateTest =
       id: v7(),
       created_at: start.toISOString(),
       reason: props.instruction,
-      step: ctx.state().analyze?.step ?? 0,
+      step: ctx.state().realize?.step ?? 0,
     });
     const document: AutoBeOpenApi.IDocument | undefined =
       ctx.state().interface?.document;

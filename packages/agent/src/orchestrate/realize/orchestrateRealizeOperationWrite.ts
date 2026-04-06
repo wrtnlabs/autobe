@@ -8,7 +8,7 @@ import {
   AutoBeRealizeTransformerFunction,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
-import { IPointer, Singleton } from "tstl";
+import { IPointer, Mutex, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -21,8 +21,10 @@ import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
+import { orchestrateInterfaceSchemaRefine } from "../interface/orchestrateInterfaceSchemaRefine";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
+import { IAutoBeBackwardPropagate } from "./structures/IAutoBeBackwardPropagate";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
@@ -36,6 +38,7 @@ export async function orchestrateRealizeOperationWrite(
   },
 ): Promise<AutoBeRealizeOperationFunction[]> {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const backwardMutex: Mutex = new Mutex();
   const scenarios: IAutoBeRealizeScenarioResult[] = document.operations.map(
     (operation) =>
       AutoBeRealizeOperationProgrammer.getScenario({
@@ -60,6 +63,7 @@ export async function orchestrateRealizeOperationWrite(
               progress: props.progress,
               counter,
               promptCacheKey,
+              backwardMutex,
             }),
           );
         } catch (error) {
@@ -83,6 +87,7 @@ async function process(
     progress: AutoBeProgressEventBase;
     counter: Singleton<number>;
     promptCacheKey: string;
+    backwardMutex: Mutex;
   },
 ): Promise<AutoBeRealizeOperationFunction> {
   const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
@@ -150,6 +155,9 @@ async function process(
         {
           value: null,
         };
+      const backwardPointer: IPointer<IAutoBeBackwardPropagate | null> = {
+        value: null,
+      };
       const dto: Record<string, string> =
         await AutoBeRealizeOperationProgrammer.writeStructures(
           ctx,
@@ -161,6 +169,9 @@ async function process(
           functionName: props.scenario.functionName,
           build: (next) => {
             pointer.value = next;
+          },
+          onBackwardPropagate: (next) => {
+            backwardPointer.value = next;
           },
           preliminary,
         }),
@@ -177,6 +188,31 @@ async function process(
           preliminary,
         }),
       });
+
+      // BACKWARD PROPAGATION: refine schemas with mutex to prevent race conditions
+      if (backwardPointer.value !== null) {
+        await props.backwardMutex.lock();
+        try {
+          const targetSchemas: Record<string, AutoBeOpenApi.IJsonSchema> = {};
+          for (const name of backwardPointer.value.typeNames) {
+            const schema = props.document.components.schemas[name];
+            if (schema !== undefined) targetSchemas[name] = schema;
+          }
+          if (Object.keys(targetSchemas).length > 0) {
+            const refined = await orchestrateInterfaceSchemaRefine(ctx, {
+              document: props.document,
+              schemas: targetSchemas,
+              instruction: backwardPointer.value.reason,
+              progress: props.progress,
+            });
+            Object.assign(props.document.components.schemas, refined);
+          }
+        } finally {
+          await props.backwardMutex.unlock();
+        }
+        return out(result)(null);
+      }
+
       if (pointer.value === null) return out(result)(null);
 
       const functor: AutoBeRealizeOperationFunction = {
@@ -218,6 +254,7 @@ async function process(
 function createController(props: {
   functionName: string;
   build: (next: IAutoBeRealizeOperationWriteApplication.IWrite) => void;
+  onBackwardPropagate: (next: IAutoBeBackwardPropagate) => void;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
@@ -229,6 +266,7 @@ function createController(props: {
     const result: IValidation<IAutoBeRealizeOperationWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
+    else if (result.data.request.type === "backwardPropagate") return result;
     else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
@@ -266,6 +304,8 @@ function createController(props: {
     execute: {
       process: (next) => {
         if (next.request.type === "write") props.build(next.request);
+        else if (next.request.type === "backwardPropagate")
+          props.onBackwardPropagate(next.request);
       },
     } satisfies IAutoBeRealizeOperationWriteApplication,
   };

@@ -126,6 +126,6 @@ const STEP_ORDER: AutoBePhase[] = [
   "analyze",
   "database",
   "interface",
-  "test",
   "realize",
+  "test",
 ];

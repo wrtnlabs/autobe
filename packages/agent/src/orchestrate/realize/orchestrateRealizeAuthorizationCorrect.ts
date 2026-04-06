@@ -67,7 +67,7 @@ export async function orchestrateRealizeAuthorizationCorrect(
       created_at: new Date().toISOString(),
       authorization: props.authorization,
       result: compiled,
-      step: ctx.state().test?.step ?? 0,
+      step: ctx.state().interface?.step ?? 0,
     });
 
     if (compiled.type === "success") {
@@ -145,7 +145,7 @@ export async function orchestrateRealizeAuthorizationCorrect(
           acquisition: preliminary.getAcquisition(),
           metric: result.metric,
           tokenUsage: result.tokenUsage,
-          step: ctx.state().test?.step ?? 0,
+          step: ctx.state().interface?.step ?? 0,
         });
       });
     ctx.dispatch(event);

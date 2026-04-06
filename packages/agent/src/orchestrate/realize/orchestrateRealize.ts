@@ -52,7 +52,7 @@ export const orchestrateRealize =
       id: v7(),
       created_at: start.toISOString(),
       reason: props.instruction,
-      step: ctx.state().test?.step ?? 0,
+      step: ctx.state().interface?.step ?? 0,
     });
 
     // PREPARE ASSETS
