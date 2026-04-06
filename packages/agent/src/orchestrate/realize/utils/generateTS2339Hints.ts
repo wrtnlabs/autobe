@@ -105,13 +105,15 @@ export function extractDidYouMeanHints(
 }
 
 /**
- * Generates hints for TS2322/TS1360 "Property 'X' is missing in type" errors.
+ * Generates hints for TS1360 "Property 'X' is missing in type" errors.
  *
- * These errors occur when Prisma's `create()`/`update()` data object is missing
- * required fields (e.g., FK columns, required scalars). Extracts the missing
- * property name and the expected type, then provides actionable guidance.
+ * TS1360 fires exclusively on `satisfies` expressions, so the expectedType is
+ * always the single type the developer explicitly chose — no union branch
+ * ambiguity. TS2322 "missing property" errors are intentionally excluded
+ * because they report failures against ALL branches of a union type (e.g.,
+ * `CreateInput | UncheckedCreateInput`), producing misleading hints.
  *
- * Returns empty string if no matching diagnostics are found.
+ * Returns empty string if no TS1360 "missing property" diagnostics are found.
  */
 export function generateMissingPropertyHints(
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
@@ -123,7 +125,9 @@ export function generateMissingPropertyHints(
   const hints: Array<{ property: string; expectedType: string }> = [];
 
   for (const diag of diagnostics) {
-    if (Number(diag.code) !== 2322 && Number(diag.code) !== 1360) continue;
+    // Only TS1360 — from explicit `satisfies` annotation.
+    // TS2322 "missing property" is noise from union branch exploration.
+    if (Number(diag.code) !== 1360) continue;
 
     const match = diag.messageText.match(MISSING_PROP);
     if (match !== null) {
@@ -144,17 +148,11 @@ export function generateMissingPropertyHints(
     .join("\n");
 
   return [
-    "## Missing Required Property Hints (TS2322/TS1360)",
+    "## Missing Required Property Hints (TS1360)",
     "",
-    "These errors mean your data object is missing required fields.",
-    "This usually happens with Prisma `create()` / `update()` calls when",
-    "a required column or FK is omitted from the `data` object.",
+    "Your `satisfies` type annotation requires properties that are missing from the data object.",
     "",
-    "**Fix**: Add the missing properties to your `data` object.",
-    "- For FK columns → provide the correct foreign key value (e.g., `reddit_clone_member_id: memberRecord.id`)",
-    "- For required scalars → provide the required value",
-    "- If using `satisfies XxxUncheckedCreateInput`, ALL required columns of that type must be present",
-    "- If the field is a relation FK that should be nullable, use `Prisma.XxxCreateInput` (relation-based) instead of `UncheckedCreateInput`",
+    "**Fix**: Add the missing FK column or required scalar to the `data` object.",
     "",
     "Missing properties:",
     lines,
