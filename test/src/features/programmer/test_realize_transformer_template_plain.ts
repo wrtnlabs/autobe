@@ -5,8 +5,8 @@ import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
 /**
- * When all DTO properties are scalar, select() should list each as `true`
- * with no `...` placeholder needed.
+ * When all DTO properties are scalar, select() should list each as `true` with
+ * no `...` placeholder needed.
  */
 interface ISimple {
   id: string & tags.Format<"uuid">;

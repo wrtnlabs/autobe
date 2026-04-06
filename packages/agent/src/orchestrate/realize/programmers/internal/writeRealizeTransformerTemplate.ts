@@ -78,14 +78,8 @@ function buildSelectEntries(props: {
   return { entries, hasUnresolved };
 }
 
-function formatSelectBody(
-  entries: string[],
-  hasUnresolved: boolean,
-): string {
-  return [
-    ...entries,
-    ...(hasUnresolved ? ["..."] : []),
-  ].join("\n            ");
+function formatSelectBody(entries: string[], hasUnresolved: boolean): string {
+  return [...entries, ...(hasUnresolved ? ["..."] : [])].join("\n            ");
 }
 
 function writeNormalTemplate(props: {
@@ -192,7 +186,11 @@ function writeParentOnlyRecursiveTemplate(props: {
     neighborRelations: [],
   });
   const selectBody = formatSelectBody(
-    [...entries, `${fk}: true,`, `${pp}: undefined, // DO NOT select recursive relation`],
+    [
+      ...entries,
+      `${fk}: true,`,
+      `${pp}: undefined, // DO NOT select recursive relation`,
+    ],
     hasUnresolved,
   );
 
