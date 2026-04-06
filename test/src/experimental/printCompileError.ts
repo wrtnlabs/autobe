@@ -1,9 +1,9 @@
-import { printErrorHints } from "@autobe/agent/src/orchestrate/realize/utils/printErrorHints";
 import {
   extractDidYouMeanHints,
   generateMissingPropertyHints,
   generateTS2339Hints,
 } from "@autobe/agent/src/orchestrate/realize/utils/generateTS2339Hints";
+import { printErrorHints } from "@autobe/agent/src/orchestrate/realize/utils/printErrorHints";
 import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 
 const CODE = `export async function postRedditCloneAuthModeratorJoin(props: {

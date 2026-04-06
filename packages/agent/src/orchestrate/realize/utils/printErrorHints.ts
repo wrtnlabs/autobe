@@ -39,10 +39,7 @@ export function printErrorHints(
     .map((line, index) => {
       const errors = errorsByLine.get(index);
       if (errors == null) return line;
-      return errors.reduce(
-        (acc, msg) => acc + " // error: " + msg,
-        line,
-      );
+      return errors.reduce((acc, msg) => acc + " // error: " + msg, line);
     })
     .join("\n");
 
