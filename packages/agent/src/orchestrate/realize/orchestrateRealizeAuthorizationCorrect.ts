@@ -76,15 +76,16 @@ export async function orchestrateRealizeAuthorizationCorrect(
       return props.authorization;
     }
 
-    const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
-      new AutoBePreliminaryController({
-        source: SOURCE,
-        dispatch: (e) => ctx.dispatch(e),
-        application:
-          typia.json.application<IAutoBeRealizeAuthorizationCorrectApplication>(),
-        kinds: ["databaseSchemas"],
-        state: ctx.state(),
-      });
+    const preliminary: AutoBePreliminaryController<
+      "databaseSchemas" | "complete"
+    > = new AutoBePreliminaryController({
+      source: SOURCE,
+      dispatch: (e) => ctx.dispatch(e),
+      application:
+        typia.json.application<IAutoBeRealizeAuthorizationCorrectApplication>(),
+      kinds: ["databaseSchemas", "complete"],
+      state: ctx.state(),
+    });
     const event: AutoBeRealizeAuthorizationCorrectEvent =
       await preliminary.orchestrate(ctx, async (out) => {
         const pointer: IPointer<IAutoBeRealizeAuthorizationCorrectApplication.IWrite | null> =
@@ -165,7 +166,7 @@ export async function orchestrateRealizeAuthorizationCorrect(
 
 function createController(props: {
   build: (next: IAutoBeRealizeAuthorizationCorrectApplication.IWrite) => void;
-  preliminary: AutoBePreliminaryController<"databaseSchemas">;
+  preliminary: AutoBePreliminaryController<"databaseSchemas" | "complete">;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeAuthorizationCorrectApplication.IProps> =

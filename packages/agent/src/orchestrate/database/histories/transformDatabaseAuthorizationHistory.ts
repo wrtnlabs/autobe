@@ -14,7 +14,10 @@ export const transformDatabaseAuthorizationHistory = (props: {
   group: AutoBeDatabaseGroup;
   instruction: string;
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   >;
 }): IAutoBeOrchestrateHistory => {
   const prefix: string = props.prefix ? `${props.prefix}_` : "";

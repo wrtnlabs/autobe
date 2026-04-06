@@ -17,7 +17,10 @@ export const transformDatabaseSchemaHistory = (props: {
   design: AutoBeDatabaseComponentTableDesign;
   instruction: string;
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   >;
 }): IAutoBeOrchestrateHistory => {
   const children: string[] = [props.component, ...props.otherComponents]

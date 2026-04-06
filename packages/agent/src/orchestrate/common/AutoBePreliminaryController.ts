@@ -70,10 +70,13 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
 
   // PAGINATION
   private analysisPageOffset: number = 0;
+
+  // COMPLETION TRACKING
   private previousWrites: IPreviousWrite[] = [];
   private completed: IPointer<boolean> = {
     value: false,
   };
+  private is_rewrite_loop: boolean = false;
 
   /**
    * Initializes controller with data collections and auto-complements
@@ -87,6 +90,11 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.source_id = v7();
     this.kinds = props.kinds;
     this.dispatch = props.dispatch;
+
+    // completion tracking
+    this.is_rewrite_loop =
+      props.application.components.schemas?.["IAutoBePreliminaryComplete"] !==
+      undefined;
 
     // biome-ignore-start lint: intended
     this.config = {
@@ -160,8 +168,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    *   found.
    */
   public validate(
-    input: IAutoBePreliminaryRequest<Kind, true>,
-  ): IValidation<IAutoBePreliminaryRequest<Kind, true>> {
+    input: IAutoBePreliminaryRequest<Kind | "complete">,
+  ): IValidation<IAutoBePreliminaryRequest<Kind | "complete">> {
     return validatePreliminary(this, input);
   }
 
@@ -286,6 +294,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         acquisition.previousInterfaceSchemas = Object.keys(
           local.previousInterfaceSchemas,
         );
+      else if (kind === "complete") acquisition.complete = false;
       else kind satisfies never;
     return acquisition as Pick<AutoBePreliminaryAcquisition, Kind>;
   }
@@ -394,9 +403,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           );
           if (history === undefined) continue;
 
-          // clear completion
-          this.completed.value = false;
-
           // store write result and raw arguments
           this.previousWrites.push({
             value: result.value as T,
@@ -417,7 +423,9 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           }
           if (
             this.previousWrites.length >=
-            AutoBeConfigConstant.PRELIMINARY_WRITE_LIMIT
+            (this.is_rewrite_loop
+              ? AutoBeConfigConstant.PRELIMINARY_WRITE_LIMIT
+              : 1)
           )
             break;
         } else {

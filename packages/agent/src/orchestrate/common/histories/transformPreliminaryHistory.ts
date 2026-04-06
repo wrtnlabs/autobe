@@ -552,6 +552,10 @@ namespace PreliminaryTransformer {
         ];
   };
 
+  export const complete = (
+    _props: IProps<"complete">,
+  ): IMicroAgenticaHistoryJson[] => [];
+
   export const realizeTransformers = (
     props: IProps<"realizeTransformers">,
   ): IMicroAgenticaHistoryJson[] => {

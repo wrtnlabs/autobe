@@ -31,14 +31,15 @@ export const orchestrateAnalyzeWriteUnit = async (
   },
 ): Promise<AutoBeAnalyzeWriteUnitEvent> => {
   const counter = new Singleton(() => ++props.progress.completed);
-  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
-    new AutoBePreliminaryController({
-      application: typia.json.application<IAutoBeAnalyzeWriteUnitApplication>(),
-      source: SOURCE,
-      kinds: ["previousAnalysisSections"],
-      state: ctx.state(),
-      dispatch: (e) => ctx.dispatch(e),
-    });
+  const preliminary: AutoBePreliminaryController<
+    "previousAnalysisSections" | "complete"
+  > = new AutoBePreliminaryController({
+    application: typia.json.application<IAutoBeAnalyzeWriteUnitApplication>(),
+    source: SOURCE,
+    kinds: ["previousAnalysisSections", "complete"],
+    state: ctx.state(),
+    dispatch: (e) => ctx.dispatch(e),
+  });
 
   const event: AutoBeAnalyzeWriteUnitEvent = await preliminary.orchestrate(
     ctx,
@@ -89,7 +90,9 @@ export const orchestrateAnalyzeWriteUnit = async (
 
 function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeWriteUnitApplication.IWrite | null>;
-  preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
+  preliminary: AutoBePreliminaryController<
+    "previousAnalysisSections" | "complete"
+  >;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,

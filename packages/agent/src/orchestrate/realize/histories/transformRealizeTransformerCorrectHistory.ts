@@ -20,7 +20,7 @@ export const transformRealizeTransformerCorrectHistory = async (
     function: AutoBeRealizeTransformerFunction;
     neighbors: AutoBeRealizeTransformerFunction[];
     failures: IAutoBeRealizeFunctionFailure<AutoBeRealizeTransformerFunction>[];
-    preliminary: AutoBePreliminaryController<"databaseSchemas">;
+    preliminary: AutoBePreliminaryController<"databaseSchemas" | "complete">;
   },
 ): Promise<IAutoBeOrchestrateHistory> => {
   const application: AutoBeDatabase.IApplication =

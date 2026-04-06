@@ -20,7 +20,10 @@ export async function orchestrateDatabaseGroup(
 ): Promise<AutoBeDatabaseGroup[]> {
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     application: typia.json.application<IAutoBeDatabaseGroupApplication>(),
@@ -29,6 +32,7 @@ export async function orchestrateDatabaseGroup(
       "analysisSections",
       "previousAnalysisSections",
       "previousDatabaseSchemas",
+      "complete",
     ],
     state: ctx.state(),
   });
@@ -73,7 +77,10 @@ export async function orchestrateDatabaseGroup(
 function createController(props: {
   pointer: IPointer<IAutoBeDatabaseGroupApplication.IWrite | null>;
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   >;
 }): IAgenticaController.IClass {
   const validate = (

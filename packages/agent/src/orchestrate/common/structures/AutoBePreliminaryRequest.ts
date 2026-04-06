@@ -20,17 +20,12 @@ import { IAutoBePreliminaryGetRealizeTransformers } from "./IAutoBePreliminaryGe
  *
  * @author Samchon
  */
-export interface IAutoBePreliminaryRequest<
-  Kind extends AutoBePreliminaryKind,
-  IncludeComplete extends boolean = false,
-> {
+export interface IAutoBePreliminaryRequest<Kind extends AutoBePreliminaryKind> {
   /** LLM's reasoning about why this data is needed. */
   thinking: string;
 
   /** Actual request payload discriminated by `Kind`. */
-  request: IncludeComplete extends true
-    ? Mapper[Kind] | IAutoBePreliminaryComplete
-    : Mapper[Kind];
+  request: Mapper[Kind];
 }
 
 /** Maps preliminary `Kind` to corresponding request type. */

@@ -127,6 +127,7 @@ async function execute(
     | "databaseSchemas"
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     application: typia.json.application<IAutoBeDatabaseCorrectApplication>(),
@@ -136,6 +137,7 @@ async function execute(
       "previousAnalysisSections",
       "databaseSchemas",
       "previousDatabaseSchemas",
+      "complete",
     ],
     state: ctx.state(),
     all: {
@@ -230,6 +232,7 @@ function createController(props: {
     | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
+    | "complete"
   >;
   build: (next: IAutoBeDatabaseCorrectApplication.IWrite) => void;
 }): IAgenticaController.IClass {

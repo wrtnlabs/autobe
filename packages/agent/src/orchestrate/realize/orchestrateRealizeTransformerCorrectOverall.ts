@@ -65,11 +65,11 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
 
       // Create preliminary controller with only databaseSchemas support
       preliminary: (next) =>
-        new AutoBePreliminaryController<"databaseSchemas">({
+        new AutoBePreliminaryController<"databaseSchemas" | "complete">({
           source: next.source,
           application:
             typia.json.application<IAutoBeRealizeTransformerCorrectApplication>(),
-          kinds: ["databaseSchemas"],
+          kinds: ["databaseSchemas", "complete"],
           dispatch: (e) => ctx.dispatch(e),
           state: ctx.state(),
           local: {

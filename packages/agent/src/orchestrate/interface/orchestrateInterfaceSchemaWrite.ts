@@ -106,6 +106,7 @@ async function process(
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     application: typia.json.application<IAutoBeInterfaceSchemaApplication>(),
@@ -118,6 +119,7 @@ async function process(
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
+      "complete",
     ],
     config: {
       database: "text",
@@ -209,6 +211,7 @@ function createController(
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
       | "previousInterfaceSchemas"
+      | "complete"
     >;
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;

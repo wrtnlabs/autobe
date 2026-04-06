@@ -52,7 +52,10 @@ async function process(
   },
 ): Promise<AutoBeDatabaseComponent> {
   const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     application:
@@ -62,6 +65,7 @@ async function process(
       "analysisSections",
       "previousAnalysisSections",
       "previousDatabaseSchemas",
+      "complete",
     ],
     state: ctx.state(),
   });
@@ -121,7 +125,10 @@ async function process(
 function createController(props: {
   pointer: IPointer<IAutoBeDatabaseAuthorizationApplication.IWrite | null>;
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   >;
   actors: AutoBeAnalyze.IActor[];
   prefix: string | null;

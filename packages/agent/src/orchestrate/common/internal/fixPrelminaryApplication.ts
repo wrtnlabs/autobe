@@ -313,6 +313,9 @@ namespace ApplicationFixer {
     );
   };
 
+  // biome-ignore lint: no-op for control signal kind
+  export const complete = (_props: any): void => {};
+
   export const realizeTransformers = (props: {
     $defs: Record<string, ILlmSchema>;
     controller: AutoBePreliminaryController<"realizeTransformers">;

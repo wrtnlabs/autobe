@@ -25,6 +25,7 @@ interface IProgrammer {
       | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
+      | "complete"
     >;
   }): IAutoBeOrchestrateHistory;
 }

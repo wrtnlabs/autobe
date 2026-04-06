@@ -14,6 +14,7 @@ export const transformDatabaseGroupHistory = (
       | "analysisSections"
       | "previousAnalysisSections"
       | "previousDatabaseSchemas"
+      | "complete"
     >;
   },
 ): IAutoBeOrchestrateHistory => {

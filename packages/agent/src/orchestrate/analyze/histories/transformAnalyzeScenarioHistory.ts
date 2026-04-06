@@ -8,7 +8,9 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export const transformAnalyzeScenarioHistory = (
   ctx: AutoBeContext,
-  preliminary: AutoBePreliminaryController<"previousAnalysisSections">,
+  preliminary: AutoBePreliminaryController<
+    "previousAnalysisSections" | "complete"
+  >,
   feedback?: string,
 ): IAutoBeOrchestrateHistory => ({
   histories: [

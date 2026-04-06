@@ -9,7 +9,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformRealizeTransformerPlanHistory = (props: {
   state: AutoBeState;
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "databaseSchemas" | "interfaceSchemas"
+    "analysisSections" | "databaseSchemas" | "interfaceSchemas" | "complete"
   >;
   dtoTypeName: string;
 }): IAutoBeOrchestrateHistory => {

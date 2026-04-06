@@ -90,15 +90,16 @@ async function process(
     counter: Singleton<number>;
   },
 ): Promise<AutoBeRealizeAuthorization> {
-  const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
-    new AutoBePreliminaryController<"databaseSchemas">({
-      source: SOURCE,
-      dispatch: (e) => ctx.dispatch(e),
-      application:
-        typia.json.application<IAutoBeRealizeAuthorizationWriteApplication>(),
-      kinds: ["databaseSchemas"],
-      state: ctx.state(),
-    });
+  const preliminary: AutoBePreliminaryController<
+    "databaseSchemas" | "complete"
+  > = new AutoBePreliminaryController<"databaseSchemas" | "complete">({
+    source: SOURCE,
+    dispatch: (e) => ctx.dispatch(e),
+    application:
+      typia.json.application<IAutoBeRealizeAuthorizationWriteApplication>(),
+    kinds: ["databaseSchemas", "complete"],
+    state: ctx.state(),
+  });
   const event: AutoBeRealizeAuthorizationWriteEvent =
     await preliminary.orchestrate(ctx, async (out) => {
       const pointer: IPointer<IAutoBeRealizeAuthorizationWriteApplication.IWrite | null> =
@@ -176,7 +177,7 @@ async function process(
 
 function createController(props: {
   build: (next: IAutoBeRealizeAuthorizationWriteApplication.IWrite) => void;
-  preliminary: AutoBePreliminaryController<"databaseSchemas">;
+  preliminary: AutoBePreliminaryController<"databaseSchemas" | "complete">;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeAuthorizationWriteApplication.IProps> =

@@ -94,7 +94,10 @@ async function process(
     );
 
   const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     application: typia.json.application<IAutoBeDatabaseComponentApplication>(),
@@ -103,6 +106,7 @@ async function process(
       "analysisSections",
       "previousAnalysisSections",
       "previousDatabaseSchemas",
+      "complete",
     ],
     state: ctx.state(),
     local: {
@@ -163,7 +167,10 @@ async function process(
 function createController(props: {
   pointer: IPointer<IAutoBeDatabaseComponentApplication.IWrite | null>;
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   >;
   prefix: string | null;
 }): IAgenticaController.IClass {

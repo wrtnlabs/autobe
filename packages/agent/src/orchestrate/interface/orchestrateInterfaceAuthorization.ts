@@ -72,6 +72,7 @@ async function process(
     | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceAuthorizationApplication>(),
@@ -81,6 +82,7 @@ async function process(
       "previousAnalysisSections",
       "databaseSchemas",
       "previousDatabaseSchemas",
+      "complete",
     ],
     state: ctx.state(),
     dispatch: (e) => ctx.dispatch(e),
@@ -142,6 +144,7 @@ function createController(props: {
     | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
+    | "complete"
   >;
   build: (next: IAutoBeInterfaceAuthorizationApplication.IWrite) => void;
 }): IAgenticaController.IClass {

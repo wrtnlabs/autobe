@@ -87,20 +87,21 @@ async function process(
     .flat();
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const dtoTypeName: string = props.plan.dtoTypeName;
-  const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
-    new AutoBePreliminaryController({
-      dispatch: (e) => ctx.dispatch(e),
-      state: ctx.state(),
-      source: SOURCE,
-      application:
-        typia.json.application<IAutoBeRealizeTransformerWriteApplication>(),
-      kinds: ["databaseSchemas"],
-      local: {
-        databaseSchemas: models.filter(
-          (m) => m.name === props.plan.databaseSchemaName,
-        ),
-      },
-    });
+  const preliminary: AutoBePreliminaryController<
+    "databaseSchemas" | "complete"
+  > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
+    state: ctx.state(),
+    source: SOURCE,
+    application:
+      typia.json.application<IAutoBeRealizeTransformerWriteApplication>(),
+    kinds: ["databaseSchemas", "complete"],
+    local: {
+      databaseSchemas: models.filter(
+        (m) => m.name === props.plan.databaseSchemaName,
+      ),
+    },
+  });
   const event: AutoBeRealizeWriteEvent = await preliminary.orchestrate(
     ctx,
     async (out) => {
@@ -169,7 +170,7 @@ function createController(props: {
   plan: AutoBeRealizeTransformerPlan;
   neighbors: AutoBeRealizeTransformerPlan[];
   build: (next: IAutoBeRealizeTransformerWriteApplication.IWrite) => void;
-  preliminary: AutoBePreliminaryController<"databaseSchemas">;
+  preliminary: AutoBePreliminaryController<"databaseSchemas" | "complete">;
 }): ILlmController {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeTransformerWriteApplication.IProps> =

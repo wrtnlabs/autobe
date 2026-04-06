@@ -106,6 +106,7 @@ async function process(
     | "databaseSchemas"
     | "interfaceSchemas"
     | "interfaceOperations"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
@@ -117,6 +118,7 @@ async function process(
       "databaseSchemas",
       "interfaceSchemas",
       "interfaceOperations",
+      "complete",
     ],
     local: {
       analysisSections: ragSections,
@@ -194,6 +196,7 @@ function createController(props: {
     | "databaseSchemas"
     | "interfaceSchemas"
     | "interfaceOperations"
+    | "complete"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {

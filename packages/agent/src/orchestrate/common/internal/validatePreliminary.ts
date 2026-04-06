@@ -20,24 +20,20 @@ import { IAutoBePreliminaryGetRealizeTransformers } from "../structures/IAutoBeP
 
 export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   controller: AutoBePreliminaryController<Kind>,
-  data: IAutoBePreliminaryRequest<Kind, true>,
-): IValidation<IAutoBePreliminaryRequest<Kind, true>> => {
+  data: IAutoBePreliminaryRequest<Kind | "complete">,
+): IValidation<IAutoBePreliminaryRequest<Kind | "complete">> => {
   // discriminator
-  const type:
-    | Exclude<
-        IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
-        `getPrevious${string}`
-      >
-    | "complete" = (
+  const type: Exclude<
+    IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
+    `getPrevious${string}`
+  > = (
     data.request.type.startsWith("getPrevious")
       ? data.request.type.replace("getPrevious", "get")
       : data.request.type
-  ) as
-    | Exclude<
-        IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
-        `getPrevious${string}`
-      >
-    | "complete";
+  ) as Exclude<
+    IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
+    `getPrevious${string}`
+  >;
 
   // ---------------------------------------------------------------------------
   // COMPLETE CASE
@@ -78,7 +74,7 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
       return typia.validate<{
         thinking: string;
         request: IAutoBePreliminaryComplete;
-      }>(data) as IValidation<IAutoBePreliminaryRequest<Kind, true>>;
+      }>(data) as IValidation<IAutoBePreliminaryRequest<Kind>>;
     return {
       success: false,
       data,

@@ -26,6 +26,7 @@ export function createPreliminaryCollection(
       previousInterfaceOperations: (
         defined?.previousInterfaceOperations ?? []
       ).slice(),
+      complete: null,
     };
   return {
     analysisSections: (
@@ -72,5 +73,6 @@ export function createPreliminaryCollection(
     ),
     previousInterfaceOperations:
       state.previousInterface?.document.operations.slice() ?? [],
+    complete: null,
   };
 }

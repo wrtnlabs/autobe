@@ -114,6 +114,7 @@ async function process(
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"
+    | "complete"
   > = new AutoBePreliminaryController({
     source: SOURCE,
     application:
@@ -123,6 +124,7 @@ async function process(
       "databaseSchemas",
       "realizeCollectors",
       "realizeTransformers",
+      "complete",
     ],
     dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
@@ -223,6 +225,7 @@ function createController(props: {
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"
+    | "complete"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {

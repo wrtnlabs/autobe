@@ -22,14 +22,15 @@ export const orchestrateAnalyzeScenario = async (
   props?: { feedback?: string },
 ): Promise<AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory> => {
   const start: Date = new Date();
-  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
-    new AutoBePreliminaryController({
-      application: typia.json.application<IAutoBeAnalyzeScenarioApplication>(),
-      source: SOURCE,
-      kinds: ["previousAnalysisSections"],
-      state: ctx.state(),
-      dispatch: (e) => ctx.dispatch(e),
-    });
+  const preliminary: AutoBePreliminaryController<
+    "previousAnalysisSections" | "complete"
+  > = new AutoBePreliminaryController({
+    application: typia.json.application<IAutoBeAnalyzeScenarioApplication>(),
+    source: SOURCE,
+    kinds: ["previousAnalysisSections", "complete"],
+    state: ctx.state(),
+    dispatch: (e) => ctx.dispatch(e),
+  });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IWrite | null> = {
       value: null,
@@ -80,19 +81,17 @@ export const orchestrateAnalyzeScenario = async (
 
 function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IWrite | null>;
-  preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
+  preliminary: AutoBePreliminaryController<
+    "previousAnalysisSections" | "complete"
+  >;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
-    if (result.success === false) {
-      return result;
-    }
-
-    if (result.data.request.type === "write") return result;
-
+    if (result.success === false) return result;
+    else if (result.data.request.type === "write") return result;
     return props.preliminary.validate({
       thinking: result.data.thinking ?? "",
       request: result.data.request,

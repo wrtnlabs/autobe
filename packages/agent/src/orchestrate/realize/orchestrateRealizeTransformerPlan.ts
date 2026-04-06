@@ -107,14 +107,19 @@ async function process(
     );
 
   const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "databaseSchemas" | "interfaceSchemas"
+    "analysisSections" | "databaseSchemas" | "interfaceSchemas" | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
     source: SOURCE,
     application:
       typia.json.application<IAutoBeRealizeTransformerPlanApplication>(),
-    kinds: ["analysisSections", "databaseSchemas", "interfaceSchemas"],
+    kinds: [
+      "analysisSections",
+      "databaseSchemas",
+      "interfaceSchemas",
+      "complete",
+    ],
     local: {
       analysisSections: ragSections,
       interfaceSchemas: Object.fromEntries(
@@ -183,7 +188,7 @@ function createController(props: {
   dtoTypeName: string;
   build: (next: IAutoBeRealizeTransformerPlanApplication.IWrite) => void;
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "databaseSchemas" | "interfaceSchemas"
+    "analysisSections" | "databaseSchemas" | "interfaceSchemas" | "complete"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {

@@ -32,6 +32,7 @@ interface IProgrammer {
       | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
+      | "complete"
     >;
   }): IAutoBeOrchestrateHistory;
 }
@@ -79,6 +80,7 @@ export const orchestrateInterfaceEndpointWrite = async (
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
@@ -90,6 +92,7 @@ export const orchestrateInterfaceEndpointWrite = async (
       "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
+      "complete",
     ],
     source: SOURCE,
     local: {
@@ -174,6 +177,7 @@ const createController = (props: {
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   >;
   build: (next: IAutoBeInterfaceEndpointWriteApplication.IWrite) => void;
 }): ILlmController => {

@@ -16,6 +16,7 @@ export const transformDatabaseComponentsHistory = (
       | "analysisSections"
       | "previousAnalysisSections"
       | "previousDatabaseSchemas"
+      | "complete"
     >;
     group: AutoBeDatabaseGroup;
   },

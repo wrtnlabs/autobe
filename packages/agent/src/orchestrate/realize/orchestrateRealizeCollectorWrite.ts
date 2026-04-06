@@ -90,20 +90,21 @@ async function process(
     .flat();
   const dtoTypeName: string = props.plan.dtoTypeName;
   const location: string = `src/collectors/${AutoBeRealizeCollectorProgrammer.getName(dtoTypeName)}.ts`;
-  const preliminary: AutoBePreliminaryController<"databaseSchemas"> =
-    new AutoBePreliminaryController({
-      dispatch: (e) => ctx.dispatch(e),
-      state: ctx.state(),
-      source: SOURCE,
-      application:
-        typia.json.application<IAutoBeRealizeCollectorWriteApplication>(),
-      kinds: ["databaseSchemas"],
-      local: {
-        databaseSchemas: models.filter(
-          (m) => m.name === props.plan.databaseSchemaName,
-        ),
-      },
-    });
+  const preliminary: AutoBePreliminaryController<
+    "databaseSchemas" | "complete"
+  > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
+    state: ctx.state(),
+    source: SOURCE,
+    application:
+      typia.json.application<IAutoBeRealizeCollectorWriteApplication>(),
+    kinds: ["databaseSchemas", "complete"],
+    local: {
+      databaseSchemas: models.filter(
+        (m) => m.name === props.plan.databaseSchemaName,
+      ),
+    },
+  });
   const event: AutoBeRealizeWriteEvent = await preliminary.orchestrate(
     ctx,
     async (out) => {
@@ -168,7 +169,7 @@ function createController(
     plan: AutoBeRealizeCollectorPlan;
     neighbors: AutoBeRealizeCollectorPlan[];
     build: (next: IAutoBeRealizeCollectorWriteApplication.IWrite) => void;
-    preliminary: AutoBePreliminaryController<"databaseSchemas">;
+    preliminary: AutoBePreliminaryController<"databaseSchemas" | "complete">;
   },
 ): ILlmController {
   const validate = (

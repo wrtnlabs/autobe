@@ -131,11 +131,16 @@ async function process(
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
   const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas" | "complete"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeTestScenarioApplication>(),
     source: SOURCE,
-    kinds: ["analysisSections", "interfaceOperations", "interfaceSchemas"],
+    kinds: [
+      "analysisSections",
+      "interfaceOperations",
+      "interfaceSchemas",
+      "complete",
+    ],
     dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
     all: {
@@ -220,7 +225,7 @@ function createController(props: {
   operation: AutoBeOpenApi.IOperation;
   build: (scenarios: AutoBeTestScenario[]) => void;
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas" | "complete"
   >;
 }): IAgenticaController.IClass {
   const validate = (

@@ -155,6 +155,7 @@ async function process(
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
@@ -166,6 +167,7 @@ async function process(
       "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
+      "complete",
     ],
     local: {
       analysisSections: ragSections,
@@ -260,6 +262,7 @@ function createController(props: {
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   >;
   build: (operation: IAutoBeInterfaceOperationApplication.IWrite) => void;
 }): IAgenticaController.IClass {

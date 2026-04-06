@@ -97,7 +97,10 @@ async function process(
   },
 ): Promise<AutoBeDatabaseSchemaEvent> {
   const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     application: typia.json.application<IAutoBeDatabaseSchemaApplication>(),
@@ -106,6 +109,7 @@ async function process(
       "analysisSections",
       "previousAnalysisSections",
       "previousDatabaseSchemas",
+      "complete",
     ],
     state: ctx.state(),
     config: {
@@ -159,7 +163,10 @@ async function process(
 
 function createController(props: {
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+    | "analysisSections"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "complete"
   >;
   targetComponent: AutoBeDatabaseComponent;
   otherComponents: AutoBeDatabaseComponent[];

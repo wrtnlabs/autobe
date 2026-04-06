@@ -28,6 +28,7 @@ export async function orchestrateInterfaceGroup(
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
@@ -39,6 +40,7 @@ export async function orchestrateInterfaceGroup(
       "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
+      "complete",
     ],
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -92,6 +94,7 @@ function createController(props: {
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   >;
   databaseSchemas: Set<string>;
 }): IAgenticaController.IClass {

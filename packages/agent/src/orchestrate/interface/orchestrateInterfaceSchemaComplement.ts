@@ -116,6 +116,7 @@ Task: ${task}
     | "previousDatabaseSchemas"
     | "previousInterfaceSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   > = new AutoBePreliminaryController({
     dispatch: (e) => ctx.dispatch(e),
     application:
@@ -130,6 +131,7 @@ Task: ${task}
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
+      "complete",
     ],
     config: {
       database: "text",
@@ -229,6 +231,7 @@ function createController(
       | "previousDatabaseSchemas"
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"
+      | "complete"
     >;
     build: (schema: IAutoBeInterfaceSchemaComplementApplication.IWrite) => void;
   },

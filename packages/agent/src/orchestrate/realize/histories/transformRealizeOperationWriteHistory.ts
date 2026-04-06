@@ -31,6 +31,7 @@ export const transformRealizeOperationWriteHistory = (props: {
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"
+    | "complete"
   >;
 }): IAutoBeOrchestrateHistory => {
   const payloads: Record<string, string> = Object.fromEntries(
