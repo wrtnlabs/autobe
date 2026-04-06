@@ -44,8 +44,8 @@ export const test_realize_transformer_template_both = (): void => {
         // implicit return type for better type inference
         return {
           select: {
-            ...
-            id: true, // required for children cache key
+            id: true,
+            name: true,
             parent_id: true,
             parent: undefined, // DO NOT select recursive relation
             children: undefined, // DO NOT select recursive relation
@@ -59,8 +59,8 @@ export const test_realize_transformer_template_both = (): void => {
         childrenCache: VariadicSingleton<Promise<INode[]>, [string]> = createChildrenCache(),
       ): Promise<INode> {
         return {
-          id: ...,
-          name: ...,
+          id: {string},
+          name: {string},
           parent: input.parent_id ? await parentCache.get(input.parent_id) : null,
           children: await childrenCache.get(input.id),
         };

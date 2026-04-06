@@ -42,8 +42,8 @@ export const test_realize_transformer_template_children_only = (): void => {
           // implicit return type for better type inference
           return {
             select: {
-              ...
-              id: true, // required for children cache key
+              id: true,
+              name: true,
               children: undefined, // DO NOT select recursive relation
             },
           } satisfies Prisma.foldersFindManyArgs;
@@ -54,8 +54,8 @@ export const test_realize_transformer_template_children_only = (): void => {
           cache: VariadicSingleton<Promise<IFolder[]>, [string]> = createChildrenCache(),
         ): Promise<IFolder> {
           return {
-            id: ...,
-            name: ...,
+            id: {string},
+            name: {string},
             children: await cache.get(input.id),
           };
         }

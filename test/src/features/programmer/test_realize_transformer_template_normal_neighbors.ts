@@ -105,22 +105,24 @@ export const test_realize_transformer_template_normal_neighbors = (): void => {
         // implicit return type for better type inference
         return {
           select: {
-            ...
+            id: true,
+            title: true,
             author: WriterTransformer.select(),
             articleComments: CommentTransformer.select(),
             cat: CategoryTransformer.select(),
+            created_at: true,
           },
         } satisfies Prisma.articlesFindManyArgs;
       }
 
       export async function transform(input: Payload): Promise<IArticle> {
         return {
-          id: ...,
-          title: ...,
+          id: {string},
+          title: {string},
           writer: await WriterTransformer.transform(input.author),
           comments: await ArrayUtil.asyncMap(input.articleComments, CommentTransformer.transform),
           category: input.cat ? await CategoryTransformer.transform(input.cat) : null,
-          created_at: ...,
+          created_at: {string},
         };
       }
     }

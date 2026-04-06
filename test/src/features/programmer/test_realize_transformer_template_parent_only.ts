@@ -41,7 +41,8 @@ export const test_realize_transformer_template_parent_only = (): void => {
         // implicit return type for better type inference
         return {
           select: {
-            ...
+            id: true,
+            name: true,
             parent_id: true,
             parent: undefined, // DO NOT select recursive relation
           },
@@ -53,8 +54,8 @@ export const test_realize_transformer_template_parent_only = (): void => {
         cache: VariadicSingleton<Promise<ICategory>, [string]> = createParentCache(),
       ): Promise<ICategory> {
         return {
-          id: ...,
-          name: ...,
+          id: {string},
+          name: {string},
           parent: input.parent_id ? await cache.get(input.parent_id) : null,
         };
       }
