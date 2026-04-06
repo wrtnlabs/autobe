@@ -5,6 +5,7 @@ import { v7 } from "uuid";
 
 import {
   extractDidYouMeanHints,
+  generateMissingPropertyHints,
   generateTS2339Hints,
 } from "../../realize/utils/generateTS2339Hints";
 import { printErrorHints } from "../../realize/utils/printErrorHints";
@@ -23,6 +24,9 @@ export const transformPreviousAndLatestCorrectHistory = (
     const isLatest = i === summarized.length - 1;
     const ts2339Hints = isLatest
       ? generateTS2339Hints(failure.diagnostics)
+      : "";
+    const missingPropHints = isLatest
+      ? generateMissingPropertyHints(failure.diagnostics)
       : "";
     const didYouMeanHints = isLatest
       ? extractDidYouMeanHints(failure.diagnostics)
@@ -103,6 +107,8 @@ export const transformPreviousAndLatestCorrectHistory = (
               ${printErrorHints(failure.script, failure.diagnostics)}
 
               ${ts2339Hints}
+
+              ${missingPropHints}
 
               ${didYouMeanSection}
             `

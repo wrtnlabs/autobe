@@ -82,6 +82,12 @@ export const transformRealizeTransformerWriteHistory = async (
             plan: props.plan,
             schema,
             schemas: document.components.schemas,
+            neighbors: props.neighbors,
+            relations:
+              AutoBeRealizeTransformerProgrammer.getRelationMappingTable({
+                application,
+                model,
+              }),
           })}
           \`\`\`
 

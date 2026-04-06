@@ -147,6 +147,11 @@ export const transformRealizeTransformerCorrectHistory = async (
           props.function.plan.dtoTypeName
         ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
         schemas: document.components.schemas,
+        neighbors: props.neighbors.map((n) => n.plan),
+        relations: AutoBeRealizeTransformerProgrammer.getRelationMappingTable({
+          application,
+          model,
+        }),
       })}
 
       Current code is as follows:

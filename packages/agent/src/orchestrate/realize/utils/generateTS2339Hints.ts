@@ -103,3 +103,60 @@ export function extractDidYouMeanHints(
 
   return hints;
 }
+
+/**
+ * Generates hints for TS2322/TS1360 "Property 'X' is missing in type" errors.
+ *
+ * These errors occur when Prisma's `create()`/`update()` data object is missing
+ * required fields (e.g., FK columns, required scalars). Extracts the missing
+ * property name and the expected type, then provides actionable guidance.
+ *
+ * Returns empty string if no matching diagnostics are found.
+ */
+export function generateMissingPropertyHints(
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+): string {
+  const MISSING_PROP =
+    /Property '(\w+)' is missing in type '.*?' but required in type '(\w+)'/;
+
+  const seen = new Set<string>();
+  const hints: Array<{ property: string; expectedType: string }> = [];
+
+  for (const diag of diagnostics) {
+    if (Number(diag.code) !== 2322 && Number(diag.code) !== 1360) continue;
+
+    const match = diag.messageText.match(MISSING_PROP);
+    if (match !== null) {
+      const property = match[1]!;
+      const expectedType = match[2]!;
+      const key = `${property}@${expectedType}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        hints.push({ property, expectedType });
+      }
+    }
+  }
+
+  if (hints.length === 0) return "";
+
+  const lines = hints
+    .map((h) => `- \`${h.property}\` (required by \`${h.expectedType}\`)`)
+    .join("\n");
+
+  return [
+    "## Missing Required Property Hints (TS2322/TS1360)",
+    "",
+    "These errors mean your data object is missing required fields.",
+    "This usually happens with Prisma `create()` / `update()` calls when",
+    "a required column or FK is omitted from the `data` object.",
+    "",
+    "**Fix**: Add the missing properties to your `data` object.",
+    "- For FK columns → provide the correct foreign key value (e.g., `reddit_clone_member_id: memberRecord.id`)",
+    "- For required scalars → provide the required value",
+    "- If using `satisfies XxxUncheckedCreateInput`, ALL required columns of that type must be present",
+    "- If the field is a relation FK that should be nullable, use `Prisma.XxxCreateInput` (relation-based) instead of `UncheckedCreateInput`",
+    "",
+    "Missing properties:",
+    lines,
+  ].join("\n");
+}

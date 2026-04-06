@@ -139,34 +139,212 @@ export namespace AutoBeRealizeTransformerProgrammer {
     }));
   }
 
+  export interface INeighborRelation {
+    dtoProperty: string;
+    relationKey: string;
+    transformerName: string;
+    isArray: boolean;
+    isNullable: boolean;
+  }
+
+  export function computeNeighborRelations(props: {
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    neighbors: AutoBeRealizeTransformerPlan[];
+    relations: Array<{
+      propertyKey: string;
+      targetModel: string;
+      relationType: string;
+      fkColumns: string;
+    }>;
+  }): INeighborRelation[] {
+    const result: INeighborRelation[] = [];
+
+    // Count how many DTO properties reference each neighbor type and
+    // how many relations point to each target model.
+    // When either is ambiguous (>1), skip — wrong mapping is worse than none.
+    const dtoRefCount = new Map<string, number>();
+    const relationCount = new Map<string, number>();
+    const neighborSchemaCount = new Map<string, number>();
+    for (const neighbor of props.neighbors) {
+      const targetRef = `#/components/schemas/${neighbor.dtoTypeName}`;
+      let count = 0;
+      for (const [, prop] of Object.entries(props.schema.properties)) {
+        if (!prop) continue;
+        if (findNeighborRef({ schema: prop, targetRef })) count++;
+      }
+      dtoRefCount.set(neighbor.dtoTypeName, count);
+      relationCount.set(
+        neighbor.databaseSchemaName,
+        props.relations.filter(
+          (r) => r.targetModel === neighbor.databaseSchemaName,
+        ).length,
+      );
+      neighborSchemaCount.set(
+        neighbor.databaseSchemaName,
+        (neighborSchemaCount.get(neighbor.databaseSchemaName) ?? 0) + 1,
+      );
+    }
+
+    for (const neighbor of props.neighbors) {
+      // Skip ambiguous cases: multiple DTO properties, relations, or
+      // neighbors sharing the same database schema (would produce
+      // duplicate select keys → silent JS overwrite)
+      if ((dtoRefCount.get(neighbor.dtoTypeName) ?? 0) !== 1) continue;
+      if ((relationCount.get(neighbor.databaseSchemaName) ?? 0) !== 1) continue;
+      if ((neighborSchemaCount.get(neighbor.databaseSchemaName) ?? 0) !== 1)
+        continue;
+
+      const targetRef = `#/components/schemas/${neighbor.dtoTypeName}`;
+      let dtoMatch: {
+        property: string;
+        isArray: boolean;
+        isNullable: boolean;
+      } | null = null;
+
+      for (const [key, prop] of Object.entries(props.schema.properties)) {
+        if (!prop) continue;
+        const ref = findNeighborRef({ schema: prop, targetRef });
+        if (ref) {
+          dtoMatch = { property: key, ...ref };
+          break;
+        }
+      }
+
+      const relation = props.relations.find(
+        (r) => r.targetModel === neighbor.databaseSchemaName,
+      );
+
+      if (dtoMatch && relation) {
+        result.push({
+          dtoProperty: dtoMatch.property,
+          relationKey: relation.propertyKey,
+          transformerName: getName(neighbor.dtoTypeName),
+          isArray: dtoMatch.isArray,
+          isNullable: dtoMatch.isNullable,
+        });
+      }
+    }
+    return result;
+  }
+
+  function findNeighborRef(props: {
+    schema: AutoBeOpenApi.IJsonSchema;
+    targetRef: string;
+  }): { isArray: boolean; isNullable: boolean } | null {
+    const { schema, targetRef } = props;
+    if (
+      AutoBeOpenApiTypeChecker.isReference(schema) &&
+      schema.$ref === targetRef
+    )
+      return { isArray: false, isNullable: false };
+    if (
+      AutoBeOpenApiTypeChecker.isArray(schema) &&
+      AutoBeOpenApiTypeChecker.isReference(schema.items) &&
+      schema.items.$ref === targetRef
+    )
+      return { isArray: true, isNullable: false };
+    if (AutoBeOpenApiTypeChecker.isOneOf(schema)) {
+      const hasNull = schema.oneOf.some((s) =>
+        AutoBeOpenApiTypeChecker.isNull(s),
+      );
+      for (const sub of schema.oneOf) {
+        if (AutoBeOpenApiTypeChecker.isNull(sub)) continue;
+        const inner = findNeighborRef({ schema: sub, targetRef });
+        if (inner) return { ...inner, isNullable: hasNull };
+      }
+    }
+    return null;
+  }
+
   export function writeTemplate(props: {
     plan: AutoBeRealizeTransformerPlan;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
+    neighbors?: AutoBeRealizeTransformerPlan[];
+    relations?: Array<{
+      propertyKey: string;
+      targetModel: string;
+      relationType: string;
+      fkColumns: string;
+    }>;
   }): string {
     const relations = getRecursiveRelations({
       schemas: props.schemas,
       typeName: props.plan.dtoTypeName,
     });
-    return relations.parent !== null || relations.children !== null
-      ? writeRecursiveTemplate({
-          ...props,
-          parentProperty: relations.parent,
-          childrenProperty: relations.children,
-        })
-      : writeNormalTemplate(props);
+    if (relations.parent !== null || relations.children !== null)
+      return writeRecursiveTemplate({
+        plan: props.plan,
+        schema: props.schema,
+        parentProperty: relations.parent,
+        childrenProperty: relations.children,
+      });
+
+    const neighborRelations =
+      props.neighbors && props.relations
+        ? computeNeighborRelations({
+            schema: props.schema,
+            neighbors: props.neighbors,
+            relations: props.relations,
+          })
+        : [];
+
+    return writeNormalTemplate({
+      plan: props.plan,
+      schema: props.schema,
+      neighborRelations,
+    });
   }
 
   function writeNormalTemplate(props: {
     plan: AutoBeRealizeTransformerPlan;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    neighborRelations: INeighborRelation[];
   }): string {
     const name: string = getName(props.plan.dtoTypeName);
     const dto: string = props.plan.dtoTypeName;
     const table: string = props.plan.databaseSchemaName;
+
     const properties: string = Object.keys(props.schema.properties)
-      .map((k) => `  ${k}: ...,`)
+      .map((k) => {
+        const nr = props.neighborRelations.find((n) => n.dtoProperty === k);
+        if (!nr) return `  ${k}: ...,`;
+        if (nr.isArray)
+          return `  ${k}: await ArrayUtil.asyncMap(input.${nr.relationKey}, ${nr.transformerName}.transform),`;
+        if (nr.isNullable)
+          return `  ${k}: input.${nr.relationKey} ? await ${nr.transformerName}.transform(input.${nr.relationKey}) : null,`;
+        return `  ${k}: await ${nr.transformerName}.transform(input.${nr.relationKey}),`;
+      })
       .join("\n");
+
+    if (props.neighborRelations.length === 0) {
+      return StringUtil.trim`
+        export namespace ${name} {
+          export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
+
+          export function select() {
+            // implicit return type for better type inference
+            return {
+              ...
+            } satisfies Prisma.${table}FindManyArgs;
+          }
+
+          export async function transform(input: Payload): Promise<${dto}> {
+            return {
+${properties}
+            };
+          }
+        }
+      `;
+    }
+
+    const selectBody: string = [
+      `...`,
+      ...props.neighborRelations.map(
+        (nr) => `${nr.relationKey}: ${nr.transformerName}.select(),`,
+      ),
+    ].join("\n              ");
+
     return StringUtil.trim`
       export namespace ${name} {
         export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
@@ -174,7 +352,9 @@ export namespace AutoBeRealizeTransformerProgrammer {
         export function select() {
           // implicit return type for better type inference
           return {
-            ...
+            select: {
+              ${selectBody}
+            },
           } satisfies Prisma.${table}FindManyArgs;
         }
 
