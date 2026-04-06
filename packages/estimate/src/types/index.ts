@@ -3,6 +3,8 @@ export {
   scoreToGrade,
   createEmptyPhaseResult,
   generateExplanation,
+} from "./score-utils";
+export {
   PHASE_WEIGHTS,
   PHASE_NAMES,
   GATE_ERROR_THRESHOLD,
@@ -13,7 +15,7 @@ export {
   MAX_COMBINED_PENALTY,
   AGENT_WEIGHT_RATIO,
   AGENT_WEIGHTS,
-} from "./score";
+} from "./constants";
 
 export type {
   Severity,

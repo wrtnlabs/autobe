@@ -10,9 +10,8 @@ import {
   PHASE_WEIGHTS,
   PRISMA_PENALTY_CAP,
   TYPE_CRITICAL_RATIO,
-  createEmptyPhaseResult,
-  scoreToGrade,
-} from "./score";
+} from "./constants";
+import { createEmptyPhaseResult, scoreToGrade } from "./score-utils";
 
 describe("PHASE_WEIGHTS", () => {
   it("active weights sum to 1.0", () => {
