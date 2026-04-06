@@ -4,6 +4,8 @@ import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * A DTO that mixes all three property categories in one template:
  *
@@ -47,6 +49,21 @@ export const test_realize_transformer_template_mixed = (): void => {
     "IOrder"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+  const model = createTestModel({
+    name: "orders",
+    plainFields: [{ name: "title" }, { name: "created_at", type: "datetime" }],
+    foreignFields: [
+      {
+        name: "customer_id",
+        relation: {
+          name: "buyer",
+          targetModel: "customers",
+          oppositeName: "orders",
+        },
+      },
+    ],
+  });
+
   const result: string = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
@@ -56,6 +73,7 @@ export const test_realize_transformer_template_mixed = (): void => {
     },
     schema,
     schemas,
+    model,
     // Only ICustomer and IOrderItem have transformers; ICoupon does NOT.
     neighbors: [
       {
@@ -97,9 +115,9 @@ export const test_realize_transformer_template_mixed = (): void => {
           select: {
             id: true,
             title: true,
+            created_at: true,
             buyer: CustomerTransformer.select(),
             orderItems: OrderItemTransformer.select(),
-            created_at: true,
             ...
           },
         } satisfies Prisma.ordersFindManyArgs;

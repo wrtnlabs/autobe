@@ -4,6 +4,8 @@ import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * A DTO with a 1:N self-reference (children array) but no parent property.
  * writeTemplate must produce the children-only recursive skeleton with
@@ -23,6 +25,22 @@ export const test_realize_transformer_template_children_only = (): void => {
     "IFolder"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+  const model = createTestModel({
+    name: "folders",
+    plainFields: [{ name: "name" }],
+    foreignFields: [
+      {
+        name: "parent_id",
+        nullable: true,
+        relation: {
+          name: "parentFolder",
+          targetModel: "folders",
+          oppositeName: "children",
+        },
+      },
+    ],
+  });
+
   const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
@@ -32,6 +50,7 @@ export const test_realize_transformer_template_children_only = (): void => {
     },
     schema,
     schemas,
+    model,
   });
 
   const expectedBody: string = StringUtil.trim`
@@ -44,6 +63,7 @@ export const test_realize_transformer_template_children_only = (): void => {
             select: {
               id: true,
               name: true,
+              parent_id: true,
               children: undefined, // DO NOT select recursive relation
             },
           } satisfies Prisma.foldersFindManyArgs;
@@ -73,7 +93,7 @@ export const test_realize_transformer_template_children_only = (): void => {
               const records =
                 await MyGlobal.prisma.folders.findMany({
                   ...select(),
-                  where: { parent_id: parentId }, // Adjust FK column based on actual schema
+                  where: { parent_id: parentId },
                 });
               return await ArrayUtil.asyncMap(records, (r) => transform(r, cache));
             },

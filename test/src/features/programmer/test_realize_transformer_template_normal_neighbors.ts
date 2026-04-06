@@ -4,6 +4,8 @@ import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * A DTO with three kinds of neighbor relations:
  *
@@ -12,8 +14,9 @@ import typia, { tags } from "typia";
  * - `category` (nullable belongsTo via `ICategory | null`)
  *
  * The relation property keys intentionally differ from the DTO property names
- * (`author` ≠ `writer`, `articleComments` ≠ `comments`, `cat` ≠ `category`) to
- * verify that select() uses relation keys while transform() uses DTO keys.
+ * (`author` ≠ `writer`, `articleComments` ≠ `comments`, `category` ≠
+ * `category`) to verify that select() uses relation keys while transform() uses
+ * DTO keys.
  */
 interface IArticle {
   id: string & tags.Format<"uuid">;
@@ -46,6 +49,30 @@ export const test_realize_transformer_template_normal_neighbors = (): void => {
     "IArticle"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+  const model = createTestModel({
+    name: "articles",
+    plainFields: [{ name: "title" }, { name: "created_at", type: "datetime" }],
+    foreignFields: [
+      {
+        name: "writer_id",
+        relation: {
+          name: "author",
+          targetModel: "writers",
+          oppositeName: "articles",
+        },
+      },
+      {
+        name: "category_id",
+        nullable: true,
+        relation: {
+          name: "category",
+          targetModel: "categories",
+          oppositeName: "articles",
+        },
+      },
+    ],
+  });
+
   const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
@@ -55,6 +82,7 @@ export const test_realize_transformer_template_normal_neighbors = (): void => {
     },
     schema,
     schemas,
+    model,
     neighbors: [
       {
         type: "transformer",
@@ -89,7 +117,7 @@ export const test_realize_transformer_template_normal_neighbors = (): void => {
         fkColumns: "-",
       },
       {
-        propertyKey: "cat",
+        propertyKey: "category",
         targetModel: "categories",
         relationType: "belongsTo",
         fkColumns: "category_id",
@@ -107,10 +135,10 @@ export const test_realize_transformer_template_normal_neighbors = (): void => {
           select: {
             id: true,
             title: true,
-            author: WriterTransformer.select(),
-            articleComments: CommentTransformer.select(),
-            cat: CategoryTransformer.select(),
             created_at: true,
+            author: WriterTransformer.select(),
+            category: CategoryTransformer.select(),
+            articleComments: CommentTransformer.select(),
           },
         } satisfies Prisma.articlesFindManyArgs;
       }
@@ -121,7 +149,7 @@ export const test_realize_transformer_template_normal_neighbors = (): void => {
           title: {string},
           writer: await WriterTransformer.transform(input.author),
           comments: await ArrayUtil.asyncMap(input.articleComments, CommentTransformer.transform),
-          category: input.cat ? await CategoryTransformer.transform(input.cat) : null,
+          category: input.category ? await CategoryTransformer.transform(input.category) : null,
           created_at: {string},
         };
       }

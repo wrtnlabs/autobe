@@ -120,7 +120,14 @@ transformMappings: [
 
 ### Phase 3: Draft & Revise
 
-Apply ALL corrections, then verify exhaustively. Use `revise.final` only if draft needs changes.
+Apply ALL corrections in `draft`, then verify in `revise.review`:
+
+1. **All diagnostics addressed**: Every error from the compiler input has a corresponding fix.
+2. **select ↔ transform alignment**: Every field accessed on `input` in `transform()` has a matching entry in `select()`.
+3. **Relation property names**: Each key in `select()` matches the Prisma model's relation property name, not the target table name.
+4. **Neighbor reuse**: Every relation with a neighbor Transformer uses `Neighbor.select()` + `Neighbor.transform()` — not an inline reimplementation.
+
+If the review finds remaining issues, submit corrected code in `revise.final`. Otherwise `null`.
 
 ## 5. Common Error Patterns
 
@@ -249,7 +256,25 @@ export function select() {
 
 **Key rule**: Every property accessed on `input` in `transform()` MUST have a corresponding entry in `select()`.
 
-### 5.6. Typia Tag Type Mismatch
+### 5.6. FK Column Names Use `snake_case` from the Schema
+
+Foreign key columns always use the exact `snake_case` name defined in the Prisma schema. The relation property name (often camelCase) is a separate concept — combining them produces a name that exists nowhere:
+
+```typescript
+// Prisma schema:
+//   parent_comment_id  String?  @db.Uuid        ← FK column (snake_case)
+//   parentComment      reddit_platform_comments? ← relation property (camelCase)
+
+// ❌ ERROR: 'parentComment_id' — hybrid of relation name + _id suffix
+select: { parentComment_id: true }
+
+// ✅ CORRECT: exact column name from schema
+select: { parent_comment_id: true }
+```
+
+**Compiler name suggestions are authoritative.** When the compiler says `Did you mean 'Y'?`, it is matching against the schema's actual field list — `Y` is the correct name. Adopt the suggested name for every occurrence in `select()`, `transform()`, and inline objects throughout the entire file. A single wrong name cascades into multiple errors, so one rename can resolve many diagnostics at once.
+
+### 5.7. Typia Tag Type Mismatch
 
 ```typescript
 // ❌ ERROR: Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'
@@ -259,8 +284,27 @@ count: input._count.reviews,
 count: input._count.reviews satisfies number as number,
 ```
 
-## 6. Compiler Authority
+## 6. Final Checklist
 
-**The TypeScript compiler is ALWAYS right. Your role is to FIX errors, not judge them.**
+### Compiler Authority
+- [ ] ALL compilation errors resolved
+- [ ] The compiler's judgment is FINAL
 
-**THE ONLY ACCEPTABLE OUTCOME**: Zero compilation errors + correct code quality.
+### select ↔ transform
+- [ ] Every field accessed on `input` in `transform()` exists in `select()`
+- [ ] Every `select()` entry is consumed in `transform()`
+
+### Naming
+- [ ] Relation property names from Prisma model (NOT table names)
+- [ ] FK columns use exact `snake_case` from schema
+- [ ] Transformer.select() assigned directly (NOT `.select().select`)
+
+### Neighbor Reuse
+- [ ] Checked neighbor transformers table
+- [ ] Using BOTH `select()` and `transform()` together for each neighbor
+
+### Type Conversions
+- [ ] `DateTime` → `.toISOString()`
+- [ ] `Decimal` → `Number()`
+- [ ] Correct `null` vs `undefined` per DTO signature
+- [ ] Typia tag mismatches → `satisfies T as T`

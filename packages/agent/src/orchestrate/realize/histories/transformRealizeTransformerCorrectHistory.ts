@@ -152,6 +152,7 @@ export const transformRealizeTransformerCorrectHistory = async (
           application,
           model,
         }),
+        model,
       })}
 
       Current code is as follows:

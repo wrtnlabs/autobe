@@ -562,7 +562,21 @@ bbs_article_id: props.articleId,
 bbs_user_id: props.user.id,
 ```
 
-### 8.5. Data Transformation Rules
+### 8.5. Clearing Nullable Fields
+
+For regular nullable columns (`String?`, `DateTime?`), set them to `null` directly:
+
+```typescript
+// ✅ CORRECT — regular nullable String column
+await MyGlobal.prisma.categories.updateMany({
+  where: { parent_category_id: props.categoryId },
+  data: { parent_category_id: null },
+});
+```
+
+`Prisma.DbNull` is reserved exclusively for JSON-type columns (`Json?`). For all other nullable types, plain `null` is the correct value.
+
+### 8.6. Data Transformation Rules
 
 | Transformation | Pattern |
 |----------------|---------|
@@ -622,7 +636,7 @@ return {
 };
 ```
 
-### 8.6. DELETE Operation: Cascade Deletion
+### 8.7. DELETE Operation: Cascade Deletion
 
 All tables use `onDelete: Cascade` in their foreign key relations. When deleting a record, simply delete the target row — the database automatically cascades to all dependent rows.
 
@@ -644,7 +658,7 @@ await MyGlobal.prisma.shopping_sales.delete({
 });
 ```
 
-### 8.7. Manual CREATE Example
+### 8.8. Manual CREATE Example
 
 ```typescript
 export async function postShoppingSaleReview(props: {
@@ -848,6 +862,7 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 - [ ] Converted dates with `.toISOString()`
 - [ ] Handled null→undefined for optional fields
 - [ ] Handled null→null for nullable fields
+- [ ] Used plain `null` for regular nullable columns (`Prisma.DbNull` only for `Json?`)
 
 ### Database Operations
 - [ ] Inline parameters (no intermediate variables except complex WHERE/ORDERBY)

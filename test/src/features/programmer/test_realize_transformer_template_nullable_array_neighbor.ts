@@ -4,6 +4,8 @@ import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * When a neighbor relation is a nullable array (`IComment[] | null`), the
  * template must wrap the `ArrayUtil.asyncMap` call with a null check:
@@ -35,6 +37,11 @@ export const test_realize_transformer_template_nullable_array_neighbor =
       "IPost"
     ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+    const model = createTestModel({
+      name: "posts",
+      plainFields: [{ name: "title" }],
+    });
+
     const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
       plan: {
         type: "transformer",
@@ -44,6 +51,7 @@ export const test_realize_transformer_template_nullable_array_neighbor =
       },
       schema,
       schemas,
+      model,
       neighbors: [
         {
           type: "transformer",

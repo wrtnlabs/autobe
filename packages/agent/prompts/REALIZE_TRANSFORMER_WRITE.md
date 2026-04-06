@@ -130,7 +130,14 @@ transformMappings: [
 
 ### Phase 3: Draft & Revise
 
-Write complete transformer code, then verify against database schema.
+Write complete transformer code in `draft`, then verify in `revise.review`:
+
+1. **select ↔ transform alignment**: Every field accessed on `input` in `transform()` has a matching entry in `select()`, and every `select()` entry is consumed in `transform()`.
+2. **Relation property names**: Each key in `select()` matches the Prisma model's relation property name (left side of the definition), not the target table name.
+3. **Neighbor reuse**: Every relation with a neighbor Transformer uses `Neighbor.select()` + `Neighbor.transform()` — not an inline reimplementation.
+4. **Type conversions**: `DateTime` → `.toISOString()`, `Decimal` → `Number()`, nullable/optional → correct `null` or `undefined` per DTO signature.
+
+If the review finds issues, submit corrected code in `revise.final`. Otherwise `null`.
 
 ## 5. Transformer Structure
 
@@ -306,6 +313,37 @@ description: input.description ?? undefined,
 
 // Nullable field (field: Type | null)
 deletedAt: input.deleted_at ? input.deleted_at.toISOString() : null,
+```
+
+When a Prisma column is nullable (`String?`) but the DTO property is required (`string`), always provide a fallback default:
+
+```typescript
+// Prisma: position  String?       (nullable)
+// DTO:    position: string         (required)
+
+// ✅ CORRECT — empty string fallback
+position: input.position ?? "",
+
+// For enum-like required fields with a sensible default:
+employment_type: (input.employment_type ?? "full-time") as
+  | "full-time" | "part-time" | "contractor" | "intern",
+```
+
+### 6.5.1. Verify DTO Field Type Before Mapping Relations
+
+When a DTO property corresponds to a database relation, check the **DTO field type** first to decide the mapping strategy:
+
+| DTO Field Type | What to return | Example |
+|---|---|---|
+| `string` (just an ID) | The relation's `.id` | `input.department?.id ?? undefined` |
+| Object type (`ISummary`) | Transformer result | `await DeptAtSummaryTransformer.transform(input.department)` |
+
+```typescript
+// DTO: department?: string                        ← just an ID string
+department: input.department?.id ?? undefined,      // ✅ string
+
+// DTO: department: IDepartment.ISummary            ← full object
+department: await DeptAtSummaryTransformer.transform(input.department),  // ✅ object
 ```
 
 ### 6.6. No Import Statements

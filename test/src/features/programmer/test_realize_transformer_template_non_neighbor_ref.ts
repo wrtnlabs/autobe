@@ -4,6 +4,8 @@ import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * When a DTO property is a $ref (single, array, or nullable) but no
  * corresponding transformer exists in the neighbors list, the template must
@@ -40,6 +42,11 @@ export const test_realize_transformer_template_non_neighbor_ref = (): void => {
     "IMember"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+  const model = createTestModel({
+    name: "members",
+    plainFields: [{ name: "name" }],
+  });
+
   // No neighbors / no relations → all properties fall back to type hints
   const result: string = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
@@ -50,6 +57,7 @@ export const test_realize_transformer_template_non_neighbor_ref = (): void => {
     },
     schema,
     schemas,
+    model,
     neighbors: [],
     relations: [],
   });

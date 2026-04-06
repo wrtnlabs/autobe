@@ -4,6 +4,8 @@ import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * Exercises every scalar branch of `isScalarProperty()`:
  *
@@ -34,6 +36,18 @@ export const test_realize_transformer_template_scalar_types = (): void => {
     "IProduct"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+  const model = createTestModel({
+    name: "products",
+    plainFields: [
+      { name: "name" },
+      { name: "price", type: "double" },
+      { name: "quantity", type: "int" },
+      { name: "is_active", type: "boolean" },
+      { name: "description", nullable: true },
+      { name: "rating", type: "double", nullable: true },
+    ],
+  });
+
   const result: string = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
@@ -45,6 +59,7 @@ export const test_realize_transformer_template_scalar_types = (): void => {
     schemas,
     neighbors: [],
     relations: [],
+    model,
   });
 
   // All properties are scalar → select has no `...`

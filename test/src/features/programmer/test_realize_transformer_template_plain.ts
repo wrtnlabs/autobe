@@ -4,6 +4,8 @@ import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * When all DTO properties are scalar, select() should list each as `true` with
  * no `...` placeholder needed.
@@ -21,6 +23,11 @@ export const test_realize_transformer_template_plain = (): void => {
     "ISimple"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+  const model = createTestModel({
+    name: "simples",
+    plainFields: [{ name: "title" }, { name: "created_at", type: "datetime" }],
+  });
+
   const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
@@ -32,6 +39,7 @@ export const test_realize_transformer_template_plain = (): void => {
     schemas,
     neighbors: [],
     relations: [],
+    model,
   });
 
   const expectedBody: string = StringUtil.trim`

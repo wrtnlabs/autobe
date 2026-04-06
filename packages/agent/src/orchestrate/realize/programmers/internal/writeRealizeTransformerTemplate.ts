@@ -1,4 +1,8 @@
-import { AutoBeOpenApi, AutoBeRealizeTransformerPlan } from "@autobe/interface";
+import {
+  AutoBeDatabase,
+  AutoBeOpenApi,
+  AutoBeRealizeTransformerPlan,
+} from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 
 import { AutoBeRealizeTransformerProgrammer } from "../AutoBeRealizeTransformerProgrammer";
@@ -14,6 +18,7 @@ export function writeRealizeTransformerTemplate(props: {
     relationType: string;
     fkColumns: string;
   }>;
+  model?: AutoBeDatabase.IModel;
 }): string {
   const relations = AutoBeRealizeTransformerProgrammer.getRecursiveRelations({
     schemas: props.schemas,
@@ -25,6 +30,7 @@ export function writeRealizeTransformerTemplate(props: {
       schema: props.schema,
       parentProperty: relations.parent,
       childrenProperty: relations.children,
+      model: props.model,
     });
 
   const neighborRelations =
@@ -40,6 +46,7 @@ export function writeRealizeTransformerTemplate(props: {
     plan: props.plan,
     schema: props.schema,
     neighborRelations,
+    model: props.model,
   });
 }
 
@@ -56,6 +63,84 @@ function isScalarProperty(schema: AutoBeOpenApi.IJsonSchema): boolean {
 }
 
 function buildSelectEntries(props: {
+  schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+  skipKeys: Set<string>;
+  neighborRelations: AutoBeRealizeTransformerProgrammer.INeighborRelation[];
+  model?: AutoBeDatabase.IModel;
+}): { entries: string[]; hasUnresolved: boolean } {
+  if (props.model) {
+    return buildSelectEntriesFromModel({
+      schema: props.schema,
+      skipKeys: props.skipKeys,
+      neighborRelations: props.neighborRelations,
+      model: props.model,
+    });
+  }
+  return buildSelectEntriesFromDto(props);
+}
+
+function buildSelectEntriesFromModel(props: {
+  schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+  skipKeys: Set<string>;
+  neighborRelations: AutoBeRealizeTransformerProgrammer.INeighborRelation[];
+  model: AutoBeDatabase.IModel;
+}): { entries: string[]; hasUnresolved: boolean } {
+  const entries: string[] = [];
+  let hasUnresolved = false;
+  const coveredRelations = new Set(
+    props.neighborRelations.map((n) => n.relationKey),
+  );
+
+  // Primary key
+  if (!props.skipKeys.has(props.model.primaryField.name)) {
+    entries.push(`${props.model.primaryField.name}: true,`);
+  }
+
+  // Plain scalar fields
+  for (const field of props.model.plainFields) {
+    if (props.skipKeys.has(field.name)) continue;
+    entries.push(`${field.name}: true,`);
+  }
+
+  // Foreign keys / belongsTo relations
+  for (const fk of props.model.foreignFields) {
+    if (props.skipKeys.has(fk.name) || props.skipKeys.has(fk.relation.name))
+      continue;
+    if (coveredRelations.has(fk.relation.name)) {
+      const nr = props.neighborRelations.find(
+        (n) => n.relationKey === fk.relation.name,
+      )!;
+      entries.push(`${nr.relationKey}: ${nr.transformerName}.select(),`);
+    } else {
+      entries.push(`${fk.name}: true,`);
+    }
+  }
+
+  // hasMany/hasOne relations covered by neighbors (not already handled via FK)
+  for (const nr of props.neighborRelations) {
+    if (props.skipKeys.has(nr.relationKey)) continue;
+    const isBelongsTo = props.model.foreignFields.some(
+      (f) => f.relation.name === nr.relationKey,
+    );
+    if (!isBelongsTo) {
+      entries.push(`${nr.relationKey}: ${nr.transformerName}.select(),`);
+    }
+  }
+
+  // Check for unresolved non-scalar DTO properties
+  for (const k of Object.keys(props.schema.properties)) {
+    if (props.skipKeys.has(k)) continue;
+    if (props.neighborRelations.some((n) => n.dtoProperty === k)) continue;
+    if (!isScalarProperty(props.schema.properties[k]!)) {
+      hasUnresolved = true;
+      break;
+    }
+  }
+
+  return { entries, hasUnresolved };
+}
+
+function buildSelectEntriesFromDto(props: {
   schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   skipKeys: Set<string>;
   neighborRelations: AutoBeRealizeTransformerProgrammer.INeighborRelation[];
@@ -82,10 +167,27 @@ function formatSelectBody(entries: string[], hasUnresolved: boolean): string {
   return [...entries, ...(hasUnresolved ? ["..."] : [])].join("\n            ");
 }
 
+/**
+ * Find the self-referential FK field for recursive templates. If multiple
+ * self-referential FKs exist, try to match by DTO property name.
+ */
+function findRecursiveFk(
+  model: AutoBeDatabase.IModel | undefined,
+  dtoProperty: string,
+): AutoBeDatabase.IForeignField | undefined {
+  if (!model) return undefined;
+  const selfFks = model.foreignFields.filter(
+    (f) => f.relation.targetModel === model.name,
+  );
+  if (selfFks.length === 1) return selfFks[0];
+  return selfFks.find((f) => f.relation.name === dtoProperty) ?? selfFks[0];
+}
+
 function writeNormalTemplate(props: {
   plan: AutoBeRealizeTransformerPlan;
   schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   neighborRelations: AutoBeRealizeTransformerProgrammer.INeighborRelation[];
+  model?: AutoBeDatabase.IModel;
 }): string {
   const name: string = AutoBeRealizeTransformerProgrammer.getName(
     props.plan.dtoTypeName,
@@ -118,6 +220,7 @@ function writeNormalTemplate(props: {
     schema: props.schema,
     skipKeys: new Set(),
     neighborRelations: props.neighborRelations,
+    model: props.model,
   });
   const selectBody = formatSelectBody(entries, hasUnresolved);
 
@@ -148,6 +251,7 @@ function writeRecursiveTemplate(props: {
   schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   parentProperty: string | null;
   childrenProperty: string | null;
+  model?: AutoBeDatabase.IModel;
 }): string {
   const { parentProperty: pp, childrenProperty: cp } = props;
   if (pp !== null && cp !== null)
@@ -168,6 +272,7 @@ function writeParentOnlyRecursiveTemplate(props: {
   plan: AutoBeRealizeTransformerPlan;
   schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   parentProperty: string;
+  model?: AutoBeDatabase.IModel;
 }): string {
   const name: string = AutoBeRealizeTransformerProgrammer.getName(
     props.plan.dtoTypeName,
@@ -175,7 +280,9 @@ function writeParentOnlyRecursiveTemplate(props: {
   const dto: string = props.plan.dtoTypeName;
   const table: string = props.plan.databaseSchemaName;
   const pp: string = props.parentProperty;
-  const fk: string = `${pp}_id`;
+  const selfFk = findRecursiveFk(props.model, pp);
+  const fk: string = selfFk?.name ?? `${pp}_id`;
+  const relationName: string = selfFk?.relation.name ?? pp;
   const transformBody: string = Object.keys(props.schema.properties)
     .map((k) =>
       k === pp
@@ -184,16 +291,18 @@ function writeParentOnlyRecursiveTemplate(props: {
     )
     .join("\n");
 
+  const skipKeys = new Set([fk, relationName, pp]);
   const { entries, hasUnresolved } = buildSelectEntries({
     schema: props.schema,
-    skipKeys: new Set([pp]),
+    skipKeys,
     neighborRelations: [],
+    model: props.model,
   });
   const selectBody = formatSelectBody(
     [
       ...entries,
       `${fk}: true,`,
-      `${pp}: undefined, // DO NOT select recursive relation`,
+      `${relationName}: undefined, // DO NOT select recursive relation`,
     ],
     hasUnresolved,
   );
@@ -248,6 +357,7 @@ function writeChildrenOnlyRecursiveTemplate(props: {
   plan: AutoBeRealizeTransformerPlan;
   schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   childrenProperty: string;
+  model?: AutoBeDatabase.IModel;
 }): string {
   const name: string = AutoBeRealizeTransformerProgrammer.getName(
     props.plan.dtoTypeName,
@@ -255,6 +365,8 @@ function writeChildrenOnlyRecursiveTemplate(props: {
   const dto: string = props.plan.dtoTypeName;
   const table: string = props.plan.databaseSchemaName;
   const cp: string = props.childrenProperty;
+  const selfFk = findRecursiveFk(props.model, cp);
+  const fk: string = selfFk?.name ?? "parent_id";
   const transformBody: string = Object.keys(props.schema.properties)
     .map((k) =>
       k === cp
@@ -267,6 +379,7 @@ function writeChildrenOnlyRecursiveTemplate(props: {
     schema: props.schema,
     skipKeys: new Set([cp]),
     neighborRelations: [],
+    model: props.model,
   });
   const selectBody = formatSelectBody(
     [...entries, `${cp}: undefined, // DO NOT select recursive relation`],
@@ -308,7 +421,7 @@ ${transformBody}
             const records =
               await MyGlobal.prisma.${table}.findMany({
                 ...select(),
-                where: { parent_id: parentId }, // Adjust FK column based on actual schema
+                where: { ${fk}: parentId },
               });
             return await ArrayUtil.asyncMap(records, (r) => transform(r, cache));
           },
@@ -324,6 +437,7 @@ function writeBothRecursiveTemplate(props: {
   schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   parentProperty: string;
   childrenProperty: string;
+  model?: AutoBeDatabase.IModel;
 }): string {
   const name: string = AutoBeRealizeTransformerProgrammer.getName(
     props.plan.dtoTypeName,
@@ -332,7 +446,9 @@ function writeBothRecursiveTemplate(props: {
   const table: string = props.plan.databaseSchemaName;
   const pp: string = props.parentProperty;
   const cp: string = props.childrenProperty;
-  const fk: string = `${pp}_id`;
+  const selfFk = findRecursiveFk(props.model, pp);
+  const fk: string = selfFk?.name ?? `${pp}_id`;
+  const relationName: string = selfFk?.relation.name ?? pp;
   const transformBody: string = Object.keys(props.schema.properties)
     .map((k) => {
       if (k === pp)
@@ -342,16 +458,18 @@ function writeBothRecursiveTemplate(props: {
     })
     .join("\n");
 
+  const skipKeys = new Set([fk, relationName, pp, cp]);
   const { entries, hasUnresolved } = buildSelectEntries({
     schema: props.schema,
-    skipKeys: new Set([pp, cp]),
+    skipKeys,
     neighborRelations: [],
+    model: props.model,
   });
   const selectBody = formatSelectBody(
     [
       ...entries,
       `${fk}: true,`,
-      `${pp}: undefined, // DO NOT select recursive relation`,
+      `${relationName}: undefined, // DO NOT select recursive relation`,
       `${cp}: undefined, // DO NOT select recursive relation`,
     ],
     hasUnresolved,

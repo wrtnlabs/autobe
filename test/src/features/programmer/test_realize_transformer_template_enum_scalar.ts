@@ -3,6 +3,8 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * Enum / constant properties must be treated as scalar:
  *
@@ -25,6 +27,15 @@ export const test_realize_transformer_template_enum_scalar = (): void => {
     "ITask"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+  const model = createTestModel({
+    name: "tasks",
+    plainFields: [
+      { name: "title" },
+      { name: "status" },
+      { name: "priority", nullable: true },
+    ],
+  });
+
   const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
@@ -36,6 +47,7 @@ export const test_realize_transformer_template_enum_scalar = (): void => {
     schemas,
     neighbors: [],
     relations: [],
+    model,
   });
 
   // All properties are scalar (including enum oneOf) → no `...`

@@ -45,7 +45,12 @@ export async function compileRealizeFiles(
       Object.entries(templateFiles).filter(([key]) => filterTsFiles(key)),
     ),
     ...Object.fromEntries(
-      props.functions.map((el) => [el.location, el.content]),
+      props.functions.map((el) => [
+        el.location,
+        el.template
+          ? el.content + "\n\n" + embedTemplateComment(el.template)
+          : el.content,
+      ]),
     ),
   };
   const compiled: IAutoBeTypeScriptCompileResult =
@@ -63,3 +68,11 @@ export async function compileRealizeFiles(
     ...props.progress(compiled),
   };
 }
+
+function embedTemplateComment(template: string): string {
+  const lines = template.split("\n").map((line) => `// ${line}`);
+  return [DIVIDER, "// TEMPLATE CODE", DIVIDER, ...lines, DIVIDER].join("\n");
+}
+
+const DIVIDER =
+  "//--------------------------------------------------------------";

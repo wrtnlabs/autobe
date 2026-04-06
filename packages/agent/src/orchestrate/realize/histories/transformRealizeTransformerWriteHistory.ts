@@ -88,6 +88,7 @@ export const transformRealizeTransformerWriteHistory = async (
                 application,
                 model,
               }),
+            model,
           })}
           \`\`\`
 

@@ -181,6 +181,13 @@ async function process(
       });
       if (pointer.value === null) return out(result)(null);
 
+      const template: string = AutoBeRealizeOperationProgrammer.writeTemplate({
+        authorizations: props.totalAuthorizations,
+        schemas: props.document.components.schemas,
+        operation: props.scenario.operation,
+        collectors: props.collectors,
+        transformers: props.transformers,
+      });
       const functor: AutoBeRealizeOperationFunction = {
         type: "operation",
         endpoint: {
@@ -198,6 +205,7 @@ async function process(
             payload: props.authorization?.payload.name,
           },
         ),
+        template,
       };
       return out(result)({
         id: v7(),

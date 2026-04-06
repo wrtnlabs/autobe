@@ -259,6 +259,18 @@ const sale = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
 
 **Key distinction from 4.3**: Section 4.3 fixes TS2339 on Prisma query results (add to `select`). This section fixes TS2339 on `props.body` / `props.customer` (remove the access, use another source).
 
+### 4.10. Clearing Nullable Fields: `null` vs `Prisma.DbNull`
+
+For regular nullable columns (`String?`, `DateTime?`, `Int?`), use plain `null`:
+
+```typescript
+// ✅ CORRECT — regular nullable column
+data: { parent_category_id: null }
+
+// Prisma.DbNull is exclusively for Json? columns
+data: { metadata: Prisma.DbNull }  // only valid for Json? type
+```
+
 ## 5. Unrecoverable Errors
 
 When schema-API mismatch is fundamental:
@@ -289,6 +301,7 @@ export async function method__path(props: {...}): Promise<IResponse> {
 | 2345 (string → literal) | `as "literal"` | - |
 | Table name in query | Use relation property name | Check Prisma schema |
 | `.select().select` | Remove trailing `.select` | - |
+| `Prisma.DbNull` on non-Json column | Use plain `null` | `Prisma.DbNull` only for `Json?` |
 | Type validation code | **DELETE IT** | No alternative |
 
 ## 7. Final Checklist
@@ -311,6 +324,7 @@ export async function method__path(props: {...}): Promise<IResponse> {
 - [ ] `satisfies Prisma.{table}FindManyArgs` on inline nested selects
 - [ ] Transformer.select() assigned directly (NOT `.select().select`)
 - [ ] Select includes all accessed fields (relations, scalars, FK columns)
+- [ ] Used plain `null` for regular nullable columns (`Prisma.DbNull` only for `Json?`)
 
 ### Parameter Types
 - [ ] No hallucinated `props.body.*` properties — only declared DTO fields

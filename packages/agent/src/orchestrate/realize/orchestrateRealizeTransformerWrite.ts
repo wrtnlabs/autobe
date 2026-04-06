@@ -137,6 +137,27 @@ async function process(
           schemas: document.components.schemas,
           code: pointer.value.revise.final ?? pointer.value.draft,
         });
+      const model: AutoBeDatabase.IModel | undefined = models.find(
+        (m) => m.name === props.plan.databaseSchemaName,
+      );
+      const schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = document
+        .components.schemas[
+        dtoTypeName
+      ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+      const template: string | undefined = model
+        ? AutoBeRealizeTransformerProgrammer.writeTemplate({
+            plan: props.plan,
+            schema,
+            schemas: document.components.schemas,
+            neighbors: props.neighbors,
+            relations:
+              AutoBeRealizeTransformerProgrammer.getRelationMappingTable({
+                application: ctx.state().database!.result.data,
+                model,
+              }),
+            model,
+          })
+        : undefined;
       const functor: AutoBeRealizeTransformerFunction = {
         type: "transformer",
         plan: props.plan,
@@ -145,6 +166,7 @@ async function process(
           dtoTypeName,
         )}.ts`,
         content,
+        template,
       };
       return out(result)({
         id: v7(),

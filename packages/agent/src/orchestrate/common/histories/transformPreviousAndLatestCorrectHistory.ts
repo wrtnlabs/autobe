@@ -35,12 +35,15 @@ export const transformPreviousAndLatestCorrectHistory = (
       didYouMeanHints.length > 0
         ? [
             "",
-            "## Compiler-Suggested Name Corrections",
+            "## ⚠ MANDATORY Name Corrections (from compiler)",
             "",
-            "The TypeScript compiler identified these likely typos. **Apply all of them**:",
+            "The compiler matched these names against the actual schema and identified the correct spelling.",
+            "Apply every correction below FIRST — before analyzing other errors. A single misspelled name",
+            "cascades into many downstream errors, so these renames alone may resolve most diagnostics.",
+            "",
             ...didYouMeanHints.map(
               (h) =>
-                `- Replace \`${h.wrong}\` with \`${h.suggested}\` everywhere in the code`,
+                `- **\`${h.wrong}\`** → **\`${h.suggested}\`** (rename every occurrence in the entire file)`,
             ),
           ].join("\n")
         : "";
@@ -78,6 +81,8 @@ export const transformPreviousAndLatestCorrectHistory = (
         ${
           failure.script !== ""
             ? StringUtil.trim`
+              ${didYouMeanSection}
+
               ## Original Code
 
               Here is the previous code you have to review and fix.
@@ -109,8 +114,6 @@ export const transformPreviousAndLatestCorrectHistory = (
               ${ts2339Hints}
 
               ${missingPropHints}
-
-              ${didYouMeanSection}
             `
             : ""
         }

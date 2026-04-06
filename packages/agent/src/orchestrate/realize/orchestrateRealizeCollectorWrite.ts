@@ -138,12 +138,26 @@ async function process(
           schemas: props.document.components.schemas,
           code: pointer.value.revise.final ?? pointer.value.draft,
         });
+      const model: AutoBeDatabase.IModel | undefined = models.find(
+        (m) => m.name === props.plan.databaseSchemaName,
+      );
+      const body: AutoBeOpenApi.IJsonSchema =
+        props.document.components.schemas[props.plan.dtoTypeName];
+      const template: string | undefined = model
+        ? AutoBeRealizeCollectorProgrammer.writeTemplate({
+            plan: props.plan,
+            body,
+            model,
+            application: ctx.state().database!.result.data,
+          })
+        : undefined;
       const functor: AutoBeRealizeCollectorFunction = {
         type: "collector",
         plan: props.plan,
         neighbors: AutoBeRealizeCollectorProgrammer.getNeighbors(content),
         location,
         content,
+        template,
       };
       return out(result)({
         id: v7(),
