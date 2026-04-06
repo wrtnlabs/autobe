@@ -41,7 +41,7 @@ export const test_realize_transformer_template_non_neighbor_ref = (): void => {
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
   // No neighbors / no relations → all properties fall back to type hints
-  const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
+  const result: string = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
       dtoTypeName: "IMember",
@@ -53,7 +53,6 @@ export const test_realize_transformer_template_non_neighbor_ref = (): void => {
     neighbors: [],
     relations: [],
   });
-  console.log(result);
 
   const expectedBody: string = StringUtil.trim`
     export namespace MemberTransformer {

@@ -34,7 +34,7 @@ export const test_realize_transformer_template_scalar_types = (): void => {
     "IProduct"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
-  const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
+  const result: string = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
       dtoTypeName: "IProduct",
@@ -46,7 +46,6 @@ export const test_realize_transformer_template_scalar_types = (): void => {
     neighbors: [],
     relations: [],
   });
-  console.log(result);
 
   // All properties are scalar → select has no `...`
   const expectedBody: string = StringUtil.trim`

@@ -37,7 +37,6 @@ export const test_realize_transformer_template_enum_scalar = (): void => {
     neighbors: [],
     relations: [],
   });
-  console.log(result);
 
   // All properties are scalar (including enum oneOf) → no `...`
   TestValidator.equals(

@@ -61,7 +61,6 @@ export const test_realize_transformer_template_nullable_array_neighbor =
         },
       ],
     });
-    console.log(result);
 
     const expectedBody: string = StringUtil.trim`
       export namespace PostTransformer {

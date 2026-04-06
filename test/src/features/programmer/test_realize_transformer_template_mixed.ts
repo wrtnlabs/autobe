@@ -47,7 +47,7 @@ export const test_realize_transformer_template_mixed = (): void => {
     "IOrder"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
-  const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
+  const result: string = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
       dtoTypeName: "IOrder",
@@ -86,7 +86,6 @@ export const test_realize_transformer_template_mixed = (): void => {
       },
     ],
   });
-  console.log(result);
 
   const expectedBody: string = StringUtil.trim`
     export namespace OrderTransformer {
