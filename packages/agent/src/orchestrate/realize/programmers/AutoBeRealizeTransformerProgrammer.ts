@@ -339,6 +339,12 @@ export namespace AutoBeRealizeTransformerProgrammer {
       path: "$input.request.draft",
       errors,
     });
+    validateSelectTransformContract({
+      plan: props.plan,
+      content: props.draft,
+      path: "$input.request.draft",
+      errors,
+    });
 
     // validate final
     if (props.revise.final !== null) {
@@ -356,6 +362,12 @@ export namespace AutoBeRealizeTransformerProgrammer {
         errors,
       });
       validateSelectReturnType({
+        content: props.revise.final,
+        path: "$input.request.revise.final",
+        errors,
+      });
+      validateSelectTransformContract({
+        plan: props.plan,
         content: props.revise.final,
         path: "$input.request.revise.final",
         errors,
@@ -587,6 +599,58 @@ export namespace AutoBeRealizeTransformerProgrammer {
               .join("\n")}
           `,
         });
+  }
+
+  function validateSelectTransformContract(props: {
+    plan: AutoBeRealizeTransformerPlan;
+    content: string;
+    path: string;
+    errors: IValidation.IError[];
+  }): void {
+    const selfName: string = getName(props.plan.dtoTypeName);
+    const selectUsers: Set<string> = new Set();
+    const transformUsers: Set<string> = new Set();
+    const selectRegex: RegExp = /(\w+Transformer)\.select/g;
+    const transformRegex: RegExp = /(\w+Transformer)\.transform/g;
+    let match: RegExpExecArray | null;
+    while ((match = selectRegex.exec(props.content)) !== null)
+      selectUsers.add(match[1]!);
+    while ((match = transformRegex.exec(props.content)) !== null)
+      transformUsers.add(match[1]!);
+    for (const name of transformUsers) {
+      if (name === selfName) continue;
+      if (selectUsers.has(name) === false)
+        props.errors.push({
+          path: props.path,
+          expected: `${name}.select() must appear in select() when ${name}.transform() is used.`,
+          value: props.content,
+          description: StringUtil.trim`
+            You call ${name}.transform() but never include ${name}.select()
+            in your select query. The Payload type of ${name}.transform()
+            is derived from ${name}.select() — without it, the data shape
+            will not match and you will get "missing properties" compile
+            errors. Reuse ${name}.select() in your select instead of
+            writing an inline select.
+          `,
+        });
+    }
+    for (const name of selectUsers) {
+      if (name === selfName) continue;
+      if (transformUsers.has(name) === false)
+        props.errors.push({
+          path: props.path,
+          expected: `${name}.transform() must be called when ${name}.select() is used.`,
+          value: props.content,
+          description: StringUtil.trim`
+            You include ${name}.select() in your query but never call
+            ${name}.transform() to convert the result. The data fetched
+            via ${name}.select() is a raw Prisma payload shaped for
+            ${name}.transform() — assigning it directly to a DTO field
+            or transforming it inline will cause type mismatches. Call
+            ${name}.transform() on the fetched data.
+          `,
+        });
+    }
   }
 
   export function getRecursiveRelations(props: {

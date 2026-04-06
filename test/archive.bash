@@ -10,12 +10,6 @@ pnpm run archive:go --vendor qwen/qwen3.5-plus-02-15 --label qwen/qwen3.5-397b-a
 pnpm run archive:go --vendor qwen/qwen3.5-plus-02-15 --label qwen/qwen3.5-397b-a17b --useToolChoice false --project shopping > archive.qwen-qwen3.5-397b-a17b.shopping.log
 pnpm run archive:go --vendor qwen/qwen3.5-plus-02-15 --label qwen/qwen3.5-397b-a17b --useToolChoice false --project erp > archive.qwen-qwen3.5-397b-a17b.erp.log
 
-# qwen/qwen3.5-35b-a3b (0.065)
-pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project todo > archive.qwen-qwen3.5-35b-a3b.todo.log
-pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project reddit > archive.qwen-qwen3.5-35b-a3b.reddit.log
-pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project shopping > archive.qwen-qwen3.5-35b-a3b.shopping.log
-pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project erp > archive.qwen-qwen3.5-35b-a3b.erp.log
-
 # qwen/qwen3.5-122b-a10b (0.26)
 pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --useToolChoice false --project todo > archive.qwen-qwen3.5-122b-a10b.todo.log
 pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --useToolChoice false --project reddit > archive.qwen-qwen3.5-122b-a10b.reddit.log
@@ -27,6 +21,12 @@ pnpm run archive:go --vendor qwen/qwen3.5-27b --useToolChoice false --project to
 pnpm run archive:go --vendor qwen/qwen3.5-27b --useToolChoice false --project reddit > archive.qwen-qwen3.5-27b.reddit.log
 pnpm run archive:go --vendor qwen/qwen3.5-27b --useToolChoice false --project shopping > archive.qwen-qwen3.5-27b.shopping.log
 pnpm run archive:go --vendor qwen/qwen3.5-27b --useToolChoice false --project erp > archive.qwen-qwen3.5-27b.erp.log
+
+# qwen/qwen3.5-35b-a3b (0.065)
+pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project todo > archive.qwen-qwen3.5-35b-a3b.todo.log
+pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project reddit > archive.qwen-qwen3.5-35b-a3b.reddit.log
+pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project shopping > archive.qwen-qwen3.5-35b-a3b.shopping.log
+pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project erp > archive.qwen-qwen3.5-35b-a3b.erp.log
 
 ######################################################
 # KIMI
