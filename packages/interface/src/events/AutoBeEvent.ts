@@ -45,6 +45,7 @@ import { AutoBePreliminaryAcquireEvent } from "./AutoBePreliminaryAcquireEvent";
 import { AutoBePreliminaryRewriteEvent } from "./AutoBePreliminaryRewriteEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "./AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationCorrectEvent } from "./AutoBeRealizeAuthorizationCorrectEvent";
+import { AutoBeRealizeBackwardPropagationEvent } from "./AutoBeRealizeBackwardPropagationEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "./AutoBeRealizeAuthorizationStartEvent";
 import { AutoBeRealizeAuthorizationValidateEvent } from "./AutoBeRealizeAuthorizationValidateEvent";
 import { AutoBeRealizeAuthorizationWriteEvent } from "./AutoBeRealizeAuthorizationWriteEvent";
@@ -162,6 +163,7 @@ export type AutoBeEvent =
   // REALIZE
   | AutoBeRealizeStartEvent
   | AutoBeRealizePlanEvent
+  | AutoBeRealizeBackwardPropagationEvent
   | AutoBeRealizeWriteEvent
   | AutoBeRealizeCorrectEvent
   | AutoBeRealizeValidateEvent

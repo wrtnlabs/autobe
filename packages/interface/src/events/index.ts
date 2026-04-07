@@ -81,6 +81,7 @@ export * from "./AutoBeTestWriteEvent";
 // REALIZE
 //----
 // REALIZE-MAIN
+export * from "./AutoBeRealizeBackwardPropagationEvent";
 export * from "./AutoBeRealizeCompleteEvent";
 export * from "./AutoBeRealizeCorrectEvent";
 export * from "./AutoBeRealizeStartEvent";

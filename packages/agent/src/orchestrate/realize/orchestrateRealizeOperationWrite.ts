@@ -3,6 +3,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
+  AutoBeRealizeBackwardPropagationEvent,
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
@@ -200,11 +201,23 @@ async function process(
             if (schema !== undefined) targetSchemas[name] = schema;
           }
           if (Object.keys(targetSchemas).length > 0) {
+            ctx.dispatch({
+              type: "realizeBackwardPropagation",
+              id: v7(),
+              typeNames: backwardPointer.value.typeNames,
+              reason: backwardPointer.value.reason,
+              step: ctx.state().analyze?.step ?? 0,
+              created_at: new Date().toISOString(),
+            } satisfies AutoBeRealizeBackwardPropagationEvent);
+            const backwardProgress: AutoBeProgressEventBase = {
+              total: 0,
+              completed: 0,
+            };
             const refined = await orchestrateInterfaceSchemaRefine(ctx, {
               document: props.document,
               schemas: targetSchemas,
               instruction: backwardPointer.value.reason,
-              progress: props.progress,
+              progress: backwardProgress,
             });
             Object.assign(props.document.components.schemas, refined);
           }

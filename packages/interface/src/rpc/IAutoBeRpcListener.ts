@@ -63,6 +63,7 @@ import { AutoBeInterfaceGroupEvent } from "../events/AutoBeInterfaceGroupEvent";
 import { AutoBeInterfacePrerequisiteEvent } from "../events/AutoBeInterfacePrerequisiteEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "../events/AutoBeRealizeAuthorizationStartEvent";
+import { AutoBeRealizeBackwardPropagationEvent } from "../events/AutoBeRealizeBackwardPropagationEvent";
 
 /**
  * Interface for WebSocket RPC event listener provided by client applications to
@@ -646,6 +647,17 @@ export interface IAutoBeRpcListener {
   ): Promise<void>;
 
   realizePlan?(event: AutoBeRealizePlanEvent): Promise<void>;
+
+  /**
+   * Optional handler for backward propagation events.
+   *
+   * Called when the Realize agent triggers backward propagation to redesign
+   * DTO schemas that are inadequately designed for proper API implementation.
+   * After this event, standard `interfaceSchemaRefine` events will follow.
+   */
+  realizeBackwardPropagation?(
+    event: AutoBeRealizeBackwardPropagationEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for implementation progress events.
