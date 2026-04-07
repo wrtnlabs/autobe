@@ -21,7 +21,9 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
     functions: AutoBeRealizeTransformerFunction[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<IAutoBeRealizeFunctionResult<AutoBeRealizeTransformerFunction>[]> => {
+): Promise<
+  IAutoBeRealizeFunctionResult<AutoBeRealizeTransformerFunction>[]
+> => {
   const prismaApplication: AutoBeDatabase.IApplication =
     ctx.state().database!.result.data;
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
