@@ -240,9 +240,10 @@ const correct = async <
   life: number,
 ): Promise<IAutoBeRealizeFunctionResult<RealizeFunction>[]> => {
   // Early returns for non-correctable cases
-  if (props.event.result.type !== "failure" || life < 0) {
+  if (props.event.result.type !== "failure")
+    return props.functions.map((f) => ({ success: true, function: f }));
+  else if (life < 0)
     return props.functions.map((f) => ({ success: false, function: f }));
-  }
 
   const failure: IAutoBeTypeScriptCompileResult.IFailure = props.event.result;
   const allErrorLocations: string[] = getErrorFiles({

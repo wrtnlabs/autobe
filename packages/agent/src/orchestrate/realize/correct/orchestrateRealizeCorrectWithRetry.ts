@@ -45,8 +45,5 @@ export async function orchestrateRealizeCorrectWithRetry<
   const retryResults: IAutoBeRealizeFunctionResult<Func>[] = await process(
     await props.rewrite(failures),
   );
-  return [
-    ...success,
-    ...retryResults.filter((r) => r.success).map((r) => r.function),
-  ];
+  return [...success, ...retryResults.map((r) => r.function)];
 }
