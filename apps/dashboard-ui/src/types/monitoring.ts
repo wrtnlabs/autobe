@@ -8,8 +8,8 @@ export const PIPELINE_PHASES = [
   "analyze",
   "database",
   "interface",
-  "test",
   "realize",
+  "test",
 ] as const;
 
 export type PipelinePhase = (typeof PIPELINE_PHASES)[number];

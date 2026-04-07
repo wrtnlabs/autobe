@@ -145,6 +145,16 @@ const PROGRESS_STEPS = [
     },
   },
   {
+    name: "realize",
+    title: "Implementation Complete",
+    getResults: (state: AutoBeListenerState) => {
+      if (!state.realize) return null;
+      const functionCount = state.realize.functions.length;
+      const authCount = state.realize.authorizations.length;
+      return `${functionCount} implementation functions, ${authCount} auth decorators`;
+    },
+  },
+  {
     name: "test",
     title: "Test Code",
     getResults: (state: AutoBeListenerState) => {
@@ -153,16 +163,6 @@ const PROGRESS_STEPS = [
         (f) => f.type === "operation",
       ).length;
       return `${testCount} test files`;
-    },
-  },
-  {
-    name: "realize",
-    title: "Implementation Complete",
-    getResults: (state: AutoBeListenerState) => {
-      if (!state.realize) return null;
-      const functionCount = state.realize.functions.length;
-      const authCount = state.realize.authorizations.length;
-      return `${functionCount} implementation functions, ${authCount} auth decorators`;
     },
   },
 ] as const;

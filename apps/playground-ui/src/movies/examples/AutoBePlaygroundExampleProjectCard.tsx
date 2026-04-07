@@ -7,7 +7,7 @@ import { formatElapsed, formatTokens } from "@/utils";
 
 import { AutoBePlaygroundExamplePhaseRow } from "./AutoBePlaygroundExamplePhaseRow";
 
-const PHASES = ["analyze", "database", "interface", "test", "realize"] as const;
+const PHASES = ["analyze", "database", "interface", "realize", "test"] as const;
 
 export function AutoBePlaygroundExampleProjectCard(
   props: AutoBePlaygroundExampleProjectCard.IProps,

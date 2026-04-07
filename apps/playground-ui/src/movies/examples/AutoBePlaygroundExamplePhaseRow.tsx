@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, formatElapsed, formatTokens } from "@/utils";
 
-const PHASES = ["analyze", "database", "interface", "test", "realize"] as const;
+const PHASES = ["analyze", "database", "interface", "realize", "test"] as const;
 type PhaseName = (typeof PHASES)[number];
 
 export function AutoBePlaygroundExamplePhaseRow(

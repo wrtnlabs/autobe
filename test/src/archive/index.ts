@@ -34,8 +34,8 @@ const PHASE_INDEXES: Record<AutoBePhase, number> = {
   analyze: 0,
   database: 1,
   interface: 2,
-  test: 3,
-  realize: 4,
+  realize: 3,
+  test: 4,
 };
 
 const collect = async (): Promise<ITestFunction[]> => {

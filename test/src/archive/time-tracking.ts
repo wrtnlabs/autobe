@@ -20,8 +20,8 @@ const PHASES: AutoBePhase[] = [
   "analyze",
   "database",
   "interface",
-  "test",
   "realize",
+  "test",
 ];
 
 const PROMPT_TEMPLATE: Record<string, string> = {

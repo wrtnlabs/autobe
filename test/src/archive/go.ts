@@ -14,8 +14,8 @@ const PHASES: AutoBePhase[] = [
   "analyze",
   "database",
   "interface",
-  "test",
   "realize",
+  "test",
 ];
 
 const main = async (): Promise<void> => {

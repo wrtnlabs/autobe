@@ -85,8 +85,8 @@ const PHASES: AutoBePhase[] = [
   "analyze",
   "database",
   "interface",
-  "test",
   "realize",
+  "test",
 ];
 const OF_INTERFACE: number = PHASES.indexOf("interface");
 const OF_TEST: number = PHASES.indexOf("test");
