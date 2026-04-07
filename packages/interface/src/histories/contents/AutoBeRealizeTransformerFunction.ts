@@ -74,5 +74,5 @@ export interface AutoBeRealizeTransformerFunction {
    *
    * @internal
    */
-  template?: string | undefined;
+  template: string | undefined;
 }

@@ -76,5 +76,5 @@ export interface AutoBeRealizeCollectorFunction {
    *
    * @internal
    */
-  template?: string | undefined;
+  template: string | undefined;
 }

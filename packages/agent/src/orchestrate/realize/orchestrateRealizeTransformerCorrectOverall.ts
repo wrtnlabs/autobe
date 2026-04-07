@@ -61,11 +61,12 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
           ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
           schemas: document.components.schemas,
           neighbors: getNeighbors(func).map((n) => n.plan),
-          relations:
-            AutoBeRealizeTransformerProgrammer.getRelationMappingTable({
+          relations: AutoBeRealizeTransformerProgrammer.getRelationMappingTable(
+            {
               application: prismaApplication,
               model,
-            }),
+            },
+          ),
           model,
         });
       },

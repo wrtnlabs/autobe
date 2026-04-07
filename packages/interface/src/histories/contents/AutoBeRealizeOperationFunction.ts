@@ -72,5 +72,5 @@ export interface AutoBeRealizeOperationFunction {
    *
    * @internal
    */
-  template?: string | undefined;
+  template: string | undefined;
 }
