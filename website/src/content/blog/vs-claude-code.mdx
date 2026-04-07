@@ -1,6 +1,6 @@
 ---
-title: "AutoBE vs Claude Code, 3세대 코딩 에이전트 개발자의 소스 코드 유출본 리뷰"
-description: "Anthropic 엔지니어의 npm publish 사고로 Claude Code 전체 소스가 공개됐다. 우리는 512,000줄을 전부 읽었다. while(true) 루프, 4계층 컨텍스트 압축, 6중 보안 방어 — 그리고 우리가 왜 다르게 만들었는지."
+title: "AutoBE vs. Claude Code: 3rd-gen coding agent developer's review of the leaked source code"
+description: "유출된 Claude Code 소스 코드에서 많은 것을 배웠다. 2세대(Claude Code)와 3세대(AutoBE) 코딩 에이전트는 무엇이 다르고, 어디서 만나는가 — 대체가 아닌 공존을 이야기한다."
 date: "2026-04-01"
 author: "Jeongho Nam"
 tags:
@@ -21,13 +21,14 @@ import { BenchmarkDashboard } from "../../components/benchmark/BenchmarkDashboar
 >    - 2세대: 사람이 주도하고, AI가 보조한다
 > 2. [AutoBe](https://github.com/wrtnlabs/autobe) — 정반대의 설계
 >    - 4개 AST × 4단계 컴파일러 × 자가교정 루프
->    - 74개 오케스트레이터, 58개 History Transformer, `executeCachedBatch`
->    - 3세대 지향: AI가 생성하고, 컴파일러가 검증한다
-> 3. 읽고 나서 — 배운 것
->    - 캐시 경계 명시화, 타입 이름으로 정책 강제, self-contained prompt 원칙
->    - 다른 길, 같은 통찰: 검증할 수 있으면 수렴한다
+>    - Function Calling Harness (6.75% → 100%): 소형 모델도 최상위 모델과 같은 백엔드를 생성
+>    - 3세대: AI가 생성하고, 컴파일러가 검증한다
+> 3. 읽고 나서 — 같은 통찰, 공존하는 미래
+>    - 독립적으로 같은 결론: 선택지를 줄여라, 워커에겐 자기완결적 컨텍스트를
+>    - 0.95⁴⁰⁰ ≈ 0% — 3세대 전환은 모델 성능이 아니라 아키텍처의 문제
+>    - AutoBE가 첫 개발, Claude Code가 유지보수 — 대체가 아니라 공존
 
-# AutoBE vs Claude Code, 3세대 코딩 에이전트 개발자의 소스 코드 유출본 리뷰
+# AutoBE vs. Claude Code
 
 ## 1. 발단
 
@@ -449,7 +450,7 @@ with software engineering tasks."
 
 ---
 
-## 5. 512,000줄에서 발견한 것들
+## 5. Claude Code에서 배운 것들
 
 ### 5.1. 에이전트 루프: `while(true)` vs 워터폴
 
