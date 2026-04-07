@@ -651,9 +651,9 @@ export interface IAutoBeRpcListener {
   /**
    * Optional handler for backward propagation events.
    *
-   * Called when the Realize agent triggers backward propagation to redesign
-   * DTO schemas that are inadequately designed for proper API implementation.
-   * After this event, standard `interfaceSchemaRefine` events will follow.
+   * Called when the Realize agent triggers backward propagation to redesign DTO
+   * schemas that are inadequately designed for proper API implementation. After
+   * this event, standard `interfaceSchemaRefine` events will follow.
    */
   realizeBackwardPropagation?(
     event: AutoBeRealizeBackwardPropagationEvent,
