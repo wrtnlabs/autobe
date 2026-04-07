@@ -742,7 +742,7 @@ export namespace AutoBeJsonSchemaValidator {
           The only valid pagination metadata type is "IPage.IPagination", which is
           a system preset containing { current, limit, records, pages }.
 
-          Valid DTO variants are: .ISummary, .ICreate, .IUpdate, .IRequest,
+          Common DTO variants include: .ISummary, .ICreate, .IUpdate, .IRequest,
           .IInvert, .IJoin, .ILogin, .IAuthorized.
 
           Remove this type entirely. If you need pagination support, the system
