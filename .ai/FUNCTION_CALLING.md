@@ -309,8 +309,8 @@ The facade ensures correct ordering without user intervention:
 ```
 User: "Implement the APIs"
 Claude: realize()
-System: { status: "pending", description: "Cannot run realize() - interface() and test() must be completed first." }
-Claude: "I can't implement the APIs yet. We need to first design the API specification (interface) and create tests. Would you like me to do that?"
+System: { status: "pending", description: "Cannot run realize() - interface() must be completed first." }
+Claude: "I can't implement the APIs yet. We need to first design the API specification (interface). Would you like me to do that?"
 ```
 
 The LLM receives the prerequisite error and intelligently guides the user through the correct sequence.
