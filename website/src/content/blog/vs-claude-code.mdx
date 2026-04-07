@@ -1,7 +1,7 @@
 ---
 title: "AutoBE vs. Claude Code: 3rd-gen coding agent developer's review of the leaked source code"
-description: "유출된 Claude Code 소스 코드에서 많은 것을 배웠다. 2세대(Claude Code)와 3세대(AutoBE) 코딩 에이전트는 무엇이 다르고, 어디서 만나는가 — 대체가 아닌 공존을 이야기한다."
-date: "2026-04-01"
+description: "We learned a great deal from the leaked Claude Code source code. What separates a 2nd-generation agent (Claude Code) from a 3rd-generation one (AutoBE), and where do they converge — this is a story of coexistence, not replacement."
+date: "2026-04-07"
 author: "Jeongho Nam"
 tags:
   - ai
@@ -15,74 +15,72 @@ import { BenchmarkDashboard } from "../../components/benchmark/BenchmarkDashboar
 
 > **TL;DR**
 >
-> 1. Claude Code — npm 사고로 유출된 소스 코드
->    - `while(true)` + 40개 도구 자율 선택 + 4계층 컨텍스트 압축
->    - 프롬프트와 에이전트 워크플로우 활용의 모범 사례
->    - 2세대: 사람이 주도하고, AI가 보조한다
-> 2. [AutoBe](https://github.com/wrtnlabs/autobe) — 정반대의 설계
->    - 4개 AST × 4단계 컴파일러 × 자가교정 루프
->    - Function Calling Harness: 소형 모델도 최상위 모델과 같은 백엔드를 생성
->    - 3세대: AI가 생성하고, 컴파일러가 검증한다
-> 3. 읽고 나서 — 같은 통찰, 공존하는 미래
->    - 독립적으로 같은 결론: 선택지를 줄여라, 워커에겐 자기완결적 컨텍스트를
->    - 0.95⁴⁰⁰ ≈ 0% — 3세대 전환은 모델 성능이 아니라 아키텍처의 문제
->    - AutoBE가 첫 개발, Claude Code가 유지보수 — 대체가 아니라 공존
+> 1. Claude Code — source code leaked via an npm incident
+>    - `while(true)` + autonomous selection of 40 tools + 4-tier context compression
+>    - A masterclass in prompt engineering and agent workflow design
+>    - 2nd generation: humans lead, AI assists
+> 2. [AutoBe](https://github.com/wrtnlabs/autobe) — the opposite design
+>    - 4 ASTs x 4-stage compiler x self-correction loops
+>    - Function Calling Harness: even small models produce backends on par with top-tier models
+>    - 3rd generation: AI generates, compilers verify
+> 3. After reading — shared insights, a coexisting future
+>    - Independently reaching the same conclusions: reduce the choices; give workers self-contained context
+>    - 0.95^400 ~ 0% — the shift to 3rd generation is an architecture problem, not a model performance problem
+>    - AutoBE handles the initial build, Claude Code handles maintenance — coexistence, not replacement
 >
-> **함께 읽으면 좋은 글**: [Function Calling Harness](/blog/function-calling-harness-qwen-meetup-korea) — 6.75%를 100%로 만든 기술의 상세 해설
+> **Recommended reading**: [Function Calling Harness](/blog/function-calling-harness-qwen-meetup-korea) — a deep dive into the technique that turned 6.75% into 100%
 
 # AutoBE vs. Claude Code
 
-## 1. 발단
+## 1. The Incident
 
-2026년 4월. 개발자 커뮤니티에 스크린샷 하나가 돌기 시작했다. Anthropic 엔지니어가 `.npmignore` 없이 `npm publish`를 실행해서, Claude Code의 전체 소스코드가 npm 레지스트리에 올라왔다는 것이었다.
+April 2026. A screenshot started circulating through developer communities. An Anthropic engineer had run `npm publish` without a `.npmignore`, and Claude Code's entire source code had been uploaded to the npm registry.
 
-**512,000줄. 1,900개 파일.** 세상에서 가장 많이 쓰이는 AI 코딩 에이전트의 전체 내부 구조가, 패키징 설정 파일 하나 때문에 공개되었다.
+**512,000 lines. 1,900 files.** The complete internal architecture of the world's most widely used AI coding agent, exposed because of a single packaging configuration file.
 
-몇 시간 만에 Anthropic이 패키지를 내렸지만, 이미 수많은 개발자가 소스를 받아놓은 뒤였다. Reddit, Hacker News, X — 타임라인이 Claude Code 소스 분석으로 도배됐다. 어떤 사람들은 시스템 프롬프트를 공유했고, 어떤 사람들은 보안 아키텍처를 분석했고, 어떤 사람들은 `while(true)` 루프의 구조를 그려냈다.
+Anthropic took the package down within hours, but by then countless developers had already downloaded the source. Reddit, Hacker News, X — timelines were flooded with Claude Code source analysis. Some shared the system prompts. Others dissected the security architecture. Others mapped out the structure of the `while(true)` loop.
 
-우리도 일정을 비웠다. 사실 비울 수밖에 없었다.
+We cleared our schedules. We had no choice.
 
-마침 AutoBE가 **전환점**에 서 있었다. 의도적으로 단순하게 유지하던 파이프라인 위에 오케스트레이션을 본격적으로 쌓으려던 시점이었다 (자세한 맥락은 3장에서). 그러려면 "다른 AI 에이전트들은 오케스트레이션을 어떻게 설계했나"를 진지하게 공부해야 했다.
+AutoBE was standing at an **inflection point**. We were about to start layering serious orchestration on top of a pipeline we had intentionally kept simple (more on the context in Section 3). To do that, we needed to seriously study how other AI agents designed their orchestration.
 
-그런데 그 교재가 하늘에서 떨어졌다.
+And then the textbook fell from the sky.
 
-Claude Code는 예상보다 깊었다. "큰 프로젝트"가 아니라 **하나의 세계관**이었다. `while(true)` 루프 안에 7개의 회복 경로. 4단계 컨텍스트 압축. 23개 보안 체크 카테고리. BashTool 관련 보안 코드만 400KB 이상.
+Claude Code was deeper than we expected. Not just a "large project" — it was **an entire worldview**. Seven recovery paths inside a `while(true)` loop. Four-tier context compression. Twenty-three security check categories. Over 400KB of security code for BashTool alone.
 
-읽을수록 감탄했고, 동시에 **우리가 왜 다르게 만들었는지**도 선명해졌다.
+The more we read, the more impressed we were — and the clearer it became **why we built things differently**.
 
-이 글은 그 독서 노트다.
+This post is those reading notes.
 
----
-
-## 2. AutoBE란
+## 2. What is AutoBE
 
 <AutoBeDemoMovie model="qwen/qwen3.5-122b-a10b" />
 
-[AutoBe](https://github.com/wrtnlabs/autobe)는 오픈소스 AI 백엔드 자동 생성 에이전트다. "쇼핑몰 백엔드 만들어줘"라고 하면, 요구사항 분석부터 DB 설계, API 명세, E2E 테스트, NestJS 구현 코드까지 통째로 만든다.
+[AutoBe](https://github.com/wrtnlabs/autobe) is an open-source AI agent that automatically generates backends. Say "build me a shopping mall backend," and it produces everything from requirements analysis to database design, API specification, E2E tests, and NestJS implementation code — all at once.
 
-Function Calling Harness와 AI 전용 컴파일러가 생성물의 품질을 균일하게 보장하기 때문에, `qwen3.5-35b-a3b` 같은 소형 모델로도 최상위 모델과 동등한 백엔드를 만들 수 있다 — 비용은 수백 분의 1이다.
+Because Function Calling Harness and AI-native compilers uniformly guarantee the quality of generated output, even small models like `qwen3.5-35b-a3b` can produce backends on par with top-tier models — at a fraction of the cost.
 
-> 현재는 TypeScript / NestJS / Prisma 스택을 지원한다.
+> Currently supports the TypeScript / NestJS / Prisma stack.
 >
-> 2026년 7월부터 다른 언어와 프레임워크를 확장 지원한다.
+> Expansion to other languages and frameworks begins in July 2026.
 
-### 2.1. LLM은 코드를 쓰지 않는다
+### 2.1. The LLM Doesn't Write Code
 
-대부분의 AI 코딩 에이전트는 LLM에게 "이 코드를 써"라고 하고 반환된 텍스트를 파일에 저장한다. AutoBE는 다르다.
+Most AI coding agents tell the LLM "write this code" and save the returned text to a file. AutoBE is different.
 
-AutoBE는 **Function Calling**을 쓴다. LLM이 자유 텍스트 대신 미리 정의된 JSON Schema — 즉 AST(추상 구문 트리) — 를 채운다. 빈 페이지에 글을 쓰는 게 아니라, 양식을 채우는 것이다. 양식이 채워지면 컴파일러가 검증하고, 실제 코드로 변환한다. **LLM이 구조를 채우면, 컴파일러가 코드를 쓴다.**
+AutoBE uses **Function Calling**. Instead of free-form text, the LLM fills in a predefined JSON Schema — an AST (Abstract Syntax Tree). It's not writing on a blank page; it's filling in a form. Once the form is filled, a compiler validates it and transforms it into actual code. **The LLM fills in the structure; the compiler writes the code.**
 
-5단계 파이프라인 전체에 이 원리가 적용된다:
+This principle applies across the entire 5-stage pipeline:
 
-| 단계 | LLM이 채우는 구조 | 컴파일러 검증 |
+| Stage | Structure the LLM fills | Compiler validation |
 |------|------------------|-------------|
-| 요구사항 | [`AutoBeAnalyze`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/analyze/AutoBeAnalyze.ts) — 구조화된 SRS | 구조 검증 |
-| DB 설계 | [`AutoBeDatabase`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) — DB 스키마 AST | Database Compiler |
-| API 설계 | [`AutoBeOpenApi`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) — OpenAPI v3.2 스펙 | OpenAPI Compiler |
-| 테스트 | [`AutoBeTest`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) — 30+ 표현식 타입 | Test Compiler |
-| 구현 | 모듈화된 코드 (Collector/Transformer/Operation) | Hybrid Compiler |
+| Requirements | [`AutoBeAnalyze`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/analyze/AutoBeAnalyze.ts) — structured SRS | Structure validation |
+| DB Design | [`AutoBeDatabase`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) — DB schema AST | Database Compiler |
+| API Design | [`AutoBeOpenApi`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) — OpenAPI v3.2 spec | OpenAPI Compiler |
+| Testing | [`AutoBeTest`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) — 30+ expression types | Test Compiler |
+| Implementation | Modularized code (Collector/Transformer/Operation) | Hybrid Compiler |
 
-각 AST는 LLM이 생성할 수 있는 것을 엄격히 제한한다. 예컨대 `AutoBeDatabase`의 필드 타입은 7가지만 허용된다: `"boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"`. `"varchar"`를 쓸 수 없다 — 선택지에 없으니까. **스키마가 곧 프롬프트다** — 모호하지 않고, 모델에 의존하지 않으며, 기계적으로 검증 가능하다.
+Each AST strictly constrains what the LLM can generate. For example, `AutoBeDatabase` allows only 7 field types: `"boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"`. You can't use `"varchar"` — it simply isn't an option. **The schema is the prompt** — unambiguous, model-independent, and mechanically verifiable.
 
 ```mermaid
 flowchart
@@ -104,19 +102,19 @@ subgraph "Compiler Feedback"
 end
 ```
 
-### 2.2. 왜 하필 Function Calling인가
+### 2.2. Why Function Calling
 
-"LLM에게 텍스트 코드를 직접 쓰게 하면 안 되나?"
+"Can't you just have the LLM write text code directly?"
 
-프론트엔드라면 그래도 된다. 버튼 위치가 조금 다르고, 애니메이션이 약간 어색해도 앱은 작동한다. 모바일이라면 출시 후 패치할 수 있다. 하지만 **백엔드는 다르다.**
+For frontend, maybe. If a button is slightly misplaced or an animation feels a little off, the app still works. On mobile, you can patch it after launch. But **backends are different.**
 
-백엔드는 창의성의 영역이 아니다. **논리와 정교함의 영역이다.** API 하나가 잘못된 타입을 반환하면 모든 클라이언트가 깨진다. Foreign key 하나가 누락되면 데이터 무결성이 소멸한다. 두 API가 같은 엔티티를 다르게 정의하면 시스템이 내부적으로 모순된다. 프론트엔드의 버그는 불편이지만, 백엔드의 버그는 장애다 — 모든 클라이언트가 의존하는 단일 진실 공급원이니까. **일관성과 100% 정확성은 백엔드의 절대전제다** — 좋으면 좋은 것이 아니라, 없으면 존재할 수 없는 것이다.
+Backend development isn't a domain of creativity. **It's a domain of logic and precision.** If a single API returns the wrong type, every client breaks. If one foreign key is missing, data integrity is gone. If two APIs define the same entity differently, the system is internally contradictory. A frontend bug is an inconvenience; a backend bug is an outage — because the backend is the single source of truth that every client depends on. **Consistency and 100% correctness are non-negotiable prerequisites for backends** — not nice-to-haves, but existential requirements.
 
-자유 텍스트 생성은 이 전제를 구조적으로 충족할 수 없다.
+Free-form text generation cannot structurally meet this requirement.
 
-#### 2.2.1. 제어 불가능
+#### 2.2.1. Uncontrollable
 
-프롬프트로 일관성을 강제할 수 있을까? "varchar를 쓰지 마라", "`any` 타입을 쓰지 마라", "유틸리티 함수를 만들지 마라" — 이것이 [분홍 코끼리 문제](/blog/function-calling-harness-qwen-meetup-korea)다. "분홍 코끼리를 생각하지 마라"고 하면, 먼저 분홍 코끼리를 떠올려야 한다. LLM에게 "X를 하지 마라"고 말하면, X가 주의의 중심에 놓이고, 오히려 생성 확률이 올라간다. 자연어는 금지를 통해서만 제약을 표현할 수 있고, **금지는 구조적으로 불완전하다.**
+Can you enforce consistency through prompts? "Don't use varchar," "don't use `any` types," "don't create utility functions" — this is the [pink elephant problem](/blog/function-calling-harness-qwen-meetup-korea). Tell someone "don't think of a pink elephant," and the first thing they do is picture one. Tell an LLM "don't do X," and X lands at the center of attention, actually *increasing* the probability of generating it. Natural language can only express constraints through prohibition, and **prohibition is structurally incomplete.**
 
 ```typescript
 export namespace AutoBeDatabase {
@@ -143,38 +141,38 @@ export namespace AutoBeDatabase {
 }
 ```
 
-Function Calling은 이 문제를 근본적으로 해결한다. LLM이 빈 페이지에 글을 쓰는 것이 아니라, 미리 정의된 양식을 채운다. 필드 타입은 7가지뿐이고, API 명세는 OpenAPI v3.2 스키마를 따르며, 테스트 로직은 `IExpression`의 30개 변형 안에서만 표현된다. "varchar를 쓰지 마라"가 아니라, varchar가 선택지에 존재하지 않는다. **금지가 아니라 부재.** 타입으로 소통하면 오해가 없고, 스키마로 제약하면 분홍 코끼리가 없다.
+Function Calling solves this problem at its root. The LLM isn't writing on a blank page — it's filling in a predefined form. There are only 7 field types; API specs follow the OpenAPI v3.2 schema; test logic can only be expressed within 30 variants of `IExpression`. It's not "don't use varchar" — varchar simply doesn't exist as an option. **Not prohibition, but absence.** Communicate through types and there's no misunderstanding; constrain through schemas and there's no pink elephant.
 
-#### 2.2.2. 복리 효과
+#### 2.2.2. The Compound Effect
 
-백엔드의 수학은 냉혹하다. 테이블 50개, API 400개짜리 서비스를 생각해보자. 400개 API가 **모두** 성공해야 서버가 돌아간다. 전체 성공률 = (단위 성공률)ⁿ 이다:
+The math of backends is unforgiving. Consider a service with 50 tables and 400 APIs. All 400 APIs must succeed for the server to run. Total success rate = (per-unit success rate)^n:
 
-95%면 API 50개만 넘어도 사실상 불가능. 99%여도 400개에서 1.8%. 오직 **100%만이 살아남는다.**
+At 95%, even 50 APIs make it virtually impossible. At 99%, 400 APIs still yield only 1.8%. Only **100% survives.**
 
-| 단위 성공률 | 10 APIs | 50 APIs | 100 APIs | 400 APIs |
+| Per-unit success rate | 10 APIs | 50 APIs | 100 APIs | 400 APIs |
 |:---:|:---:|:---:|:---:|:---:|
-| 95% | 59.9% | 7.7% | 0.6% | ≈ 0% |
+| 95% | 59.9% | 7.7% | 0.6% | ~ 0% |
 | 99% | 90.4% | 60.5% | 36.6% | 1.8% |
 | 99.9% | 99.0% | 95.1% | 90.5% | 67.0% |
 | **100%** | **100%** | **100%** | **100%** | **100%** |
 
-이것이 자유 텍스트 생성 방식의 구조적 한계다. 코딩 어시스턴트에게 테이블 50개, API 400개짜리 백엔드를 맡기면, 결과물은 나온다. **0→80은 빠르다.** 스캐폴딩은 훌륭하고, 개별 함수도 잘 짠다. 하지만 400개 API가 서로 정합하고, FK가 빠짐없이 연결되고, 공유 타입이 모든 엔드포인트에서 일관되려면 — 그게 **80→100**이다. 자유 텍스트 생성만으로는 구조적으로 도달할 수 없는 영역이다. 각 API의 성공률이 95%인 한, API가 늘어날수록 전체 성공률은 0에 수렴하니까. 사람이 400개를 하나하나 확인하면 가능하겠지만, 그러면 AI를 쓰는 이유가 없다.
+This is the structural limitation of free-form text generation. Hand a coding assistant a backend with 50 tables and 400 APIs, and you'll get output. **0 to 80 is fast.** The scaffolding is great, individual functions are well-written. But getting 400 APIs to be mutually consistent, with every FK properly connected and shared types uniform across all endpoints — that's **80 to 100**. It's a region that free-form text generation structurally cannot reach. As long as each API's success rate is 95%, total success converges to 0 as the API count grows. A human could review all 400 one by one, but then what's the point of AI?
 
-Function Calling은 이 복리 문제를 근본적으로 해결한다. 양식이 정해져 있으니 분산이 0이고, 컴파일러가 양식을 검증하니 각 단위의 성공률이 100%에 수렴한다. **1.0<sup>400</sup> = 1.0.** 그 위에 4단계 컴파일러가 시스템 수준의 정합성 — DB 스키마와 API 명세의 교차 검증, API 간 공유 타입의 일관성, 모듈 간 의존성의 순환 여부 — 을 보장한다. 검증을 통과하지 못하면 자가교정 루프가 통과할 때까지 반복한다.
+Function Calling fundamentally solves this compound problem. The form is fixed, so variance is zero; a compiler validates the form, so per-unit success rate converges to 100%. **1.0<sup>400</sup> = 1.0.** On top of that, a 4-stage compiler guarantees system-level consistency — cross-validation between DB schema and API spec, uniformity of shared types across APIs, detection of circular dependencies between modules. If validation fails, a self-correction loop repeats until it passes.
 
-#### 2.2.3. 분산
+#### 2.2.3. Variance
 
-LLM의 출력은 확률 분포에서 추출한 샘플이다. 같은 프롬프트로 같은 모델을 돌려도 매번 다른 코드가 나온다 — 변수명이 다르고, 패턴이 다르고, 에러 처리 방식이 다르다. 모델이 바뀌면 차이는 더 크다. Claude는 functional style, GPT는 class-based, Qwen은 또 다른 관용구. 이 분산은 창작에서는 풍부함이지만, 백엔드에서는 결함이다.
+LLM output is a sample drawn from a probability distribution. Run the same model with the same prompt and you get different code every time — different variable names, different patterns, different error handling approaches. Swap the model and the differences grow larger. Claude leans functional, GPT leans class-based, Qwen has its own idioms. This variance is richness in creative writing, but a defect in backends.
 
-그런데 양식이 정해져 있으면 분산은 사라진다. 모델의 "문체"를 AST 스키마가 균일하게 통제하고, 컴파일러가 결과를 검증하니, 모델 개성이 최종 출력에 미치는 영향이 극도로 작아진다. [벤치마크](/benchmark)가 이를 증명한다:
+When the form is fixed, variance vanishes. The AST schema uniformly governs the model's "style," and the compiler verifies the result, so the model's personality has minimal impact on the final output. The [benchmarks](/benchmark) prove this:
 
 <BenchmarkDashboard />
 
-`qwen3.5-35b-a3b`(3B active)와 `claude-sonnet-4.6`이 생성한 백엔드의 아키텍처, 모듈 구조, 네이밍 컨벤션이 거의 동일하다. 강한 모델은 1–2번 만에 수렴하고, 약한 모델은 3–4번 만에 수렴하지만, 도착지는 같다. **모델이 달라도 결과가 같다. 매번 돌려도 결과가 같다.** 이것이 백엔드가 요구하는 일관성이고, Function Calling만이 이를 구조적으로 보장할 수 있는 이유다.
+The backends generated by `qwen3.5-35b-a3b` (3B active) and `claude-sonnet-4.6` have nearly identical architecture, module structure, and naming conventions. Strong models converge in 1-2 iterations; weaker models converge in 3-4 — but the destination is the same. **Different models, same result. Run it again, same result.** This is the consistency that backends demand, and it's why Function Calling is the only approach that can structurally guarantee it.
 
-### 2.3. 업계 컨센서스: "그거 안 된다"
+### 2.3. Industry Consensus: "That Won't Work"
 
-그런데 LLM이 채워야 하는 양식은 단순하지 않다. DTO 타입을 정의하는 [`AutoBeOpenApi.IJsonSchema`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/interface/AutoBeOpenApi.ts)는 10가지 변형의 재귀적 유니언 타입이다:
+But the forms the LLM must fill are far from simple. [`AutoBeOpenApi.IJsonSchema`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/interface/AutoBeOpenApi.ts), which defines DTO types, is a recursive union type with 10 variants:
 
 ```typescript
 export type IJsonSchema =
@@ -182,17 +180,17 @@ export type IJsonSchema =
   | IJsonSchema.IInteger
   | IJsonSchema.INumber
   | IJsonSchema.IString
-  | IJsonSchema.IArray      // items: IJsonSchema ← 재귀
-  | IJsonSchema.IObject     // properties: Record<string, IJsonSchema> ← 재귀
+  | IJsonSchema.IArray      // items: IJsonSchema <- recursive
+  | IJsonSchema.IObject     // properties: Record<string, IJsonSchema> <- recursive
   | IJsonSchema.IReference
-  | IJsonSchema.IOneOf      // oneOf: IJsonSchema[] ← 재귀
+  | IJsonSchema.IOneOf      // oneOf: IJsonSchema[] <- recursive
   | IJsonSchema.INull
   | IJsonSchema.IConstant;
 ```
 
-10가지 변형이 3단계 깊이로 중첩되면 1,000개의 가능한 경로.
+Ten variants nested 3 levels deep yield 1,000 possible paths.
 
-테스트 단계의 복잡도는 한 차원 더 높다. E2E 테스트 로직을 표현하는 [`AutoBeTest.IExpression`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts)은 **30개 이상의 재귀적 변형**이다 — 프로그래밍 언어 수준의 복잡도를 단일 Function Call에 담는다:
+The test stage is even more complex. [`AutoBeTest.IExpression`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts), which represents E2E test logic, has **over 30 recursive variants** — programming-language-level complexity packed into a single Function Call:
 
 ```typescript
 export type IExpression =
@@ -213,13 +211,13 @@ export type IExpression =
   | IConditionalPredicate    | IErrorPredicate;                  // assertions
 ```
 
-이것이 LLM이 단일 Function Call에서 정확히 채워야 하는 양식의 실제 복잡도다.
+This is the actual complexity of the form the LLM must accurately fill in a single Function Call.
 
-`qwen3-coder-next`의 `IJsonSchema` 첫 시도 성공률: **6.75%**. 업계 컨센서스는 명확하다 — [NESTFUL (EMNLP 2025)](https://arxiv.org/abs/2409.03797)은 GPT-4o의 중첩 도구 호출 정확도를 28%로 측정했고, [JSONSchemaBench (ICLR 2025)](https://arxiv.org/abs/2501.10868)은 10,000개 실세계 스키마에서 최고 난이도 구간의 성공률을 3–41%로 보고했다. BoundaryML은 한 발 더 나아가, 구조화된 출력이 [모델의 추론 능력을 오히려 떨어뜨린다](https://boundaryml.com/blog/structured-outputs-create-false-confidence)고 주장했다. 컨센서스: **복잡한 스키마의 Function Calling은 하지 마라.**
+`qwen3-coder-next`'s first-attempt success rate on `IJsonSchema`: **6.75%**. The industry consensus is clear — [NESTFUL (EMNLP 2025)](https://arxiv.org/abs/2409.03797) measured GPT-4o's nested tool calling accuracy at 28%, and [JSONSchemaBench (ICLR 2025)](https://arxiv.org/abs/2501.10868) reported success rates of 3-41% on the hardest tier across 10,000 real-world schemas. BoundaryML went further, arguing that structured output actually [degrades a model's reasoning ability](https://boundaryml.com/blog/structured-outputs-create-false-confidence). The consensus: **don't do Function Calling with complex schemas.**
 
-우리는 포기할 수 없었다. 구조화된 출력 없이는 기계적 검증이 불가능하고, 검증 없이는 피드백 루프가 불가능하고, 피드백 루프 없이는 보장이 불가능하니까.
+We couldn't give up. Without structured output, mechanical verification is impossible; without verification, feedback loops are impossible; without feedback loops, guarantees are impossible.
 
-그래서 만든 것이 [Function Calling Harness](/blog/function-calling-harness-qwen-meetup-korea)다. [Typia](https://github.com/samchon/typia)의 3계층 인프라가 핵심이다:
+So we built the [Function Calling Harness](/blog/function-calling-harness-qwen-meetup-korea). The 3-tier infrastructure from [Typia](https://github.com/samchon/typia) is at its core:
 
 ```mermaid
 flowchart LR
@@ -234,11 +232,11 @@ flowchart LR
     style V fill:#E5C07B,color:#000
 ```
 
-이 3계층은 모두 [Typia](https://github.com/samchon/typia)의 컴파일러가 TypeScript 타입 정의에서 자동 생성한다. 개발자는 TypeScript 타입만 정의하면 된다 — Function Calling 스키마도, `parse()` 복구 로직도, `validate()` 검증기도, `LlmJson.stringify()` 피드백 생성기도 모두 같은 타입에서 나온다. **하나의 타입이 스키마·파싱·검증·피드백을 동시에 지배한다.**
+All three tiers are auto-generated by [Typia](https://github.com/samchon/typia)'s compiler from TypeScript type definitions. Developers only need to define TypeScript types — the Function Calling schema, `parse()` recovery logic, `validate()` checker, and `LlmJson.stringify()` feedback generator all derive from the same type. **A single type governs schema, parsing, validation, and feedback simultaneously.**
 
-#### 2.3.1. `parse()` — 깨진 JSON 복구
+#### 2.3.1. `parse()` — Recovering Broken JSON
 
-LLM은 JSON 생성기가 아니다. 마크다운 코드 블록으로 감싸고, "I'd be happy to help!"를 붙이고, 괄호를 닫지 않고, 키에 따옴표를 빼먹고, `true` 대신 `tru`를 쓴다. Qwen 3.5 시리즈는 더 심하다 — 모든 유니언 타입 필드를 **100% 확률로** 이중 직렬화한다. 실제 프로덕션에서 받은 단일 응답에 7가지 문제가 동시에 존재한 사례:
+LLMs aren't JSON generators. They wrap output in markdown code blocks, prepend "I'd be happy to help!", leave brackets unclosed, omit quotes on keys, and write `tru` instead of `true`. The Qwen 3.5 series is worse — it double-serializes every union type field with **100% probability**. A real production response that contained 7 simultaneous issues:
 
 ```typescript
 import { dedent } from "@typia/utils";
@@ -300,19 +298,19 @@ declare class OrderService {
 }
 ```
 
-`func.parse()` 한 번의 호출로 7가지를 모두 복구한다:
+A single call to `func.parse()` recovers all 7 issues:
 
-- **마크다운 블록 & 접두 잡담** → 제거
-- **닫히지 않은 문자열 & 괄호** (`"1234-5678`) → 자동 완성
-- **따옴표 없는 키** (`name:`) → 허용
-- **후행 쉼표** (`quantity: 2,`) → 무시
-- **불완전한 키워드** (`tru`) → `true`로 완성
-- **잘못된 타입** (`"1299.99"`) → 스키마에 따라 `1299.99`로 강제 변환
-- **이중 직렬화** (`"{\"type\":\"card\"...`) → 재귀적으로 객체 복원
+- **Markdown block & prefix chatter** -> stripped
+- **Unclosed string & bracket** (`"1234-5678`) -> auto-completed
+- **Unquoted key** (`name:`) -> accepted
+- **Trailing comma** (`quantity: 2,`) -> ignored
+- **Incomplete keyword** (`tru`) -> completed to `true`
+- **Wrong type** (`"1299.99"`) -> coerced to `1299.99` according to the schema
+- **Double serialization** (`"{\"type\":\"card\"...`) -> recursively restored to object
 
-#### 2.3.2. `validate()` + `LlmJson.stringify()` — 정밀 피드백
+#### 2.3.2. `validate()` + `LlmJson.stringify()` — Precision Feedback
 
-파싱 후에도 값 자체가 틀릴 수 있다. 음수 가격, 이메일이 아닌 문자열, 정수여야 할 곳에 소수점. `validate()`가 스키마 위반을 감지하면, `LlmJson.stringify()`가 LLM의 원본 JSON 위에 `// ❌` 인라인 에러 마커를 생성한다:
+Even after parsing, the values themselves can be wrong. Negative prices, non-email strings, decimals where integers are expected. When `validate()` detects a schema violation, `LlmJson.stringify()` generates inline `// ❌` error markers on top of the LLM's original JSON:
 
 ```json
 {
@@ -335,304 +333,298 @@ declare class OrderService {
 }
 ```
 
-LLM은 자기 출력 위에 표시된 에러만 고치면 된다. 전체를 다시 쓸 필요 없이, 표시된 5개 필드만 수정하면 된다. **정밀하고, 구조화되고, 즉시 실행 가능한 피드백.**
+The LLM only needs to fix the errors marked on its own output. No need to rewrite everything — just fix the 5 flagged fields. **Precise, structured, and immediately actionable feedback.**
 
-이 루프가 6.75%를 100%로 만든다. 그 위에 AutoBE의 4단계 컴파일러(Database → OpenAPI → Test → TypeScript)가 시스템 수준의 자가교정 루프를 추가한다. **Function Calling 수준 + 컴파일러 수준의 이중 검증**이 100% 컴파일 성공률의 원동력이다.
+This loop is what turns 6.75% into 100%. On top of that, AutoBE's 4-stage compiler (Database -> OpenAPI -> Test -> TypeScript) adds system-level self-correction loops. **Dual validation at the Function Calling level and the compiler level** is the driving force behind 100% compilation success.
 
----
+## 3. Why This Moment
 
-## 3. 왜 하필 지금이었나
+### 3.1. Intentionally Kept Simple
 
-### 3.1. 의도적으로 멍청하게 만들었다
+To be honest, AutoBE had never paid close attention to agent orchestration until now. **Intentionally.**
 
-솔직히 말하면, AutoBE는 지금까지 에이전트 오케스트레이션에 세심한 주의를 기울인 적이 없다. **의도적으로.**
+We kept the workflow in its simplest possible form. It flowed in one direction following the waterfall model; AI self-review happened only once; code generation got only one shot. On top of that, we intentionally **banned using overly smart AI**. We ran repeated experiments with small models (`qwen3-30b-a3b`, 3B active). There were three reasons.
 
-워크플로우를 가장 단순한 형태로 유지했다. 폭포수 모델에 따라 일방향으로만 흐르고, AI의 자기 리뷰는 한 번뿐이었으며, 코드 생성 기회도 한 번뿐이었다. 여기에 더해, 의도적으로 **지나치게 똑똑한 AI 사용도 금지**했다. 소형 모델(`qwen3-30b-a3b`, 3B active)로 반복 실험했다. 이유는 세 가지였다.
+#### 3.1.1. Stability
 
-#### 3.1.1. 안정성
+We needed to measure each pipeline stage's success rate in isolation. When orchestration gets complex, it becomes difficult to identify which stage failed. In a simple pipeline, "FK references broke in the Database stage" is clear. In complex orchestration, it becomes "something went wrong somewhere."
 
-각 파이프라인 단계의 성공률을 격리해서 측정해야 했다. 오케스트레이션이 복잡해지면, 어느 단계가 실패했는지 파악하기 어려워진다. 단순한 파이프라인에서는 "Database 단계에서 FK 참조가 깨졌다"가 명확하다. 복잡한 오케스트레이션에서는 "어딘가에서 뭔가가 틀렸다"가 된다.
+#### 3.1.2. Debugging
 
-#### 3.1.2. 디버깅
+The more stages where AI intervenes autonomously, the exponentially harder it becomes to trace failure causes. When Agent A corrects something, Agent B touches it again, and Agent C modifies that result — the root cause gets buried.
 
-AI가 자율적으로 개입하는 단계가 많을수록, 실패 원인 추적이 기하급수적으로 어려워진다. 에이전트 A가 교정한 것을 에이전트 B가 다시 건드리고, 에이전트 C가 그 결과를 또 수정하면 — 근본 원인이 묻힌다.
+#### 3.1.3. Preventing Weakness Concealment
 
-#### 3.1.3. 취약점 은폐 방지
+Smart AI and sophisticated workflows **mask the system's vulnerabilities**. Even if the Database stage generates a flawed schema, if the subsequent Interface stage's AI "silently" compensates, we never discover the Database stage's weakness. Vulnerabilities exposed by small models also exist in large models — they just surface less often. "Less often" becomes "occasionally" in production, and "occasionally" becomes an outage.
 
-똑똑한 AI와 정교한 워크플로우는 시스템의 취약점을 **스스로 감추어버린다.** Database 단계에서 잘못된 스키마가 생성되어도, 뒤이은 Interface 단계의 AI가 "알아서" 보정해버리면, 우리는 Database 단계의 취약점을 영원히 모른다. 소형 모델이 노출한 취약점은 대형 모델에서도 존재한다 — 단지 덜 자주 드러날 뿐이다. "덜 자주"는 프로덕션에서 "가끔"이 되고, "가끔"은 장애가 된다.
+So we deliberately — with small models, in a simple pipeline, with minimal AI intervention — tightened only the validation at each stage.
 
-그래서 일부러 — 소형 모델로, 단순한 파이프라인에서, AI 개입을 최소화한 채로 — 각 단계의 validation만 빡빡하게 조였다.
+### 3.2. Breaking 100% and Rebuilding
 
-### 3.2. 100%를 부수고 다시 만들다
+[We had previously achieved 100% compilation + runtime success rate](/blog/autobe-broke-100-percent-success-rate-on-purpose). Then we deliberately broke it to rebuild at a higher level of quality.
 
-[이전에 100% 컴파일 + 런타임 성공률을 달성한 적이 있다](/blog/autobe-broke-100-percent-success-rate-on-purpose). 그런데 더 높은 품질을 위해 과감히 부수고 다시 만들었다.
+#### 3.2.1. Divide and Conquer
 
-#### 3.2.1. 각개격파
+AutoBE's first goal was simple — generate each API function independently. No code reuse, no inter-function dependencies, each function self-contained. If 10 functions query the same table, all 10 contain the same duplicated query.
 
-AutoBE의 첫 번째 목표는 단순했다 — 각 API 함수를 독립적으로 생성하는 것. 코드 재사용 없이, 함수 간 의존 없이, 각 함수가 자기완결적. 같은 테이블을 조회하는 함수가 10개 있으면, 10개 각각에 동일한 쿼리가 중복된다.
+You can't run before you walk. We first needed to prove in the simplest possible form that the Function Calling Harness worked, that the compiler feedback loop achieved self-correction, and that 100% was reachable even with small models.
 
-걷기도 전에 뛸 수 없다. Function Calling Harness가 작동하는지, 컴파일러 피드백 루프가 자가교정을 해내는지, 소형 모델에서도 100%에 도달하는지 — 가장 단순한 형태에서 먼저 증명해야 했다.
+And we proved it. 100% compilation, 100% runtime. Even with small models. **The foundation works.**
 
-그리고 증명했다. 100% 컴파일, 100% 런타임. 소형 모델에서도. **기반이 작동한다.**
+#### 3.2.2. The Output Wasn't Software
 
-#### 3.2.2. 생성물은 소프트웨어가 아니었다
+After hitting 100%, we looked closely at the generated output. 100% compilation, 100% runtime. Perfect. But it **wasn't maintainable software.** Adding a column to a table meant regenerating all 10 related functions. Changing requirements meant rebuilding everything from scratch. Without code reuse, the output could be generated but couldn't evolve.
 
-100%를 달성하고 나서 생성물을 들여다봤다. 컴파일 100%, 런타임 100%. 완벽했다. 하지만 **유지보수할 수 있는 소프트웨어는 아니었다.** 테이블에 컬럼 하나를 추가하면 관련 함수 10개를 전부 다시 생성해야 했다. 요구사항이 바뀌면 전체를 처음부터 다시 만들어야 했다. 코드 재사용이 없으니, 생성은 되지만 진화는 불가능한 구조였다.
+The next mission was clear. Move to a **structure that enables code reuse** — where functions call other functions, shared logic converges in one place, and requirement changes only require modifying what changed.
 
-다음 미션은 명확했다. 함수가 다른 함수를 호출하고, 공통 로직이 한 곳에 모이고, 요구사항이 바뀌면 바뀐 부분만 수정하면 되는 — **코드 재사용이 가능한 구조**로 넘어가는 것.
+#### 3.2.3. Breaking It
 
-#### 3.2.3. 부수다
+So we broke 100%.
 
-그래서 100%를 부쉈다.
+Introducing inter-module dependencies caused the success rate to **plummet to 40%**. Problems that didn't exist with independent functions erupted all at once — the moment functions call each other, one function's mistake breaks another. Return types don't match, imports get tangled, dependency ordering falls apart. A microcosm of the **compound effect** from Section 2.2 — when 100 modules depend on each other, each module's 95% success rate converges to 0% at the system level.
 
-모듈 간 의존성이 있는 코드 구조를 도입하자, 성공률이 **40%로 급락**했다. 독립 함수에서는 존재하지 않던 문제들이 한꺼번에 터졌다 — 함수가 서로를 호출하는 순간, 한 함수의 실수가 다른 함수를 깨뜨린다. 반환 타입이 안 맞고, import가 꼬이고, 의존 순서가 엉킨다. 2.2에서 말한 **복리 효과의 축소판**이다 — 100개 모듈이 서로 의존하면, 각 모듈의 95% 성공률은 전체로 보면 0%에 수렴한다.
+From 100% to 40%. It took months. We strengthened the compiler, refined the correction loops, and improved the Harness.
 
-100%에서 40%로. 수개월이 걸렸다. 컴파일러를 강화하고, 교정 루프를 세분화하고, Harness를 개선했다.
+And we reached 100% compilation again. Runtime 100% is still being restored.
 
-그리고 다시 컴파일 100%에 도달했다. 런타임 100%는 아직 복원 중이다.
+### 3.3. Time to Get Sophisticated
 
-### 3.3. 기교를 부릴 때가 왔다
+At this point, we had fully achieved 100% compilation. Runtime 100% was still in progress.
 
-지금은 컴파일 100%를 완전히 달성한 상태다. 런타임 100%는 아직 진행 중이다.
+This is when we declared:
 
-이 시점에서 선언했다:
+> "With 100% compilation secured as our foundation, it's time to start getting sophisticated."
 
-> "컴파일 100%를 확보한 기반 위에, 이제 기교를 부리기 시작한다."
+Introduce agent self-review loops. Refine the prompts. Add sophistication to the orchestration. **No matter how sophisticated you make a workflow without a verification foundation, it's nothing more than an elaborate dice roll.** First lay the verification foundation, then build the workflow on top — we were convinced this was the right order.
 
-에이전트 자기 리뷰 루프를 도입하고, 프롬프트를 고도화하고, 오케스트레이션에 정교함을 더한다. **검증 기반 없이 워크플로우를 아무리 정교하게 만들어도, 그것은 정교한 주사위 굴리기에 불과하다.** 먼저 검증 기반을 닦고, 그 위에 워크플로우를 쌓는 것 — 이것이 올바른 순서라고 확신했다.
+To do that, we needed to **seriously study how other AI agents designed their orchestration**.
 
-그러려면 **"다른 AI 에이전트들은 오케스트레이션을 어떻게 설계했나"를 진지하게 공부해야** 했다.
+That's exactly when the Claude Code source code leaked.
 
-바로 그때, Claude Code 소스 코드가 유출됐다.
+## 4. 2nd Generation and 3rd Generation
 
----
+Before comparing, let's establish one thing. These two projects are solving **fundamentally different problems**.
 
-## 4. 2세대와 3세대
+### 4.1. Claude Code — 2nd Generation: The Senior Developer Sitting Next to You
 
-비교에 앞서 하나 짚자. 두 프로젝트는 **근본적으로 다른 문제**를 풀고 있다.
-
-### 4.1. Claude Code — 2세대: 옆에 앉은 시니어 개발자
-
-시스템 프롬프트의 첫 줄:
+The first line of the system prompt:
 
 ```
 "You are an interactive agent that helps users
 with software engineering tasks."
 ```
 
-**"helps users"** — 사람이 주도하고, AI가 보조한다. 사용자가 파일을 읽어달라 하면 읽고, 코드를 고쳐달라 하면 고친다. 40개 이상의 범용 도구와 `while(true)` 루프 안에서 LLM이 매 턴마다 자율적으로 도구를 선택한다.
+**"helps users"** — humans lead, AI assists. When the user asks to read a file, it reads. When asked to fix code, it fixes. With 40+ general-purpose tools and a `while(true)` loop, the LLM autonomously selects tools at every turn.
 
-강점은 유연성이다. 어떤 언어든, 어떤 프레임워크든 — 파일을 읽고, 맥락을 이해하고, 정확히 필요한 부분을 고치는 능력은 현존 최강이다. 개발자의 하루는 Python 디버깅하다 Go 리팩터링하다 Terraform 고치는 다국어 전쟁이다. 이 모든 걸 한 세션에서 처리하는 것 — 이것은 타협이 아니라, 대부분의 개발자가 대부분의 시간에 필요로 하는 바로 그것이다.
+The strength is flexibility. Any language, any framework — the ability to read files, understand context, and fix exactly what's needed is best-in-class. A developer's day is a polyglot war: debugging Python, refactoring Go, fixing Terraform. Handling all of this in a single session — that's not a compromise; it's exactly what most developers need most of the time.
 
-프롬프트, 에이전트 워크플로우, 도구 구현체 하나하나를 읽노라면 감탄이 나온다. 7개의 회복 경로, 4단계 컨텍스트 압축, 스트리밍 중 도구 선행 실행, BashTool 관련 보안 코드만 400KB 이상까지. AI 에이전트 개발의 극한이자 정석이다. **"helps users"** 를 위한 모든 것이 극한까지 다듬어져 있었다.
+Reading through each prompt, agent workflow, and tool implementation fills you with admiration. Seven recovery paths, 4-tier context compression, speculative tool execution during streaming, over 400KB of BashTool security code alone. It's the extreme edge and the gold standard of AI agent development. Everything behind **"helps users"** was refined to perfection.
 
-### 4.2. AutoBe — 3세대: 혼자 다 하는 백엔드 공장
+### 4.2. AutoBe — 3rd Generation: The Self-Sufficient Backend Factory
 
-시스템 프롬프트의 핵심:
+The core of the system prompt:
 
 ```
 "You are a professional backend engineer—not an assistant"
 ```
 
-**"not an assistant"** — AI가 주도하고, 컴파일러가 검증한다. 사용자는 요구사항만 말하면 된다. 나머지는 42개의 전문 AI 에이전트가 5단계 파이프라인을 자율적으로 실행한다.
+**"not an assistant"** — AI leads, compilers verify. The user only needs to state requirements. The rest is autonomously executed by 42 specialized AI agents across a 5-stage pipeline.
 
-핵심은 **양식 + 컴파일러** 구조다. LLM이 자유 텍스트가 아니라 스키마 양식을 채우니 분산이 제거되고, 컴파일러가 양식을 검증하니 단위 성공률이 100%에 수렴한다. **1.0<sup>400</sup> = 1.0** — 복리 효과가 역전된다. 사람이 확인할 필요가 없다. 기계가 보증하니까.
+The core is the **form + compiler** architecture. Since the LLM fills in schema forms instead of free-form text, variance is eliminated; since compilers validate the forms, per-unit success rate converges to 100%. **1.0<sup>400</sup> = 1.0** — the compound effect is reversed. No human review needed. The machine provides the guarantee.
 
-### 4.3. 세대를 가르는 기준
+### 4.3. What Separates the Generations
 
-검증의 주체가 다르다:
+The agent of verification is different:
 
-| | 2세대 | 3세대 |
+| | 2nd Generation | 3rd Generation |
 |---|---|---|
-| **정합성 판단** | 사람 | 기계 |
-| **에러 발견** | 사용자가 발견 | 컴파일러가 발견 |
-| **교정 루프** | 사용자가 지시 | 자동 반복 |
-| **제약 방식** | 프롬프트 금지 (분홍 코끼리) | 스키마 부재 (선택지 제거) |
-| **안정성** | 0.95<sup>n</sup> → 0 | 1.0<sup>n</sup> = 1.0 |
-| **일관성** | 모델 의존 (Claude ≠ GPT ≠ Qwen) | 모델 독립 (도착지 동일) |
-| **대표 사례** | Claude Code, Cursor | AutoBe |
+| **Consistency judgment** | Human | Machine |
+| **Error discovery** | User discovers | Compiler discovers |
+| **Correction loop** | User instructs | Automatic iteration |
+| **Constraint method** | Prompt prohibition (pink elephant) | Schema absence (option removal) |
+| **Reliability** | 0.95<sup>n</sup> -> 0 | 1.0<sup>n</sup> = 1.0 |
+| **Consistency** | Model-dependent (Claude != GPT != Qwen) | Model-independent (same destination) |
+| **Representative example** | Claude Code, Cursor | AutoBe |
 
-솔직히, Claude Code는 **훌륭한 어시스턴트**다. 파일 탐색, 디버깅, 리팩터링 — 옆에 앉은 시니어 개발자로서의 역할에서는 현존 최강이라 해도 과언이 아니다. 다만 "어시스턴트"와 "빌더"는 다른 문제다. 테이블 50개, API 400개짜리 백엔드를 **처음부터 끝까지 혼자 만들어내려면** — 즉 **80→100**을 보장하려면 — 검증의 주체가 사람이어선 안 된다. 기계여야 한다.
+Honestly, Claude Code is a **superb assistant**. File navigation, debugging, refactoring — as a senior developer sitting beside you, calling it best-in-class wouldn't be an exaggeration. But "assistant" and "builder" are different problems. To **build a backend with 50 tables and 400 APIs from start to finish** — to guarantee **80 to 100** — the agent of verification can't be human. It must be machine.
 
-Claude Code는 2세대의 끝을 보여준다. 프롬프트와 에이전트 워크플로우를 극한까지 다듬어, 사람이 주도하는 방식의 최고 경지에 도달했다. 3세대는 그 반대편에 있다 — Function Calling Harness와 AI 전용 컴파일러를 통해, 범용성을 포기하는 대신 특수 목적에서 100% 성공을 목표한다. 우위가 아니라 방향이 다르다. 핵심 차이는 명확하다: **생성물의 정합성을 누가 보증하느냐.**
+Claude Code shows the pinnacle of the 2nd generation. It refined prompts and agent workflows to the extreme, reaching the highest achievement possible with a human-led approach. The 3rd generation stands on the opposite side — through Function Calling Harness and AI-native compilers, it sacrifices generality to target 100% success in a specialized domain. This isn't about superiority; it's about direction. The core difference is clear: **who guarantees the consistency of the generated output.**
 
----
+## 5. What We Learned from Claude Code
 
-## 5. Claude Code에서 배운 것들
+### 5.1. Agent Loop: `while(true)` vs Waterfall
 
-### 5.1. 에이전트 루프: `while(true)` vs 워터폴
+#### 5.1.1. The Heart of Claude Code
 
-#### 5.1.1. Claude Code의 심장부
-
-`query.ts` 1,730줄짜리 `while(true)` 루프:
+The 1,730-line `while(true)` loop in `query.ts`:
 
 ```
 while(true) {
-    Phase 1: 컨텍스트 준비 (토큰 계산, 압축)
-    Phase 2: API 스트리밍 (도구 호출 감지)
-    Phase 3: 회복 (7개의 continue 지점)
-    Phase 4: 도구 실행 (동시성 제어)
-    Phase 5: 계속/종료 결정
+    Phase 1: Context preparation (token counting, compression)
+    Phase 2: API streaming (tool call detection)
+    Phase 3: Recovery (7 continue points)
+    Phase 4: Tool execution (concurrency control)
+    Phase 5: Continue/exit decision
 }
 ```
 
-7개의 `continue` 지점이 각각 다른 회복 경로를 나타낸다:
+Seven `continue` points each represent a different recovery path:
 
-| continue 지점 | 트리거 | 회복 |
+| Continue point | Trigger | Recovery |
 |---|---|---|
-| `collapse_drain_retry` | 413 Prompt Too Long | 스테이지된 collapse 배출 |
-| `reactive_compact_retry` | drain 후에도 413 | 전체 autocompact |
-| `max_output_tokens_escalate` | 8k 출력 한도 | 64k로 에스컬레이션 |
-| `max_output_tokens_recovery` | 64k 초과 | "resume directly" 주입 |
-| `streaming_fallback` | 스트리밍 실패 | 전체 재시도 |
-| `stop_hook_blocking` | 훅 에러 | 에러를 대화에 추가 |
-| `token_budget_continuation` | 예산 내 | 자동 계속 |
+| `collapse_drain_retry` | 413 Prompt Too Long | Drain staged collapse |
+| `reactive_compact_retry` | Still 413 after drain | Full autocompact |
+| `max_output_tokens_escalate` | 8k output limit | Escalate to 64k |
+| `max_output_tokens_recovery` | Exceeds 64k | Inject "resume directly" |
+| `streaming_fallback` | Streaming failure | Full retry |
+| `stop_hook_blocking` | Hook error | Add error to conversation |
+| `token_budget_continuation` | Within budget | Auto-continue |
 
-이 루프의 강점은 **유연성**이다. "파일 읽고, 수정하고, 테스트 돌려" — 어떤 조합이든 LLM이 알아서 흐름을 만든다.
+The strength of this loop is **flexibility**. "Read a file, modify it, run tests" — whatever the combination, the LLM figures out the flow.
 
-#### 5.1.2. AutoBE의 결정론적 파이프라인
+#### 5.1.2. AutoBE's Deterministic Pipeline
 
-정반대다. 42개의 전문 AI 에이전트가 하드코딩된 순서로 실행된다. Realize 단계 하나만 봐도:
+The exact opposite. 42 specialized AI agents execute in a hardcoded order. Just the Realize stage alone:
 
 ```
 orchestrateRealize()
-  ├─ orchestrateRealizeCollector (DB 쿼리 함수)
-  │   ├─ Plan → Write → Validate
-  │   └─ 실패 시 → CorrectCasting / CorrectOverall
-  ├─ orchestrateRealizeTransformer (결과 변환 함수)
-  ├─ orchestrateRealizeAuthorizationWrite (인증 로직)
-  ├─ orchestrateRealizeOperation (비즈니스 로직)
-  │   └─ 교정 루프: TypeScript 컴파일 → 진단 → 재생성
-  └─ compileRealizeFiles (최종 검증)
+  |-- orchestrateRealizeCollector (DB query functions)
+  |   |-- Plan -> Write -> Validate
+  |   +-- On failure -> CorrectCasting / CorrectOverall
+  |-- orchestrateRealizeTransformer (result transformation functions)
+  |-- orchestrateRealizeAuthorizationWrite (auth logic)
+  |-- orchestrateRealizeOperation (business logic)
+  |   +-- Correction loop: TypeScript compile -> diagnostics -> regenerate
+  +-- compileRealizeFiles (final validation)
 ```
 
-무엇을 병렬로 돌릴지, 몇 개씩 돌릴지, 실패 시 어떻게 할지 — 모두 코드로 결정되어 있다. 예측 가능하지만 유연하지 않다.
+What runs in parallel, how many at a time, what happens on failure — it's all determined in code. Predictable, but inflexible.
 
-#### 5.1.3. 비교
+#### 5.1.3. Comparison
 
 | | Claude Code | AutoBe |
 |---|---|---|
-| **구조** | `while(true)` + 도구 자유 선택 | 5단계 워터폴 + 42개 전문 에이전트 |
-| **도구 결정** | LLM이 매 턴 자율 결정 | 코드가 사전 결정 |
-| **에이전트 수명** | 세션 전체 유지 | 작업당 생성 → 폐기 (MicroAgentica) |
-| **적합한 작업** | 열린 탐색, 디버깅 | 구조화된 생성 |
+| **Architecture** | `while(true)` + free tool selection | 5-stage waterfall + 42 specialized agents |
+| **Tool decisions** | LLM decides autonomously each turn | Code decides in advance |
+| **Agent lifetime** | Persists for entire session | Created per task -> discarded (MicroAgentica) |
+| **Best suited for** | Open-ended exploration, debugging | Structured generation |
 
-### 5.2. 컨텍스트 관리: 사후 압축 vs 사전 선별
+### 5.2. Context Management: Post-hoc Compression vs Pre-selection
 
-#### 5.2.1. Claude Code — 4단계 압축
+#### 5.2.1. Claude Code — 4-Tier Compression
 
-대화가 길어지면 압축한다:
+As conversations grow, it compresses:
 
-1. **Snip** — 체크포인트 이전 메시지 제거
-2. **Microcompact** — API의 `cache_edits`로 오래된 도구 결과를 서버 측 삭제. 로컬 메시지는 건드리지 않으므로 캐시 무효화 없음
-3. **Context Collapse** — 읽기 시점 투영 (90%에서 단계적 압축 커밋, 95%에서 차단)
-4. **Autocompact** — LLM에게 대화 요약 요청 (167k 토큰 초과 시). 3회 연속 실패 시 회로 차단(circuit breaker)
+1. **Snip** — Remove messages before checkpoints
+2. **Microcompact** — Server-side deletion of stale tool results via the API's `cache_edits`. Doesn't touch local messages, so cache isn't invalidated
+3. **Context Collapse** — Read-time projection (staged compression commits at 90%, blocking at 95%)
+4. **Autocompact** — Ask the LLM to summarize the conversation (when exceeding 167k tokens). Circuit breaker after 3 consecutive failures
 
-시스템 프롬프트에서도 `SYSTEM_PROMPT_DYNAMIC_BOUNDARY`로 정적/동적 부분을 분리한다:
+Even in the system prompt, static and dynamic parts are separated with `SYSTEM_PROMPT_DYNAMIC_BOUNDARY`:
 
 ```typescript
 const [staticPart, dynamicPart] = systemPrompt.split(
   SYSTEM_PROMPT_DYNAMIC_BOUNDARY
 )
-// staticPart → cache_control: { scope: 'global' } (크로스-유저 캐시)
-// dynamicPart → cache_control: { scope: 'session' }
+// staticPart -> cache_control: { scope: 'global' } (cross-user cache)
+// dynamicPart -> cache_control: { scope: 'session' }
 ```
 
-이 경계 마커 하나로 프롬프트 캐시 비용을 극적으로 줄인다. 캐싱 없이 긴 Opus 세션은 $50–100이지만, 캐싱 적용 시 $10–19 수준으로 떨어진다. ~80% 비용 절감. 배울 만했다.
+This single boundary marker dramatically reduces prompt caching costs. Without caching, a long Opus session runs $50-100, but with caching it drops to $10-19. Roughly 80% cost reduction. Worth learning from.
 
-#### 5.2.2. AutoBE — 48개 History Transformer
+#### 5.2.2. AutoBE — 48 History Transformers
 
-AutoBE는 압축이 아니라 **변환**을 한다. 48개의 History Transformer가 각 오케스트레이터에 **정확히 필요한 컨텍스트만** 조립한다:
+AutoBE doesn't compress — it **transforms**. 48 History Transformers assemble **exactly the context each orchestrator needs**:
 
 ```typescript
-// Realize Write용 History Transformer
+// History Transformer for Realize Write
 const histories = [
   { type: "systemMessage", text: REALIZE_OPERATION_WRITE,
-    _cache: { type: "ephemeral" } },           // 시스템 프롬프트 (캐시)
+    _cache: { type: "ephemeral" } },           // system prompt (cached)
   { type: "userMessage", text: formatDatabaseSchemas(state),
-    _cache: { type: "ephemeral" } },           // 관련 DB 스키마만 (캐시)
+    _cache: { type: "ephemeral" } },           // only relevant DB schemas (cached)
   { type: "userMessage", text: formatOperation(operation) },
   { type: "userMessage", text: formatCollectors(collectors) },
 ];
-// 180KB 전체 컨텍스트 → 8KB 정밀 컨텍스트 (95% 감소)
+// 180KB full context -> 8KB precise context (95% reduction)
 ```
 
-에이전트가 일회용이니까 가능한 일이다. 이전 대화를 압축할 필요 없이, 매번 새 에이전트에게 필요한 것만 담아주면 된다.
+This is possible because agents are disposable. No need to compress previous conversations — just give each new agent exactly what it needs.
 
-`executeCachedBatch` 패턴으로 캐시 효율도 극대화한다: 첫 번째 작업은 순차 실행하여 캐시를 확립하고, 나머지는 병렬 실행하여 90%+ 캐시 히트. 40개 API 구현 시 토큰 비용 약 88% 절감.
+The `executeCachedBatch` pattern also maximizes cache efficiency: the first task executes sequentially to establish the cache, then the rest run in parallel with 90%+ cache hits. When implementing 40 APIs, this reduces token costs by roughly 88%.
 
-#### 5.2.3. 비교
+#### 5.2.3. Comparison
 
 | | Claude Code | AutoBe |
 |---|---|---|
-| **전략** | 있는 것을 줄임 (사후 압축) | 처음부터 적게 넣음 (사전 선별) |
-| **비용 증가** | O(N) ~ O(N²) | O(1) — 대화 길이와 무관 |
-| **정보 유실** | 요약 시 불가피 | 없음 (필요한 것만 있으므로) |
-| **캐시** | `DYNAMIC_BOUNDARY` 분리 | `executeCachedBatch` 패턴 |
+| **Strategy** | Shrink what exists (post-hoc compression) | Start with less (pre-selection) |
+| **Cost growth** | O(N) ~ O(N^2) | O(1) — independent of conversation length |
+| **Information loss** | Unavoidable when summarizing | None (only what's needed is present) |
+| **Caching** | `DYNAMIC_BOUNDARY` split | `executeCachedBatch` pattern |
 
-### 5.3. 안전성: 23개 보안 체크 vs 컴파일러 게이트
+### 5.3. Safety: 23 Security Checks vs Compiler Gates
 
-이 비교가 두 프로젝트의 **존재 이유 차이**를 가장 선명하게 보여준다.
+This comparison most clearly reveals the **difference in raison d'etre** between the two projects.
 
-#### 5.3.1. Claude Code — 사용자 시스템 보호
+#### 5.3.1. Claude Code — Protecting the User's System
 
-Claude Code는 **사용자 컴퓨터에서 직접 명령을 실행**한다. 위험은 "LLM이 `rm -rf /`를 실행하는 것"이다. 그래서 다층 방어를 쌓았다:
-
-```
-Layer 1: 트리시터 AST 파싱으로 셸 명령 의미 분석
-Layer 2: 전체 대화 히스토리를 LLM에 보내 맥락적 안전 판단
-Layer 3: OS 레벨 샌드박싱 (macOS seatbelt, Linux bwrap + seccomp)
-Layer 4: 8종 소스의 권한 규칙 엔진
-Layer 5: 파괴적 패턴 감지 (rm -rf, DROP TABLE, terraform destroy)
-Layer 6: 도구 결과 크기 예산 (50KB 초과 시 디스크 저장)
-```
-
-BashTool 관련 보안 코드만 **400KB 이상**, 23개 보안 체크 카테고리가 셸 명령의 의미를 분석한다. 이 방어의 깊이에는 진심으로 놀랐다.
-
-#### 5.3.2. AutoBE — 생성물 정합성 보호
-
-AutoBE의 위험은 다르다. "LLM이 잘못된 코드를 생성하는 것"이다. 실제 파일 시스템을 건드리지 않고, 가상 파일 시스템(`Record<string, string>`)에서 작동한다:
+Claude Code **executes commands directly on the user's computer**. The risk is "the LLM runs `rm -rf /`." Hence the multi-layered defense:
 
 ```
-Gate 1: Typia 스키마 검증 (Function Calling 출력)
-Gate 2: Database Compiler (FK 무결성, 순환참조, 예약어)
-Gate 3: OpenAPI Interface Compiler (스펙 정합성, DB 교차 검증)
-Gate 4: TypeScript Compiler (strict 모드, 증분 컴파일, ESLint)
+Layer 1: Tree-sitter AST parsing for semantic analysis of shell commands
+Layer 2: Full conversation history sent to LLM for contextual safety judgment
+Layer 3: OS-level sandboxing (macOS seatbelt, Linux bwrap + seccomp)
+Layer 4: Permission rule engine from 8 sources
+Layer 5: Destructive pattern detection (rm -rf, DROP TABLE, terraform destroy)
+Layer 6: Tool result size budget (disk storage when exceeding 50KB)
 ```
 
-방화벽을 쌓는 것과 애초에 불이 날 수 없는 구조를 만드는 것. 위협 모델이 다르니, 방어 전략이 다르다.
+Over **400KB** of BashTool-related security code alone, with 23 security check categories that analyze the semantics of shell commands. The depth of this defense genuinely impressed us.
 
-### 5.4. 타입으로 정책을 강제하는 기법
+#### 5.3.2. AutoBE — Protecting Output Consistency
 
-소스를 읽다가 무릎을 친 코드:
+AutoBE's risk is different. "The LLM generates incorrect code." It doesn't touch the actual file system — it operates on a virtual file system (`Record<string, string>`):
+
+```
+Gate 1: Typia schema validation (Function Calling output)
+Gate 2: Database Compiler (FK integrity, circular references, reserved words)
+Gate 3: OpenAPI Interface Compiler (spec consistency, DB cross-validation)
+Gate 4: TypeScript Compiler (strict mode, incremental compilation, ESLint)
+```
+
+Building firewalls versus building a structure where fire can't start in the first place. Different threat models demand different defense strategies.
+
+### 5.4. Enforcing Policy Through Types
+
+A piece of code that made us stop and take note while reading the source:
 
 ```typescript
 export type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS = never
 ```
 
-**타입 이름 자체가 정책 선언이다.** 이벤트를 로깅할 때 이 타입을 캐스팅해야 하는데, 개발자가 타입 이름을 보게 된다: "나는 이게 코드나 파일 경로가 아님을 검증했다." 주석으로 쓰면 무시되지만, 타입 이름은 컴파일 흐름 안에 들어온다.
+**The type name itself is a policy declaration.** When logging events, you have to cast to this type, and the developer sees the name: "I verified this is not code or file paths." A comment would be ignored, but a type name lives inside the compilation flow.
 
-이것은 AutoBE의 핵심 원리 — **부재를 통한 제약** — 과 같은 결이다:
-
-```
-프롬프트: "varchar, text, bigint를 쓰지 마라" → LLM이 오히려 떠올림
-스키마: type: "boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"
-→ varchar가 선택지에 존재하지 않음 → 물리적으로 생성 불가
-```
-
-"하지 마라"고 말하는 대신, 할 수 없게 만드는 것. 접근은 다르지만 출발점은 같다 — **선택지를 줄여라.**
-
-### 5.5. Coordinator Mode — 인간 팀 리더 패턴
-
-#### 5.5.1. 워크플로우
-
-Claude Code의 Coordinator Mode는 LLM이 팀 리더 역할을 한다:
+This is the same spirit as AutoBE's core principle — **constraint through absence**:
 
 ```
-Research (병렬 워커) → Synthesis (코디네이터가 직접) → Implementation → Verification
+Prompt: "Don't use varchar, text, bigint" -> LLM actually thinks of them
+Schema: type: "boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"
+-> varchar doesn't exist as an option -> physically impossible to generate
 ```
 
-워커 결과는 XML로 도착한다:
+Instead of saying "don't do it," make it impossible. The approaches differ, but the starting point is the same — **reduce the choices.**
+
+### 5.5. Coordinator Mode — The Human Team Lead Pattern
+
+#### 5.5.1. Workflow
+
+Claude Code's Coordinator Mode casts the LLM as a team lead:
+
+```
+Research (parallel workers) -> Synthesis (coordinator handles directly) -> Implementation -> Verification
+```
+
+Worker results arrive as XML:
 
 ```xml
 <task-notification>
@@ -642,11 +634,11 @@ Research (병렬 워커) → Synthesis (코디네이터가 직접) → Implement
 </task-notification>
 ```
 
-코디네이터 LLM이 이를 파싱해서 다음 단계를 결정한다. **무엇을 병렬로 돌릴지, 몇 개를 돌릴지 — 모두 LLM이 추론으로 결정한다.**
+The coordinator LLM parses this and decides the next step. **What to parallelize, how many to run — the LLM decides everything through reasoning.**
 
-#### 5.5.2. 인상적인 설계 원칙
+#### 5.5.2. An Impressive Design Principle
 
-프롬프트에 명시적으로 금지하는 패턴:
+Patterns explicitly forbidden in the prompt:
 
 ```
 // Bad: "Based on your findings, fix the auth bug"
@@ -654,90 +646,86 @@ Research (병렬 워커) → Synthesis (코디네이터가 직접) → Implement
 //   The user field on Session is undefined when sessions expire."
 ```
 
-"워커에게 줄 프롬프트는 self-contained여야 한다." 이것은 AutoBE의 History Transformer가 하는 일과 정확히 같은 통찰이다 — 다른 경로로 같은 결론에 도달한 것이다.
+"The prompt given to workers must be self-contained." This is exactly the same insight behind AutoBE's History Transformers — arriving at the same conclusion via a different path.
 
-AutoBE의 `executeCachedBatch`가 "무엇을 병렬로 돌릴지"를 코드에 박아놓는 것과 정확히 반대 — Coordinator는 그 결정마저 LLM에게 맡긴다. 적응적이지만 예측 불가능한 것과, 결정론적이지만 유연하지 않은 것. 이 트레이드오프가 2세대와 3세대의 축소판이다.
+Where AutoBE's `executeCachedBatch` hardcodes "what to parallelize" into the code, Coordinator delegates even that decision to the LLM. Adaptive but unpredictable versus deterministic but inflexible. This trade-off is a microcosm of the 2nd versus 3rd generation divide.
 
----
+## 6. Full Comparison
 
-## 6. 전체 비교
-
-| 차원 | Claude Code (2세대) | AutoBe (3세대) |
+| Dimension | Claude Code (2nd gen) | AutoBe (3rd gen) |
 |------|--------------------|--------------------|
-| **한 줄 정의** | 옆에 앉은 시니어 개발자 | 혼자 돌아가는 백엔드 공장 |
-| **에이전트 구조** | 단일 에이전트, `while(true)` | 42개 전문 AI 에이전트 |
-| **도구 선택** | LLM이 40+ 도구 중 자율 선택 | 코드가 사전 결정 |
-| **에이전트 수명** | 세션 전체 유지 | 작업당 생성 → 폐기 |
-| **컨텍스트 관리** | 4단계 사후 압축 | 48개 History Transformer 사전 선별 |
-| **검증** | LSP 진단 + 사용자 확인 | 4단계 컴파일러 + 자가치유 (최대 4회) |
-| **안전성** | 23개 보안 체크 + ML 분류기 + 샌드박스 | 4중 컴파일러 게이트 |
-| **병렬 실행** | LLM 판단 (Coordinator) | `executeCachedBatch` (결정론적) |
-| **캐시 전략** | `DYNAMIC_BOUNDARY` 분리 | 메시지 순서 기반 최적화 |
-| **모델 독립성** | Claude API 의존 | 어떤 LLM이든 작동 |
-| **출력 단위** | 파일 편집, 셸 명령 | 전체 백엔드 애플리케이션 |
-| **범용성** | 어떤 프로젝트, 어떤 언어든 | TypeScript + NestJS 전용 |
-| **생태계** | MCP + 플러그인 + IDE 브릿지 | 컴파일러 체인 확장 |
-| **코드 규모** | 512,000줄, 1,900 파일 | 153,000줄, 1,400 파일 |
+| **One-line definition** | The senior developer sitting next to you | A self-sufficient backend factory |
+| **Agent architecture** | Single agent, `while(true)` | 42 specialized AI agents |
+| **Tool selection** | LLM autonomously picks from 40+ tools | Code decides in advance |
+| **Agent lifetime** | Persists for entire session | Created per task -> discarded |
+| **Context management** | 4-tier post-hoc compression | 48 History Transformers, pre-selection |
+| **Validation** | LSP diagnostics + user confirmation | 4-stage compiler + self-healing (up to 4 rounds) |
+| **Safety** | 23 security checks + ML classifier + sandbox | 4-gate compiler gates |
+| **Parallel execution** | LLM judgment (Coordinator) | `executeCachedBatch` (deterministic) |
+| **Cache strategy** | `DYNAMIC_BOUNDARY` split | Message-order-based optimization |
+| **Model independence** | Claude API dependent | Works with any LLM |
+| **Output unit** | File edits, shell commands | Complete backend applications |
+| **Generality** | Any project, any language | TypeScript + NestJS only |
+| **Ecosystem** | MCP + plugins + IDE bridge | Compiler chain extension |
+| **Codebase size** | 512,000 lines, 1,900 files | 153,000 lines, 1,400 files |
 
----
+## 7. What We Learned
 
-## 7. 우리가 배운 것
+### 7.1. Same Road, Different Scenery
 
-### 7.1. 같은 길, 다른 풍경
+The most striking thing about reading Claude Code was discovering that, despite building in complete ignorance of each other, **we arrived at the same conclusions** on several fronts.
 
-Claude Code를 읽으며 가장 인상 깊었던 건, 서로의 존재를 모르고 만들었는데 **같은 결론에 도달한 지점들**이 있다는 것이었다.
+#### 7.1.1. "Make It Structurally Impossible"
 
-#### 7.1.1. "구조로 불가능하게 만들어라"
+The `AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS` type from Section 5.4 and our 7-field type restriction. Different approaches, but the same starting point — **reducing choices is more powerful than prohibition.** The fact that we arrived at the same principle without ever seeing each other's code speaks to the robustness of the principle itself.
 
-5.4에서 다룬 `AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS` 타입과, 우리의 7개 필드 타입 제한. 접근은 다르지만 출발점은 같다 — **선택지를 줄이는 것이 금지보다 강하다.** 서로의 코드를 본 적 없는데 같은 원칙에 도달했다는 것 자체가, 이 원칙의 견고함을 보여준다.
+#### 7.1.2. "Give Workers Self-Contained Context"
 
-#### 7.1.2. "워커에게는 자기완결적 컨텍스트를 줘라"
+The self-contained principle from Coordinator Mode in Section 5.5 and what our 48 History Transformers do are exactly the same. Whether it's a worker or an orchestrator, it must be able to complete its task with only the context it receives. Independently reaching the same conclusion.
 
-5.5에서 본 Coordinator Mode의 self-contained 원칙과, 우리의 48개 History Transformer가 하는 일이 정확히 같다. 워커든 오케스트레이터든, 받은 컨텍스트만으로 작업을 완수할 수 있어야 한다. 독립적으로 같은 결론에 도달했다.
+#### 7.1.3. "Cache the Prefix, Change Only the Suffix"
 
-#### 7.1.3. "프리픽스는 캐시하고, 서픽스만 바꿔라"
+The `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` from Section 5.2 and our `executeCachedBatch`. They do the same thing, but the approach of declaring the boundary with an **explicit marker** is cleaner. We've already started applying this.
 
-5.2에서 다룬 `SYSTEM_PROMPT_DYNAMIC_BOUNDARY`와 우리의 `executeCachedBatch`. 같은 일을 하지만, 경계를 **명시적 마커로** 선언하는 접근은 더 깔끔하다. 이미 적용 작업을 시작했다.
+### 7.2. Things That Impressed Us
 
-### 7.2. 감탄한 것들
+#### 7.2.1. StreamingToolExecutor — Speculative Tool Execution During Streaming
 
-#### 7.2.1. StreamingToolExecutor — 스트리밍 중 도구 선행 실행
+Most agents wait for the model's full response before executing tools. Claude Code detects tool calls **while the model is still streaming** and starts execution immediately. Side-effect-free tools like file reads have their results ready before the response even finishes. Pure engineering tenacity. Our disposable agents make us less sensitive to session latency, but we admired the elegance of this pattern.
 
-대부분의 에이전트는 모델의 전체 응답을 기다린 후 도구를 실행한다. Claude Code는 모델이 **스트리밍하는 도중에** 도구 호출을 감지하면 즉시 실행을 시작한다. 파일 읽기처럼 부작용 없는 도구는 응답이 끝나기도 전에 결과가 준비된다. 순수한 엔지니어링 집념이다. 우리는 일회용 에이전트라 세션 지연에 덜 민감하지만, 이 패턴의 우아함에는 감탄했다.
+#### 7.2.2. cache_edits — Non-Destructive Server-Side Cache Deletion
 
-#### 7.2.2. cache_edits — 비파괴적 서버 측 캐시 삭제
+As conversations grow, stale tool results need to be removed. Normally, modifying local messages invalidates the cache. Claude Code uses the Anthropic API's `cache_edits` to delete **only on the server**, leaving local messages untouched. Reducing context without invalidating the cache — this was an approach we hadn't seen before.
 
-대화가 길어지면 오래된 도구 결과를 삭제해야 한다. 보통은 로컬 메시지를 수정하면 캐시가 무효화된다. Claude Code는 Anthropic API의 `cache_edits`를 써서 **서버에서만** 삭제하고, 로컬 메시지는 건드리지 않는다. 캐시 무효화 없이 컨텍스트를 줄이는 것 — 이건 처음 보는 접근이었다.
+#### 7.2.3. buildTool()'s Fail-Closed Defaults
 
-#### 7.2.3. buildTool()의 fail-closed 기본값
+When creating a new tool, the defaults are `isConcurrencySafe: false`, `isReadOnly: false`. A design that **starts at maximum restriction and explicitly relaxes**. The principle: "dangerous until proven safe." The same philosophy as our compiler gates, but seeing it implemented this cleanly at the tool registration level was something to learn from.
 
-새 도구를 만들면 기본적으로 `isConcurrencySafe: false`, `isReadOnly: false`다. **최대 제한에서 시작하여 명시적으로 풀어주는** 설계. "안전하다고 증명될 때까지 위험하다"는 원칙. 우리의 컴파일러 게이트와 같은 철학이지만, 도구 등록 수준에서 이렇게 깔끔하게 구현한 것은 본받을 만하다.
+#### 7.2.4. Specificity of the Threat Model
 
-#### 7.2.4. 위협 모델의 구체성
+Each of the 23 security check categories has a clear answer to "what does this prevent?" Shell metacharacter injection, IFS variable manipulation, process environment access, Unicode whitespace disguises, control character insertion — each category addresses a specific threat. The depth of this documentation inspired us to begin documenting exactly which vulnerability each of our 4-Gate compilers prevents.
 
-23개 보안 체크 카테고리 각각이 "무엇을 막는가"가 명확하다. 셸 메타문자 주입, IFS 변수 조작, 프로세스 환경 접근, 유니코드 공백 위장, 제어 문자 삽입 — 카테고리마다 구체적인 위협에 대응한다. 이 문서화의 깊이에서, 우리 4-Gate 컴파일러의 각 Gate도 "정확히 어떤 취약점을 막는가"를 명시하는 작업을 시작했다.
+#### 7.2.5. Context Collapse's "Read-Time Projection"
 
-#### 7.2.5. Context Collapse의 "읽기 시점 투영"
+When context exceeds 90%, it compresses — but **doesn't modify the original history**. Instead, it provides a compressed view only at read time, a "projection" approach. Since the original is preserved, you can always roll back. Non-destructive design. Our History Transformers also leave the original state untouched, but we drew inspiration from the explicit design of this pattern.
 
-컨텍스트가 90%를 넘으면 압축하는데, 원본 히스토리를 **수정하지 않는다.** 대신 읽을 때만 압축된 뷰를 제공하는 "투영(projection)" 방식이다. 원본이 보존되니까 언제든 되돌릴 수 있다. 비파괴적 설계. 우리의 History Transformer도 원본 상태를 건드리지 않지만, 이 패턴의 명시적 설계에서 영감을 받았다.
+#### 7.2.6. Speculative Execution
 
-#### 7.2.6. 투기적 실행 (Speculative Execution)
-
-소스를 읽다가 가장 놀란 부분이다. 사용자가 가만히 있으면, Claude Code는 다음에 할 것 같은 작업을 **미리 실행**한다. 단, 실제 파일 시스템이 아니라 **Copy-on-Write 오버레이**에서:
+The most surprising discovery in the source code. When the user is idle, Claude Code **preemptively executes** what it thinks the user will do next. But not on the actual file system — in a **copy-on-write overlay**:
 
 ```typescript
-// Copy-on-write: 원본을 오버레이에 복사 후, 모든 쓰기를 오버레이로 리다이렉트
+// Copy-on-write: copy original to overlay, redirect all writes to overlay
 if (!writtenPathsRef.current.has(rel)) {
   await copyFile(join(cwd, rel), join(overlayPath, rel))
   writtenPathsRef.current.add(rel)
 }
 ```
 
-사용자가 수락하면 오버레이를 메인으로 복사하고, 거부하면 오버레이를 삭제한다. **CPU의 분기 예측을 AI 코딩 에이전트에 적용한 것이다.** 맞으면 지연 시간이 사라지고, 틀려도 비용은 계산 자원뿐 — 실제 코드베이스는 건드리지 않는다. 이건 진심으로 "이 사람들은 다른 수준이구나" 싶었다.
+If the user accepts, the overlay is copied to main; if rejected, the overlay is deleted. **CPU branch prediction applied to an AI coding agent.** If the prediction is right, latency vanishes; if wrong, the only cost is compute — the actual codebase is never touched. This genuinely made us think, "these people are operating on a different level."
 
-#### 7.2.7. `<analysis>` 숨겨진 스크래치패드
+#### 7.2.7. `<analysis>` Hidden Scratchpad
 
-대화를 요약할 때, LLM에게 먼저 `<analysis>` 태그 안에 생각을 정리하게 한다. 이 과정이 요약의 품질을 높인다. 그런데 요약이 완성되면 **`<analysis>` 부분을 제거**하고 `<summary>`만 남긴다:
+When summarizing conversations, the LLM first organizes its thoughts inside an `<analysis>` tag. This process improves summary quality. But once the summary is complete, the **`<analysis>` portion is stripped**, leaving only the `<summary>`:
 
 ```typescript
 formattedSummary = formattedSummary.replace(
@@ -745,64 +733,60 @@ formattedSummary = formattedSummary.replace(
 )
 ```
 
-숨겨진 chain-of-thought다. 생각하는 과정이 결과물의 품질을 높이되, 그 생각 자체는 컨텍스트를 소비하지 않는다. 단순하지만, "왜 우리는 이걸 안 했지?"라는 생각이 들었다.
+A hidden chain-of-thought. The thinking process improves the output's quality, but the thinking itself doesn't consume context. Simple, yet it made us wonder, "why didn't we do this?"
 
-#### 7.2.8. 모델 버전별 프롬프트 패치
+#### 7.2.8. Per-Model-Version Prompt Patches
 
-코드 곳곳에 `@[MODEL LAUNCH]` 마커가 있다. 각 모델이 출시될 때마다, 알려진 약점을 **프롬프트로 패치**하는 체계다:
+Throughout the code are `@[MODEL LAUNCH]` markers. Each time a model is released, known weaknesses are **patched via prompts**:
 
 ```
-// @[MODEL LAUNCH]: Capybara v8 허위 보고율 29-30% (v4는 16.7%)
-"테스트가 실패하면 실패했다고 말해라. 검증 단계를 실행하지 않았으면 실행하지 않았다고 말해라.
- 절대 출력에 실패가 보이는데 '모든 테스트 통과'라고 주장하지 마라."
+// @[MODEL LAUNCH]: Capybara v8 false reporting rate 29-30% (v4 was 16.7%)
+"If a test fails, say it failed. If you didn't run a verification step, say you didn't.
+ Never claim 'all tests passed' when failures are visible in the output."
 ```
 
-모델을 재학습시키지 않고, 프롬프트 한 줄로 행동을 교정한다. 그리고 이것이 임시 땜빵이 아니라 **버전 관리되는 패치 시스템**이라는 점 — 각 마커에 어떤 모델, 어떤 버전, 어떤 PR에서 추가했는지가 기록되어 있다. 프롬프트 엔지니어링을 소프트웨어 엔지니어링 수준으로 관리하는 것이다.
+Correcting behavior with a single prompt line instead of retraining the model. And the fact that this isn't an ad-hoc fix but a **version-controlled patch system** — each marker records which model, which version, and which PR added it. Prompt engineering managed at the level of software engineering.
 
-#### 7.2.9. Anti-Distillation — 가짜 도구 주입
+#### 7.2.9. Anti-Distillation — Fake Tool Injection
 
-`ANTI_DISTILLATION_CC` 플래그가 활성화되면, API 요청에 `anti_distillation: ['fake_tools']`를 전송한다. 서버가 시스템 프롬프트에 가짜 도구 정의를 주입해, 경쟁사가 Claude Code의 출력을 수집해 모델 학습에 쓰는 것을 방해한다. 학습 데이터를 오염시키는 방어 — 발상 자체가 인상적이다.
+When the `ANTI_DISTILLATION_CC` flag is enabled, `anti_distillation: ['fake_tools']` is sent in the API request. The server injects fake tool definitions into the system prompt, disrupting competitors who might collect Claude Code's output for model training. Poisoning the training data as a defense — the idea itself is impressive.
 
-AutoBE의 Function Calling 스키마는 의도치 않게 비슷한 효과를 갖는다. 커스텀 AST 구조는 범용 모델 학습 데이터와 구조적으로 다르기 때문에, 증류(distillation) 대상으로서의 가치가 낮다.
+AutoBE's Function Calling schemas have an unintentional similar effect. Custom AST structures are structurally different from general-purpose model training data, making them low-value targets for distillation.
 
----
+## 8. A Coexisting Future
 
-## 8. 공존하는 미래
+2nd generation and 3rd generation are about **coexistence, not replacement**.
 
-2세대와 3세대는 **대체가 아니라 공존**이다.
+Faced with the math that 0.95<sup>400</sup> ~ 0, it's hard to expect that "coding assistants will reach the 3rd generation through model performance improvements alone." Guaranteeing system-level consistency across 400 APIs requires the structural foundation of forms + compilers, and that's an architecture problem, not a model performance problem.
 
-0.95<sup>400</sup> ≈ 0이라는 수학 앞에서, "코딩 어시스턴트가 모델 성능 개선만으로 3세대에 도달한다"고 기대하기는 쉽지 않다. 400개 API의 시스템 수준 정합성을 보장하려면 양식 + 컴파일러라는 구조적 전제가 필요하고, 이것은 아키텍처의 문제지 모델 성능의 문제가 아니다.
+But the compound effect depends on n. When n = 400, 95% becomes 0% — but when n = 2, 95% is 90%. And in real-world development, the moment where n = 400 happens **exactly once**.
 
-하지만 복리 효과는 n에 의존한다. n = 400이면 95%가 0%가 되지만, n = 2면 95%가 90%다. 그리고 실제 개발에서 n = 400인 순간은 **최초 한 번**뿐이다.
+After that? Requirements change, features get added, bugs are discovered. You're touching 1-5 APIs at a time. The scope of change is narrow, small enough for a human to verify. This is where Claude Code shines — flexible, context-aware, instantly reflecting the user's intent.
 
-그 이후는? 요구사항이 바뀌고, 기능이 추가되고, 버그가 발견된다. 한 번에 건드리는 API는 1–5개. 변경의 범위가 좁고, 사람이 확인할 수 있는 크기다. 이것이 Claude Code가 빛나는 영역이다 — 유연하고, 맥락을 이해하고, 사용자의 의도를 즉시 반영한다.
+Imagine the ideal workflow:
 
-이상적인 워크플로우를 상상해보라:
-
-> AutoBE가 백엔드를 통째로 생성한다 — 테이블 50개, API 400개, 컴파일 100%, 런타임 100%.
-> 
-> 그 위에 Claude Code가 앉는다 — 실시간으로 변하는 요구사항, 추가 기능, 디버깅, 리팩터링.
+> AutoBE generates the entire backend — 50 tables, 400 APIs, 100% compilation, 100% runtime.
 >
-> **AutoBE가 첫 개발. Claude Code가 유지보수.**
+> Then Claude Code sits on top — handling evolving requirements, new features, debugging, refactoring.
+>
+> **AutoBE handles the initial build. Claude Code handles maintenance.**
 
-공장이 건물의 구조를 세우고, 장인이 인테리어를 다듬는 것처럼. 구조에는 오차가 허용되지 않지만, 인테리어에는 유연성과 감각이 더 중요하다.
+Like a factory erecting a building's structure while artisans refine the interior. Structure tolerates no error, but interiors demand flexibility and taste.
 
-Claude Code를 읽고 나서, 우리 설계에 더 확신이 생겼다. 컴파일러에 올인하고, 컨텍스트를 처음부터 선별하고, 병렬성을 코드에 하드코딩한 것 — 다른 문제에서 다른 선택이 필요했기 때문에 한 선택들이었고, Claude Code는 그 선택이 틀리지 않았음을 보여줬다.
+After reading Claude Code, we became more confident in our design. Going all-in on compilers, pre-selecting context from the start, hardcoding parallelism into code — these were choices made because different problems demanded different solutions, and Claude Code confirmed that those choices weren't wrong.
 
-**먼저 검증 기반을 닦고, 그 위에 워크플로우를 쌓는 것.** 검증 없이 워크플로우를 아무리 고도화해도, 그것은 정교한 주사위 굴리기에 불과하다.
+**First lay the verification foundation, then build the workflow on top.** Without verification, no amount of workflow sophistication amounts to anything more than an elaborate dice roll.
 
-AI에게 "쇼핑몰 만들어"라고 하면, 어떤 도구든 뭔가 나온다. 0→80은 빠르다. 누구나 간다. **80→100이 진짜다.** 컴파일 에러 0, 런타임 에러 0, 모듈 간 의존성 정합성 100% — 이 마지막 20%가 우리가 가장 오래 싸워왔고, 가장 자신 있는 구간이다.
+Tell AI "build me a shopping mall" and any tool will produce something. 0 to 80 is fast. Everyone gets there. **80 to 100 is what matters.** Zero compilation errors, zero runtime errors, 100% inter-module dependency consistency — this last 20% is what we've been fighting the longest, and where we're most confident.
 
----
+## Postscript: 80 to 100 Exists in Your Domain Too
 
-## 추신: 80→100은 당신의 도메인에도 있다
+This post was about backends, but the lesson doesn't stop there.
 
-이 글은 백엔드에 대한 이야기였지만, 교훈은 백엔드에 머물지 않는다.
+Refine your prompts, design sophisticated workflows, hand agents their tools — 0 to 80 is astonishingly fast. As Claude Code demonstrated, the extreme end of this direction is even beautiful. But **80 to 100** is a different kind of problem. Prompts can't reach it; workflows alone can't guarantee it. You need a deterministic verification mechanism.
 
-프롬프트를 다듬고, 워크플로우를 정교하게 짜고, 에이전트에게 도구를 쥐어주면 — 0→80은 놀라울 만큼 빠르다. Claude Code가 보여줬듯이, 이 방향의 극한은 아름답기까지 하다. 하지만 **80→100**은 다른 종류의 문제다. 프롬프트로는 도달할 수 없고, 워크플로우만으로는 보장할 수 없다. 결정론적 검증 수단이 필요하다.
+For backends, that mechanism was a compiler. But domains where deterministic verification is possible exist everywhere — circuit design has DRC/LVS, structural engineering has FEM solvers, drug design has molecular simulators, smart contracts have formal verifiers. The pattern where an LLM fills in a structure and a domain-specific verifier guarantees consistency **works anywhere**.
 
-백엔드에서는 그것이 컴파일러였다. 하지만 결정론적 검증이 가능한 도메인은 어디에나 있다 — 회로 설계에는 DRC/LVS가, 구조 공학에는 FEM 솔버가, 약물 설계에는 분자 시뮬레이터가, 스마트 컨트랙트에는 formal verifier가 있다. LLM이 구조를 채우고, 도메인 전용 검증기가 정합성을 보장하는 패턴은 **어디서든** 작동한다.
+Three things are needed. A **form** the LLM can fill (Function Calling Schema), a **dedicated compiler** to validate the form, and a **feedback loop** that automatically corrects failures. Just as we turned 6.75% into 100% with [Function Calling Harness](/blog/function-calling-harness-qwen-meetup-korea), the same breakthrough is possible in your domain.
 
-필요한 것은 세 가지다. LLM이 채울 수 있는 **양식**(Function Calling Schema), 양식을 검증할 **전용 컴파일러**, 그리고 실패를 자동으로 교정하는 **피드백 루프**. 우리가 [Function Calling Harness](/blog/function-calling-harness-qwen-meetup-korea)에서 6.75%를 100%로 만든 것처럼, 당신의 도메인에서도 같은 돌파가 가능하다.
-
-**0→80은 모델이 해결한다. 80→100은 하네스가 해결한다.** 당신의 도메인에서 그 하네스를 만들 사람은 당신이다.
+**0 to 80 is solved by the model. 80 to 100 is solved by the harness.** The person who builds that harness in your domain is you.
