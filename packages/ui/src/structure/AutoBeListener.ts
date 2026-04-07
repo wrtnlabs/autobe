@@ -252,6 +252,9 @@ export class AutoBeListener {
       realizePlan: async (event) => {
         this.accumulate(event);
       },
+      realizeBackwardPropagation: async (event) => {
+        this.insert(event);
+      },
       realizeWrite: async (event) => {
         this.accumulate(event);
       },

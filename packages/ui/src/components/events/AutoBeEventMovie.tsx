@@ -126,6 +126,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       );
     }
     // DISCARD
+    case "realizeBackwardPropagation":
     case "imageDescribeStart":
     case "imageDescribeDraft":
     case "imageDescribeComplete":

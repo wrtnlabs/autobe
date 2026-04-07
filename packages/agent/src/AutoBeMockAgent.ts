@@ -270,6 +270,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   realizeStart: 1_000,
   realizeComplete: 1_000,
   realizePlan: 80,
+  realizeBackwardPropagation: 500,
   realizeWrite: 80,
   realizeCorrect: 80,
   realizeValidate: 200,
