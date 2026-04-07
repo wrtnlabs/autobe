@@ -20,7 +20,6 @@ export const test_api_hackathon_participant_session_erase = async (
         timezone: "Asia/Seoul",
       } satisfies IAutoBeHackathonSession.ICreate,
     );
-  console.log("created a session");
   await HackathonApi.functional.autobe.hackathon.participants.sessions.erase(
     connection,
     TestGlobal.CODE,

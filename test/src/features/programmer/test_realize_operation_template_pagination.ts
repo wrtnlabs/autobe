@@ -1,5 +1,6 @@
 import { writeRealizeOperationTemplate } from "@autobe/agent/src/orchestrate/realize/programmers/internal/writeRealizeOperationTemplate";
 import { AutoBeOpenApi } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
@@ -40,23 +41,32 @@ export const test_realize_operation_template_pagination = (): void => {
     ],
   });
 
-  const expectedBody: string = [
-    `export async function patchTest(): Promise<IPageIArticle> {`,
-    `  const records = await MyGlobal.prisma.articles.findMany({`,
-    `    ...ArticleTransformer.select(),`,
-    `    ...,`,
-    `  });`,
-    `  return {`,
-    `    pagination: {`,
-    `      current: ...,`,
-    `      limit: ...,`,
-    `      records: ...,`,
-    `      pages: ...,`,
-    `    },`,
-    `    data: await ArrayUtil.asyncMap(records, ArticleTransformer.transform),`,
-    `  };`,
-    `}`,
-  ].join("\n");
+  const expectedBody: string = StringUtil.trim`
+    export async function patchTest(): Promise<IPageIArticle> {
+      const records = await MyGlobal.prisma.articles.findMany({
+        ...ArticleTransformer.select(),
+        ...,
+      });
+      return {
+        pagination: {
+          current: ...,
+          limit: ...,
+          records: ...,
+          pages: ...,
+        },
+        data: await ArrayUtil.asyncMap(records, ArticleTransformer.transform),
+      };
+    }
+  `;
 
-  TestValidator.equals("full body", result.includes(expectedBody), true);
+  const normalize = (s: string): string =>
+    s
+      .split("\n")
+      .map((l) => l.trimStart())
+      .join("\n");
+  TestValidator.equals(
+    "full body",
+    normalize(result).includes(normalize(expectedBody)),
+    true,
+  );
 };

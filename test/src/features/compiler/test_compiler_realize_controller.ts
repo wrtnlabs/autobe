@@ -22,6 +22,7 @@ export const test_compiler_realize_controller = async (
         name: "createShoppingSale",
         location: "src/providers/createShoppingSale.ts",
         content: "",
+        template: "",
         endpoint: {
           method: "post",
           path: "/shopping/sale",

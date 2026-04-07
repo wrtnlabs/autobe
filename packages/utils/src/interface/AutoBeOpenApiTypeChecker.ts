@@ -124,4 +124,20 @@ export namespace AutoBeOpenApiTypeChecker {
           });
     }
   };
+
+  export const getTypeName = (schema: AutoBeOpenApi.IJsonSchema): string => {
+    if (isReference(schema)) return schema.$ref.split("/").slice(-1)[0]!;
+    else if (isConstant(schema)) return JSON.stringify(schema.const);
+    else if (isArray(schema)) return `Array<${getTypeName(schema.items)}>`;
+    else if (isString(schema)) return "string";
+    else if (isInteger(schema)) return "integer";
+    else if (isNumber(schema)) return "number";
+    else if (isBoolean(schema)) return "boolean";
+    else if (isNull(schema)) return "null";
+    else if (isObject(schema)) return "object";
+    else if (isOneOf(schema))
+      return schema.oneOf.map((s) => getTypeName(s)).join(" | ");
+    schema satisfies never;
+    return "unknown";
+  };
 }

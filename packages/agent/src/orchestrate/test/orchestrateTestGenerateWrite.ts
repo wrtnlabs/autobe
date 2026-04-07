@@ -6,7 +6,7 @@ import {
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -62,6 +62,7 @@ export const orchestrateTestGenerateWrite = async (
           },
         });
 
+        const counter = new Singleton(() => ++props.progress.completed);
         try {
           return await forceRetry(async () => {
             const event: AutoBeTestWriteEvent = await process(ctx, {
@@ -69,6 +70,7 @@ export const orchestrateTestGenerateWrite = async (
               artifacts,
               operation,
               progress: props.progress,
+              counter,
               promptCacheKey,
               instruction: props.instruction,
             });
@@ -84,6 +86,7 @@ export const orchestrateTestGenerateWrite = async (
             } satisfies IAutoBeTestGenerateProcedure;
           });
         } catch {
+          counter.get();
           return null;
         }
       }),
@@ -98,6 +101,7 @@ async function process(
     artifacts: IAutoBeTestArtifacts;
     operation: AutoBeOpenApi.IOperation;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
     instruction: string;
   },
@@ -128,7 +132,7 @@ async function process(
   });
 
   if (pointer.value === null) {
-    ++props.progress.completed;
+    props.counter.get();
     throw new Error("Failed to create generation function.");
   }
 
@@ -156,7 +160,7 @@ async function process(
     },
     metric,
     tokenUsage,
-    completed: ++props.progress.completed,
+    completed: props.counter.get(),
     total: props.progress.total,
     step: ctx.state().test?.step ?? 0,
   } satisfies AutoBeTestWriteEvent;

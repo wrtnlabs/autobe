@@ -20,6 +20,7 @@ export const transformInterfaceSchemaReviewHistory = (props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
+    | "complete"
   >;
   typeName: string;
   reviewOperations: AutoBeOpenApi.IOperation[];

@@ -44,40 +44,20 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Database Components",
           description: "Generating database component schemas",
         };
-      case "databaseComponentReview":
-        return {
-          title: "Prisma Components Review",
-          description: "Reviewing the Prisma components",
-        };
       case "databaseSchema":
         return {
           title: "Prisma Schemas",
           description: "Designing Database schemas",
-        };
-      case "databaseSchemaReview":
-        return {
-          title: "Prisma Review",
-          description: "Reviewing the Prisma schemas",
         };
       case "interfaceEndpoint":
         return {
           title: "Interface Endpoints",
           description: "Collecting API endpoints",
         };
-      case "interfaceEndpointReview":
-        return {
-          title: "Interface Endpoints Review",
-          description: "Reviewing API endpoints",
-        };
       case "interfaceOperation":
         return {
           title: "Interface Operations",
           description: "Designing API operations",
-        };
-      case "interfaceOperationReview":
-        return {
-          title: "Interface Operations Review",
-          description: "Reviewing API operations",
         };
       case "interfaceAuthorization":
         return {
@@ -128,11 +108,6 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
         return {
           title: "Test Scenarios",
           description: "Planning E2E test scenarios",
-        };
-      case "testScenarioReview":
-        return {
-          title: "Test Scenarios Review",
-          description: "Reviewing E2E test scenarios",
         };
       case "testWrite":
         return {

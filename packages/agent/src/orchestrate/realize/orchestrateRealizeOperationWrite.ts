@@ -8,7 +8,7 @@ import {
   AutoBeRealizeTransformerFunction,
   AutoBeRealizeWriteEvent,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -45,21 +45,29 @@ export async function orchestrateRealizeOperationWrite(
   );
   return await executeCachedBatch(
     ctx,
-    scenarios.map(
-      (s) => (promptCacheKey) =>
-        forceRetry(() =>
-          process(ctx, {
-            document,
-            totalAuthorizations: props.authorizations,
-            collectors: props.collectors,
-            transformers: props.transformers,
-            authorization: s.decoratorEvent ?? null,
-            scenario: s,
-            progress: props.progress,
-            promptCacheKey,
-          }),
-        ),
-    ),
+    scenarios.map((s) => {
+      const counter = new Singleton(() => ++props.progress.completed);
+      return async (promptCacheKey: string) => {
+        try {
+          return await forceRetry(() =>
+            process(ctx, {
+              document,
+              totalAuthorizations: props.authorizations,
+              collectors: props.collectors,
+              transformers: props.transformers,
+              authorization: s.decoratorEvent ?? null,
+              scenario: s,
+              progress: props.progress,
+              counter,
+              promptCacheKey,
+            }),
+          );
+        } catch (error) {
+          counter.get();
+          throw error;
+        }
+      };
+    }),
   );
 }
 
@@ -73,6 +81,7 @@ async function process(
     scenario: IAutoBeRealizeScenarioResult;
     transformers: AutoBeRealizeTransformerFunction[];
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeOperationFunction> {
@@ -105,6 +114,7 @@ async function process(
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"
+    | "complete"
   > = new AutoBePreliminaryController({
     source: SOURCE,
     application:
@@ -114,7 +124,9 @@ async function process(
       "databaseSchemas",
       "realizeCollectors",
       "realizeTransformers",
+      "complete",
     ],
+    dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
     all: {
       realizeCollectors: props.collectors,
@@ -133,89 +145,102 @@ async function process(
       analysisSections: ragSections,
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const dto: Record<string, string> =
-      await AutoBeRealizeOperationProgrammer.writeStructures(
-        ctx,
-        props.scenario.operation,
-      );
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: "realizeWrite",
-      controller: createController({
-        functionName: props.scenario.functionName,
-        build: (next) => {
-          pointer.value = next;
-        },
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformRealizeOperationWriteHistory({
-        state: ctx.state(),
-        scenario: props.scenario,
-        authorization: props.authorization,
-        totalAuthorizations: props.totalAuthorizations,
+  const event: AutoBeRealizeWriteEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeRealizeOperationWriteApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const dto: Record<string, string> =
+        await AutoBeRealizeOperationProgrammer.writeStructures(
+          ctx,
+          props.scenario.operation,
+        );
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: "realizeWrite",
+        controller: createController({
+          functionName: props.scenario.functionName,
+          build: (next) => {
+            pointer.value = next;
+          },
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformRealizeOperationWriteHistory({
+          state: ctx.state(),
+          scenario: props.scenario,
+          authorization: props.authorization,
+          totalAuthorizations: props.totalAuthorizations,
+          collectors: props.collectors,
+          transformers: props.transformers,
+          dto,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
+
+      const template: string = AutoBeRealizeOperationProgrammer.writeTemplate({
+        authorizations: props.totalAuthorizations,
+        schemas: props.document.components.schemas,
+        operation: props.scenario.operation,
         collectors: props.collectors,
         transformers: props.transformers,
-        dto,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
-
-    const functor: AutoBeRealizeOperationFunction = {
-      type: "operation",
-      endpoint: {
-        method: props.scenario.operation.method,
-        path: props.scenario.operation.path,
-      },
-      location: props.scenario.location,
-      name: props.scenario.functionName,
-      content: await AutoBeRealizeOperationProgrammer.replaceImportStatements(
-        ctx,
-        {
-          operation: props.scenario.operation,
-          schemas: props.document.components.schemas,
-          code: pointer.value.revise.final ?? pointer.value.draft,
-          payload: props.authorization?.payload.name,
+      });
+      const functor: AutoBeRealizeOperationFunction = {
+        type: "operation",
+        endpoint: {
+          method: props.scenario.operation.method,
+          path: props.scenario.operation.path,
         },
-      ),
-    };
-    ctx.dispatch({
-      id: v7(),
-      type: "realizeWrite",
-      function: functor,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeRealizeWriteEvent);
-    return out(result)(functor);
-  });
+        location: props.scenario.location,
+        name: props.scenario.functionName,
+        content: await AutoBeRealizeOperationProgrammer.replaceImportStatements(
+          ctx,
+          {
+            operation: props.scenario.operation,
+            schemas: props.document.components.schemas,
+            code: pointer.value.revise.final ?? pointer.value.draft,
+            payload: props.authorization?.payload.name,
+          },
+        ),
+        template,
+      };
+      return out(result)({
+        id: v7(),
+        type: "realizeWrite",
+        function: functor,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        completed: props.counter.get(),
+        total: props.progress.total,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeRealizeWriteEvent);
+    },
+  );
+  ctx.dispatch(event);
+  return event.function as AutoBeRealizeOperationFunction;
 }
 
 function createController(props: {
   functionName: string;
-  build: (next: IAutoBeRealizeOperationWriteApplication.IComplete) => void;
+  build: (next: IAutoBeRealizeOperationWriteApplication.IWrite) => void;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"
+    | "complete"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeOperationWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -251,7 +276,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeRealizeOperationWriteApplication,
   };

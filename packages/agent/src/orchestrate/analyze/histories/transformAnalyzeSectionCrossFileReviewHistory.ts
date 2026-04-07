@@ -34,7 +34,9 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
     }>;
     mechanicalViolationSummary?: string;
     fileDecisions?: import("../utils/detectDecisionConflicts").IFileDecisions[];
-    preliminary: null | AutoBePreliminaryController<"previousAnalysisSections">;
+    preliminary: null | AutoBePreliminaryController<
+      "previousAnalysisSections" | "complete"
+    >;
   },
 ): IAutoBeOrchestrateHistory => {
   return {

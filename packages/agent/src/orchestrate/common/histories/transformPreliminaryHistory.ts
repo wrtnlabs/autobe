@@ -55,14 +55,33 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
       });
     })
     .flat();
-  const systems = histories.filter((h) => h.type === "systemMessage");
-  const others = histories.filter((h) => h.type !== "systemMessage");
-  return [...systems, ...others];
+
+  // sequence messages
+  const systems: IAgenticaHistoryJson.ISystemMessage[] = histories.filter(
+    (h) => h.type === "systemMessage",
+  );
+  const others: IMicroAgenticaHistoryJson[] = histories.filter(
+    (h) => h.type !== "systemMessage",
+  );
+  const messages: IMicroAgenticaHistoryJson[] = [...systems, ...others];
+
+  // previous written value
+  const previousWrite: Record<string, unknown> | null =
+    preliminary.getPreviousWrite();
+  if (previousWrite !== null)
+    messages.push(
+      createFunctionCallingMessage({
+        controller: preliminary.getSource(),
+        kind: "write",
+        arguments: previousWrite,
+      }),
+    );
+  return messages;
 };
 
 namespace PreliminaryTransformer {
   export interface IProps<Kind extends AutoBePreliminaryKind> {
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
     state: AutoBeState;
     all: Pick<IAutoBePreliminaryCollection, Kind>;
     local: Pick<IAutoBePreliminaryCollection, Kind>;
@@ -533,6 +552,10 @@ namespace PreliminaryTransformer {
         ];
   };
 
+  export const complete = (
+    _props: IProps<"complete">,
+  ): IMicroAgenticaHistoryJson[] => [];
+
   export const realizeTransformers = (
     props: IProps<"realizeTransformers">,
   ): IMicroAgenticaHistoryJson[] => {
@@ -704,9 +727,9 @@ const formatCompactSectionIndex = (
 const createFunctionCallingMessage = <
   Kind extends AutoBePreliminaryKind,
 >(props: {
-  controller: Exclude<AutoBeEventSource, "facade" | "preliminary">;
-  kind: Kind;
-  arguments: IAutoBePreliminaryRequest<Kind>;
+  controller: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
+  kind: Kind | "write";
+  arguments: Record<string, unknown>;
 }): IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.IExecute => ({
   type: "execute",
   id: v7(),
@@ -716,8 +739,7 @@ const createFunctionCallingMessage = <
     function: "process",
     name: "process",
   },
-  // biome-ignore lint: intended
-  arguments: props.arguments as Record<string, any>,
+  arguments: props.arguments,
   value: undefined,
   success: true,
   created_at: new Date().toISOString(),

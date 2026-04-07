@@ -67,11 +67,11 @@ export namespace AutoBeOpenApi {
     specification: string;
 
     /**
-     * Multi-paragraph description of the API operation for consumers.
+     * API documentation for consumers. Describe the operation's purpose,
+     * business logic, relationships, and error handling.
      *
-     * Reference and incorporate DB schema table/column description comments.
-     * Organize into multiple paragraphs covering purpose, business logic,
-     * relationships, and error handling.
+     * Format: summary sentence first, `\n\n`, then paragraphs grouped by topic.
+     * Reference DB schema table/column descriptions for consistency.
      *
      * Do NOT use "soft delete" / "soft-delete" unless the operation actually
      * implements soft deletion (triggers validation expecting

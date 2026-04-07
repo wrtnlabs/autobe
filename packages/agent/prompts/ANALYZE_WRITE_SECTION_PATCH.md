@@ -54,7 +54,7 @@ When specific sections are marked `[NEEDS FIX]` and others `[APPROVED - DO NOT M
 
 ## 5. Output
 
-Return a full `process({ request: { type: "complete", ... } })` call that includes **all**
+Return a full `process({ request: { type: "write", ... } })` call that includes **all**
 section sections, with only the necessary edits applied.
 
 ---

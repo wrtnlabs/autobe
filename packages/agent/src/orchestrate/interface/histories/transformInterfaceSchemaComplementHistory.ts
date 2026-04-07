@@ -21,6 +21,7 @@ export const transformInterfaceSchemaComplementHistory = (props: {
     | "previousInterfaceSchemas"
     | "previousInterfaceOperations"
     | "previousDatabaseSchemas"
+    | "complete"
   >;
 }): IAutoBeOrchestrateHistory => ({
   histories: [

@@ -103,3 +103,58 @@ export function extractDidYouMeanHints(
 
   return hints;
 }
+
+/**
+ * Generates hints for TS1360 "Property 'X' is missing in type" errors.
+ *
+ * TS1360 fires exclusively on `satisfies` expressions, so the expectedType is
+ * always the single type the developer explicitly chose — no union branch
+ * ambiguity. TS2322 "missing property" errors are intentionally excluded
+ * because they report failures against ALL branches of a union type (e.g.,
+ * `CreateInput | UncheckedCreateInput`), producing misleading hints.
+ *
+ * Returns empty string if no TS1360 "missing property" diagnostics are found.
+ */
+export function generateMissingPropertyHints(
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+): string {
+  const MISSING_PROP =
+    /Property '(\w+)' is missing in type '.*?' but required in type '(\w+)'/;
+
+  const seen = new Set<string>();
+  const hints: Array<{ property: string; expectedType: string }> = [];
+
+  for (const diag of diagnostics) {
+    // Only TS1360 — from explicit `satisfies` annotation.
+    // TS2322 "missing property" is noise from union branch exploration.
+    if (Number(diag.code) !== 1360) continue;
+
+    const match = diag.messageText.match(MISSING_PROP);
+    if (match !== null) {
+      const property = match[1]!;
+      const expectedType = match[2]!;
+      const key = `${property}@${expectedType}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        hints.push({ property, expectedType });
+      }
+    }
+  }
+
+  if (hints.length === 0) return "";
+
+  const lines = hints
+    .map((h) => `- \`${h.property}\` (required by \`${h.expectedType}\`)`)
+    .join("\n");
+
+  return [
+    "## Missing Required Property Hints (TS1360)",
+    "",
+    "Your `satisfies` type annotation requires properties that are missing from the data object.",
+    "",
+    "**Fix**: Add the missing FK column or required scalar to the `data` object.",
+    "",
+    "Missing properties:",
+    lines,
+  ].join("\n");
+}

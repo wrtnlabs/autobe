@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceSchemaPropertyRevise,
 } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -13,23 +14,62 @@ import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/s
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
 
 export interface IAutoBeInterfaceSchemaReviewApplication {
-  /** Process task or retrieve preliminary data. */
+  /**
+   * Process schema review via write-validate-correct loop with preliminary data
+   * requests.
+   *
+   * Reviews and validates OpenAPI schema definitions to ensure quality,
+   * correctness, and compliance with domain requirements and system policies.
+   *
+   * @param props Request containing preliminary data request, write submission,
+   *   or completion signal
+   */
   process(props: IAutoBeInterfaceSchemaReviewApplication.IProps): void;
 }
 export namespace IAutoBeInterfaceSchemaReviewApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * Before requesting preliminary data, submitting a review, or completing
+     * your task, reflect on your current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
+     *
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For write submissions:
+     *
+     * - What issues did you find in the schema?
+     * - What property changes are you proposing?
+     * - If this is a revision, what issues are you improving?
+     *
+     * For completion:
+     *
+     * - State why you consider the last write final.
+     *
+     * This reflection helps you avoid duplicate requests and premature
+     * completion.
      */
     thinking: string;
 
     /**
-     * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform:
+     *
+     * - Preliminary types: Load context data incrementally
+     * - `write`: Submit schema review
+     * - `complete`: Finalize when satisfied with last write
+     *
+     * When preliminary returns empty array, that type is removed from the
+     * union, physically preventing repeated calls.
      */
     request:
-      | IComplete
+      | IWrite
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
@@ -40,10 +80,15 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /** Complete schema review with property-level revisions. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /**
+   * Submit schema review with property-level revisions.
+   *
+   * After submitting, review your own output. Call `complete` if satisfied, or
+   * submit another `write` to improve (3 writes maximum).
+   */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Summary of issues found and fixes applied. */
     review: string;

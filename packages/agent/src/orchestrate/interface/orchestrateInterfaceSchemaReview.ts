@@ -8,7 +8,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -19,7 +19,7 @@ import { getEmbedder } from "../../utils/getEmbedder";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
-import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
+import { AutoBeDatabaseModelProgrammer } from "../database/programmers/AutoBeDatabaseModelProgrammer";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
 import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
@@ -49,6 +49,7 @@ export async function orchestrateInterfaceSchemaReview(
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++props.progress.completed);
       const predicate = (key: string) =>
         key === it ||
         (AutoBeJsonSchemaValidator.isPage(key) &&
@@ -62,7 +63,7 @@ export async function orchestrateInterfaceSchemaReview(
       try {
         const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schemas[it];
         if (AutoBeOpenApiTypeChecker.isObject(value) === false) {
-          ++props.progress.completed;
+          counter.get();
           return;
         }
         const reviewed: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
@@ -74,11 +75,12 @@ export async function orchestrateInterfaceSchemaReview(
             reviewSchema: value,
             progress: props.progress,
             promptCacheKey,
+            counter,
           });
         x[it] = reviewed;
       } catch (error) {
         console.log("interfaceSchemaReview failure", it, error);
-        --props.progress.total;
+        counter.get();
       }
     }),
   );
@@ -95,6 +97,7 @@ async function process(
     reviewSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
   const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
@@ -125,7 +128,9 @@ async function process(
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
     application:
       typia.json.application<IAutoBeInterfaceSchemaReviewApplication>(),
     source: SOURCE,
@@ -138,6 +143,7 @@ async function process(
       "previousInterfaceOperations",
       "interfaceSchemas",
       "previousInterfaceSchemas",
+      "complete",
     ],
     config: {
       database: "text",
@@ -168,56 +174,57 @@ async function process(
       })(),
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController(ctx, {
-        typeName: props.typeName,
-        operations: props.document.operations,
-        schema: props.reviewSchema,
-        preliminary,
-        pointer,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaReviewHistory({
-        state: ctx.state(),
-        instruction: props.instruction,
-        typeName: props.typeName,
-        reviewOperations: props.reviewOperations,
-        reviewSchema: props.reviewSchema,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
-
-    // Apply revises to generate the modified schema content
-    const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
-      AutoBeInterfaceSchemaReviewProgrammer.execute({
-        schema: props.reviewSchema,
-        revises: pointer.value.revises,
+  const event: AutoBeInterfaceSchemaReviewEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController(ctx, {
+          typeName: props.typeName,
+          operations: props.document.operations,
+          schema: props.reviewSchema,
+          preliminary,
+          pointer,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfaceSchemaReviewHistory({
+          state: ctx.state(),
+          instruction: props.instruction,
+          typeName: props.typeName,
+          reviewOperations: props.reviewOperations,
+          reviewSchema: props.reviewSchema,
+          preliminary,
+        }),
       });
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      typeName: props.typeName,
-      schema: props.reviewSchema,
-      review: pointer.value.review,
-      excludes: pointer.value.excludes,
-      revises: pointer.value.revises,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceSchemaReviewEvent);
-    return out(result)(content);
+      if (pointer.value === null) return out(result)(null);
+
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
+        typeName: props.typeName,
+        schema: props.reviewSchema,
+        review: pointer.value.review,
+        excludes: pointer.value.excludes,
+        revises: pointer.value.revises,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        step: ctx.state().analyze?.step ?? 0,
+        total: props.progress.total,
+        completed: props.counter.get(),
+        created_at: new Date().toISOString(),
+      } satisfies AutoBeInterfaceSchemaReviewEvent);
+    },
+  );
+  ctx.dispatch(event);
+  return AutoBeInterfaceSchemaReviewProgrammer.execute({
+    schema: props.reviewSchema,
+    revises: event.revises,
   });
 }
 
@@ -228,7 +235,7 @@ function createController(
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     operations: AutoBeOpenApi.IOperation[];
     pointer: IPointer<
-      IAutoBeInterfaceSchemaReviewApplication.IComplete | null | false
+      IAutoBeInterfaceSchemaReviewApplication.IWrite | null | false
     >;
     preliminary: AutoBePreliminaryController<
       | "analysisSections"
@@ -239,6 +246,7 @@ function createController(
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
       | "previousInterfaceSchemas"
+      | "complete"
     >;
   },
 ): IAgenticaController.IClass {
@@ -248,7 +256,7 @@ function createController(
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
-    } else if (result.data.request.type !== "complete")
+    } else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -295,8 +303,7 @@ function createController(
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeInterfaceSchemaReviewApplication,
   };

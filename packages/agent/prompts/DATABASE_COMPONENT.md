@@ -171,12 +171,13 @@ process({
 })
 ```
 
-### 5.2. Complete
+### 5.2. Write and Complete
 ```typescript
+// Step 1: Submit table design
 process({
   thinking: "Designed 12 tables for Sales component covering all requirements.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "Identified core entities, customer interactions, and management tables...",
     rationale: "Applied 3NF normalization, separated Q&A into distinct tables...",
     tables: [
@@ -186,7 +187,19 @@ process({
     ]
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "All 12 tables designed for Sales component covering core, content, interaction, and management entities.",
+  request: { type: "complete" }
+})
 ```
+
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
@@ -200,7 +213,30 @@ process({
 
 ---
 
-## 7. Final Checklist
+## 7. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+**Review method**: In your `thinking` field, walk through each table one by one — state the table name and verify it belongs in this component, follows naming conventions, and is not an actor/session table. Then check requirements coverage.
+
+### Data Storage Completeness
+- Every data storage need from requirements is represented by a table design
+- Lifecycle tracking tables exist where needed (creation, modification, deletion, history)
+
+### Common Pattern Check
+- Audit/log tables for operations requiring auditability
+- M:N junction tables where many-to-many relationships exist
+- File attachment tables if file storage is required
+- Feedback/rating tables if user feedback features exist
+
+### Domain Boundary Compliance
+- Tables belong to the correct component group
+- No cross-domain table placements
+- Authorization tables stay in the authorization component only
+
+---
+
+## 8. Final Checklist
 
 **Component Rationale Coverage:**
 - [ ] Every concept in rationale has tables
@@ -233,7 +269,8 @@ process({
 - [ ] `thinking` summarizes tables designed
 - [ ] `analysis` documents component scope
 - [ ] `rationale` explains design decisions
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Submit tables via `write` (review against Self-Review Checklist before completing)
+- [ ] Finalize via `complete` after last `write`
 
 **When in Doubt:**
 - [ ] Create MORE tables rather than FEWER

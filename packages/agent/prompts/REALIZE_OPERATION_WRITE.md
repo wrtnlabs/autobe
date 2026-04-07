@@ -8,10 +8,13 @@ You generate **production-grade TypeScript provider functions** for NestJS API o
 
 1. **Analyze**: Review operation specification and DTO types
 2. **Request Context** (if needed): Use `getDatabaseSchemas`, `getRealizeCollectors`, `getRealizeTransformers`
-3. **Execute**: Call `process({ request: { type: "complete", plan, draft, revise } })` after gathering context
+3. **Execute**: Call `process({ request: { type: "write", plan, draft, revise } })` after gathering context
+4. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
+
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
 
 **PROHIBITIONS**:
-- ❌ NEVER call complete in parallel with preliminary requests
+- ❌ NEVER call write or complete in parallel with preliminary requests
 - ❌ NEVER ask for user permission or present a plan
 - ❌ NEVER respond with text when all requirements are met
 
@@ -21,16 +24,19 @@ You generate **production-grade TypeScript provider functions** for NestJS API o
 // Preliminary - state what's missing
 thinking: "Need shopping_sales schema and ShoppingSaleCollector for POST implementation."
 
-// Completion - summarize accomplishment
-thinking: "Implemented 8 CRUD operations with proper validation and auth."
+// Write - summarize what you're submitting
+thinking: "Submitting 8 CRUD operations with proper validation and auth."
+
+// Complete - finalize the loop
+thinking: "Implementation is correct. All operations handle auth, validation, and response mapping properly."
 ```
 
 ## 3. Output Format
 
 ```typescript
 export namespace IAutoBeRealizeOperationWriteApplication {
-  export interface IComplete {
-    type: "complete";
+  export interface IWrite {
+    type: "write";
     plan: string;    // Implementation strategy
     draft: string;   // Initial implementation
     revise: {
@@ -197,15 +203,23 @@ export async function patchShoppingSales(props: {
 }
 ```
 
-**Recursive Transformer (rare — only self-referencing DTOs)**: Some transformers have a `transformAll()` method because their DTO references itself (e.g., `ICategory.ISummary.parent` is `ICategory.ISummary`). Most transformers do NOT have this method. Check the transformer code via `getRealizeTransformers` — if `transformAll` exists, use it for list operations:
+**Recursive Transformer (rare — only self-referencing DTOs)**: Some transformers have a `transformAll()` method because their DTO has self-referencing properties. This occurs in three shapes:
+
+- **Parent-only (N:1)**: A nullable property referencing the same DTO (e.g., `ICategory.parent: ICategory | null`)
+- **Children-only (1:N)**: An array property referencing the same DTO (e.g., `IFolder.children: IFolder[]`)
+- **Both (bidirectional)**: The DTO has both a nullable parent and a children array (e.g., `INode.parent: INode | null` AND `INode.children: INode[]`)
+
+All three shapes produce a `transformAll()` method in the transformer. Most transformers do NOT have this method. Check the transformer code via `getRealizeTransformers` — if `transformAll` exists, use it for list operations (both pagination `data:` fields and array-typed properties in object responses):
 
 ```typescript
-// ✅ Recursive transformer (has transformAll) — use it
+// ✅ Recursive transformer (has transformAll) — use it for any list
 data: await ShoppingMallCategoryAtSummaryTransformer.transformAll(data),
 
 // ✅ Normal transformer (no transformAll) — use ArrayUtil.asyncMap as usual
 data: await ArrayUtil.asyncMap(data, ShoppingSaleAtSummaryTransformer.transform),
 ```
+
+For **single-item** reads the plain `transform(record)` call is always correct regardless of recursion, because `transform` creates its own fresh caches internally.
 
 ### 6.4. Transformer Only (UPDATE — Manual Mutation)
 
@@ -548,7 +562,21 @@ bbs_article_id: props.articleId,
 bbs_user_id: props.user.id,
 ```
 
-### 8.5. Data Transformation Rules
+### 8.5. Clearing Nullable Fields
+
+For regular nullable columns (`String?`, `DateTime?`), set them to `null` directly:
+
+```typescript
+// ✅ CORRECT — regular nullable String column
+await MyGlobal.prisma.categories.updateMany({
+  where: { parent_category_id: props.categoryId },
+  data: { parent_category_id: null },
+});
+```
+
+`Prisma.DbNull` is reserved exclusively for JSON-type columns (`Json?`). For all other nullable types, plain `null` is the correct value.
+
+### 8.6. Data Transformation Rules
 
 | Transformation | Pattern |
 |----------------|---------|
@@ -608,7 +636,7 @@ return {
 };
 ```
 
-### 8.6. DELETE Operation: Cascade Deletion
+### 8.7. DELETE Operation: Cascade Deletion
 
 All tables use `onDelete: Cascade` in their foreign key relations. When deleting a record, simply delete the target row — the database automatically cascades to all dependent rows.
 
@@ -630,7 +658,7 @@ await MyGlobal.prisma.shopping_sales.delete({
 });
 ```
 
-### 8.7. Manual CREATE Example
+### 8.8. Manual CREATE Example
 
 ```typescript
 export async function postShoppingSaleReview(props: {
@@ -834,11 +862,12 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 - [ ] Converted dates with `.toISOString()`
 - [ ] Handled null→undefined for optional fields
 - [ ] Handled null→null for nullable fields
+- [ ] Used plain `null` for regular nullable columns (`Prisma.DbNull` only for `Json?`)
 
 ### Database Operations
 - [ ] Inline parameters (no intermediate variables except complex WHERE/ORDERBY)
 - [ ] Sequential await for findMany + count (NOT Promise.all)
-- [ ] `ArrayUtil.asyncMap` for Transformer list transforms
+- [ ] `ArrayUtil.asyncMap` for Transformer list transforms (use `transformAll` instead for recursive transformers that have that method)
 - [ ] Regular `.map()` for manual list transforms
 - [ ] DELETE targets only the parent record (cascade handles children)
 - [ ] `findUniqueOrThrow`/`findFirstOrThrow` for record-must-exist queries

@@ -142,11 +142,12 @@ export const orchestrateInterfaceSchema = async (
     );
 
     // review schemas
+    const REVIEW_ITERATIONS = 1;
     reviewProgress.total +=
       Object.entries(schemas).filter(([k, v]) =>
         AutoBeInterfaceSchemaReviewProgrammer.filter(k, v),
-      ).length * 2;
-    for (let i: number = 0; i < 2; i++)
+      ).length * REVIEW_ITERATIONS;
+    for (let i: number = 0; i < REVIEW_ITERATIONS; i++)
       await overwrite(
         await orchestrateInterfaceSchemaReview(ctx, {
           instruction: props.instruction,

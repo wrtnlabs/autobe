@@ -1,6 +1,5 @@
 import {
   AutoBeDatabaseValidateEvent,
-  AutoBeInterfaceOperationReviewEvent,
   AutoBeRealizeAuthorizationValidateEvent,
   AutoBeRealizeValidateEvent,
   AutoBeTestValidateEvent,
@@ -11,7 +10,6 @@ import { CollapsibleEventGroup } from "../common/CollapsibleEventGroup";
 
 export type ValidateEvent =
   | AutoBeDatabaseValidateEvent
-  | AutoBeInterfaceOperationReviewEvent
   | AutoBeTestValidateEvent
   | AutoBeRealizeValidateEvent
   | AutoBeRealizeAuthorizationValidateEvent;
@@ -41,7 +39,6 @@ export const ValidateEventGroup = (props: IValidateEventGroupProps) => {
       case "testValidate":
       case "realizeAuthorizationValidate":
         return event.result.type !== "success";
-      case "interfaceOperationReview":
       default:
         return false;
     }

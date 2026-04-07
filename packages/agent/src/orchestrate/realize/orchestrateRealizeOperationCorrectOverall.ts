@@ -31,6 +31,18 @@ export const orchestrateRealizeOperationCorrectOverall = async (
   return await orchestrateRealizeCorrectOverall(ctx, {
     programmer: {
       location: "src/providers",
+      template: (func) =>
+        AutoBeRealizeOperationProgrammer.writeTemplate({
+          authorizations: props.authorizations,
+          schemas: document.components.schemas,
+          operation: document.operations.find(
+            (o) =>
+              o.method === func.endpoint.method &&
+              o.path === func.endpoint.path,
+          )!,
+          collectors: props.collectors,
+          transformers: props.transformers,
+        }),
       replaceImportStatements: async (next) => {
         const scenario: IAutoBeRealizeScenarioResult =
           AutoBeRealizeOperationProgrammer.getScenario({
@@ -69,6 +81,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
           });
         return new AutoBePreliminaryController({
           source: next.source,
+          dispatch: (e) => ctx.dispatch(e),
           application:
             typia.json.application<IAutoBeRealizeOperationCorrectApplication>(),
           kinds: [
@@ -124,7 +137,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
               input,
             );
           if (result.success === false) return result;
-          else if (result.data.request.type !== "complete")
+          else if (result.data.request.type !== "write")
             return next.preliminary.validate({
               thinking: result.data.thinking,
               request: result.data.request,
@@ -159,7 +172,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
           application,
           execute: {
             process: (v) => {
-              if (v.request.type === "complete") next.build(v.request);
+              if (v.request.type === "write") next.build(v.request);
             },
           } satisfies IAutoBeRealizeOperationCorrectApplication,
         };

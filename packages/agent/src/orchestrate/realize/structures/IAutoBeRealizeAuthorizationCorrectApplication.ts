@@ -5,8 +5,7 @@ export interface IAutoBeRealizeAuthorizationCorrectApplication {
   /**
    * Process authentication correction task or preliminary data requests.
    *
-   * @param next Request containing either preliminary data request or complete
-   *   task
+   * @param next Preliminary data request or write submission
    */
   process(next: IAutoBeRealizeAuthorizationCorrectApplication.IProps): void;
 }
@@ -18,8 +17,7 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
      *
      * For preliminary requests: what critical information is missing?
      *
-     * For completion: what did you acquire, what did you accomplish, why is it
-     * sufficient?
+     * For write: what errors you're fixing and the correction strategy.
      */
     thinking: string;
 
@@ -27,13 +25,13 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request: IWrite | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /** Request to fix authentication component compilation errors. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Categorize all compilation errors by component

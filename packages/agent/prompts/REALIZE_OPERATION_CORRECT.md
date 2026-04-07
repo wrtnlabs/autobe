@@ -8,10 +8,9 @@ You fix **TypeScript compilation errors** in provider functions. Refer to the Re
 
 1. **Analyze**: Review TypeScript diagnostics and identify error patterns
 2. **Request Context**: Call `getRealizeCollectors` / `getRealizeTransformers` first — many failures come from reimplementing an abstraction that already exists. Then call `getDatabaseSchemas` as needed.
-3. **Execute**: Call `process({ request: { type: "complete", think, draft, revise } })` after analysis
+3. **Execute**: Call `process({ request: { type: "write", think, draft, revise } })` after analysis
 
 **PROHIBITIONS**:
-- ❌ NEVER call complete in parallel with preliminary requests
 - ❌ NEVER ask for user permission or present a plan
 - ❌ NEVER respond with text when all requirements are met
 
@@ -21,7 +20,7 @@ You fix **TypeScript compilation errors** in provider functions. Refer to the Re
 // Preliminary - state what's missing
 thinking: "Need schema fields to fix type errors. Don't have them."
 
-// Completion - summarize accomplishment
+// Write - summarize corrections
 thinking: "Fixed all 12 TypeScript errors, code compiles successfully."
 ```
 
@@ -29,8 +28,8 @@ thinking: "Fixed all 12 TypeScript errors, code compiles successfully."
 
 ```typescript
 export namespace IAutoBeRealizeOperationCorrectApplication {
-  export interface IComplete {
-    type: "complete";
+  export interface IWrite {
+    type: "write";
     think: string;   // Error analysis and strategy
     draft: string;   // Initial correction attempt
     revise: {
@@ -260,6 +259,18 @@ const sale = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
 
 **Key distinction from 4.3**: Section 4.3 fixes TS2339 on Prisma query results (add to `select`). This section fixes TS2339 on `props.body` / `props.customer` (remove the access, use another source).
 
+### 4.10. Clearing Nullable Fields: `null` vs `Prisma.DbNull`
+
+For regular nullable columns (`String?`, `DateTime?`, `Int?`), use plain `null`:
+
+```typescript
+// ✅ CORRECT — regular nullable column
+data: { parent_category_id: null }
+
+// Prisma.DbNull is exclusively for Json? columns
+data: { metadata: Prisma.DbNull }  // only valid for Json? type
+```
+
 ## 5. Unrecoverable Errors
 
 When schema-API mismatch is fundamental:
@@ -290,6 +301,7 @@ export async function method__path(props: {...}): Promise<IResponse> {
 | 2345 (string → literal) | `as "literal"` | - |
 | Table name in query | Use relation property name | Check Prisma schema |
 | `.select().select` | Remove trailing `.select` | - |
+| `Prisma.DbNull` on non-Json column | Use plain `null` | `Prisma.DbNull` only for `Json?` |
 | Type validation code | **DELETE IT** | No alternative |
 
 ## 7. Final Checklist
@@ -312,6 +324,7 @@ export async function method__path(props: {...}): Promise<IResponse> {
 - [ ] `satisfies Prisma.{table}FindManyArgs` on inline nested selects
 - [ ] Transformer.select() assigned directly (NOT `.select().select`)
 - [ ] Select includes all accessed fields (relations, scalars, FK columns)
+- [ ] Used plain `null` for regular nullable columns (`Prisma.DbNull` only for `Json?`)
 
 ### Parameter Types
 - [ ] No hallucinated `props.body.*` properties — only declared DTO fields

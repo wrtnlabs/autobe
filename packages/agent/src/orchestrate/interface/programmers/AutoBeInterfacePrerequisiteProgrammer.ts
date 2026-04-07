@@ -20,7 +20,7 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
   export const validate = (props: {
     document: AutoBeOpenApi.IDocument;
     operation: AutoBeOpenApi.IOperation;
-    complete: IAutoBeInterfacePrerequisiteApplication.IComplete;
+    complete: IAutoBeInterfacePrerequisiteApplication.IWrite;
     accessor?: string;
     dict?: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   }): IValidation.IError[] => {
@@ -97,17 +97,18 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
           \`\`\`
         `,
       });
-    props.complete.prerequisites.forEach((raw, i) => {
-      const it: HashMap.Iterator<
-        AutoBeOpenApi.IEndpoint,
-        AutoBeOpenApi.IOperation
-      > = dict.find(raw.endpoint);
-      if (it.equals(dict.end()) === true)
-        errors.push({
-          path: `${accessor}.prerequisites[${i}].endpoint`,
-          expected: "AutoBeOpenApi.IEndpoint",
-          value: raw.endpoint,
-          description: StringUtil.trim`
+    props.complete.prerequisites.forEach(
+      (raw: AutoBeOpenApi.IPrerequisite, i: number) => {
+        const it: HashMap.Iterator<
+          AutoBeOpenApi.IEndpoint,
+          AutoBeOpenApi.IOperation
+        > = dict.find(raw.endpoint);
+        if (it.equals(dict.end()) === true)
+          errors.push({
+            path: `${accessor}.prerequisites[${i}].endpoint`,
+            expected: "AutoBeOpenApi.IEndpoint",
+            value: raw.endpoint,
+            description: StringUtil.trim`
             ## ERROR: Prerequisite Operation Does Not Exist
 
             The prerequisite endpoint you specified does not exist in the API
@@ -141,15 +142,15 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
             Only use operations that you can SEE in your conversation context.
             NEVER invent or guess operation endpoints.
           `,
-        });
-      else if (
-        AutoBeOpenApiEndpointComparator.equals(props.operation, raw.endpoint)
-      )
-        errors.push({
-          path: `${accessor}.prerequisites[${i}].endpoint`,
-          expected: "Different Operation Endpoint from Target Operation",
-          value: raw.endpoint,
-          description: StringUtil.trim`
+          });
+        else if (
+          AutoBeOpenApiEndpointComparator.equals(props.operation, raw.endpoint)
+        )
+          errors.push({
+            path: `${accessor}.prerequisites[${i}].endpoint`,
+            expected: "Different Operation Endpoint from Target Operation",
+            value: raw.endpoint,
+            description: StringUtil.trim`
             ## CRITICAL ERROR: Self-Reference Detected
 
             You added the target operation as its own prerequisite. This creates
@@ -195,13 +196,13 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
 
             ${table.get()}
           `,
-        });
-      else if (isPrerequisite(it.second) === false)
-        errors.push({
-          path: `${accessor}.prerequisites[${i}].endpoint`,
-          expected: "AutoBeOpenApi.IEndpoint",
-          value: raw.endpoint,
-          description: StringUtil.trim`
+          });
+        else if (isPrerequisite(it.second) === false)
+          errors.push({
+            path: `${accessor}.prerequisites[${i}].endpoint`,
+            expected: "AutoBeOpenApi.IEndpoint",
+            value: raw.endpoint,
+            description: StringUtil.trim`
             ## ERROR: Invalid Prerequisite Type
 
             The operation you specified exists, but it CANNOT be used as a
@@ -246,8 +247,9 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
             - Only POST operations create resources
             - GET/PUT/DELETE/PATCH operations are NEVER prerequisites
           `,
-        });
-    });
+          });
+      },
+    );
     return errors;
   };
 

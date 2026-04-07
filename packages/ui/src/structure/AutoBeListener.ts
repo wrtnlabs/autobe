@@ -71,9 +71,6 @@ export class AutoBeListener {
       analyzeSectionReview: async (event) => {
         this.accumulate(event);
       },
-      analyzeScenarioReview: async (event) => {
-        this.accumulate(event);
-      },
       analyzeComplete: async (event) => {
         this.dict_.delete("analyzeWriteModule");
         this.dict_.delete("analyzeWriteUnit");
@@ -85,35 +82,20 @@ export class AutoBeListener {
 
       // PRISMA
       databaseStart: async (event) => {
-        this.dict_.delete("databaseAuthorizationReview");
         this.dict_.delete("databaseComponent");
-        this.dict_.delete("databaseComponentReview");
         this.dict_.delete("databaseSchema");
-        this.dict_.delete("databaseSchemaReview");
         this.insert(event);
       },
       databaseGroup: async (event) => {
         this.insert(event);
       },
-      databaseGroupReview: async (event) => {
-        this.insert(event);
-      },
       databaseAuthorization: async (event) => {
-        this.accumulate(event);
-      },
-      databaseAuthorizationReview: async (event) => {
         this.accumulate(event);
       },
       databaseComponent: async (event) => {
         this.accumulate(event);
       },
-      databaseComponentReview: async (event) => {
-        this.accumulate(event);
-      },
       databaseSchema: async (event) => {
-        this.accumulate(event);
-      },
-      databaseSchemaReview: async (event) => {
         this.accumulate(event);
       },
       databaseValidate: async (event) => {
@@ -123,11 +105,8 @@ export class AutoBeListener {
         this.insert(event);
       },
       databaseComplete: async (event) => {
-        this.dict_.delete("databaseAuthorizationReview");
         this.dict_.delete("databaseComponent");
-        this.dict_.delete("databaseComponentReview");
         this.dict_.delete("databaseSchema");
-        this.dict_.delete("databaseSchemaReview");
         this.state_.setDatabase(event);
         this.insert(event);
       },
@@ -137,7 +116,6 @@ export class AutoBeListener {
         this.dict_.delete("interfaceAuthorization");
         this.dict_.delete("interfaceEndpoint");
         this.dict_.delete("interfaceOperation");
-        this.dict_.delete("interfaceOperationReview");
         this.dict_.delete("interfaceSchema");
         this.dict_.delete("interfaceSchemaCasting");
         this.dict_.delete("interfaceSchemaRefine");
@@ -154,13 +132,7 @@ export class AutoBeListener {
       interfaceEndpoint: async (event) => {
         this.accumulate(event);
       },
-      interfaceEndpointReview: async (event) => {
-        this.accumulate(event);
-      },
       interfaceOperation: async (event) => {
-        this.accumulate(event);
-      },
-      interfaceOperationReview: async (event) => {
         this.accumulate(event);
       },
       interfaceAuthorization: async (event) => {
@@ -193,7 +165,6 @@ export class AutoBeListener {
       interfaceComplete: async (event) => {
         this.dict_.delete("interfaceEndpoint");
         this.dict_.delete("interfaceOperation");
-        this.dict_.delete("interfaceOperationReview");
         this.dict_.delete("interfaceAuthorization");
         this.dict_.delete("interfaceSchema");
         this.dict_.delete("interfaceSchemaCasting");
@@ -216,9 +187,6 @@ export class AutoBeListener {
         this.insert(event);
       },
       testScenario: async (event) => {
-        this.accumulate(event);
-      },
-      testScenarioReview: async (event) => {
         this.accumulate(event);
       },
       testWrite: async (event) => {

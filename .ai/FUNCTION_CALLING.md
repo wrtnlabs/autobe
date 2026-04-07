@@ -343,7 +343,7 @@ Claude: prisma({ instruction: "Use PostgreSQL with UUID primary keys for all mod
 
 Instructions are passed to orchestrators, which include them in the history transformers:
 
-**Location**: `packages/agent/src/orchestrate/prisma/histories/transformPrismaSchemaHistories.ts`
+**Location**: `packages/agent/src/orchestrate/database/histories/transformPrismaSchemaHistories.ts`
 
 ```typescript
 export const transformPrismaSchemaHistories = (

@@ -15,5 +15,6 @@ export function createMockTransformer(props: {
     neighbors: [],
     location: "src/transformers/MockTransformer.ts",
     content: "// mock",
+    template: "",
   };
 }

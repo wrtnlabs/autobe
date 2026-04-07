@@ -9,7 +9,7 @@ import {
   AutoBeFunctionCallingMetricFactory,
   AutoBeOpenApiTypeChecker,
 } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -68,6 +68,7 @@ export const orchestrateTestPrepareWrite = async (
     await executeCachedBatch(
       ctx,
       createTypes.map((entry) => async (promptCacheKey) => {
+        const counter = new Singleton(() => ++props.progress.completed);
         try {
           const event: AutoBeTestWriteEvent<AutoBeTestPrepareFunction> =
             await forceRetry(() =>
@@ -78,6 +79,7 @@ export const orchestrateTestPrepareWrite = async (
                 instruction: props.instruction,
                 promptCacheKey,
                 progress: props.progress,
+                counter,
               }),
             );
           ctx.dispatch(event);
@@ -88,6 +90,7 @@ export const orchestrateTestPrepareWrite = async (
             function: event.function,
           };
         } catch {
+          counter.get();
           return null;
         }
       }),
@@ -106,6 +109,7 @@ async function process(
     schema: AutoBeOpenApi.IJsonSchema.IObject;
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     instruction: string;
   },
 ): Promise<AutoBeTestWriteEvent<AutoBeTestPrepareFunction>> {
@@ -134,7 +138,7 @@ async function process(
         typeName: props.typeName,
         name: functionName,
       },
-      completed: ++props.progress.completed,
+      completed: props.counter.get(),
       total: props.progress.total,
       step: ctx.state().interface?.step ?? 0,
       tokenUsage: new AutoBeTokenUsageComponent(),
@@ -162,7 +166,7 @@ async function process(
   });
   // Validate LLM response
   if (pointer.value === null) {
-    ++props.progress.completed;
+    props.counter.get();
     throw new Error(
       `Failed to generate prepare function for ${props.typeName}`,
     );
@@ -186,7 +190,7 @@ async function process(
       typeName: props.typeName,
       name: functionName,
     },
-    completed: ++props.progress.completed,
+    completed: props.counter.get(),
     total: props.progress.total,
     step: ctx.state().interface?.step ?? 0,
     tokenUsage,

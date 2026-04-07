@@ -45,6 +45,19 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
     programmer: {
       location: "src/collectors",
 
+      // Recalculate template for corrected collector function
+      template: (func) =>
+        AutoBeRealizeCollectorProgrammer.writeTemplate({
+          plan: func.plan,
+          body: document.components.schemas[func.plan.dtoTypeName],
+          model: ctx
+            .state()
+            .database!.result.data.files.map((f) => f.models)
+            .flat()
+            .find((m) => m.name === func.plan.databaseSchemaName)!,
+          application: ctx.state().database!.result.data,
+        }),
+
       // Replace import statements using Collector-specific programmer
       replaceImportStatements: async (next) => {
         return await AutoBeRealizeCollectorProgrammer.replaceImportStatements(
@@ -67,6 +80,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
           application:
             typia.json.application<IAutoBeRealizeCollectorCorrectApplication>(),
           kinds: ["databaseSchemas"],
+          dispatch: (e) => ctx.dispatch(e),
           state: ctx.state(),
           local: {
             databaseSchemas: ctx
@@ -94,7 +108,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
               input,
             );
           if (result.success === false) return result;
-          else if (result.data.request.type !== "complete")
+          else if (result.data.request.type !== "write")
             return next.preliminary.validate({
               thinking: result.data.thinking,
               request: result.data.request,
@@ -141,7 +155,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
           application,
           execute: {
             process: (v) => {
-              if (v.request.type === "complete") next.build(v.request);
+              if (v.request.type === "write") next.build(v.request);
             },
           } satisfies IAutoBeRealizeCollectorCorrectApplication,
         };

@@ -83,7 +83,6 @@ function groupEventsByCategory(events: AutoBeEvent[]) {
       case "testValidate":
       case "realizeValidate":
       case "realizeAuthorizationValidate":
-      case "interfaceOperationReview":
         grouped.validate.push(event);
         break;
       default:

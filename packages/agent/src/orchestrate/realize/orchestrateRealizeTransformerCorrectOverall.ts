@@ -48,6 +48,29 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
     programmer: {
       location: "src/transformers",
 
+      // Recalculate template for corrected transformer function
+      template: (func) => {
+        const model: AutoBeDatabase.IModel = prismaApplication.files
+          .map((f) => f.models)
+          .flat()
+          .find((m) => m.name === func.plan.databaseSchemaName)!;
+        return AutoBeRealizeTransformerProgrammer.writeTemplate({
+          plan: func.plan,
+          schema: document.components.schemas[
+            func.plan.dtoTypeName
+          ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
+          schemas: document.components.schemas,
+          neighbors: getNeighbors(func).map((n) => n.plan),
+          relations: AutoBeRealizeTransformerProgrammer.getRelationMappingTable(
+            {
+              application: prismaApplication,
+              model,
+            },
+          ),
+          model,
+        });
+      },
+
       // Replace import statements using Transformer-specific programmer
       replaceImportStatements: async (next) => {
         return await AutoBeRealizeTransformerProgrammer.replaceImportStatements(
@@ -70,6 +93,7 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
           application:
             typia.json.application<IAutoBeRealizeTransformerCorrectApplication>(),
           kinds: ["databaseSchemas"],
+          dispatch: (e) => ctx.dispatch(e),
           state: ctx.state(),
           local: {
             databaseSchemas: ctx
@@ -97,7 +121,7 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
               input,
             );
           if (result.success === false) return result;
-          else if (result.data.request.type !== "complete")
+          else if (result.data.request.type !== "write")
             return next.preliminary.validate({
               thinking: result.data.thinking,
               request: result.data.request,
@@ -144,7 +168,7 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
           application,
           execute: {
             process: (v) => {
-              if (v.request.type === "complete") next.build(v.request);
+              if (v.request.type === "write") next.build(v.request);
             },
           } satisfies IAutoBeRealizeTransformerCorrectApplication,
         };

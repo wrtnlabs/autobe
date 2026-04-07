@@ -7,7 +7,7 @@ import {
   AutoBeRealizePlanEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v4 } from "uuid";
 
@@ -47,18 +47,24 @@ export async function orchestrateRealizeCollectorPlan(
 
   const result: AutoBeRealizeCollectorPlan[][] = await executeCachedBatch(
     ctx,
-    Array.from(dtoTypeNames).map(
-      (it) => (promptCacheKey) =>
-        forceRetry(() =>
+    Array.from(dtoTypeNames).map((it) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++props.progress.completed);
+      try {
+        return await forceRetry(() =>
           process(ctx, {
             document,
             dtoTypeName: it,
             prismaSchemaNames,
             promptCacheKey,
             progress: props.progress,
+            counter,
           }),
-        ),
-    ),
+        );
+      } catch (error) {
+        counter.get();
+        throw error;
+      }
+    }),
   );
   return result.flat();
 }
@@ -71,6 +77,7 @@ async function process(
     prismaSchemaNames: Set<string>;
     promptCacheKey: string;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeRealizeCollectorPlan[]> {
   const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
@@ -99,7 +106,9 @@ async function process(
     | "databaseSchemas"
     | "interfaceSchemas"
     | "interfaceOperations"
+    | "complete"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
     source: SOURCE,
     application:
@@ -109,6 +118,7 @@ async function process(
       "databaseSchemas",
       "interfaceSchemas",
       "interfaceOperations",
+      "complete",
     ],
     local: {
       analysisSections: ragSections,
@@ -122,73 +132,78 @@ async function process(
       ),
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeRealizeCollectorPlanApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: "realizePlan",
-      controller: createController({
-        prismaSchemaNames: props.prismaSchemaNames,
-        dtoTypeName: props.dtoTypeName,
-        build: (next) => {
-          pointer.value = next;
-        },
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformRealizeCollectorPlanHistory({
-        state: ctx.state(),
-        preliminary,
-        dtoTypeName: props.dtoTypeName,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeRealizePlanEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeRealizeCollectorPlanApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: "realizePlan",
+        controller: createController({
+          prismaSchemaNames: props.prismaSchemaNames,
+          dtoTypeName: props.dtoTypeName,
+          build: (next) => {
+            pointer.value = next;
+          },
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformRealizeCollectorPlanHistory({
+          state: ctx.state(),
+          preliminary,
+          dtoTypeName: props.dtoTypeName,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    const plans: AutoBeRealizeCollectorPlan[] = pointer.value.plans
-      .filter((p) => p.databaseSchemaName !== null)
-      .map((p) => ({
-        type: "collector",
-        dtoTypeName: p.dtoTypeName,
-        thinking: p.thinking,
-        databaseSchemaName: p.databaseSchemaName!,
-        references: p.references,
-      }));
-    const event: AutoBeRealizePlanEvent = {
-      type: "realizePlan",
-      id: v4(),
-      plans,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: new Date().toISOString(),
-    };
-    ctx.dispatch(event);
-    return out(result)(plans);
-  });
+      const plans: AutoBeRealizeCollectorPlan[] = pointer.value.plans
+        .filter((p) => p.databaseSchemaName !== null)
+        .map((p) => ({
+          type: "collector",
+          dtoTypeName: p.dtoTypeName,
+          thinking: p.thinking,
+          databaseSchemaName: p.databaseSchemaName!,
+          references: p.references,
+        }));
+      const event: AutoBeRealizePlanEvent = {
+        type: "realizePlan",
+        id: v4(),
+        plans,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        completed: props.counter.get(),
+        total: props.progress.total,
+        step: ctx.state().analyze?.step ?? 0,
+        created_at: new Date().toISOString(),
+      };
+      return out(result)(event);
+    },
+  );
+  ctx.dispatch(event);
+  return event.plans as AutoBeRealizeCollectorPlan[];
 }
 
 function createController(props: {
   prismaSchemaNames: Set<string>;
   dtoTypeName: string;
-  build: (next: IAutoBeRealizeCollectorPlanApplication.IComplete) => void;
+  build: (next: IAutoBeRealizeCollectorPlanApplication.IWrite) => void;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
     | "interfaceSchemas"
     | "interfaceOperations"
+    | "complete"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeRealizeCollectorPlanApplication.IProps> =
       typia.validate<IAutoBeRealizeCollectorPlanApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -251,7 +266,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeRealizeCollectorPlanApplication,
   };

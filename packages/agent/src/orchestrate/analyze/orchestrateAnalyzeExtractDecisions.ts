@@ -5,17 +5,12 @@ import {
   AutoBeEventSource,
 } from "@autobe/interface";
 import { IPointer } from "tstl";
-import typia, { ILlmApplication, IValidation } from "typia";
+import typia, { ILlmApplication } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { transformAnalyzeExtractDecisionsHistory } from "./histories/transformAnalyzeExtractDecisionsHistory";
-import {
-  IAutoBeAnalyzeExtractDecisionsApplication,
-  IAutoBeAnalyzeExtractDecisionsApplicationComplete,
-  IAutoBeAnalyzeExtractDecisionsApplicationProps,
-} from "./structures/IAutoBeAnalyzeExtractDecisionsApplication";
+import { IAutoBeAnalyzeExtractDecisionsApplication } from "./structures/IAutoBeAnalyzeExtractDecisionsApplication";
 import { IFileDecisions } from "./utils/detectDecisionConflicts";
-import { isRecord, tryParseStringAsRecord } from "./utils/repairUtils";
 
 /**
  * Extract key decisions from a single file's section content.
@@ -34,7 +29,7 @@ export const orchestrateAnalyzeExtractDecisions = async (
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   },
 ): Promise<IFileDecisions> => {
-  const pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplicationComplete | null> =
+  const pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplication.IProps | null> =
     {
       value: null,
     };
@@ -61,34 +56,17 @@ export const orchestrateAnalyzeExtractDecisions = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplicationComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeExtractDecisionsApplication.IProps | null>;
 }): IAgenticaController.IClass {
   const application: ILlmApplication =
-    typia.llm.application<IAutoBeAnalyzeExtractDecisionsApplication>({
-      validate: {
-        process: (
-          input: unknown,
-        ): IValidation<IAutoBeAnalyzeExtractDecisionsApplicationProps> => {
-          if (isRecord(input) && typeof input.request === "string") {
-            input = {
-              ...input,
-              request: tryParseStringAsRecord(input.request),
-            };
-          }
-          return typia.validate<IAutoBeAnalyzeExtractDecisionsApplicationProps>(
-            input,
-          );
-        },
-      },
-    });
+    typia.llm.application<IAutoBeAnalyzeExtractDecisionsApplication>();
   return {
     protocol: "class",
     name: SOURCE,
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        props.pointer.value = input;
       },
     } satisfies IAutoBeAnalyzeExtractDecisionsApplication,
   };

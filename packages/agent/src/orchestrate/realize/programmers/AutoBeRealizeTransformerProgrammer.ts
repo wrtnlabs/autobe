@@ -12,6 +12,7 @@ import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgrammer";
+import { writeRealizeTransformerTemplate } from "./internal/writeRealizeTransformerTemplate";
 
 export namespace AutoBeRealizeTransformerProgrammer {
   export function filter(props: {
@@ -139,114 +140,124 @@ export namespace AutoBeRealizeTransformerProgrammer {
     }));
   }
 
-  export function writeTemplate(props: {
-    plan: AutoBeRealizeTransformerPlan;
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-    schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
-  }): string {
-    const recursive: string | null = getRecursiveProperty({
-      schemas: props.schemas,
-      typeName: props.plan.dtoTypeName,
-    });
-    return recursive !== null
-      ? writeRecursiveTemplate({ ...props, recursiveProperty: recursive })
-      : writeNormalTemplate(props);
+  export interface INeighborRelation {
+    dtoProperty: string;
+    relationKey: string;
+    transformerName: string;
+    isArray: boolean;
+    isNullable: boolean;
   }
 
-  function writeNormalTemplate(props: {
-    plan: AutoBeRealizeTransformerPlan;
+  export function computeNeighborRelations(props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-  }): string {
-    const name: string = getName(props.plan.dtoTypeName);
-    const dto: string = props.plan.dtoTypeName;
-    const table: string = props.plan.databaseSchemaName;
-    const properties: string = Object.keys(props.schema.properties)
-      .map((k) => `  ${k}: ...,`)
-      .join("\n");
-    return StringUtil.trim`
-      export namespace ${name} {
-        export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
+    neighbors: AutoBeRealizeTransformerPlan[];
+    relations: Array<{
+      propertyKey: string;
+      targetModel: string;
+      relationType: string;
+      fkColumns: string;
+    }>;
+  }): INeighborRelation[] {
+    const result: INeighborRelation[] = [];
 
-        export function select() {
-          // implicit return type for better type inference
-          return {
-            ...
-          } satisfies Prisma.${table}FindManyArgs;
-        }
+    // Count how many DTO properties reference each neighbor type and
+    // how many relations point to each target model.
+    // When either is ambiguous (>1), skip — wrong mapping is worse than none.
+    const dtoRefCount = new Map<string, number>();
+    const relationCount = new Map<string, number>();
+    const neighborSchemaCount = new Map<string, number>();
+    for (const neighbor of props.neighbors) {
+      const targetRef = `#/components/schemas/${neighbor.dtoTypeName}`;
+      let count = 0;
+      for (const [, prop] of Object.entries(props.schema.properties)) {
+        if (!prop) continue;
+        if (findNeighborRef({ schema: prop, targetRef })) count++;
+      }
+      dtoRefCount.set(neighbor.dtoTypeName, count);
+      relationCount.set(
+        neighbor.databaseSchemaName,
+        props.relations.filter(
+          (r) => r.targetModel === neighbor.databaseSchemaName,
+        ).length,
+      );
+      neighborSchemaCount.set(
+        neighbor.databaseSchemaName,
+        (neighborSchemaCount.get(neighbor.databaseSchemaName) ?? 0) + 1,
+      );
+    }
 
-        export async function transform(input: Payload): Promise<${dto}> {
-          return {
-${properties}
-          };
+    for (const neighbor of props.neighbors) {
+      // Skip ambiguous cases: multiple DTO properties, relations, or
+      // neighbors sharing the same database schema (would produce
+      // duplicate select keys → silent JS overwrite)
+      if ((dtoRefCount.get(neighbor.dtoTypeName) ?? 0) !== 1) continue;
+      if ((relationCount.get(neighbor.databaseSchemaName) ?? 0) !== 1) continue;
+      if ((neighborSchemaCount.get(neighbor.databaseSchemaName) ?? 0) !== 1)
+        continue;
+
+      const targetRef = `#/components/schemas/${neighbor.dtoTypeName}`;
+      let dtoMatch: {
+        property: string;
+        isArray: boolean;
+        isNullable: boolean;
+      } | null = null;
+
+      for (const [key, prop] of Object.entries(props.schema.properties)) {
+        if (!prop) continue;
+        const ref = findNeighborRef({ schema: prop, targetRef });
+        if (ref) {
+          dtoMatch = { property: key, ...ref };
+          break;
         }
       }
-    `;
-  }
 
-  function writeRecursiveTemplate(props: {
-    plan: AutoBeRealizeTransformerPlan;
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-    recursiveProperty: string;
-  }): string {
-    const name: string = getName(props.plan.dtoTypeName);
-    const dto: string = props.plan.dtoTypeName;
-    const table: string = props.plan.databaseSchemaName;
-    const rp: string = props.recursiveProperty;
-    const fk: string = `${rp}_id`;
-    const properties: string = Object.keys(props.schema.properties)
-      .map((k) =>
-        k === rp
-          ? `  ${k}: input.${fk} ? await cache.get(input.${fk}) : null,`
-          : `  ${k}: ...,`,
-      )
-      .join("\n");
-    return StringUtil.trim`
-      export namespace ${name} {
-        export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
+      const relation = props.relations.find(
+        (r) => r.targetModel === neighbor.databaseSchemaName,
+      );
 
-        export function select() {
-          // implicit return type for better type inference
-          return {
-            select: {
-              ...
-              ${fk}: true,
-              ${rp}: undefined, // DO NOT select recursive relation
-            },
-          } satisfies Prisma.${table}FindManyArgs;
-        }
-
-        export async function transform(
-          input: Payload,
-          cache: VariadicSingleton<Promise<${dto}>, [string]> = createCache(),
-        ): Promise<${dto}> {
-          return {
-${properties}
-          };
-        }
-
-        export async function transformAll(
-          inputs: Payload[],
-        ): Promise<${dto}[]> {
-          const cache = createCache();
-          return await ArrayUtil.asyncMap(inputs, (x) => transform(x, cache));
-        }
-
-        function createCache() {
-          const cache = new VariadicSingleton(
-            async (id: string): Promise<${dto}> => {
-              const record =
-                await MyGlobal.prisma.${table}.findFirstOrThrow({
-                  ...select(),
-                  where: { id },
-                });
-              return transform(record, cache);
-            },
-          );
-          return cache;
-        }
+      if (dtoMatch && relation) {
+        result.push({
+          dtoProperty: dtoMatch.property,
+          relationKey: relation.propertyKey,
+          transformerName: getName(neighbor.dtoTypeName),
+          isArray: dtoMatch.isArray,
+          isNullable: dtoMatch.isNullable,
+        });
       }
-    `;
+    }
+    return result;
   }
+
+  function findNeighborRef(props: {
+    schema: AutoBeOpenApi.IJsonSchema;
+    targetRef: string;
+  }): { isArray: boolean; isNullable: boolean } | null {
+    const { schema, targetRef } = props;
+    if (
+      AutoBeOpenApiTypeChecker.isReference(schema) &&
+      schema.$ref === targetRef
+    )
+      return { isArray: false, isNullable: false };
+    if (
+      AutoBeOpenApiTypeChecker.isArray(schema) &&
+      AutoBeOpenApiTypeChecker.isReference(schema.items) &&
+      schema.items.$ref === targetRef
+    )
+      return { isArray: true, isNullable: false };
+    if (AutoBeOpenApiTypeChecker.isOneOf(schema)) {
+      const hasNull = schema.oneOf.some((s) =>
+        AutoBeOpenApiTypeChecker.isNull(s),
+      );
+      for (const sub of schema.oneOf) {
+        if (AutoBeOpenApiTypeChecker.isNull(sub)) continue;
+        const inner = findNeighborRef({ schema: sub, targetRef });
+        if (inner) return { ...inner, isNullable: hasNull };
+      }
+    }
+    return null;
+  }
+
+  export const writeTemplate = writeRealizeTransformerTemplate;
 
   export function writeStructures(
     ctx: AutoBeContext,
@@ -328,6 +339,12 @@ ${properties}
       path: "$input.request.draft",
       errors,
     });
+    validateSelectTransformContract({
+      plan: props.plan,
+      content: props.draft,
+      path: "$input.request.draft",
+      errors,
+    });
 
     // validate final
     if (props.revise.final !== null) {
@@ -345,6 +362,12 @@ ${properties}
         errors,
       });
       validateSelectReturnType({
+        content: props.revise.final,
+        path: "$input.request.revise.final",
+        errors,
+      });
+      validateSelectTransformContract({
+        plan: props.plan,
         content: props.revise.final,
         path: "$input.request.revise.final",
         errors,
@@ -578,14 +601,66 @@ ${properties}
         });
   }
 
-  export function getRecursiveProperty(props: {
+  function validateSelectTransformContract(props: {
+    plan: AutoBeRealizeTransformerPlan;
+    content: string;
+    path: string;
+    errors: IValidation.IError[];
+  }): void {
+    const selfName: string = getName(props.plan.dtoTypeName);
+    const selectUsers: Set<string> = new Set();
+    const transformUsers: Set<string> = new Set();
+    const selectRegex: RegExp = /(\w+Transformer)\.select/g;
+    const transformRegex: RegExp = /(\w+Transformer)\.transform/g;
+    let match: RegExpExecArray | null;
+    while ((match = selectRegex.exec(props.content)) !== null)
+      selectUsers.add(match[1]!);
+    while ((match = transformRegex.exec(props.content)) !== null)
+      transformUsers.add(match[1]!);
+    for (const name of transformUsers) {
+      if (name === selfName) continue;
+      if (selectUsers.has(name) === false)
+        props.errors.push({
+          path: props.path,
+          expected: `${name}.select() must appear in select() when ${name}.transform() is used.`,
+          value: props.content,
+          description: StringUtil.trim`
+            You call ${name}.transform() but never include ${name}.select()
+            in your select query. The Payload type of ${name}.transform()
+            is derived from ${name}.select() — without it, the data shape
+            will not match and you will get "missing properties" compile
+            errors. Reuse ${name}.select() in your select instead of
+            writing an inline select.
+          `,
+        });
+    }
+    for (const name of selectUsers) {
+      if (name === selfName) continue;
+      if (transformUsers.has(name) === false)
+        props.errors.push({
+          path: props.path,
+          expected: `${name}.transform() must be called when ${name}.select() is used.`,
+          value: props.content,
+          description: StringUtil.trim`
+            You include ${name}.select() in your query but never call
+            ${name}.transform() to convert the result. The data fetched
+            via ${name}.select() is a raw Prisma payload shaped for
+            ${name}.transform() — assigning it directly to a DTO field
+            or transforming it inline will cause type mismatches. Call
+            ${name}.transform() on the fetched data.
+          `,
+        });
+    }
+  }
+
+  export function getRecursiveRelations(props: {
     schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
     typeName: string;
-  }): string | null {
+  }): { parent: string | null; children: string | null } {
     const schema: AutoBeOpenApi.IJsonSchema | undefined =
       props.schemas[props.typeName];
     if (schema === undefined || !AutoBeOpenApiTypeChecker.isObject(schema))
-      return null;
+      return { parent: null, children: null };
 
     const selfRef: string = `#/components/schemas/${props.typeName}`;
     const hasSelfRef = (s: AutoBeOpenApi.IJsonSchema): boolean => {
@@ -594,9 +669,29 @@ ${properties}
         return s.oneOf.some((sub) => hasSelfRef(sub));
       return false;
     };
-    for (const [key, value] of Object.entries(schema.properties))
-      if (value && hasSelfRef(value)) return key;
-    return null;
+    const hasSelfRefArray = (s: AutoBeOpenApi.IJsonSchema): boolean => {
+      if (AutoBeOpenApiTypeChecker.isArray(s)) return hasSelfRef(s.items);
+      else if (AutoBeOpenApiTypeChecker.isOneOf(s))
+        return s.oneOf.some((sub) => hasSelfRefArray(sub));
+      return false;
+    };
+
+    let parent: string | null = null;
+    let children: string | null = null;
+    for (const [key, value] of Object.entries(schema.properties)) {
+      if (!value) continue;
+      if (hasSelfRef(value)) parent = key;
+      else if (hasSelfRefArray(value)) children = key;
+    }
+    return { parent, children };
+  }
+
+  export function getRecursiveProperty(props: {
+    schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
+    typeName: string;
+  }): string | null {
+    const { parent, children } = getRecursiveRelations(props);
+    return parent ?? children;
   }
 
   export const fixApplication = (props: {

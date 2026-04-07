@@ -1,7 +1,6 @@
 import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeScenarioReviewEvent,
   AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteModuleEvent,
@@ -9,15 +8,11 @@ import {
   AutoBeAnalyzeWriteUnitEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
-  AutoBeDatabaseAuthorizationReviewEvent,
   AutoBeDatabaseCompleteEvent,
   AutoBeDatabaseComponentEvent,
-  AutoBeDatabaseComponentReviewEvent,
   AutoBeDatabaseCorrectEvent,
   AutoBeDatabaseGroupEvent,
-  AutoBeDatabaseGroupReviewEvent,
   AutoBeDatabaseSchemaEvent,
-  AutoBeDatabaseSchemaReviewEvent,
   AutoBeDatabaseStartEvent,
   AutoBeDatabaseValidateEvent,
   AutoBeImageDescribeCompleteEvent,
@@ -26,7 +21,6 @@ import {
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceOperationEvent,
-  AutoBeInterfaceOperationReviewEvent,
   AutoBeInterfaceSchemaCastingEvent,
   AutoBeInterfaceSchemaComplementEvent,
   AutoBeInterfaceSchemaDecoupleEvent,
@@ -51,14 +45,12 @@ import {
   AutoBeTestCompleteEvent,
   AutoBeTestCorrectEvent,
   AutoBeTestScenarioEvent,
-  AutoBeTestScenarioReviewEvent,
   AutoBeTestStartEvent,
   AutoBeTestValidateEvent,
   AutoBeTestWriteEvent,
   AutoBeUserMessageEvent,
 } from "../events";
 import { AutoBeInterfaceAuthorizationEvent } from "../events/AutoBeInterfaceAuthorizationEvent";
-import { AutoBeInterfaceEndpointReviewEvent } from "../events/AutoBeInterfaceEndpointReviewEvent";
 import { AutoBeInterfaceGroupEvent } from "../events/AutoBeInterfaceGroupEvent";
 import { AutoBeInterfacePrerequisiteEvent } from "../events/AutoBeInterfacePrerequisiteEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "../events/AutoBeRealizeAuthorizationCompleteEvent";
@@ -197,22 +189,13 @@ export interface IAutoBeRpcListener {
   analyzeWriteSection?(event: AutoBeAnalyzeWriteSectionEvent): Promise<void>;
 
   /**
-   * Optional handler for section review progress events.
+   * Optional handler for cross-file section review events.
    *
-   * Called when the Analyze agent reviews generated detailed sections and
-   * reports review progress.
+   * Called when the cross-file review agent validates section metadata across
+   * all files for consistency, terminology alignment, and EARS format
+   * compliance.
    */
   analyzeSectionReview?(event: AutoBeAnalyzeSectionReviewEvent): Promise<void>;
-
-  /**
-   * Optional handler for scenario review progress events.
-   *
-   * Called when the Analyze agent reviews the generated scenario and reports
-   * review progress.
-   */
-  analyzeScenarioReview?(
-    event: AutoBeAnalyzeScenarioReviewEvent,
-  ): Promise<void>;
 
   /**
    * Mandatory handler for requirements analysis completion events.
@@ -246,15 +229,6 @@ export interface IAutoBeRpcListener {
   databaseGroup?(event: AutoBeDatabaseGroupEvent): Promise<void>;
 
   /**
-   * Optional handler for database group review events.
-   *
-   * Called when the Database agent reviews and validates the component group
-   * organization, ensuring all business domains are properly represented and
-   * group boundaries are appropriate.
-   */
-  databaseGroupReview?(event: AutoBeDatabaseGroupReviewEvent): Promise<void>;
-
-  /**
    * Optional handler for database authorization events.
    *
    * Called when the Database agent generates authorization tables for a
@@ -263,17 +237,6 @@ export interface IAutoBeRpcListener {
    */
   databaseAuthorization?(
     event: AutoBeDatabaseAuthorizationEvent,
-  ): Promise<void>;
-
-  /**
-   * Optional handler for database authorization review events.
-   *
-   * Called when the Database agent reviews and validates the authorization
-   * component's table organization, ensuring all actor and session tables are
-   * properly defined.
-   */
-  databaseAuthorizationReview?(
-    event: AutoBeDatabaseAuthorizationReviewEvent,
   ): Promise<void>;
 
   /**
@@ -286,16 +249,6 @@ export interface IAutoBeRpcListener {
   databaseComponent?(event: AutoBeDatabaseComponentEvent): Promise<void>;
 
   /**
-   * Optional handler for database component review events.
-   *
-   * Called when the Database agent reviews and validates the component
-   * organization during the database design process.
-   */
-  databaseComponentReview?(
-    event: AutoBeDatabaseComponentReviewEvent,
-  ): Promise<void>;
-
-  /**
    * Optional handler for database schema creation progress events.
    *
    * Called each time a domain-specific schema file is completed, enabling
@@ -303,24 +256,6 @@ export interface IAutoBeRpcListener {
    * areas have been fully designed.
    */
   databaseSchema?(event: AutoBeDatabaseSchemaEvent): Promise<void>;
-
-  /**
-   * Optional handler for database schema review events.
-   *
-   * Called when the Database agent reviews and validates schema modifications,
-   * enabling client applications to show that the database design is being
-   * thoroughly evaluated against best practices and business requirements.
-   *
-   * Client applications can use this event to display the review findings,
-   * highlight any necessary modifications, and confirm that the schema adheres
-   * to normalization principles, relationship integrity, and performance
-   * optimization.
-   *
-   * The review process ensures that the database design is robust, maintains
-   * data integrity, and aligns with the overall project goals and
-   * requirements.
-   */
-  databaseSchemaReview?(event: AutoBeDatabaseSchemaReviewEvent): Promise<void>;
 
   /**
    * Optional handler for database schema validation events.
@@ -383,16 +318,6 @@ export interface IAutoBeRpcListener {
   interfaceEndpoint?(event: AutoBeInterfaceEndpointEvent): Promise<void>;
 
   /**
-   * Optional handler for API endpoint review events.
-   *
-   * Called when the Interface agent reviews API endpoints, enabling client
-   * applications to show the review process and any identified issues.
-   */
-  interfaceEndpointReview?(
-    event: AutoBeInterfaceEndpointReviewEvent,
-  ): Promise<void>;
-
-  /**
    * Optional handler for API operation definition progress events.
    *
    * Called as detailed operation specifications are created for each endpoint,
@@ -400,16 +325,6 @@ export interface IAutoBeRpcListener {
    * functionality is being systematically developed.
    */
   interfaceOperation?(event: AutoBeInterfaceOperationEvent): Promise<void>;
-
-  /**
-   * Optional handler for API operation review events.
-   *
-   * Called when the Interface agent reviews API operations, enabling client
-   * applications to show the review process and any identified issues.
-   */
-  interfaceOperationReview?(
-    event: AutoBeInterfaceOperationReviewEvent,
-  ): Promise<void>;
 
   /**
    * Optional handler for API authorization operation definition progress
@@ -531,14 +446,6 @@ export interface IAutoBeRpcListener {
    * the application.
    */
   testScenario?(event: AutoBeTestScenarioEvent): Promise<void>;
-
-  /**
-   * Optional handler for test scenario review events.
-   *
-   * Called when test scenarios are being reviewed, allowing client applications
-   * to show the review process and any identified issues.
-   */
-  testScenarioReview?(event: AutoBeTestScenarioReviewEvent): Promise<void>;
 
   /**
    * Optional handler for test code generation progress events.

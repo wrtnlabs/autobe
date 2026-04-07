@@ -76,7 +76,7 @@ export namespace ArchiveLogger {
         `  - partial data: ${JSON.stringify(event.failure.data)}`,
         `  - life: ${event.life}`,
       );
-    else if (event.type === "preliminary") {
+    else if (event.type === "preliminaryAcquire")
       content.push(
         `  - source: ${event.source}`,
         `  - source_id: ${event.source_id}`,
@@ -85,7 +85,17 @@ export namespace ArchiveLogger {
         `  - existing: ${event.existing.length}, ${JSON.stringify(event.existing)}`,
         `  - requested: ${event.requested.length}, ${JSON.stringify(event.requested)}`,
       );
-    }
+    else if (event.type === "preliminaryRewrite")
+      content.push(
+        `  - source: ${event.source}`,
+        `  - oldbie: ${JSON.stringify(event.oldbie)}`,
+        `  - newbie: ${JSON.stringify(event.newbie)}`,
+        `  - thinking:`,
+        event.thinking
+          .split("\n")
+          .map((line) => `    ${line}`)
+          .join("\n"),
+      );
     //----
     // COMPLETES
     //----
@@ -151,71 +161,17 @@ export namespace ArchiveLogger {
         `  - groups: ${event.groups.length}`,
         ...event.groups.map((g) => `    - ${g.namespace} (kind: ${g.kind})`),
       );
-    else if (event.type === "databaseGroupReview")
-      content.push(
-        `  - revises: ${event.revises.length}`,
-        `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
-        ...event.revises
-          .filter((r) => r.type === "create")
-          .map((r) => `      - ${r.group.namespace} (kind: ${r.group.kind})`),
-        `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
-        ...event.revises
-          .filter((r) => r.type === "update")
-          .map((r) => `      - ${r.originalNamespace} => ${r.group.namespace}`),
-        `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
-        ...event.revises
-          .filter((r) => r.type === "erase")
-          .map((r) => `      - ${r.namespace}`),
-        `  - groups after review: ${event.groups.length}`,
-        ...event.groups.map((g) => `    - ${g.namespace} (kind: ${g.kind})`),
-      );
     else if (event.type === "databaseAuthorization")
       content.push(
         `  - namespace: ${event.component.namespace}`,
         `  - tables: ${event.component.tables.length}`,
         ...event.component.tables.map((t) => `    - ${t.name}`),
       );
-    else if (event.type === "databaseAuthorizationReview")
-      content.push(
-        `  - namespace: ${event.modification.namespace}`,
-        `  - tables: ${event.modification.tables.length}`,
-        `  - revised:`,
-        `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
-        ...event.revises
-          .filter((r) => r.type === "create")
-          .map((r) => `      - ${r.table}`),
-        `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
-        ...event.revises
-          .filter((r) => r.type === "update")
-          .map((r) => `      - ${r.original} => ${r.updated}`),
-        `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
-        ...event.revises
-          .filter((r) => r.type === "erase")
-          .map((r) => `      - ${r.table}`),
-      );
     else if (event.type === "databaseComponent")
       content.push(
         `  - namespace: ${event.component.namespace}`,
         `  - tables: ${event.component.tables.length}`,
         ...event.component.tables.map((t) => `    - ${t.name}`),
-      );
-    else if (event.type === "databaseComponentReview")
-      content.push(
-        `  - namespace: ${event.modification.namespace}`,
-        `  - tables: ${event.modification.tables.length}`,
-        `  - revised:`,
-        `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
-        ...event.revises
-          .filter((r) => r.type === "create")
-          .map((r) => `      - ${r.table}`),
-        `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
-        ...event.revises
-          .filter((r) => r.type === "update")
-          .map((r) => `      - ${r.original} => ${r.updated}`),
-        `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
-        ...event.revises
-          .filter((r) => r.type === "erase")
-          .map((r) => `      - ${r.table}`),
       );
     else if (event.type === "databaseSchema")
       content.push(
@@ -246,34 +202,6 @@ export namespace ArchiveLogger {
           (d) =>
             `    - ${d.endpoint.method} ${d.endpoint.path} (${d.authorizationType})`,
         ),
-      );
-    else if (event.type === "interfaceEndpointReview")
-      content.push(
-        `  - kind: ${event.kind}`,
-        `  - group: ${event.group}`,
-        `  - endpoints: ${event.designs.length}`,
-        `  - revised:`,
-        `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
-        ...event.revises
-          .filter((r) => r.type === "create")
-          .map(
-            (r) =>
-              `      - ${r.design.endpoint.method.toUpperCase()} ${r.design.endpoint.path} (${r.design.authorizationType})`,
-          ),
-        `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
-        ...event.revises
-          .filter((r) => r.type === "update")
-          .map(
-            (r) =>
-              `      - ${r.endpoint.method.toUpperCase()} ${r.endpoint.path} -> ${r.newDesign.endpoint.method.toUpperCase()} ${r.newDesign.endpoint.path} (${r.newDesign.authorizationType})`,
-          ),
-        `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
-        ...event.revises
-          .filter((r) => r.type === "erase")
-          .map(
-            (r) =>
-              `      - ${r.endpoint.method.toUpperCase()} ${r.endpoint.path}`,
-          ),
       );
     else if (event.type === "interfaceOperation")
       content.push(

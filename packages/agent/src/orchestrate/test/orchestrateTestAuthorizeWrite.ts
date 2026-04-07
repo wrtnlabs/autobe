@@ -9,7 +9,7 @@ import {
   AutoBeFunctionCallingMetricFactory,
   AutoBeOpenApiTypeChecker,
 } from "@autobe/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -60,22 +60,31 @@ export const orchestrateTestAuthorizeWrite = async (
           path: operation.path,
         },
       });
-      const event: AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction> =
-        operation.authorizationType === "join"
-          ? await forceRetry(() =>
-              process(ctx, {
-                operation,
-                artifacts,
+      const counter = new Singleton(() => ++props.progress.completed);
+      let event: AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>;
+      try {
+        event =
+          operation.authorizationType === "join"
+            ? await forceRetry(() =>
+                process(ctx, {
+                  operation,
+                  artifacts,
+                  progress: props.progress,
+                  counter,
+                  promptCacheKey,
+                }),
+              )
+            : await write(ctx, {
+                document: props.document,
                 progress: props.progress,
-                promptCacheKey,
-              }),
-            )
-          : await write(ctx, {
-              document: props.document,
-              progress: props.progress,
-              artifacts,
-              operation,
-            });
+                counter,
+                artifacts,
+                operation,
+              });
+      } catch (error) {
+        counter.get();
+        throw error;
+      }
       ctx.dispatch(event);
       return {
         type: "authorize",
@@ -94,6 +103,7 @@ async function write(
     operation: AutoBeOpenApi.IOperation;
     artifacts: IAutoBeTestArtifacts;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>> {
   const schema: AutoBeOpenApi.IJsonSchema | undefined =
@@ -138,7 +148,7 @@ async function write(
     function: authorizationFunction,
     metric: AutoBeFunctionCallingMetricFactory.create(),
     tokenUsage: new AutoBeTokenUsageComponent(),
-    completed: ++props.progress.completed,
+    completed: props.counter.get(),
     total: props.progress.total,
     step: ctx.state().interface?.step ?? 0,
   } satisfies AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>;
@@ -150,6 +160,7 @@ async function process(
     operation: AutoBeOpenApi.IOperation;
     artifacts: IAutoBeTestArtifacts;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>> {
@@ -174,7 +185,7 @@ async function process(
     })),
   });
   if (pointer.value === null) {
-    ++props.progress.completed;
+    props.counter.get();
     throw new Error("Failed to create authorization function.");
   }
 
@@ -205,7 +216,7 @@ async function process(
     function: authorizationFunction,
     metric,
     tokenUsage,
-    completed: ++props.progress.completed,
+    completed: props.counter.get(),
     total: props.progress.total,
     step: ctx.state().interface?.step ?? 0,
   } satisfies AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>;

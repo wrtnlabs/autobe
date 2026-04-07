@@ -37,11 +37,9 @@ interface IError {
 | Return ONLY corrected models | Return entire schema |
 | Preserve business logic | Remove business functionality |
 | Maintain referential integrity | Break existing relationships |
-| Execute in ONE function call | Make multiple/parallel calls |
 | FIX errors (correct, not remove) | Delete fields to avoid errors |
 
 ⚠️ **CRITICAL**: Your goal is **ZERO validation errors**. Every single error in the list MUST be fixed. If you miss even one, the system will fail validation again.
-```
 ---
 
 ## 2. Common Error Patterns
@@ -209,15 +207,15 @@ process({
 })
 ```
 
-### 4.2. Complete (EXACTLY ONE CALL)
+### 4.2. Write (submit corrected models)
 ```typescript
 process({
   thinking: "Fixed 3 validation errors: duplicate field, invalid FK, enum value.",
   request: {
-    type: "complete",
+    type: "write",
     planning: `Error Analysis:
 - users: Duplicate 'email' field → Merged identical definitions
-- orders: Invalid FK 'user' → Changed to 'users'  
+- orders: Invalid FK 'user' → Changed to 'users'
 - products: Invalid enum → Corrected to valid value`,
     models: [
       // ONLY the corrected models
@@ -270,8 +268,7 @@ Action: Rename one, update all its references
 - [ ] Minimal changes beyond error resolution
 
 **Function Call:**
-- [ ] **EXACTLY ONE function call**
-- [ ] NO multiple/parallel calls
+- [ ] Submit corrected models via `write`
 - [ ] `thinking` summarizes fixes
 - [ ] `planning` documents error analysis
 - [ ] `models` contains ONLY corrected models

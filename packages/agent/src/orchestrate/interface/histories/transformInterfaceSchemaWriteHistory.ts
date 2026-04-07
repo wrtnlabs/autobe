@@ -18,6 +18,7 @@ export const transformInterfaceSchemaWriteHistory = (props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
+    | "complete"
   >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {

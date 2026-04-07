@@ -1,15 +1,28 @@
-import { IMicroAgenticaHistoryJson } from "@agentica/core";
+import {
+  AgenticaExecuteHistory,
+  IMicroAgenticaHistoryJson,
+} from "@agentica/core";
 import {
   AutoBeEventSource,
+  AutoBeFunctionCallingMetric,
   AutoBePreliminaryAcquisition,
   AutoBePreliminaryKind,
+  AutoBePreliminaryRewriteEvent,
+  AutoBeProcessAggregate,
+  IAutoBeTokenUsageJson,
 } from "@autobe/interface";
+import {
+  AutoBeFunctionCallingMetricFactory,
+  AutoBeProcessAggregateFactory,
+  TokenUsageComputer,
+} from "@autobe/utils";
 import {
   IJsonSchemaApplication,
   ILlmApplication,
   IValidation,
 } from "@typia/interface";
 import { OpenApiTypeChecker } from "@typia/utils";
+import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
@@ -40,10 +53,14 @@ import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCol
  */
 export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   // METADATA
-  private readonly source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+  private readonly source: Exclude<
+    AutoBeEventSource,
+    "facade" | "preliminaryAcquire"
+  >;
   private readonly source_id: string;
   private readonly kinds: Kind[];
   private readonly argumentTypeNames: string[];
+  private readonly dispatch: (event: AutoBePreliminaryRewriteEvent) => void;
 
   // PRELIMINARY DATA
   private readonly all: Pick<IAutoBePreliminaryCollection, Kind>;
@@ -53,6 +70,12 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
 
   // PAGINATION
   private analysisPageOffset: number = 0;
+
+  // COMPLETION TRACKING
+  private previousWrites: IPreviousWrite[] = [];
+  private completed: IPointer<boolean> = {
+    value: false,
+  };
 
   /**
    * Initializes controller with data collections and auto-complements
@@ -65,6 +88,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.source = props.source;
     this.source_id = v7();
     this.kinds = props.kinds;
+    this.dispatch = props.dispatch;
 
     // biome-ignore-start lint: intended
     this.config = {
@@ -157,7 +181,10 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    *
    * @returns Source event type (e.g., `"realizeWrite"`, `"interfaceSchema"`).
    */
-  public getSource(): Exclude<AutoBeEventSource, "facade" | "preliminary"> {
+  public getSource(): Exclude<
+    AutoBeEventSource,
+    "facade" | "preliminaryAcquire"
+  > {
     return this.source;
   }
 
@@ -261,6 +288,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         acquisition.previousInterfaceSchemas = Object.keys(
           local.previousInterfaceSchemas,
         );
+      else if (kind === "complete") acquisition.complete = false;
       else kind satisfies never;
     return acquisition as Pick<AutoBePreliminaryAcquisition, Kind>;
   }
@@ -277,6 +305,10 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   /** Returns current page offset for analysis section metadata pagination. */
   public getAnalysisPageOffset(): number {
     return this.analysisPageOffset;
+  }
+
+  public getPreviousWrite(): Record<string, unknown> | null {
+    return this.previousWrites.at(-1)?.raw ?? null;
   }
 
   /** Advances analysis section metadata page by PAGE_SIZE. */
@@ -331,23 +363,86 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       ) => (value: T | null) => IAutoBeOrchestrateResult<T>,
     ) => Promise<IAutoBeOrchestrateResult<T>>,
   ): Promise<T | never> {
-    for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
-      const result: IAutoBeOrchestrateResult<T> = await process(
-        (x) => (value) => ({
-          ...x,
-          value,
-        }),
-      );
-      if (result.value !== null) return result.value;
+    // initialize
+    this.previousWrites = [];
+    this.completed.value = false satisfies boolean as boolean;
+    const aggregate: AutoBeProcessAggregate =
+      AutoBeProcessAggregateFactory.createAggregate();
 
-      await orchestratePreliminary(ctx, {
-        source_id: this.source_id,
-        source: this.source,
-        preliminary: this,
-        trial: i + 1,
-        histories: result.histories,
-      });
+    try {
+      for (let i: number = 0; i < AutoBeConfigConstant.RAG_LIMIT; ++i) {
+        // take a process
+        const result: IAutoBeOrchestrateResult<T> = await process(
+          (x) => (value) => ({
+            ...x,
+            value,
+          }),
+        );
+
+        // swap consumption to aggregate
+        AutoBeFunctionCallingMetricFactory.increment(
+          aggregate.metric,
+          result.metric,
+        );
+        TokenUsageComputer.increment(aggregate.tokenUsage, result.tokenUsage);
+        result.tokenUsage = aggregate.tokenUsage;
+        result.metric = aggregate.metric;
+
+        if (result.value !== null) {
+          const executes: AgenticaExecuteHistory[] = result.histories.filter(
+            (h) => h.type === "execute",
+          );
+          const history: AgenticaExecuteHistory | undefined = executes.find(
+            (h) => (h.arguments.request as { type: "write" }).type === "write",
+          );
+          if (history === undefined) continue;
+
+          // store write result and raw arguments
+          this.previousWrites.push({
+            value: result.value as T,
+            metric: result.metric,
+            tokenUsage: result.tokenUsage,
+            raw: history.arguments,
+          });
+          if (this.previousWrites.length > 1) {
+            this.dispatch({
+              id: v7(),
+              type: "preliminaryRewrite",
+              source: this.source,
+              thinking: history.arguments.thinking as string,
+              oldbie: this.previousWrites.at(-2)!.raw,
+              newbie: history.arguments,
+              created_at: new Date().toISOString(),
+            } satisfies AutoBePreliminaryRewriteEvent);
+          }
+          if (
+            this.previousWrites.length >=
+            (this.kinds.includes("complete" as Kind)
+              ? AutoBeConfigConstant.PRELIMINARY_WRITE_LIMIT
+              : 1)
+          )
+            break;
+        } else {
+          // orchestrate next iteration
+          await orchestratePreliminary(ctx, {
+            source_id: this.source_id,
+            source: this.source,
+            preliminary: this,
+            trial: i + 1,
+            histories: result.histories,
+            completed: this.completed,
+          });
+          if (this.completed.value === true && this.previousWrites.length !== 0)
+            break;
+        }
+      }
+    } catch (error) {
+      if (this.previousWrites.length === 0) throw error;
     }
+
+    // check success
+    const last: IPreviousWrite | undefined = this.previousWrites.at(-1);
+    if (last !== undefined) return last.value as T;
 
     throw new AutoBePreliminaryExhaustedError();
   }
@@ -356,10 +451,12 @@ export namespace AutoBePreliminaryController {
   /** Constructor props for `AutoBePreliminaryController`. */
   export interface IProps<Kind extends AutoBePreliminaryKind> {
     /** Orchestration source creating this controller. */
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source: Exclude<AutoBeEventSource, "facade" | "preliminaryAcquire">;
 
     /** LLM application schema for function calling validation. */
     application: IJsonSchemaApplication;
+
+    dispatch: (event: AutoBePreliminaryRewriteEvent) => void;
 
     /**
      * Data types to enable (e.g., `["databaseSchemas",
@@ -397,4 +494,11 @@ export namespace AutoBePreliminaryController {
       : never;
     databaseProperty: boolean;
   }
+}
+
+interface IPreviousWrite {
+  value: unknown;
+  metric: AutoBeFunctionCallingMetric;
+  tokenUsage: IAutoBeTokenUsageJson.IComponent;
+  raw: Record<string, unknown>;
 }

@@ -13,7 +13,8 @@ export const test_typing_rpc_listener_functions = () => {
     | "jsonValidateError"
     | "jsonParseError"
     | "consentFunctionCall"
-    | "preliminary"
+    | "preliminaryAcquire"
+    | "preliminaryRewrite"
   > = "interfaceSchema" as any;
   // biome-ignore-end lint: intended
 

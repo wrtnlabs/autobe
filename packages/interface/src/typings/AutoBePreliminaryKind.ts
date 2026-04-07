@@ -28,6 +28,11 @@
  * - **previousInterfaceOperations**: API operations from previous iterations
  * - **previousInterfaceSchemas**: Schema definitions from previous iterations
  *
+ * **Control Signal**:
+ *
+ * - **complete**: Signals that the write loop should be finalized, accepting the
+ *   most recent write as-is
+ *
  * The "previous" categories enable incremental updates and regeneration
  * scenarios where new requirements need to be merged with or replace existing
  * generated artifacts, ensuring smooth evolution of the generated backend
@@ -46,4 +51,5 @@ export type AutoBePreliminaryKind =
   | "previousAnalysisSections"
   | "previousDatabaseSchemas"
   | "previousInterfaceOperations"
-  | "previousInterfaceSchemas";
+  | "previousInterfaceSchemas"
+  | "complete";

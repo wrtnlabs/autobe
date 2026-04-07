@@ -1,5 +1,6 @@
 import { AutoBeInterfaceSchemaDesign } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -17,8 +18,8 @@ export interface IAutoBeInterfaceSchemaComplementApplication {
 export namespace IAutoBeInterfaceSchemaComplementApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Reasoning: what's missing (preliminary), what you're submitting (write),
+     * or why you're finalizing (complete).
      */
     thinking: string;
 
@@ -27,7 +28,8 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
      * union.
      */
     request:
-      | IComplete
+      | IWrite
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
@@ -38,10 +40,13 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /** Add a missing schema definition referenced by $ref in components.schemas. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /**
+   * Submit a missing schema definition referenced by $ref in
+   * components.schemas.
+   */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of the missing type's purpose and reference context. */
     analysis: string;

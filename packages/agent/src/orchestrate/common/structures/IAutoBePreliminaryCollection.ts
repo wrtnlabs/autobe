@@ -41,4 +41,7 @@ export interface IAutoBePreliminaryCollection {
     string,
     AutoBeOpenApi.IJsonSchemaDescriptive
   >;
+
+  /** Completion signal (no data — used only as a control kind). */
+  complete: null;
 }

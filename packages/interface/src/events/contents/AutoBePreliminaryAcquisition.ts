@@ -12,4 +12,6 @@ export interface AutoBePreliminaryAcquisition {
   previousDatabaseSchemas: string[];
   previousInterfaceOperations: AutoBeOpenApi.IEndpoint[];
   previousInterfaceSchemas: string[];
+
+  complete: false;
 }

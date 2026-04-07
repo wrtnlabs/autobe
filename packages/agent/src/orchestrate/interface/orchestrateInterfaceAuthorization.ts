@@ -8,7 +8,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { NamingConvention } from "@typia/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -34,17 +34,24 @@ export async function orchestrateInterfaceAuthorization(
   return await executeCachedBatch(
     ctx,
     actors.map((a) => async (promptCacheKey) => {
-      const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
-        actor: a,
-        progress,
-        promptCacheKey,
-        instruction: props.instruction,
-      });
-      ctx.dispatch(event);
-      return {
-        name: a.name,
-        operations: event.operations,
-      };
+      const counter = new Singleton(() => ++progress.completed);
+      try {
+        const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
+          actor: a,
+          progress,
+          counter,
+          promptCacheKey,
+          instruction: props.instruction,
+        });
+        ctx.dispatch(event);
+        return {
+          name: a.name,
+          operations: event.operations,
+        };
+      } catch (error) {
+        counter.get();
+        throw error;
+      }
     }),
   );
 }
@@ -55,6 +62,7 @@ async function process(
     instruction: string;
     actor: AutoBeAnalyze.IActor;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
@@ -64,6 +72,7 @@ async function process(
     | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceAuthorizationApplication>(),
@@ -73,11 +82,13 @@ async function process(
       "previousAnalysisSections",
       "databaseSchemas",
       "previousDatabaseSchemas",
+      "complete",
     ],
     state: ctx.state(),
+    dispatch: (e) => ctx.dispatch(e),
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceAuthorizationApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfaceAuthorizationApplication.IWrite | null> =
       {
         value: null,
       };
@@ -120,7 +131,7 @@ async function process(
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
       total: props.progress.total,
-      completed: ++props.progress.completed,
+      completed: props.counter.get(),
     } satisfies AutoBeInterfaceAuthorizationEvent);
   });
 }
@@ -133,8 +144,9 @@ function createController(props: {
     | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
+    | "complete"
   >;
-  build: (next: IAutoBeInterfaceAuthorizationApplication.IComplete) => void;
+  build: (next: IAutoBeInterfaceAuthorizationApplication.IWrite) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -142,7 +154,7 @@ function createController(props: {
     const result: IValidation<IAutoBeInterfaceAuthorizationApplication.IProps> =
       typia.validate<IAutoBeInterfaceAuthorizationApplication.IProps>(next);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -187,7 +199,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") {
+        if (next.request.type === "write") {
           for (const o of next.request.operations)
             for (const p of o.parameters)
               AutoBeJsonSchemaFactory.fixSchema(p.schema);

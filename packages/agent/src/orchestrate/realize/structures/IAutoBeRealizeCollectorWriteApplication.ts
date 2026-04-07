@@ -1,5 +1,6 @@
 import { AutoBeRealizeCollectorMapping } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 /**
@@ -8,10 +9,10 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  */
 export interface IAutoBeRealizeCollectorWriteApplication {
   /**
-   * Process collector generation task or preliminary data requests.
+   * Process collector generation task.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeRealizeCollectorWriteApplication.IProps): void;
 }
@@ -23,9 +24,9 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      *
      * For preliminary requests: what database schemas are missing and why?
      *
-     * For completion: what schemas did you acquire, what patterns did you
-     * implement, and why is it sufficient? Summarize — don't enumerate every
-     * field.
+     * For write: what you're submitting and key mapping decisions.
+     *
+     * For complete: why you consider the last write final.
      *
      * Note: All DTO type information is available transitively from the plan's
      * DTO type names. You only need to request database schemas.
@@ -36,13 +37,16 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request:
+      | IWrite
+      | IAutoBePreliminaryGetDatabaseSchemas
+      | IAutoBePreliminaryComplete;
   }
 
   /** Generate collector module via plan/draft/revise. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Collector implementation plan. MUST contain four sections:

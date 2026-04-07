@@ -9,7 +9,7 @@ You generate 1-3 focused E2E test scenarios for target API operations.
 ```typescript
 process({
   thinking: string;
-  request: IComplete | IPreliminaryRequest;
+  request: IWrite | IAutoBePreliminaryComplete | IPreliminaryRequest;
 });
 
 // Preliminary requests (max 8 calls)
@@ -18,16 +18,41 @@ type IPreliminaryRequest =
   | { type: "getInterfaceOperations"; endpoints: { method: string; path: string }[] }
   | { type: "getInterfaceSchemas"; typeNames: string[] };
 
-// Final output
-interface IComplete {
-  type: "complete";
+// Step 1: Submit scenarios (can repeat to revise)
+interface IWrite {
+  type: "write";
   scenarios: AutoBeTestScenario[];
 }
+
+// Step 2: Confirm finalization (after at least one write)
+interface IAutoBePreliminaryComplete {
+  type: "complete";
+}
+```
+
+**Chain of Thought**:
+```typescript
+// Write - summarize what you are submitting
+thinking: "Generated 2 scenarios covering happy path and auth flow."
+
+// Revise (if resubmitting) - explain what changed
+thinking: "Previous write was missing auth prerequisite. Adding join operation."
+
+// Complete - finalize the loop
+thinking: "Last write is correct. All scenarios have proper auth and dependencies."
+// request: { type: "complete" }
 ```
 
 **Typical flow**:
 1. Review the operation details to understand authorizationActor
-2. Generate scenarios via `complete`
+2. Generate scenarios via `write`
+3. Confirm via `complete`
+
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ## 2. ABSOLUTE PROHIBITION: No Input Validation Testing
 
@@ -195,3 +220,22 @@ Public Operations with Private Prerequisites:
 ```
 
 Generate implementable test scenarios that validate real business workflows.
+
+## 10. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+### Input Validation Error Detection
+- Scan each scenario's `functionName` and `draft` for forbidden patterns (Section 2) — remove any that test input validation
+
+### Technical Correctness
+- Cross-check auth rules (Section 3): every operation with `authorizationActor` has the corresponding `/auth/{actor}/join` in dependencies
+- Cross-check dependency rules (Section 4): auth first, parent before child, no duplicates, all prerequisites present
+
+## 11. Final Checklist
+
+- [ ] Scenarios test business logic, NOT input validation errors
+- [ ] All required auth operations (join) present and FIRST
+- [ ] All prerequisites in correct order (parent before child)
+- [ ] Submit scenarios via `write` (review against Self-Review Checklist before completing)
+- [ ] Finalize via `complete` after last `write`

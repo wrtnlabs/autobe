@@ -5,7 +5,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeInterfacePrerequisiteEvent } from "@autobe/interface/src/events/AutoBeInterfacePrerequisiteEvent";
-import { HashMap, IPointer } from "tstl";
+import { HashMap, IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -38,6 +38,7 @@ export async function orchestrateInterfacePrerequisite(
     await executeCachedBatch(
       ctx,
       candidates.map((it) => async (promptCacheKey) => {
+        const counter = new Singleton(() => ++progress.completed);
         try {
           return await process(ctx, {
             dict,
@@ -45,8 +46,10 @@ export async function orchestrateInterfacePrerequisite(
             operation: it,
             progress,
             promptCacheKey,
+            counter,
           });
         } catch {
+          counter.get();
           return null;
         }
       }),
@@ -62,6 +65,7 @@ async function process(
     operation: AutoBeOpenApi.IOperation;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    counter: Singleton<number>;
   },
 ): Promise<AutoBeInterfacePrerequisiteEvent | null> {
   const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
@@ -100,7 +104,10 @@ async function process(
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
+    | "complete"
   > = new AutoBePreliminaryController({
+    dispatch: (e) => ctx.dispatch(e),
+    state: ctx.state(),
     application:
       typia.json.application<IAutoBeInterfacePrerequisiteApplication>(),
     source: SOURCE,
@@ -113,8 +120,8 @@ async function process(
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
+      "complete",
     ],
-    state: ctx.state(),
     all: {
       interfaceOperations: props.document.operations,
       interfaceSchemas: props.document.components.schemas,
@@ -124,53 +131,57 @@ async function process(
       interfaceOperations: [props.operation],
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfacePrerequisiteApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        dict: props.dict,
-        document: props.document,
-        operation: props.operation,
-        preliminary,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfacePrerequisiteHistory({
-        document: props.document,
-        operation: props.operation,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeInterfacePrerequisiteEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeInterfacePrerequisiteApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          dict: props.dict,
+          document: props.document,
+          operation: props.operation,
+          preliminary,
+          build: (next) => {
+            pointer.value = next;
+          },
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfacePrerequisiteHistory({
+          document: props.document,
+          operation: props.operation,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeInterfacePrerequisiteEvent = {
-      type: SOURCE,
-      id: v7(),
-      endpoint: {
-        path: props.operation.path,
-        method: props.operation.method,
-      },
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      prerequisites: pointer.value.prerequisites,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      step: ctx.state().database?.step ?? 0,
-      created_at: new Date().toISOString(),
-    };
-    ctx.dispatch(event);
-    return out(result)(event);
-  });
+      const event: AutoBeInterfacePrerequisiteEvent = {
+        type: SOURCE,
+        id: v7(),
+        endpoint: {
+          path: props.operation.path,
+          method: props.operation.method,
+        },
+        analysis: pointer.value.analysis,
+        rationale: pointer.value.rationale,
+        prerequisites: pointer.value.prerequisites,
+        acquisition: preliminary.getAcquisition(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        total: props.progress.total,
+        completed: props.counter.get(),
+        step: ctx.state().database?.step ?? 0,
+        created_at: new Date().toISOString(),
+      };
+      return out(result)(event);
+    },
+  );
+  ctx.dispatch(event);
+  return event;
 }
 
 function createController(props: {
@@ -186,8 +197,9 @@ function createController(props: {
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceSchemas"
+    | "complete"
   >;
-  build: (next: IAutoBeInterfacePrerequisiteApplication.IComplete) => void;
+  build: (next: IAutoBeInterfacePrerequisiteApplication.IWrite) => void;
 }): IAgenticaController.IClass {
   const validate = (
     next: unknown,
@@ -195,7 +207,7 @@ function createController(props: {
     const result: IValidation<IAutoBeInterfacePrerequisiteApplication.IProps> =
       typia.validate<IAutoBeInterfacePrerequisiteApplication.IProps>(next);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -231,7 +243,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write") props.build(next.request);
       },
     } satisfies IAutoBeInterfacePrerequisiteApplication,
   };

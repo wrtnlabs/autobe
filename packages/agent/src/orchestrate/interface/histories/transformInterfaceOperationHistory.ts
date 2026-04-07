@@ -15,6 +15,7 @@ export const transformInterfaceOperationHistory = (props: {
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {

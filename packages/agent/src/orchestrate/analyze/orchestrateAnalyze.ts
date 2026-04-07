@@ -3,7 +3,6 @@ import {
   AutoBeAnalyze,
   AutoBeAnalyzeHistory,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeScenarioReviewEvent,
   AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeSectionReviewFileResult,
   AutoBeAnalyzeSectionReviewIssue,
@@ -24,9 +23,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { fillTocDeterministic } from "./fillTocDeterministic";
 import { orchestrateAnalyzeExtractDecisions } from "./orchestrateAnalyzeExtractDecisions";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
-import { orchestrateAnalyzeScenarioReview } from "./orchestrateAnalyzeScenarioReview";
 import { orchestrateAnalyzeSectionCrossFileReview } from "./orchestrateAnalyzeSectionCrossFileReview";
-import { orchestrateAnalyzeSectionReview } from "./orchestrateAnalyzeSectionReview";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
 import { orchestrateAnalyzeWriteSectionPatch } from "./orchestrateAnalyzeWriteSectionPatch";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
@@ -139,68 +136,11 @@ export const orchestrateAnalyze = async (
       continue;
     }
 
-    // 2) LLM review
-    let review: AutoBeAnalyzeScenarioReviewEvent;
-    try {
-      review = await orchestrateAnalyzeScenarioReview(ctx, {
-        scenario: rawScenario,
-        retry: attempt,
-      });
-    } catch (e) {
-      if (
-        e instanceof AgenticaValidationError ||
-        e instanceof AutoBePreliminaryExhaustedError ||
-        e instanceof AutoBeTimeoutError
-      ) {
-        analyzeDebug(
-          `scenario review force-pass (attempt ${attempt}) error=${(e as Error).constructor.name}`,
-        );
-        review = {
-          type: "analyzeScenarioReview",
-          id: v7(),
-          approved: true,
-          feedback:
-            "Review could not be completed; proceeding with current scenario.",
-          issues: [],
-          tokenUsage: {
-            total: 0,
-            input: { total: 0, cached: 0 },
-            output: {
-              total: 0,
-              reasoning: 0,
-              accepted_prediction: 0,
-              rejected_prediction: 0,
-            },
-          },
-          metric: {
-            attempt: 0,
-            success: 0,
-            consent: 0,
-            validationFailure: 0,
-            invalidJson: 0,
-          },
-          step: (ctx.state().analyze?.step ?? -1) + 1,
-          retry: attempt,
-          created_at: new Date().toISOString(),
-        };
-      } else {
-        throw e;
-      }
-    }
-
-    if (review.approved || attempt >= ANALYZE_SCENARIO_MAX_RETRY) {
-      analyzeDebug(
-        review.approved
-          ? `Scenario approved (attempt ${attempt})`
-          : `Scenario max retry reached (attempt ${attempt}), proceeding`,
-      );
-      scenario = rawScenario;
-      ctx.dispatch(scenario);
-      break;
-    }
-
-    analyzeDebug(`Scenario rejected (attempt ${attempt}): ${review.feedback}`);
-    scenarioFeedback = review.feedback;
+    // Accept scenario directly (write agent self-reviews during rewrite loop)
+    analyzeDebug(`Scenario accepted (attempt ${attempt})`);
+    scenario = rawScenario;
+    ctx.dispatch(scenario);
+    break;
   }
 
   // Initialize per-file state
@@ -600,10 +540,6 @@ async function processStageSection(
     // Build scenario entity name list for invention validation (P0-B)
     const scenarioEntityNames = props.scenario.entities.map((e) => e.name);
 
-    // Collect per-file review results (populated inside write+review batch)
-    const perFileReviewResults: Map<number, AutoBeAnalyzeSectionReviewEvent> =
-      new Map();
-
     for (const sectionBatch of sectionFileBatches)
       await executeCachedBatch(
         ctx,
@@ -765,59 +701,10 @@ async function processStageSection(
             `section file-write-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
           );
 
-          // Per-module review immediately after write (removes barrier)
-          const reviewStart: number = Date.now();
+          // Per-module review removed — write agents self-review during rewrite loop
           analyzeDebug(
-            `section per-module-review-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" modules=${state.unitResults!.length}`,
+            `section file-sections-accepted attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
           );
-          const moduleReviews: AutoBeAnalyzeSectionReviewEvent[] = [];
-          for (
-            let moduleIndex = 0;
-            moduleIndex < state.unitResults!.length;
-            moduleIndex++
-          ) {
-            try {
-              const moduleReviewEvent = await orchestrateAnalyzeSectionReview(
-                ctx,
-                {
-                  scenario: props.scenario,
-                  fileIndex,
-                  file: state.file,
-                  moduleEvent: state.moduleResult!,
-                  moduleIndex,
-                  unitEvent: state.unitResults![moduleIndex]!,
-                  moduleSectionEvents: state.sectionResults![moduleIndex]!,
-                  siblingModuleSummaries: buildSiblingModuleSummaries(
-                    state.moduleResult!,
-                    state.sectionResults!,
-                    moduleIndex,
-                  ),
-                  feedback: state.sectionFeedback,
-                  progress: props.perFileSectionReviewProgress,
-                  promptCacheKey: cacheKey,
-                  retry: attempt,
-                },
-              );
-              moduleReviews.push(moduleReviewEvent);
-            } catch (e) {
-              if (
-                e instanceof AgenticaValidationError ||
-                e instanceof AutoBeTimeoutError ||
-                e instanceof AutoBePreliminaryExhaustedError
-              ) {
-                analyzeDebug(
-                  `section per-module-review-force-pass attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} error=${(e as Error).constructor.name} — skipping this module review`,
-                );
-              } else {
-                throw e;
-              }
-            }
-          }
-          const reviewEvent = mergeModuleReviewEvents(moduleReviews, fileIndex);
-          analyzeDebug(
-            `section per-module-review-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" modules=${moduleReviews.length} elapsedMs=${Date.now() - reviewStart}`,
-          );
-          perFileReviewResults.set(fileIndex, reviewEvent!);
 
           return sectionResults;
         }),
@@ -1035,11 +922,9 @@ async function processStageSection(
         continue;
       }
 
-      const perFileEvent = perFileReviewResults.get(fileIndex);
-      const perFileResult = perFileEvent?.fileResults[0];
       const crossFileResult = crossFileResultMap.get(fileIndex);
 
-      const perFileApproved = perFileResult?.approved ?? true;
+      const perFileApproved = true; // per-file LLM review removed
       const crossFileApproved = crossFileResult?.approved ?? true;
 
       // Check if this file has programmatically-detected critical conflicts
@@ -1073,8 +958,6 @@ async function processStageSection(
       // 3. per-file approve + no critical conflict → approve (unchanged)
       const approved = perFileApproved && !hasCriticalConflict;
 
-      const structuredPerFileIssues =
-        collectStructuredReviewIssues(perFileResult);
       const structuredCrossFileIssues =
         collectStructuredReviewIssues(crossFileResult);
       const programmaticIssues = buildProgrammaticSectionIssues({
@@ -1101,33 +984,6 @@ async function processStageSection(
         state.lastSectionContentSignature = undefined;
         state.lastSectionRejectionSignature = undefined;
         pendingIndices.delete(fileIndex);
-      } else if (!perFileApproved) {
-        // Per-file rejected: store only the latest per-file feedback (no accumulation)
-        state.sectionFeedback = formatStructuredIssuesForRetry({
-          fallbackFeedback: perFileResult?.feedback ?? "",
-          issues: structuredPerFileIssues,
-        });
-
-        // Use only per-file rejectedModuleUnits (no cross-file merge)
-        state.rejectedModuleUnits = normalizeRejectedModuleUnits(
-          perFileResult?.rejectedModuleUnits ?? null,
-          structuredPerFileIssues,
-        );
-        // Fallback: infer targets from issues to avoid full-file rewrite
-        if (state.rejectedModuleUnits === null) {
-          state.rejectedModuleUnits = inferRejectedModuleUnitsFromIssues(
-            structuredPerFileIssues,
-            state.unitResults!,
-          );
-        }
-        analyzeDebug(
-          `section reject file="${state.file.filename}" attempt=${attempt} perFileApproved=${perFileApproved} crossFileApproved=${crossFileApproved} critical=${hasCriticalConflict} targets=${formatRejectedModuleUnitsSummary(
-            state.rejectedModuleUnits,
-          )} issues=${formatReviewIssuesSummary(structuredPerFileIssues)} feedback=${truncateForDebug(
-            state.sectionFeedback ?? "",
-            500,
-          )}`,
-        );
       } else {
         // Critical conflict rejected (per-file approved but programmatic violations exist)
         // Use cross-file rejectedModuleUnits for targeted patch if available
@@ -1614,66 +1470,6 @@ function dedupeReviewIssues(
     if (!map.has(key)) map.set(key, issue);
   }
   return [...map.values()];
-}
-
-// ─── Per-module review helpers ───
-
-function buildSiblingModuleSummaries(
-  moduleEvent: AutoBeAnalyzeWriteModuleEvent,
-  sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
-  excludeModuleIndex: number,
-): Array<{
-  moduleIndex: number;
-  title: string;
-  sectionTitles: string[];
-}> {
-  return sectionResults
-    .map((sectionsForModule, moduleIndex) => ({
-      moduleIndex,
-      title: moduleEvent.moduleSections[moduleIndex]?.title ?? "Unknown",
-      sectionTitles: sectionsForModule.flatMap((se) =>
-        se.sectionSections.map((s) => s.title),
-      ),
-    }))
-    .filter((s) => s.moduleIndex !== excludeModuleIndex);
-}
-
-function mergeModuleReviewEvents(
-  moduleReviews: AutoBeAnalyzeSectionReviewEvent[],
-  fileIndex: number,
-): AutoBeAnalyzeSectionReviewEvent | null {
-  if (moduleReviews.length === 0) return null;
-
-  const allApproved = moduleReviews.every(
-    (r) => r.fileResults[0]?.approved ?? true,
-  );
-  const allFeedback = moduleReviews
-    .map((r) => r.fileResults[0]?.feedback)
-    .filter(Boolean)
-    .join("\n");
-  const allRejectedModuleUnits = moduleReviews.flatMap(
-    (r) => r.fileResults[0]?.rejectedModuleUnits ?? [],
-  );
-  const allIssues = moduleReviews.flatMap(
-    (r) => r.fileResults[0]?.issues ?? [],
-  );
-
-  // Use the last review event as base (for tokenUsage, metric, etc.)
-  const base = moduleReviews[moduleReviews.length - 1]!;
-  return {
-    ...base,
-    fileResults: [
-      {
-        fileIndex,
-        approved: allApproved,
-        feedback: allFeedback,
-        revisedSections: null,
-        rejectedModuleUnits:
-          allRejectedModuleUnits.length > 0 ? allRejectedModuleUnits : null,
-        issues: allIssues.length > 0 ? allIssues : null,
-      },
-    ],
-  };
 }
 
 // ─── Section-stage helpers ───
