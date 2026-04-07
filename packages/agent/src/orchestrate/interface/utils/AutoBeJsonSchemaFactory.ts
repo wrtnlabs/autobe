@@ -66,6 +66,14 @@ export namespace AutoBeJsonSchemaFactory {
             next.$ref = "#/components/schemas/IPage.IPagination";
         },
       });
+
+    // Delete the bogus schemas themselves so the LLM never sees them
+    // in subsequent iterations. Covers both entity variants
+    // (IEcommerceMall.IPagination) and their page wrappers
+    // (IPageIEcommerceMall.IPagination).
+    for (const key of Object.keys(schemas))
+      if (key.endsWith(".IPagination") && key !== "IPage.IPagination")
+        delete schemas[key];
   };
 
   export const fixAuthorizationSchemas = (
