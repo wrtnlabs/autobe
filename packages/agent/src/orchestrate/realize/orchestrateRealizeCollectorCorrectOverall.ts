@@ -45,6 +45,19 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
     programmer: {
       location: "src/collectors",
 
+      // Recalculate template for corrected collector function
+      template: (func) =>
+        AutoBeRealizeCollectorProgrammer.writeTemplate({
+          plan: func.plan,
+          body: document.components.schemas[func.plan.dtoTypeName],
+          model: ctx
+            .state()
+            .database!.result.data.files.map((f) => f.models)
+            .flat()
+            .find((m) => m.name === func.plan.databaseSchemaName)!,
+          application: ctx.state().database!.result.data,
+        }),
+
       // Replace import statements using Collector-specific programmer
       replaceImportStatements: async (next) => {
         return await AutoBeRealizeCollectorProgrammer.replaceImportStatements(

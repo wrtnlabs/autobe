@@ -31,6 +31,18 @@ export const orchestrateRealizeOperationCorrectOverall = async (
   return await orchestrateRealizeCorrectOverall(ctx, {
     programmer: {
       location: "src/providers",
+      template: (func) =>
+        AutoBeRealizeOperationProgrammer.writeTemplate({
+          authorizations: props.authorizations,
+          schemas: document.components.schemas,
+          operation: document.operations.find(
+            (o) =>
+              o.method === func.endpoint.method &&
+              o.path === func.endpoint.path,
+          )!,
+          collectors: props.collectors,
+          transformers: props.transformers,
+        }),
       replaceImportStatements: async (next) => {
         const scenario: IAutoBeRealizeScenarioResult =
           AutoBeRealizeOperationProgrammer.getScenario({

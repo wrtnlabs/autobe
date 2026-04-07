@@ -115,6 +115,7 @@ interface IProgrammer<
   PreliminaryKind extends AutoBePreliminaryKind,
   Complete,
 > {
+  template(func: RealizeFunction): string;
   replaceImportStatements(props: {
     function: RealizeFunction;
     code: string;
@@ -531,20 +532,23 @@ const process = async <
       });
       if (pointer.value === null) return out(result)(null);
 
+      const template: string = props.programmer.template(props.function);
       const content: string = await props.programmer.replaceImportStatements({
         function: props.function,
         code: sanitizeGeneratedCode(
           pointer.value.revise.final ?? pointer.value.draft,
         ),
       });
+      const corrected: RealizeFunction = {
+        ...props.function,
+        content,
+        template,
+      };
       return out(result)({
         id: v7(),
         type: "realizeCorrect",
         kind: "overall",
-        function: {
-          ...props.function,
-          content,
-        },
+        function: corrected,
         created_at: new Date().toISOString(),
         step: ctx.state().analyze?.step ?? 0,
         metric: result.metric,

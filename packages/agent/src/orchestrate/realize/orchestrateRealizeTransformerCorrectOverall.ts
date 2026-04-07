@@ -48,6 +48,28 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
     programmer: {
       location: "src/transformers",
 
+      // Recalculate template for corrected transformer function
+      template: (func) => {
+        const model: AutoBeDatabase.IModel = prismaApplication.files
+          .map((f) => f.models)
+          .flat()
+          .find((m) => m.name === func.plan.databaseSchemaName)!;
+        return AutoBeRealizeTransformerProgrammer.writeTemplate({
+          plan: func.plan,
+          schema: document.components.schemas[
+            func.plan.dtoTypeName
+          ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
+          schemas: document.components.schemas,
+          neighbors: getNeighbors(func).map((n) => n.plan),
+          relations:
+            AutoBeRealizeTransformerProgrammer.getRelationMappingTable({
+              application: prismaApplication,
+              model,
+            }),
+          model,
+        });
+      },
+
       // Replace import statements using Transformer-specific programmer
       replaceImportStatements: async (next) => {
         return await AutoBeRealizeTransformerProgrammer.replaceImportStatements(

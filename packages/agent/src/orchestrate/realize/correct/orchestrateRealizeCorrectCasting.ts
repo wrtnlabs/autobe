@@ -287,14 +287,16 @@ const process = async <RealizeFunction extends AutoBeRealizeFunction>(
     function: props.function,
     code: pointer.value.revise.final ?? pointer.value.draft,
   });
+  const corrected: RealizeFunction = {
+    ...props.function,
+    content,
+    template,
+  };
   ctx.dispatch({
     id: v7(),
     type: "realizeCorrect",
     kind: "casting",
-    function: {
-      ...props.function,
-      content,
-    },
+    function: corrected,
     created_at: new Date().toISOString(),
     step: ctx.state().analyze?.step ?? 0,
     metric,
@@ -302,10 +304,7 @@ const process = async <RealizeFunction extends AutoBeRealizeFunction>(
   } satisfies AutoBeRealizeCorrectEvent);
   return {
     type: "success",
-    function: {
-      ...props.function,
-      content,
-    },
+    function: corrected,
   };
 };
 
