@@ -347,6 +347,24 @@ department: input.department?.id ?? undefined,      // ✅ string
 department: await DeptAtSummaryTransformer.transform(input.department),  // ✅ object
 ```
 
+### 6.5.2. Nullable Relation Access: Mandatory Null Guard
+
+When a Prisma relation is **optional** (`?` in schema), `select()` returns `T | null`. Add a null guard before accessing its properties — otherwise `'X' is possibly 'null'`.
+
+```typescript
+// ❌ WRONG — sellerProfile is optional (?)
+shop_name: input.seller.sellerProfile.shop_name,
+
+// ✅ Required DTO field — throw guard
+if (!input.seller.sellerProfile) throw new HttpException("Seller profile not found", 404);
+shop_name: input.seller.sellerProfile.shop_name,
+
+// ✅ Nullable DTO field — optional chaining
+shop_name: input.seller.sellerProfile?.shop_name ?? null,
+```
+
+In `selectMappings`: if `kind = belongsTo` and `nullable = true`, a null guard is **MANDATORY**.
+
 ### 6.6. No Import Statements
 
 ```typescript
@@ -530,4 +548,5 @@ export async function transform(input: Payload): Promise<IBbsArticle> {
 - [ ] DateTime → ISO string conversions
 - [ ] Decimal → Number conversions
 - [ ] Correct null vs undefined handling
+- [ ] Nullable relations (`?`) have null guards before property access
 - [ ] ArrayUtil.asyncMap for array transforms

@@ -470,6 +470,13 @@ const customerId = props.customer.id;  // From ActorPayload
 
 **IMPORTANT**: These specifications are drafts — treat them as **reference hints, not absolute truth**. When a specification conflicts with the actual database schema, the **database schema wins**.
 
+**Column Name Verification**: NEVER guess column names. Common traps:
+- `image_uri` NOT `url`, `image_url`, or `imageUrl`
+- `display_order` NOT `order`, `sort_order`
+- FK column names vary by table — always check the exact name in the schema
+
+**Computed Fields**: DTO fields ending with `_count` (e.g., `permissions_count`, `images_count`) are **NOT** database columns. They are computed using Prisma `_count` aggregate: `_count: { select: { permissions: true } }`. If you're using Pattern A (Transformer), the transformer's `select()` already handles this correctly.
+
 ### 8.2. Use Relation Property Names
 
 Given this Prisma schema:
@@ -608,6 +615,44 @@ where: { parent_department_id: parentId ?? null }
 ```
 
 **Prisma logical operators are UPPERCASE**: `AND`, `OR`, `NOT` — never `and`, `or`, `not`.
+
+### 8.6.1. DB Non-Null but DTO Nullable — Provide Default Values
+
+When a database column is **non-nullable** but the corresponding DTO field is **nullable** (`| null` or `?`), the column always has a value in the DB. The DTO is nullable because the client may omit it (e.g., CREATE with server-assigned defaults).
+
+**Rule**: Never pass `null` to a non-nullable DB column. Provide a **sensible default value** instead.
+
+```typescript
+// DB: expired_at DateTime (non-nullable)
+// DTO: expired_at?: string | null
+
+// ❌ WRONG — null to non-nullable column
+data: { expired_at: input.expired_at ?? null }  // Type error
+
+// ✅ CORRECT — provide a default
+data: { expired_at: input.expired_at ? new Date(input.expired_at) : new Date(Date.now() + 24*60*60*1000) }
+```
+
+**For WHERE clauses**: Non-nullable columns cannot be filtered with `{ equals: null }`. Use value-based comparisons instead.
+
+```typescript
+// DB: expired_at DateTime (non-nullable)
+
+// ❌ WRONG — null filter on non-nullable column
+where: { expired_at: { equals: null } }  // Type error
+
+// ✅ CORRECT — temporal comparison
+where: { expired_at: { gt: new Date() } }  // "not yet expired"
+```
+
+**For nullable source values** (e.g., `session.organization_id: string | null`) used in non-nullable column filters, add a null check:
+
+```typescript
+if (!session.organization_id) {
+  throw new HttpException("Organization ID is required", 400);
+}
+where: { organization_id: session.organization_id }
+```
 
 ### 8.7. Data Transformation Rules
 
@@ -898,6 +943,8 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 - [ ] Handled null→undefined for optional fields
 - [ ] Handled null→null for nullable fields
 - [ ] Used plain `null` for regular nullable columns (`Prisma.DbNull` only for `Json?`)
+- [ ] Nullable relations have null guards before property access
+- [ ] Non-nullable columns never receive `null` — use sensible default values
 
 ### Database Operations
 - [ ] Inline parameters (no intermediate variables except complex WHERE/ORDERBY)

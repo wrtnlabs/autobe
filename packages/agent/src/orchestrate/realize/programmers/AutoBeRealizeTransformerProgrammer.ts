@@ -518,8 +518,9 @@ export namespace AutoBeRealizeTransformerProgrammer {
     visit(props.dtoTypeName);
 
     const imports: string[] = [
-      `import { Prisma } from "@prisma/sdk";`,
       `import { ArrayUtil } from "@nestia/e2e";`,
+      `import { HttpException } from "@nestjs/common";`,
+      `import { Prisma } from "@prisma/sdk";`,
       `import { VariadicSingleton } from "tstl";`,
       `import typia, { tags } from "typia";`,
       "",

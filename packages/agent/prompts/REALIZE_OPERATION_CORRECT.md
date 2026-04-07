@@ -46,7 +46,9 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
 
 ## 4. Common Error Patterns
 
-> **Reuse first**: When errors concentrate in `data:` construction or `select`/transform blocks, call `getRealizeCollectors`/`getRealizeTransformers` before patching individual lines — replacing a manual reimplementation with `Collector.collect(...)` or `...Transformer.select()` + `transform/transformAll` often eliminates all errors at once.
+> **Reuse first**: When errors concentrate in `data:` or `select`/transform blocks, call `getRealizeCollectors`/`getRealizeTransformers` first. If a Transformer exists for the model you're querying, use `Transformer.select()` + `Transformer.transform()` — this is the **MOST COMMON fix** for "missing properties" errors. Similarly, `Collector.collect(...)` eliminates write-side errors.
+
+> **Nullable relation access**: If you see `'X.Y' is possibly 'null'`, add a null guard (`if (!X.Y) throw new HttpException(...)`) or use optional chaining (`X.Y?.prop ?? null`) before accessing properties of nullable Prisma relations.
 
 ### 4.1. Error 2353: "Field does not exist in type"
 
@@ -80,6 +82,22 @@ updated_at: new Date(),                     // Date object
 created_at: record.created_at.toISOString(),
 updated_at: new Date().toISOString(),
 deleted_at: record.deleted_at?.toISOString() ?? null,  // nullable
+```
+
+### 4.2.1. `null` Assigned to Non-Nullable Column
+
+If you see `Type 'null' is not assignable to type 'string | Date | ...'` on a Prisma `where` or `data` field, the DB column is **non-nullable**. Never use `null` — provide a **default value** instead.
+
+```typescript
+// DB: expired_at DateTime (non-nullable)
+// ❌ ERROR: null → non-nullable
+where: { expired_at: { equals: null } }
+
+// ✅ FIX: use value-based comparison
+where: { expired_at: { gt: new Date() } }  // "not yet expired"
+
+// For CREATE/UPDATE: provide a contextual default
+data: { expired_at: input.expired_at ? new Date(input.expired_at) : new Date(Date.now() + 86400000) }
 ```
 
 ### 4.3. Error 2339: Property Not in Select
@@ -331,6 +349,8 @@ export async function method__path(props: {...}): Promise<IResponse> {
 - [ ] Transformer.select() assigned directly (NOT `.select().select`)
 - [ ] Select includes all accessed fields (relations, scalars, FK columns)
 - [ ] Used plain `null` for regular nullable columns (`Prisma.DbNull` only for `Json?`)
+- [ ] Nullable relations have null guards before property access
+- [ ] Non-nullable columns never receive `null` — use default values
 
 ### Parameter Types
 - [ ] No hallucinated `props.body.*` properties — only declared DTO fields

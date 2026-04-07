@@ -311,6 +311,28 @@ count: input._count.reviews,
 count: input._count.reviews satisfies number as number,
 ```
 
+### 5.9. Nullable Relation Access — `'X' is possibly 'null'`
+
+When you see `'input.X.Y' is possibly 'null'`, it means `X` is an optional Prisma relation (`?` in schema) returning `T | null`.
+
+**Fix**: Add a null guard before accessing any property of the nullable relation.
+
+```typescript
+// ❌ ERROR: 'input.seller.sellerProfile' is possibly 'null'
+shop_name: input.seller.sellerProfile.shop_name,
+
+// ✅ FIX — throw guard (when DTO field is required)
+if (!input.seller.sellerProfile) {
+  throw new HttpException("Seller profile not found", 404);
+}
+shop_name: input.seller.sellerProfile.shop_name,
+
+// ✅ FIX — optional chaining (when DTO field is nullable)
+shop_name: input.seller.sellerProfile?.shop_name ?? null,
+```
+
+**When multiple paths have the same nullable relation** (e.g., `input.product.seller.sellerProfile`, `input.orderItem.seller.sellerProfile`), apply the null guard to EACH path — fixing one does NOT fix the others.
+
 ## 6. Final Checklist
 
 ### Compiler Authority
@@ -335,4 +357,5 @@ count: input._count.reviews satisfies number as number,
 - [ ] `DateTime` → `.toISOString()`
 - [ ] `Decimal` → `Number()`
 - [ ] Correct `null` vs `undefined` per DTO signature
+- [ ] Nullable relations (`?`) have null guards before property access
 - [ ] Typia tag mismatches → `satisfies T as T`
