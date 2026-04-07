@@ -222,103 +222,6 @@ const predicate = async <
   return props.functions;
 };
 
-/**
- * Identify files that likely contain the root cause of a shared error.
- *
- * When the same diagnostic message appears across 3+ files, a single source
- * file (e.g., a transformer with a typo) is likely propagating type errors to
- * every consumer. This function picks the most likely root-cause file per
- * shared-error group so we can correct it first and let the retry loop handle
- * the rest.
- *
- * Heuristic: the file with the MOST total diagnostics is likeliest to be the
- * direct cause, because TypeScript attributes the initial type mismatch there
- * while downstream files only receive knock-on errors.
- */
-const identifyRootCauseFiles = (
-  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
-  errorLocations: string[],
-): { rootCause: string[]; deferred: string[] } => {
-  // Group diagnostics by normalised message → set of files
-  const msgToFiles = new Map<string, Set<string>>();
-  for (const d of diagnostics) {
-    if (d.file === null || !errorLocations.includes(d.file)) continue;
-    // Normalise: strip line/column info from the message to group by pattern
-    const key = d.messageText.replace(/\d+/g, "#");
-    let files = msgToFiles.get(key);
-    if (!files) {
-      files = new Set();
-      msgToFiles.set(key, files);
-    }
-    files.add(d.file);
-  }
-
-  // Find messages that appear in 3+ files — these are shared/propagated errors
-  const sharedFiles = new Set<string>();
-  for (const [, files] of msgToFiles) {
-    if (files.size >= 3) {
-      for (const f of files) sharedFiles.add(f);
-    }
-  }
-
-  // If no shared errors, all locations are independent — correct them all
-  if (sharedFiles.size === 0) {
-    return { rootCause: errorLocations, deferred: [] };
-  }
-
-  // For each shared group, pick the file with the most diagnostics as root cause
-  const diagCountByFile = new Map<string, number>();
-  for (const d of diagnostics) {
-    if (d.file !== null && sharedFiles.has(d.file)) {
-      diagCountByFile.set(d.file, (diagCountByFile.get(d.file) ?? 0) + 1);
-    }
-  }
-
-  // The root cause set: files with the highest error count among shared files,
-  // plus all files that have ONLY non-shared (unique) errors
-  const rootCauses = new Set<string>();
-  const deferredSet = new Set<string>();
-
-  // For each shared-error group, keep only the top file(s)
-  for (const [, files] of msgToFiles) {
-    if (files.size < 3) continue;
-    let maxCount = 0;
-    let maxFile: string | null = null;
-    for (const f of files) {
-      const count = diagCountByFile.get(f) ?? 0;
-      if (count > maxCount) {
-        maxCount = count;
-        maxFile = f;
-      }
-    }
-    if (maxFile) rootCauses.add(maxFile);
-    for (const f of files) {
-      if (f !== maxFile) deferredSet.add(f);
-    }
-  }
-
-  // Files with only unique errors (not in any shared group) are always corrected
-  for (const loc of errorLocations) {
-    if (!sharedFiles.has(loc)) {
-      rootCauses.add(loc);
-    }
-  }
-
-  // A file that is a root cause for one group should not be deferred
-  for (const rc of rootCauses) deferredSet.delete(rc);
-
-  console.log(
-    `[realizeCorrectOverall] Cross-file dependency: ` +
-      `${rootCauses.size} root-cause files, ` +
-      `${deferredSet.size} deferred files (will retry after root-cause correction)`,
-  );
-
-  return {
-    rootCause: errorLocations.filter((l) => rootCauses.has(l)),
-    deferred: errorLocations.filter((l) => deferredSet.has(l)),
-  };
-};
-
 const correct = async <
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
@@ -351,13 +254,7 @@ const correct = async <
     return props.functions;
   }
 
-  // Identify root-cause files vs deferred files (cross-file dependency analysis).
-  // Deferred files are not corrected this round — they remain in the unchanged
-  // set and get retried after root-cause corrections are recompiled.
-  const { rootCause: errorLocations } = identifyRootCauseFiles(
-    failure.diagnostics,
-    allErrorLocations,
-  );
+  const errorLocations: string[] = allErrorLocations;
 
   const converted: ICorrectionResult<RealizeFunction>[] =
     await executeCachedBatch(
@@ -664,13 +561,11 @@ const separateCorrectionResults = <
   const failed: RealizeFunction[] = corrections
     .filter(
       (c) =>
-        (c.type === "success" &&
-          errorLocations.includes(c.function.location)) ||
-        c.type === "exception",
+        c.type === "success" && errorLocations.includes(c.function.location),
     )
     .map((c) => c.function);
   const ignored: RealizeFunction[] = corrections
-    .filter((c) => c.type === "ignore")
+    .filter((c) => c.type === "ignore" || c.type === "exception")
     .map((c) => c.function);
   return { success, failed, ignored };
 };
