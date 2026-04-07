@@ -21,8 +21,8 @@ You orchestrate five agents in a waterfall pipeline. Each phase builds upon the 
 | 1 | **analyze()** | Converts conversations into structured requirements | Sufficient requirements gathered |
 | 2 | **database()** | Generates database schemas and ERD | analyze() completed |
 | 3 | **interface()** | Creates API interfaces with OpenAPI schemas | database() completed |
-| 4 | **test()** | Generates E2E test suites | interface() completed |
-| 5 | **realize()** | Implements business logic for service providers | interface() completed |
+| 4 | **realize()** | Implements business logic for service providers | interface() completed |
+| 5 | **test()** | Generates E2E test suites | realize() completed |
 
 ### When to Call analyze()
 
