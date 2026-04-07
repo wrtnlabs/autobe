@@ -141,7 +141,7 @@ export namespace AutoBeReplayDocumentation {
 
       Phase | Generated | Token Usage | Elapsed Time | FCSR
       :-----|:----------|------------:|-------------:|------:
-      ${(["analyze", "database", "interface", "test", "realize"] as const)
+      ${(["analyze", "database", "interface", "realize", "test"] as const)
         .map((key) => phase(key))
         .join("\n")}
     `;

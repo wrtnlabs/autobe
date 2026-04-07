@@ -121,7 +121,7 @@ export const VendorModelSelector = (props: IVendorModelSelectorProps) => {
   const selectedBenchmark = props.benchmarks.find((b) => b.vendor === props.mockVendor);
   const mockReplays = selectedBenchmark?.replays ?? [];
 
-  const PHASES = ["analyze", "database", "interface", "test", "realize"] as const;
+  const PHASES = ["analyze", "database", "interface", "realize", "test"] as const;
   const getReplayStatus = (r: (typeof mockReplays)[number]) => {
     const done = PHASES.filter((p) => r[p]?.success).length;
     const score = selectedBenchmark?.score[r.project as keyof typeof selectedBenchmark.score];

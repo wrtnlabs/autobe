@@ -90,7 +90,7 @@ const MODEL_TO_RESULTS_PATH = {
   "glm-5": "z-ai/glm-5",
 };
 
-const PIPELINE_PHASES = ["analyze", "database", "interface", "test", "realize"];
+const PIPELINE_PHASES = ["analyze", "database", "interface", "realize", "test"];
 
 function extractAgentMetrics(aggregates) {
   if (!aggregates) return null;

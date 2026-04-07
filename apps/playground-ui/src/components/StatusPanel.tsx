@@ -49,6 +49,16 @@ const PROGRESS_STEPS = [
     },
   },
   {
+    name: "realize" as const,
+    title: "Realize",
+    icon: Hammer,
+    getResults: (state: AutoBeListenerState) => {
+      if (!state.realize) return null;
+      const functionCount = state.realize.functions.length;
+      return `${functionCount} functions`;
+    },
+  },
+  {
     name: "test" as const,
     title: "Test",
     icon: FlaskConical,
@@ -58,16 +68,6 @@ const PROGRESS_STEPS = [
         (f) => f.type === "operation",
       ).length;
       return `${testCount} tests`;
-    },
-  },
-  {
-    name: "realize" as const,
-    title: "Realize",
-    icon: Hammer,
-    getResults: (state: AutoBeListenerState) => {
-      if (!state.realize) return null;
-      const functionCount = state.realize.functions.length;
-      return `${functionCount} functions`;
     },
   },
 ];

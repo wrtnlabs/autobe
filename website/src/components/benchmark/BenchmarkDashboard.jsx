@@ -205,7 +205,7 @@ function ExpandedDetail({ entries, projects, onSelectEntry }) {
             {/* Pipeline phases (waterfall timeline) */}
             {entry.pipeline?.phases && (() => {
               const pp = entry.pipeline.phases;
-              const phaseNames = ["analyze", "database", "interface", "test", "realize"];
+              const phaseNames = ["analyze", "database", "interface", "realize", "test"];
               const phaseColors = { analyze: "#818cf8", database: "#34d399", interface: "#fbbf24", test: "#f472b6", realize: "#60a5fa" };
               const maxDur = Math.max(...phaseNames.map(n => pp[n]?.durationMs || 0), 1);
               const totalDur = phaseNames.reduce((s, n) => s + (pp[n]?.durationMs || 0), 0);
@@ -411,7 +411,7 @@ function ScoreDetailModal({ entry, onClose }) {
         {/* Pipeline Phases Detail */}
         {entry.pipeline?.phases && (() => {
           const pp = entry.pipeline.phases;
-          const phaseNames = ["analyze", "database", "interface", "test", "realize"];
+          const phaseNames = ["analyze", "database", "interface", "realize", "test"];
           const phaseLabels = { analyze: "Analyze", database: "Database", interface: "Interface", test: "Test", realize: "Realize" };
           const phaseColors = { analyze: "#818cf8", database: "#34d399", interface: "#fbbf24", test: "#f472b6", realize: "#60a5fa" };
           const maxDur = Math.max(...phaseNames.map(n => pp[n]?.durationMs || 0), 1);

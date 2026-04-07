@@ -195,7 +195,7 @@ function writeReadMe(state: AutoBeState, readme: string): string {
 }
 
 function writeBenchmarkAggregate(state: AutoBeState): string {
-  return (["analyze", "database", "interface", "test", "realize"] as const)
+  return (["analyze", "database", "interface", "realize", "test"] as const)
     .map((key) => {
       const h = state[key];
       if (h === null) return `⬜ ${key} | | | | `;

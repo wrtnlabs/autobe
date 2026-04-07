@@ -185,6 +185,6 @@ const PHASE_SEQUENCE = [
   "analyze",
   "database",
   "interface",
-  "test",
   "realize",
+  "test",
 ] as const;

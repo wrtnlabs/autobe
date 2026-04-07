@@ -59,8 +59,8 @@ export const test_api_playground_example_replay = async (
       "analyze",
       "database",
       "interface",
-      "test",
       "realize",
+      "test",
     ] as const;
     for (const phase of PHASES) {
       if (example[phase] === null) continue;

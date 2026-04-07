@@ -178,8 +178,8 @@ export const PIPELINE_PHASES: PipelinePhaseName[] = [
   "analyze",
   "database",
   "interface",
-  "test",
   "realize",
+  "test",
 ];
 
 export const PIPELINE_PHASE_DISPLAY: Record<
