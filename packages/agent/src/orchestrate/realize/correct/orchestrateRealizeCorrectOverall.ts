@@ -19,6 +19,7 @@ import { forceRetry } from "../../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
+import { IAutoBeRealizeFunctionResult } from "../structures/IAutoBeRealizeFunctionResult";
 
 /**
  * Deduplicate diagnostics by grouping identical messages and capping total
@@ -164,7 +165,7 @@ export const orchestrateRealizeCorrectOverall = async <
     progress: AutoBeProgressEventBase;
   },
   life: number = AutoBeConfigConstant.COMPILER_RETRY,
-): Promise<RealizeFunction[]> => {
+): Promise<IAutoBeRealizeFunctionResult<RealizeFunction>[]> => {
   const preliminaries: Map<
     string,
     AutoBePreliminaryController<PreliminaryKind>
@@ -214,12 +215,12 @@ const predicate = async <
     event: AutoBeRealizeValidateEvent;
   },
   life: number,
-): Promise<RealizeFunction[]> => {
+): Promise<IAutoBeRealizeFunctionResult<RealizeFunction>[]> => {
   if (props.event.result.type === "failure") {
     ctx.dispatch(props.event);
     return await correct(ctx, props, life);
   }
-  return props.functions;
+  return props.functions.map((f) => ({ success: true, function: f }));
 };
 
 const correct = async <
@@ -237,10 +238,10 @@ const correct = async <
     event: AutoBeRealizeValidateEvent;
   },
   life: number,
-): Promise<RealizeFunction[]> => {
+): Promise<IAutoBeRealizeFunctionResult<RealizeFunction>[]> => {
   // Early returns for non-correctable cases
   if (props.event.result.type !== "failure" || life < 0) {
-    return props.functions;
+    return props.functions.map((f) => ({ success: false, function: f }));
   }
 
   const failure: IAutoBeTypeScriptCompileResult.IFailure = props.event.result;
@@ -251,7 +252,7 @@ const correct = async <
 
   // If no locations to correct, return original functions
   if (allErrorLocations.length === 0) {
-    return props.functions;
+    return props.functions.map((f) => ({ success: false, function: f }));
   }
 
   const errorLocations: string[] = allErrorLocations;
@@ -334,10 +335,13 @@ const correct = async <
   );
   const newResult: IAutoBeTypeScriptCompileResult = newValidate.result;
   if (newResult.type === "success") {
-    return allFunctionsForValidation;
+    return allFunctionsForValidation.map((f) => ({
+      success: true,
+      function: f,
+    }));
   } else if (newResult.type === "exception") {
     // Compilation exception, return current functions. because retrying won't help.
-    return props.functions;
+    return props.functions.map((f) => ({ success: false, function: f }));
   }
 
   const newLocations: string[] =
@@ -356,37 +360,47 @@ const correct = async <
 
   // If no failures to retry, return all functions
   if (failed.length === 0) {
-    return [...success, ...ignored, ...unchangedFunctions];
+    return [
+      ...success.map((f) => ({ success: true, function: f })),
+      ...ignored.map((f) => ({ success: false, function: f })),
+      ...unchangedFunctions.map((f) => ({ success: true, function: f })),
+    ];
   }
 
   // Recursively retry failed functions
-  const retriedFunctions: RealizeFunction[] = await predicate(
-    ctx,
-    {
-      programmer: props.programmer,
-      preliminaries: props.preliminaries,
-      functions: failed,
-      previousFailures: [
-        ...props.previousFailures,
-        failed.map(
-          (f) =>
-            ({
-              function: f,
-              diagnostics:
-                newValidate.result.type === "failure"
-                  ? newValidate.result.diagnostics.filter(
-                      (d) => d.file === f.location,
-                    )
-                  : [],
-            }) satisfies IAutoBeRealizeFunctionFailure<RealizeFunction>,
-        ),
-      ],
-      progress: props.progress,
-      event: newValidate,
-    },
-    life - 1,
-  );
-  return [...success, ...ignored, ...retriedFunctions, ...unchangedFunctions];
+  const retriedResults: IAutoBeRealizeFunctionResult<RealizeFunction>[] =
+    await predicate(
+      ctx,
+      {
+        programmer: props.programmer,
+        preliminaries: props.preliminaries,
+        functions: failed,
+        previousFailures: [
+          ...props.previousFailures,
+          failed.map(
+            (f) =>
+              ({
+                function: f,
+                diagnostics:
+                  newValidate.result.type === "failure"
+                    ? newValidate.result.diagnostics.filter(
+                        (d) => d.file === f.location,
+                      )
+                    : [],
+              }) satisfies IAutoBeRealizeFunctionFailure<RealizeFunction>,
+          ),
+        ],
+        progress: props.progress,
+        event: newValidate,
+      },
+      life - 1,
+    );
+  return [
+    ...success.map((f) => ({ success: true, function: f })),
+    ...ignored.map((f) => ({ success: false, function: f })),
+    ...retriedResults,
+    ...unchangedFunctions.map((f) => ({ success: true, function: f })),
+  ];
 };
 
 const process = async <

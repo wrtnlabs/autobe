@@ -12,6 +12,7 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { orchestrateRealizeCorrectOverall } from "./correct/orchestrateRealizeCorrectOverall";
 import { transformRealizeTransformerCorrectHistory } from "./histories/transformRealizeTransformerCorrectHistory";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
+import { IAutoBeRealizeFunctionResult } from "./structures/IAutoBeRealizeFunctionResult";
 import { IAutoBeRealizeTransformerCorrectApplication } from "./structures/IAutoBeRealizeTransformerCorrectApplication";
 
 export const orchestrateRealizeTransformerCorrectOverall = async (
@@ -20,7 +21,7 @@ export const orchestrateRealizeTransformerCorrectOverall = async (
     functions: AutoBeRealizeTransformerFunction[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeTransformerFunction[]> => {
+): Promise<IAutoBeRealizeFunctionResult<AutoBeRealizeTransformerFunction>[]> => {
   const prismaApplication: AutoBeDatabase.IApplication =
     ctx.state().database!.result.data;
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;

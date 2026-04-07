@@ -12,6 +12,7 @@ import { orchestrateRealizeCorrectOverall } from "./correct/orchestrateRealizeCo
 import { transformRealizeCollectorCorrectHistory } from "./histories/transformRealizeCollectorCorrectHistory";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
 import { IAutoBeRealizeCollectorCorrectApplication } from "./structures/IAutoBeRealizeCollectorCorrectApplication";
+import { IAutoBeRealizeFunctionResult } from "./structures/IAutoBeRealizeFunctionResult";
 
 export const orchestrateRealizeCollectorCorrectOverall = async (
   ctx: AutoBeContext,
@@ -19,7 +20,7 @@ export const orchestrateRealizeCollectorCorrectOverall = async (
     functions: AutoBeRealizeCollectorFunction[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeCollectorFunction[]> => {
+): Promise<IAutoBeRealizeFunctionResult<AutoBeRealizeCollectorFunction>[]> => {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   const getNeighbors = (
     func: AutoBeRealizeCollectorFunction,

@@ -14,6 +14,7 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { orchestrateRealizeCorrectOverall } from "./correct/orchestrateRealizeCorrectOverall";
 import { transformRealizeOperationCorrectHistory } from "./histories/transformRealizeOperationCorrectHistory";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
+import { IAutoBeRealizeFunctionResult } from "./structures/IAutoBeRealizeFunctionResult";
 import { IAutoBeRealizeOperationCorrectApplication } from "./structures/IAutoBeRealizeOperationCorrectApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
@@ -26,7 +27,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
     functions: AutoBeRealizeOperationFunction[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeOperationFunction[]> => {
+): Promise<IAutoBeRealizeFunctionResult<AutoBeRealizeOperationFunction>[]> => {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   return await orchestrateRealizeCorrectOverall(ctx, {
     programmer: {

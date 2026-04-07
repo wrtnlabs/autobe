@@ -33,16 +33,24 @@ export async function orchestrateRealizeOperationWrite(
     collectors: AutoBeRealizeCollectorFunction[];
     transformers: AutoBeRealizeTransformerFunction[];
     progress: AutoBeProgressEventBase;
+    targetEndpoints?: AutoBeOpenApi.IEndpoint[];
   },
 ): Promise<AutoBeRealizeOperationFunction[]> {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
-  const scenarios: IAutoBeRealizeScenarioResult[] = document.operations.map(
+  const allScenarios: IAutoBeRealizeScenarioResult[] = document.operations.map(
     (operation) =>
       AutoBeRealizeOperationProgrammer.getScenario({
         authorizations: props.authorizations,
         operation,
       }),
   );
+  const scenarios: IAutoBeRealizeScenarioResult[] = props.targetEndpoints
+    ? allScenarios.filter((s) =>
+        props.targetEndpoints!.some(
+          (e) => e.method === s.operation.method && e.path === s.operation.path,
+        ),
+      )
+    : allScenarios;
   return await executeCachedBatch(
     ctx,
     scenarios.map((s) => {
