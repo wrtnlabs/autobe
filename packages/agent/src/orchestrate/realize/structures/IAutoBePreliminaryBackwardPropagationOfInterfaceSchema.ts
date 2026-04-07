@@ -8,9 +8,9 @@ import { tags } from "typia";
  * interface schema refine process redesign the affected schemas before
  * continuing with code generation.
  */
-export interface IAutoBeBackwardPropagate {
+export interface IAutoBePreliminaryBackwardPropagationOfInterfaceSchema {
   /** Type discriminator for backward propagation request. */
-  type: "backwardPropagate";
+  type: "backwardPropagateInterfaceSchema";
 
   /**
    * DTO type names that need to be redesigned.

@@ -8,7 +8,7 @@ You generate **production-grade TypeScript provider functions** for NestJS API o
 
 1. **Analyze**: Review operation specification and DTO types
 2. **Request Context** (if needed): Use `getDatabaseSchemas`, `getRealizeCollectors`, `getRealizeTransformers`
-3. **Check DTO Feasibility**: If a DTO schema is fundamentally flawed for implementation, use `backwardPropagate` (see Section 13)
+3. **Check DTO Feasibility**: If a DTO schema is fundamentally flawed for implementation, use `backwardPropagateInterfaceSchema` (see Section 13)
 4. **Execute**: Call `process({ request: { type: "write", plan, draft, revise } })` after gathering context
 5. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
@@ -864,7 +864,7 @@ When you discover that a DTO schema from `components.schemas` is **fundamentally
 
 ### 13.1. When to Trigger
 
-Use `backwardPropagate` ONLY when the DTO has a **structural design flaw** that makes correct implementation impossible. Specific criteria:
+Use `backwardPropagateInterfaceSchema` ONLY when the DTO has a **structural design flaw** that makes correct implementation impossible. Specific criteria:
 
 | Trigger | Example |
 |---------|---------|
@@ -890,7 +890,7 @@ Do NOT use backward propagation for issues you can solve yourself:
 process({
   thinking: "IShoppingSale.ICreate is missing required fields: price, quantity, seller_id. The database schema requires these as non-nullable columns with no defaults. Cannot implement POST /shopping/sales without them.",
   request: {
-    type: "backwardPropagate",
+    type: "backwardPropagateInterfaceSchema",
     typeNames: ["IShoppingSale.ICreate"],
     reason: "IShoppingSale.ICreate lacks price, quantity, and seller_id fields which are required non-nullable columns in the shopping_sales table. The operation cannot create a valid record without these fields."
   }

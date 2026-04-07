@@ -24,7 +24,7 @@ import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntr
 import { orchestrateInterfaceSchemaRefine } from "../interface/orchestrateInterfaceSchemaRefine";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
-import { IAutoBeBackwardPropagate } from "./structures/IAutoBeBackwardPropagate";
+import { IAutoBePreliminaryBackwardPropagationOfInterfaceSchema } from "./structures/IAutoBePreliminaryBackwardPropagationOfInterfaceSchema";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
@@ -155,9 +155,10 @@ async function process(
         {
           value: null,
         };
-      const backwardPointer: IPointer<IAutoBeBackwardPropagate | null> = {
-        value: null,
-      };
+      const backwardPointer: IPointer<IAutoBePreliminaryBackwardPropagationOfInterfaceSchema | null> =
+        {
+          value: null,
+        };
       const dto: Record<string, string> =
         await AutoBeRealizeOperationProgrammer.writeStructures(
           ctx,
@@ -254,7 +255,9 @@ async function process(
 function createController(props: {
   functionName: string;
   build: (next: IAutoBeRealizeOperationWriteApplication.IWrite) => void;
-  onBackwardPropagate: (next: IAutoBeBackwardPropagate) => void;
+  onBackwardPropagate: (
+    next: IAutoBePreliminaryBackwardPropagationOfInterfaceSchema,
+  ) => void;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
@@ -266,7 +269,8 @@ function createController(props: {
     const result: IValidation<IAutoBeRealizeOperationWriteApplication.IProps> =
       typia.validate<IAutoBeRealizeOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type === "backwardPropagate") return result;
+    else if (result.data.request.type === "backwardPropagateInterfaceSchema")
+      return result;
     else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
@@ -304,7 +308,7 @@ function createController(props: {
     execute: {
       process: (next) => {
         if (next.request.type === "write") props.build(next.request);
-        else if (next.request.type === "backwardPropagate")
+        else if (next.request.type === "backwardPropagateInterfaceSchema")
           props.onBackwardPropagate(next.request);
       },
     } satisfies IAutoBeRealizeOperationWriteApplication,
