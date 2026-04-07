@@ -256,9 +256,30 @@ export function select() {
 
 **Key rule**: Every property accessed on `input` in `transform()` MUST have a corresponding entry in `select()`.
 
-### 5.6. FK Column Names Use `snake_case` from the Schema
+### 5.6. Computed Fields Selected as Columns (TS2353)
 
-Foreign key columns always use the exact `snake_case` name defined in the Prisma schema. The relation property name (often camelCase) is a separate concept — combining them produces a name that exists nowhere:
+When TS2353 says a field doesn't exist and it looks like an aggregation (e.g., `total_hours`, `average_rating`, `total_count`), it's likely a computed field that is NOT a database column.
+
+```typescript
+// ❌ ERROR: 'total_billable_hours' does not exist in type Select
+select: { total_billable_hours: true }
+
+// ✅ FIX: Select the source relation, compute in transform()
+select: {
+  timelogs: { select: { hours: true, billable: true } }
+    satisfies Prisma.hrm_platform_timelogsFindManyArgs,
+}
+// transform():
+totalBillableHours: input.timelogs
+  .filter(t => t.billable)
+  .reduce((sum, t) => sum + t.hours, 0),
+```
+
+**Diagnosis**: If a field name sounds like an aggregation (`*_count`, `total_*`, `average_*`), it's computed from a relation — select the relation instead.
+
+### 5.7. FK Column Names: Exact `snake_case` from Schema (Never Abbreviate)
+
+Foreign key columns always use the FULL exact `snake_case` name defined in the Prisma schema. The relation property name (often camelCase) is a separate concept — combining or abbreviating them produces a name that exists nowhere:
 
 ```typescript
 // Prisma schema:
@@ -270,11 +291,17 @@ select: { parentComment_id: true }
 
 // ✅ CORRECT: exact column name from schema
 select: { parent_comment_id: true }
+
+// ❌ ERROR: 'organization_id' — abbreviated FK name
+select: { organization_id: true }
+
+// ✅ CORRECT: full FK name from schema
+select: { hrm_platform_organization_id: true }
 ```
 
 **Compiler name suggestions are authoritative.** When the compiler says `Did you mean 'Y'?`, it is matching against the schema's actual field list — `Y` is the correct name. Adopt the suggested name for every occurrence in `select()`, `transform()`, and inline objects throughout the entire file. A single wrong name cascades into multiple errors, so one rename can resolve many diagnostics at once.
 
-### 5.7. Typia Tag Type Mismatch
+### 5.8. Typia Tag Type Mismatch
 
 ```typescript
 // ❌ ERROR: Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'
@@ -296,7 +323,8 @@ count: input._count.reviews satisfies number as number,
 
 ### Naming
 - [ ] Relation property names from Prisma model (NOT table names)
-- [ ] FK columns use exact `snake_case` from schema
+- [ ] FK columns use exact full `snake_case` from schema (never abbreviated)
+- [ ] Computed fields derived from relations in `transform()`, not selected as columns
 - [ ] Transformer.select() assigned directly (NOT `.select().select`)
 
 ### Neighbor Reuse

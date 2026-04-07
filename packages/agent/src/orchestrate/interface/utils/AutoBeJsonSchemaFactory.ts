@@ -50,6 +50,22 @@ export namespace AutoBeJsonSchemaFactory {
       if (value.properties.limit === undefined)
         value.properties.limit = pageRequest.properties.limit;
     }
+
+    // Rewrite every $ref pointing to a bogus .IPagination variant
+    // (e.g. IEcommerceMall.IPagination) → IPage.IPagination.
+    for (const value of Object.values(schemas))
+      AutoBeOpenApiTypeChecker.skim({
+        schema: value,
+        accessor: "",
+        closure: (next) => {
+          if (
+            AutoBeOpenApiTypeChecker.isReference(next) &&
+            next.$ref.endsWith(".IPagination") &&
+            next.$ref !== "#/components/schemas/IPage.IPagination"
+          )
+            next.$ref = "#/components/schemas/IPage.IPagination";
+        },
+      });
   };
 
   export const fixAuthorizationSchemas = (

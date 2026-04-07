@@ -458,9 +458,10 @@ const customerId = props.customer.id;  // From ActorPayload
 
 **Before writing ANY query**:
 1. READ the database schema thoroughly
-2. VERIFY each field name (case-sensitive)
+2. VERIFY each field name character-for-character (case-sensitive)
 3. VERIFY relation property names from schema
-4. NEVER fabricate, imagine, or guess
+4. Copy FK column names exactly — never abbreviate (e.g., `hrm_platform_organization_id`, NOT `organization_id`)
+5. NEVER fabricate, imagine, or guess
 
 **Key Hints from DTO Schema** — each DTO property has JSDoc annotations:
 - `@x-autobe-database-schema`: The DB table this DTO maps to
@@ -576,7 +577,39 @@ await MyGlobal.prisma.categories.updateMany({
 
 `Prisma.DbNull` is reserved exclusively for JSON-type columns (`Json?`). For all other nullable types, plain `null` is the correct value.
 
-### 8.6. Data Transformation Rules
+### 8.6. Prisma Where Filter Syntax
+
+Prisma `where` clauses have strict syntax. These are the most common mistakes:
+
+```typescript
+// ❌ WRONG - { equals: null } for nullable filter
+where: { deleted_at: { equals: null } }
+
+// ✅ CORRECT - Direct null comparison
+where: { deleted_at: null }
+
+// ❌ WRONG - Lowercase `not` (TS2353)
+where: { not: { status: "deleted" } }
+
+// ✅ CORRECT - Uppercase `NOT` for logical operators
+where: { NOT: { status: "deleted" } }
+
+// ❌ WRONG - Nested relation filter with scalar value
+where: { department: props.departmentId }
+
+// ✅ CORRECT - Relation filter uses object with `id`
+where: { department: { id: props.departmentId } }
+
+// ❌ WRONG - Nullable relation filter without handling
+where: { parent_department: { id: parentId } }  // Fails when null
+
+// ✅ CORRECT - Nullable relation: use FK column directly
+where: { parent_department_id: parentId ?? null }
+```
+
+**Prisma logical operators are UPPERCASE**: `AND`, `OR`, `NOT` — never `and`, `or`, `not`.
+
+### 8.7. Data Transformation Rules
 
 | Transformation | Pattern |
 |----------------|---------|
@@ -636,7 +669,7 @@ return {
 };
 ```
 
-### 8.7. DELETE Operation: Cascade Deletion
+### 8.8. DELETE Operation: Cascade Deletion
 
 All tables use `onDelete: Cascade` in their foreign key relations. When deleting a record, simply delete the target row — the database automatically cascades to all dependent rows.
 
@@ -658,7 +691,7 @@ await MyGlobal.prisma.shopping_sales.delete({
 });
 ```
 
-### 8.8. Manual CREATE Example
+### 8.9. Manual CREATE Example
 
 ```typescript
 export async function postShoppingSaleReview(props: {
@@ -856,9 +889,11 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 
 ### Manual Code (when no Collector/Transformer)
 - [ ] Verified ALL field/relation names against database schema
+- [ ] FK column names copied exactly — never abbreviated (e.g., `hrm_platform_organization_id`)
 - [ ] Used relation property names (NOT table names or FK columns)
 - [ ] Used `connect` syntax for relations (NOT direct FK assignment)
 - [ ] `satisfies Prisma.{table}FindManyArgs` on inline nested selects
+- [ ] `where` filters: direct `null` (not `{ equals: null }`), uppercase `NOT`/`AND`/`OR`
 - [ ] Converted dates with `.toISOString()`
 - [ ] Handled null→undefined for optional fields
 - [ ] Handled null→null for nullable fields

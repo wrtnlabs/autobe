@@ -240,6 +240,7 @@ select: {
 **Rules**:
 1. If you need a relation not listed in the table, the DTO field is likely a computed field (see Section 8)
 2. FK columns (e.g., `reddit_clone_member_id`) are scalar fields, NOT relations — select them with `true`, not `{ select: {...} }`
+3. FK column names use the FULL name from the schema — never abbreviate (e.g., `hrm_platform_organization_id`, NOT `organization_id`)
 
 ### 6.3. Mandatory Neighbor Transformer Reuse
 
@@ -417,6 +418,17 @@ Cross-check: every `transformMappings` entry must have a corresponding line in t
 ## 8. Computed Fields (Not in DB)
 
 When a DTO field doesn't exist as a database column, select the underlying relation and compute in `transform()`. Every aggregation is backed by a real relation — select that relation, then derive the value.
+
+**NEVER select a computed field directly** — it does not exist as a column:
+
+```typescript
+// ❌ WRONG (TS2353) - total_hours is NOT a column, it's computed from timelogs
+select: { total_hours: true }
+
+// ✅ CORRECT - select the source relation, compute in transform()
+select: { timelogs: { select: { hours: true } } }
+// transform(): total_hours = input.timelogs.reduce((sum, t) => sum + t.hours, 0)
+```
 
 ```typescript
 // DTO: reviewCount, averageRating (NOT in DB)

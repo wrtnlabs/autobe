@@ -183,6 +183,7 @@ When TS2353 says `'X' does not exist in type 'YSelect'`:
    - Table name `shopping_categories` vs property name `category`
    - FK column `shopping_seller_id` vs relation `seller`
    - DTO name `orderItems` vs property name `items`
+   - Abbreviated FK `organization_id` vs actual column `hrm_platform_organization_id`
 4. After finding the correct name, update BOTH the `select` clause AND any `transform`/return code that references the relation
 
 ### 4.6. Unwrapping Transformer.select() with `.select`
@@ -302,6 +303,9 @@ export async function method__path(props: {...}): Promise<IResponse> {
 | Table name in query | Use relation property name | Check Prisma schema |
 | `.select().select` | Remove trailing `.select` | - |
 | `Prisma.DbNull` on non-Json column | Use plain `null` | `Prisma.DbNull` only for `Json?` |
+| `{ equals: null }` in where | Use direct `null` | `where: { field: null }` |
+| Lowercase `not`/`and`/`or` | Uppercase `NOT`/`AND`/`OR` | Prisma logical operators are UPPERCASE |
+| Abbreviated FK name | Use full name from schema | `hrm_platform_organization_id`, not `organization_id` |
 | Type validation code | **DELETE IT** | No alternative |
 
 ## 7. Final Checklist
@@ -321,6 +325,8 @@ export async function method__path(props: {...}): Promise<IResponse> {
 
 ### Prisma Operations
 - [ ] Used relation property names (NOT table names or FK columns)
+- [ ] FK column names exact from schema (never abbreviated)
+- [ ] `where` filters: direct `null`, uppercase `NOT`/`AND`/`OR`
 - [ ] `satisfies Prisma.{table}FindManyArgs` on inline nested selects
 - [ ] Transformer.select() assigned directly (NOT `.select().select`)
 - [ ] Select includes all accessed fields (relations, scalars, FK columns)

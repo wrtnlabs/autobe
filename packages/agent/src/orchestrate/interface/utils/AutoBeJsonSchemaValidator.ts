@@ -52,7 +52,8 @@ export namespace AutoBeJsonSchemaValidator {
     validateReferenceId(props);
     validatePropertyNames(props);
     validateNumericRanges(props);
-    // validateEmptyProperties(props);
+    validatePaginationVariant(props);
+    validateEmptyProperties(props);
 
     vo(props.typeName, props.schema);
     AutoBeOpenApiTypeChecker.skim({
@@ -724,40 +725,68 @@ export namespace AutoBeJsonSchemaValidator {
     });
   };
 
-  // const validateEmptyProperties = (props: IProps): void => {
-  //   if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
-  //   if (Object.keys(props.schema.properties).length !== 0) return;
-  //   if (
-  //     isObjectType({
-  //       operations: props.operations,
-  //       typeName: props.typeName,
-  //     }) === false
-  //   )
-  //     return;
+  const validatePaginationVariant = (props: IProps): void => {
+    // Reject .IPagination variants on entity types (only IPage.IPagination is valid)
+    if (
+      props.typeName.endsWith(".IPagination") &&
+      props.typeName !== "IPage.IPagination"
+    )
+      props.errors.push({
+        path: props.path,
+        expected: `No .IPagination variant — only "IPage.IPagination" is valid`,
+        value: props.typeName,
+        description: StringUtil.trim`
+          You have defined a type ${JSON.stringify(props.typeName)} with an
+          ".IPagination" suffix, but ".IPagination" is NOT a valid DTO variant.
 
-  //   props.errors.push({
-  //     path: `${props.path}.properties`,
-  //     expected: "At least 1 property in properties",
-  //     value: props.schema.properties,
-  //     description: StringUtil.trim`
-  //       Schema ${JSON.stringify(props.typeName)} has zero properties but is used
-  //       as a request body or response body in API operations.
+          The only valid pagination metadata type is "IPage.IPagination", which is
+          a system preset containing { current, limit, records, pages }.
 
-  //       Empty properties will cause TypeScript compilation errors (TS2339) in the
-  //       downstream Realize stage because implementation code will try to access
-  //       properties that don't exist on the type.
+          Valid DTO variants are: .ISummary, .ICreate, .IUpdate, .IRequest,
+          .IInvert, .IJoin, .ILogin, .IAuthorized.
 
-  //       You MUST define at least one property in the schema. Load the database
-  //       schema and add the appropriate properties based on the DTO type:
-  //       - ICreate: User-provided business fields (exclude id, timestamps, actor FKs)
-  //       - IUpdate: All mutable business fields (all optional)
-  //       - ISummary: Essential display fields for list views
-  //       - IEntity (root): All public fields including relations
-  //       - IRequest: Pagination and filter parameters
-  //       - IJoin/ILogin: Credentials and session context fields
+          Remove this type entirely. If you need pagination support, the system
+          automatically wraps your entity ISummary types in IPage wrappers.
 
-  //       Note that, this is not a recommendation, but an instruction you must follow.
-  //     `,
-  //   });
-  // };
+          Note that, this is not a recommendation, but an instruction you must follow.
+        `,
+      });
+  };
+
+  const validateEmptyProperties = (props: IProps): void => {
+    if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
+    if (Object.keys(props.schema.properties).length !== 0) return;
+    if (
+      isObjectType({
+        operations: props.operations,
+        typeName: props.typeName,
+      }) === false
+    )
+      return;
+
+    props.errors.push({
+      path: `${props.path}.properties`,
+      expected: "At least 1 property in properties",
+      value: props.schema.properties,
+      description: StringUtil.trim`
+        Schema ${JSON.stringify(props.typeName)} has zero properties but is used
+        as a request body or response body in API operations.
+
+        Empty properties will cause TypeScript compilation errors (TS2339) in the
+        downstream Realize stage because implementation code will try to access
+        properties that don't exist on the type.
+
+        You MUST define at least one property in the schema. Load the database
+        schema and add the appropriate properties based on the DTO type:
+        - ICreate: User-provided business fields (exclude id, timestamps, actor FKs)
+        - IUpdate: All mutable business fields (all optional)
+        - ISummary: Essential display fields for list views
+        - IEntity (root): All public fields including relations
+        - IRequest: Pagination and filter parameters
+        - IJoin/ILogin: Credentials and session context fields
+
+        Note that, this is not a recommendation, but an instruction you must follow.
+      `,
+    });
+  };
 }
