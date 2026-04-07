@@ -70,29 +70,93 @@ AutoBE는 **Function Calling**을 쓴다. LLM이 자유 텍스트 대신 미리 
 | DB 설계 | [`AutoBeDatabase`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) — DB 스키마 AST | Database Compiler |
 | API 설계 | [`AutoBeOpenApi`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) — OpenAPI v3.2 스펙 | OpenAPI Compiler |
 | 테스트 | [`AutoBeTest`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) — 30+ 표현식 타입 | Test Compiler |
-| 구현 | 모듈화된 코드 (Collector/Transformer/Operation) | TypeScript Compiler |
+| 구현 | 모듈화된 코드 (Collector/Transformer/Operation) | Hybrid Compiler |
 
 각 AST는 LLM이 생성할 수 있는 것을 엄격히 제한한다. 예컨대 `AutoBeDatabase`의 필드 타입은 7가지만 허용된다: `"boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"`. `"varchar"`를 쓸 수 없다 — 선택지에 없으니까. **스키마가 곧 프롬프트다** — 모호하지 않고, 모델에 의존하지 않으며, 기계적으로 검증 가능하다.
 
 ```mermaid
-flowchart LR
-    A["Analyze"] --> D["Database"]
-    D --> I["Interface"]
-    I --> T["Test"]
-    T --> R["Realize"]
-    D -->|"컴파일 실패 → 자가교정"| D
-    I -->|"컴파일 실패 → 자가교정"| I
-    R -->|"컴파일 실패 → 자가교정"| R
-    style A fill:#4A90D9,color:#fff
-    style D fill:#7B68EE,color:#fff
-    style I fill:#E06C75,color:#fff
-    style T fill:#E5C07B,color:#000
-    style R fill:#98C379,color:#000
+flowchart
+subgraph "Backend Coding Agent"
+  coder("Facade Controller")
+end
+subgraph "Functional Agents"
+  coder --"Requirements Analysis"--> analyze("Analyze")
+  coder --"ERD"--> database("Database")
+  coder --"API Design"--> interface("Interface")
+  coder --"Test Codes" --> test("Test")
+  coder --"Main Program" --> realize("Realize")
+end
+subgraph "Compiler Feedback"
+  database --"validates" --> prismaCompiler("<a href="https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts" target="_blank">Prisma Compiler</a>")
+  interface --"generates" --> openapiCompiler("<a href="https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts" target="_blank">OpenAPI Compiler</a>")
+  test --"analyzes" --> testCompiler("<a href="https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts" target="_blank">Test Compiler</a>")
+  realize --"compiles" --> realizeCompiler("Hybrid Compiler")
+end
 ```
 
-### 2.2. Function Calling Harness
+### 2.2. 왜 하필 Function Calling인가
 
-하지만 LLM이 채워야 하는 구조는 단순하지 않다. DTO 타입을 정의하는 `IJsonSchema`는 10가지 변형의 재귀적 유니언 타입이다:
+"LLM에게 코드를 직접 쓰게 하면 안 되나?"
+
+프론트엔드라면 그래도 된다. 버튼 위치가 조금 다르고, 애니메이션이 약간 어색해도 앱은 작동한다. 모바일이라면 출시 후 패치할 수 있다. 하지만 **백엔드는 다르다.**
+
+백엔드는 창의성의 영역이 아니다. **논리와 정교함의 영역이다.** API 하나가 잘못된 타입을 반환하면 모든 클라이언트가 깨진다. FK 하나가 누락되면 데이터 무결성이 소멸한다. 두 API가 같은 엔티티를 다르게 정의하면 시스템이 내부적으로 모순된다. 프론트엔드의 버그는 불편이지만, 백엔드의 버그는 장애다 — 모든 클라이언트가 의존하는 단일 진실 공급원이니까. **일관성과 100% 정확성은 백엔드의 절대전제다** — 좋으면 좋은 것이 아니라, 없으면 존재할 수 없는 것이다.
+
+자유 텍스트 생성은 이 전제를 구조적으로 충족할 수 없다.
+
+**첫째, 분산.** LLM의 출력은 확률 분포에서 추출한 샘플이다. 같은 프롬프트로 같은 모델을 돌려도 매번 다른 코드가 나온다 — 변수명이 다르고, 패턴이 다르고, 에러 처리 방식이 다르다. 모델이 바뀌면 차이는 더 크다. Claude는 functional style, GPT는 class-based, Qwen은 또 다른 관용구. 이 분산은 창작에서는 풍부함이지만, 백엔드에서는 결함이다. 동일한 요구사항에서 동일한 구조가 나와야 한다 — 누가 돌려도, 어떤 모델로 돌려도.
+
+**둘째, 제어 불가능.** 프롬프트로 일관성을 강제할 수 있을까? "varchar를 쓰지 마라", "`any` 타입을 쓰지 마라", "유틸리티 함수를 만들지 마라" — 이것이 [분홍 코끼리 문제](/blog/function-calling-harness-qwen-meetup-korea)다. "분홍 코끼리를 생각하지 마라"고 하면, 먼저 분홍 코끼리를 떠올려야 한다. LLM에게 "X를 하지 마라"고 말하면, X가 주의의 중심에 놓이고, 오히려 생성 확률이 올라간다. 자연어는 금지를 통해서만 제약을 표현할 수 있고, **금지는 구조적으로 불완전하다.**
+
+```typescript
+export namespace AutoBeDatabase {
+  export interface IForeignField {
+    name: string & SnakeCasePattern; // enforce snake_case naming 
+    type: "uuid";
+    relation: IRelation;
+    unique: boolean;
+    nullable: boolean;
+  }
+  export interface IPlainField {
+    name: string & SnakeCasePattern;
+    type: // restrict type by spec, not by prohibition rule 
+      | "boolean" 
+      | "int" 
+      | "double" 
+      | "string" 
+      | "uri" 
+      | "uuid" 
+      | "datetime";
+    description: string;
+    nullable: boolean;
+  }
+}
+```
+
+Function Calling은 이 두 문제를 동시에 해결한다.
+
+LLM이 빈 페이지에 글을 쓰는 것이 아니라, 미리 정의된 양식을 채운다. 필드 타입은 7가지뿐이고, API 명세는 OpenAPI v3.2 스키마를 따르며, 테스트 로직은 `IExpression`의 30개 변형 안에서만 표현된다. "varchar를 쓰지 마라"가 아니라, varchar가 선택지에 존재하지 않는다. **금지가 아니라 부재.** 타입으로 소통하면 오해가 없고, 스키마로 제약하면 분홍 코끼리가 없다.
+
+**셋째, 복리 효과.** 백엔드의 수학은 냉혹하다. 테이블 50개, API 400개짜리 서비스를 생각해보자. 400개 API가 **모두** 성공해야 서버가 돌아간다. 전체 성공률 = (단위 성공률)ⁿ 이다:
+
+95%면 API 50개만 넘어도 사실상 불가능. 99%여도 400개에서 1.8%. 오직 **100%만이 살아남는다.**
+
+| 단위 성공률 | 10 APIs | 50 APIs | 100 APIs | 400 APIs |
+|:---:|:---:|:---:|:---:|:---:|
+| 95% | 59.9% | 7.7% | 0.6% | ≈ 0% |
+| 99% | 90.4% | 60.5% | 36.6% | 1.8% |
+| 99.9% | 99.0% | 95.1% | 90.5% | 67.0% |
+| **100%** | **100%** | **100%** | **100%** | **100%** |
+
+이것이 코딩 어시스턴트의 구조적 한계를 설명한다. Claude Code에게 "테이블 50개, API 400개짜리 쇼핑몰 백엔드 통째로 만들어"라고 하면? 뭔가 나온다. **0→80은 빠르다.** 스캐폴딩은 훌륭하고, 개별 함수는 잘 짠다. 하지만 400개 API가 서로 정합하고, FK가 빠짐없이 연결되고, 공유 타입이 모든 엔드포인트에서 일관되려면 — 그게 **80→100**이다. 코딩 어시스턴트가 구조적으로 도달할 수 없는 영역이다. 각 API의 성공률이 95%인 한, API가 늘어날수록 전체 성공률은 0에 수렴하니까. 사람이 400개를 하나하나 확인하면 가능하겠지만, 그러면 AI를 쓰는 이유가 없다.
+
+Function Calling은 이 복리 문제를 근본적으로 해결한다. 양식이 정해져 있으니 분산이 0이고, 컴파일러가 양식을 검증하니 각 단위의 성공률이 100%에 수렴한다. **1.0<sup>400</sup> = 1.0.** 그 위에 4단계 컴파일러가 시스템 수준의 정합성 — DB 스키마와 API 명세의 교차 검증, API 간 공유 타입의 일관성, 모듈 간 의존성의 순환 여부 — 을 보장한다. 검증을 통과하지 못하면 자가교정 루프가 통과할 때까지 반복한다. 강한 모델은 1–2번 만에 수렴하고, 약한 모델은 3–4번 만에 수렴하지만, **도착지는 같다.**
+
+[벤치마크](/benchmark)가 이를 증명한다. `qwen3.5-35b-a3b`(3B active)와 `claude-sonnet-4.6`이 생성한 백엔드의 아키텍처, 모듈 구조, 네이밍 컨벤션이 거의 동일하다. **모델이 달라도 결과가 같다. 매번 돌려도 결과가 같다.** 이것이 백엔드가 요구하는 일관성이고, Function Calling만이 이를 구조적으로 보장할 수 있는 이유다.
+
+### 2.3. 업계 컨센서스: "그거 안 된다"
+
+그런데 LLM이 채워야 하는 양식은 단순하지 않다. DTO 타입을 정의하는 [`IJsonSchema`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts)는 10가지 변형의 재귀적 유니언 타입이다:
 
 ```typescript
 export type IJsonSchema =
@@ -108,7 +172,32 @@ export type IJsonSchema =
   | IJsonSchema.IConstant;
 ```
 
-10가지 변형이 3단계 깊이로 중첩되면 1,000개의 가능한 경로. `qwen3-coder-next`의 첫 시도 성공률: **6.75%**. 업계 컨센서스대로라면, 이 수준의 복잡한 Function Calling은 "하지 마라"다.
+10가지 변형이 3단계 깊이로 중첩되면 1,000개의 가능한 경로.
+
+테스트 단계의 복잡도는 한 차원 더 높다. E2E 테스트 로직을 표현하는 [`AutoBeTest.IExpression`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts)은 **30개 이상의 재귀적 변형**이다 — 프로그래밍 언어 수준의 복잡도를 단일 Function Call에 담는다:
+
+```typescript
+export type IExpression =
+  | IBooleanLiteral   | INumericLiteral    | IStringLiteral     // literals
+  | IArrayLiteralExpression  | IObjectLiteralExpression          // compound literals
+  | INullLiteral      | IUndefinedKeyword                       // null/undefined
+  | IIdentifier       | IPropertyAccessExpression               // accessors
+  | IElementAccessExpression | ITypeOfExpression                 // access/operations
+  | IPrefixUnaryExpression   | IPostfixUnaryExpression           // unary operations
+  | IBinaryExpression                                            // binary operations
+  | IArrowFunction    | ICallExpression    | INewExpression      // functions
+  | IArrayFilterExpression   | IArrayForEachExpression           // array operations
+  | IArrayMapExpression      | IArrayRepeatExpression            // array operations
+  | IPickRandom       | ISampleRandom      | IBooleanRandom     // random generation
+  | IIntegerRandom    | INumberRandom      | IStringRandom      // random generation
+  | IPatternRandom    | IFormatRandom      | IKeywordRandom     // random generation
+  | IEqualPredicate   | INotEqualPredicate                      // assertions
+  | IConditionalPredicate    | IErrorPredicate;                  // assertions
+```
+
+이것이 LLM이 단일 Function Call에서 정확히 채워야 하는 양식의 실제 복잡도다.
+
+`qwen3-coder-next`의 `IJsonSchema` 첫 시도 성공률: **6.75%**. 업계 컨센서스는 명확하다 — [NESTFUL (EMNLP 2025)](https://arxiv.org/abs/2409.03797)은 GPT-4o의 중첩 도구 호출 정확도를 28%로 측정했고, [JSONSchemaBench (ICLR 2025)](https://arxiv.org/abs/2501.10868)은 10,000개 실세계 스키마에서 최고 난이도 구간의 성공률을 3–41%로 보고했다. BoundaryML은 한 발 더 나아가, 구조화된 출력이 [모델의 추론 능력을 오히려 떨어뜨린다](https://boundaryml.com/blog/structured-outputs-create-false-confidence)고 주장했다. 컨센서스: **복잡한 스키마의 Function Calling은 하지 마라.**
 
 우리는 포기할 수 없었다. 구조화된 출력 없이는 기계적 검증이 불가능하고, 검증 없이는 피드백 루프가 불가능하고, 피드백 루프 없이는 보장이 불가능하니까.
 
@@ -127,11 +216,110 @@ flowchart LR
     style V fill:#E5C07B,color:#000
 ```
 
-- **`parse()`** — 깨진 JSON 복구. 마크다운 코드 블록 제거, 닫히지 않은 문자열 완성, 따옴표 없는 키 허용, 타입 강제 변환, 이중 직렬화(`"{\\"type\\":\\"card\\"}"`) 재귀적 복원
-- **`validate()`** — 스키마 위반 감지. 각 필드의 정확한 경로와 기대 타입을 구조화
-- **`LlmJson.stringify()`** — LLM이 읽을 수 있는 피드백 생성. 원본 JSON 위에 `// ❌` 인라인 에러 마커
+이 3계층은 모두 [Typia](https://github.com/samchon/typia)의 컴파일러가 TypeScript 타입 정의에서 자동 생성한다. 개발자는 TypeScript 타입만 정의하면 된다 — Function Calling 스키마도, `parse()` 복구 로직도, `validate()` 검증기도, `LlmJson.stringify()` 피드백 생성기도 모두 같은 타입에서 나온다. **하나의 타입이 스키마·파싱·검증·피드백을 동시에 지배한다.**
 
-LLM은 자기 출력 위에 표시된 에러만 고치면 된다. 이 루프가 6.75%를 100%로 만든다. 그 위에 AutoBE의 4단계 컴파일러(Database → OpenAPI → Test → TypeScript)가 시스템 수준의 자가교정 루프를 추가한다. **Function Calling 수준 + 컴파일러 수준의 이중 검증**이 100% 컴파일 성공률의 원동력이다.
+#### `parse()` — 깨진 JSON 복구
+
+LLM은 JSON 생성기가 아니다. 마크다운 코드 블록으로 감싸고, "I'd be happy to help!"를 붙이고, 괄호를 닫지 않고, 키에 따옴표를 빼먹고, `true` 대신 `tru`를 쓴다. Qwen 3.5 시리즈는 더 심하다 — 모든 유니언 타입 필드를 **100% 확률로** 이중 직렬화한다. 실제 프로덕션에서 받은 단일 응답에 7가지 문제가 동시에 존재한 사례:
+
+```typescript
+import { dedent } from "@typia/utils";
+import typia, { ILlmApplication, ILlmFunction, tags } from "typia";
+
+const app: ILlmApplication = typia.llm.application<OrderService>();
+const func: ILlmFunction = app.functions[0];
+
+// LLM sometimes returns malformed JSON with wrong types
+const llmOutput = dedent`
+  > LLM sometimes returns some prefix text with markdown JSON code block.
+
+  I'd be happy to help you with your order! 😊
+
+  \`\`\`json
+  {
+    "order": {
+      "payment": "{\\"type\\":\\"card\\",\\"cardNumber\\":\\"1234-5678", // unclosed string & bracket
+      "product": {
+        name: "Laptop", // unquoted key
+        price: "1299.99", // wrong type (string instead of number)
+        quantity: 2, // trailing comma
+      },
+      "customer": {
+        // incomplete keyword + unclosed brackets
+        "name": "John Doe",
+        "email": "john@example.com",
+        vip: tru
+  \`\`\` `;
+
+const result = func.parse(llmOutput);
+if (result.success) console.log(result);
+
+interface IOrder {
+  payment: IPayment;
+  product: {
+    name: string;
+    price: number & tags.Minimum<0>;
+    quantity: number & tags.Type<"uint32">;
+  };
+  customer: {
+    name: string;
+    email: string & tags.Format<"email">;
+    vip: boolean;
+  };
+}
+
+type IPayment =
+  | { type: "card"; cardNumber: string }
+  | { type: "bank"; accountNumber: string };
+
+declare class OrderService {
+  /**
+   * Create a new order.
+   *
+   * @param props Order properties
+   */
+  createOrder(props: { order: IOrder }): { id: string };
+}
+```
+
+`func.parse()` 한 번의 호출로 7가지를 모두 복구한다:
+
+- **마크다운 블록 & 접두 잡담** → 제거
+- **닫히지 않은 문자열 & 괄호** (`"1234-5678`) → 자동 완성
+- **따옴표 없는 키** (`name:`) → 허용
+- **후행 쉼표** (`quantity: 2,`) → 무시
+- **불완전한 키워드** (`tru`) → `true`로 완성
+- **잘못된 타입** (`"1299.99"`) → 스키마에 따라 `1299.99`로 강제 변환
+- **이중 직렬화** (`"{\"type\":\"card\"...`) → 재귀적으로 객체 복원
+
+#### `validate()` + `LlmJson.stringify()` — 정밀 피드백
+
+파싱 후에도 값 자체가 틀릴 수 있다. 음수 가격, 이메일이 아닌 문자열, 정수여야 할 곳에 소수점. `validate()`가 스키마 위반을 감지하면, `LlmJson.stringify()`가 LLM의 원본 JSON 위에 `// ❌` 인라인 에러 마커를 생성한다:
+
+```json
+{
+  "order": {
+    "payment": {
+      "type": "card",
+      "cardNumber": 12345678 // ❌ [{"path":"$input.order.payment.cardNumber","expected":"string"}]
+    },
+    "product": {
+      "name": "Laptop",
+      "price": -100, // ❌ [{"path":"$input.order.product.price","expected":"number & Minimum<0>"}]
+      "quantity": 2.5 // ❌ [{"path":"$input.order.product.quantity","expected":"number & Type<\"uint32\">"}]
+    },
+    "customer": {
+      "name": "John Doe",
+      "email": "invalid-email", // ❌ [{"path":"$input.order.customer.email","expected":"string & Format<\"email\">"}]
+      "vip": "yes" // ❌ [{"path":"$input.order.customer.vip","expected":"boolean"}]
+    }
+  }
+}
+```
+
+LLM은 자기 출력 위에 표시된 에러만 고치면 된다. 전체를 다시 쓸 필요 없이, 표시된 5개 필드만 수정하면 된다. **정밀하고, 구조화되고, 즉시 실행 가능한 피드백.**
+
+이 루프가 6.75%를 100%로 만든다. 그 위에 AutoBE의 4단계 컴파일러(Database → OpenAPI → Test → TypeScript)가 시스템 수준의 자가교정 루프를 추가한다. **Function Calling 수준 + 컴파일러 수준의 이중 검증**이 100% 컴파일 성공률의 원동력이다.
 
 ---
 
@@ -549,9 +737,3 @@ Claude Code도 3세대로 진화하고 있다 — Coordinator Mode, Plan Mode V2
 **먼저 검증 기반을 닦고, 그 위에 워크플로우를 쌓는 것.** 검증 없이 워크플로우를 아무리 고도화해도, 그것은 정교한 주사위 굴리기에 불과하다.
 
 AI에게 "쇼핑몰 만들어"라고 하면, 어떤 도구든 뭔가 나온다. 0→80은 빠르다. 누구나 간다. **80→100이 진짜다.** 컴파일 에러 0, 런타임 에러 0, 모듈 간 의존성 정합성 100% — 이 마지막 20%가 우리가 가장 오래 싸워왔고, 가장 자신 있는 구간이다.
-
----
-
-**AutoBE는 AGPL 3.0 오픈소스입니다.**
-
-[GitHub](https://github.com/wrtnlabs/autobe) | [Docs](https://autobe.dev/docs) | [Benchmark](https://autobe.dev/benchmark) | [Discord](https://discord.gg/aMhRmzkqCx)
