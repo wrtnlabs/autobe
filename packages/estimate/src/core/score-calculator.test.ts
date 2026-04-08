@@ -7,29 +7,42 @@ import type {
   PhaseResult,
   ReferenceInfo,
 } from "../types";
-import {
-  GATE_MULTIPLIER_FLOOR,
-  createEmptyPhaseResult,
-} from "../types";
+import { GATE_MULTIPLIER_FLOOR, createEmptyPhaseResult } from "../types";
 import { buildResult } from "./score-calculator";
 
 /** Create a PhaseResult with the given score */
-function phaseResult(phase: PhaseResult["phase"], score: number, passed = true): PhaseResult {
+function phaseResult(
+  phase: PhaseResult["phase"],
+  score: number,
+  passed = true,
+): PhaseResult {
   return { ...createEmptyPhaseResult(phase), score, passed };
 }
 
 /** Minimal reference info */
 function emptyReference(): ReferenceInfo {
   return {
-    complexity: { totalFunctions: 0, complexFunctions: 0, maxComplexity: 0, issues: [] },
+    complexity: {
+      totalFunctions: 0,
+      complexFunctions: 0,
+      maxComplexity: 0,
+      issues: [],
+    },
     duplication: { totalBlocks: 0, issues: [] },
     naming: { totalIssues: 0, issues: [] },
     jsdoc: { totalMissing: 0, totalApis: 0, issues: [] },
-    schemaSync: { totalTypes: 20, emptyTypes: 0, mismatchedProperties: 0, issues: [] },
+    schemaSync: {
+      totalTypes: 20,
+      emptyTypes: 0,
+      mismatchedProperties: 0,
+      issues: [],
+    },
   };
 }
 
-function makePhases(overrides?: Partial<EvaluationResult.Phases>): EvaluationResult.Phases {
+function makePhases(
+  overrides?: Partial<EvaluationResult.Phases>,
+): EvaluationResult.Phases {
   return {
     gate: phaseResult("gate", 100),
     documentQuality: phaseResult("documentQuality", 80),
@@ -47,7 +60,11 @@ function makeBuildInput(overrides?: {
 }) {
   return {
     input: { inputPath: "/test" } as EvaluationInput,
-    context: { files: { typescript: Array.from({ length: 50 }, (_, i) => `file${i}.ts`) } } as unknown as EvaluationContext,
+    context: {
+      files: {
+        typescript: Array.from({ length: 50 }, (_, i) => `file${i}.ts`),
+      },
+    } as unknown as EvaluationContext,
     phases: overrides?.phases ?? makePhases(),
     reference: overrides?.reference ?? emptyReference(),
     startTime: performance.now() - 100,
@@ -256,7 +273,10 @@ describe("buildResult", () => {
       };
       const phases = makePhases({
         gate: { ...phaseResult("gate", 100), issues: [issue, issue] },
-        documentQuality: { ...phaseResult("documentQuality", 80), issues: [issue] },
+        documentQuality: {
+          ...phaseResult("documentQuality", 80),
+          issues: [issue],
+        },
       });
       const result = buildResult(makeBuildInput({ phases }));
       expect(result.criticalIssues).toHaveLength(1);
@@ -295,17 +315,29 @@ describe("buildResult", () => {
     it("subtracts penalty from total score", () => {
       // Create a scenario with schema sync penalty (totalTypes = 0 → base 3)
       const ref = emptyReference();
-      ref.schemaSync = { totalTypes: 0, emptyTypes: 0, mismatchedProperties: 0, issues: [] };
+      ref.schemaSync = {
+        totalTypes: 0,
+        emptyTypes: 0,
+        mismatchedProperties: 0,
+        issues: [],
+      };
       const phases = makePhases();
       const resultClean = buildResult(makeBuildInput({ phases }));
-      const resultWithPenalty = buildResult(makeBuildInput({ phases, reference: ref }));
+      const resultWithPenalty = buildResult(
+        makeBuildInput({ phases, reference: ref }),
+      );
       expect(resultWithPenalty.totalScore).toBeLessThan(resultClean.totalScore);
       expect(resultWithPenalty.penalties).toBeDefined();
     });
 
     it("does not apply penalties when gate fails", () => {
       const ref = emptyReference();
-      ref.schemaSync = { totalTypes: 0, emptyTypes: 0, mismatchedProperties: 0, issues: [] };
+      ref.schemaSync = {
+        totalTypes: 0,
+        emptyTypes: 0,
+        mismatchedProperties: 0,
+        issues: [],
+      };
       const gate = phaseResult("gate", 0);
       gate.passed = false;
       gate.metrics = { failedAt: "type-errors", errorRatio: 20 };
@@ -318,7 +350,12 @@ describe("buildResult", () => {
 
     it("score never goes below 0 after penalties", () => {
       const ref = emptyReference();
-      ref.schemaSync = { totalTypes: 0, emptyTypes: 0, mismatchedProperties: 0, issues: [] };
+      ref.schemaSync = {
+        totalTypes: 0,
+        emptyTypes: 0,
+        mismatchedProperties: 0,
+        issues: [],
+      };
       ref.duplication.totalBlocks = 200;
       ref.jsdoc = { totalMissing: 10, totalApis: 10, issues: [] };
 

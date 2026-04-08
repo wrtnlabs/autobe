@@ -679,7 +679,11 @@ ${snippetBlocks ? `### Code Snippets\n${snippetBlocks}` : ""}
 }
 
 function renderPenaltyRecovery(
-  recovery?: Array<{ type: string; currentPenalty: number; description: string }>,
+  recovery?: Array<{
+    type: string;
+    currentPenalty: number;
+    description: string;
+  }>,
 ): string {
   if (!recovery || recovery.length === 0) return "";
 

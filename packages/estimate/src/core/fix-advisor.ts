@@ -47,8 +47,8 @@ const REFERENCE_CATEGORY_PHASE: Record<string, Phase> = {
 /**
  * Generate fix advisory from evaluation results.
  *
- * For each issue, estimates the score impact of fixing it and
- * extracts a code snippet from the source file.
+ * For each issue, estimates the score impact of fixing it and extracts a code
+ * snippet from the source file.
  */
 export function generateFixAdvisory(
   result: EvaluationResult,
@@ -85,7 +85,15 @@ export function generateFixAdvisory(
         activeSum,
       );
 
-      items.push(buildAdvice(issue, phaseResult.phase, estimatedImpact, "phase", targetPath));
+      items.push(
+        buildAdvice(
+          issue,
+          phaseResult.phase,
+          estimatedImpact,
+          "phase",
+          targetPath,
+        ),
+      );
     }
   }
 
@@ -136,8 +144,7 @@ export function generateFixAdvisory(
       seenIds.add(issue.id);
 
       const severityMult = SEVERITY_MULTIPLIER[issue.severity] ?? 0.2;
-      const impact =
-        Math.round(perIssueImpact * severityMult * 10) / 10;
+      const impact = Math.round(perIssueImpact * severityMult * 10) / 10;
 
       items.push(buildAdvice(issue, phase, impact, "reference", targetPath));
     }
@@ -202,8 +209,8 @@ function computeActiveKeys(result: EvaluationResult): Phase[] {
 /**
  * Estimate score improvement from fixing one phase issue.
  *
- * Formula: distributes the "lost points" of a phase proportionally
- * across its issues, weighted by severity.
+ * Formula: distributes the "lost points" of a phase proportionally across its
+ * issues, weighted by severity.
  */
 function estimatePhaseImpact(
   issue: Issue,
@@ -219,11 +226,14 @@ function estimatePhaseImpact(
   // Gate issues: estimate based on gate penalty spread
   if (phase === "gate") {
     const severityMult = SEVERITY_MULTIPLIER[issue.severity] ?? 0.2;
-    return Math.round(((2 * severityMult) / Math.max(1, phaseIssueCount)) * 10) / 10;
+    return (
+      Math.round(((2 * severityMult) / Math.max(1, phaseIssueCount)) * 10) / 10
+    );
   }
 
   const lostPoints = 100 - phaseScore;
-  const normalizedWeight = activeWeightSum > 0 ? phaseWeight / activeWeightSum : 0;
+  const normalizedWeight =
+    activeWeightSum > 0 ? phaseWeight / activeWeightSum : 0;
   const severityMult = SEVERITY_MULTIPLIER[issue.severity] ?? 0.2;
 
   const rawImpact =
@@ -277,9 +287,7 @@ function buildPenaltyRecovery(result: EvaluationResult): PenaltyRecovery[] {
   return recovery;
 }
 
-/**
- * Extract a code snippet from a source file around a given line.
- */
+/** Extract a code snippet from a source file around a given line. */
 function extractSnippet(
   targetPath: string,
   file: string,

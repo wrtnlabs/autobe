@@ -3,7 +3,9 @@ import * as path from "path";
 
 import type { CompareCommandOptions } from "../types";
 
-export async function runCompare(options: CompareCommandOptions): Promise<void> {
+export async function runCompare(
+  options: CompareCommandOptions,
+): Promise<void> {
   const { CompareEvaluator, CompareReporter } = await import("../../compare");
 
   if (!options.apiKey) {

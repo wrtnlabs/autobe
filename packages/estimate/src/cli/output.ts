@@ -242,9 +242,7 @@ function printPhaseScore(phase: string, phaseResult: PhaseResult): void {
   console.log(`   ${padded} ${indicator}`);
 }
 
-function printGroupedIssues(
-  issues: EvaluationResult["criticalIssues"],
-): void {
+function printGroupedIssues(issues: EvaluationResult["criticalIssues"]): void {
   const grouped = new Map<string, GroupedIssue>();
 
   for (const issue of issues) {
@@ -267,9 +265,7 @@ function printGroupedIssues(
     }
   }
 
-  const sorted = [...grouped.entries()].sort(
-    (a, b) => b[1].count - a[1].count,
-  );
+  const sorted = [...grouped.entries()].sort((a, b) => b[1].count - a[1].count);
 
   for (const [code, info] of sorted.slice(0, 5)) {
     const fileHint = info.files.join(", ");

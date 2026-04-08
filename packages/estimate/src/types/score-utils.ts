@@ -1,5 +1,11 @@
 import type { Issue } from "./issue";
-import type { Grade, IssueSummary, Phase, PhaseResult, ScoreExplanation } from "./score";
+import type {
+  Grade,
+  IssueSummary,
+  Phase,
+  PhaseResult,
+  ScoreExplanation,
+} from "./score";
 
 /** Convert score to grade */
 export function scoreToGrade(score: number): Grade {

@@ -15,14 +15,16 @@ export interface PenaltyOutput {
 }
 
 /**
- * Calculate all quality penalties proportionally, capped at MAX_COMBINED_PENALTY.
+ * Calculate all quality penalties proportionally, capped at
+ * MAX_COMBINED_PENALTY.
  *
  * Five penalty types:
- *   1. Warning penalty (max 20) — non-infra, non-gate-penalized warnings
- *   2. Duplication penalty (max 5)
- *   3. JSDoc penalty (max 5)
- *   4. Schema sync penalty (max 10)
- *   5. Suggestion overflow penalty (max 10)
+ *
+ * 1. Warning penalty (max 20) — non-infra, non-gate-penalized warnings
+ * 2. Duplication penalty (max 5)
+ * 3. JSDoc penalty (max 5)
+ * 4. Schema sync penalty (max 10)
+ * 5. Suggestion overflow penalty (max 10)
  */
 export function calculatePenalties(input: PenaltyInput): PenaltyOutput {
   const { warnings, suggestions, reference, verbose } = input;
@@ -57,10 +59,7 @@ export function calculatePenalties(input: PenaltyInput): PenaltyOutput {
   }
 
   // 2. Duplication penalty (max 5)
-  const dupThreshold = Math.max(
-    30,
-    Math.min(80, Math.round(totalFiles * 0.5)),
-  );
+  const dupThreshold = Math.max(30, Math.min(80, Math.round(totalFiles * 0.5)));
   let rawDupPenalty = 0;
   if (reference.duplication.totalBlocks > dupThreshold) {
     rawDupPenalty = Math.min(
@@ -75,8 +74,7 @@ export function calculatePenalties(input: PenaltyInput): PenaltyOutput {
   if (reference.jsdoc.totalMissing > 0) {
     const jsdocDenom =
       reference.jsdoc.totalApis || reference.jsdoc.totalMissing;
-    jsdocRatio =
-      jsdocDenom > 0 ? reference.jsdoc.totalMissing / jsdocDenom : 0;
+    jsdocRatio = jsdocDenom > 0 ? reference.jsdoc.totalMissing / jsdocDenom : 0;
     if (jsdocRatio > 0.3) {
       const normalizedRatio = Math.min(1, (jsdocRatio - 0.3) / 0.7);
       rawJsdocPenalty = Math.min(5, Math.round(normalizedRatio * 5));
@@ -90,8 +88,7 @@ export function calculatePenalties(input: PenaltyInput): PenaltyOutput {
   }
   const syncTotal = Math.max(reference.schemaSync.totalTypes, 10);
   const emptyRatio = reference.schemaSync.emptyTypes / syncTotal;
-  const mismatchRatio =
-    reference.schemaSync.mismatchedProperties / syncTotal;
+  const mismatchRatio = reference.schemaSync.mismatchedProperties / syncTotal;
   const emptyThreshold = Math.min(
     0.25,
     0.15 + Math.max(0, syncTotal - 30) * 0.001,
@@ -121,9 +118,7 @@ export function calculatePenalties(input: PenaltyInput): PenaltyOutput {
     );
     rawSuggestionPenalty = Math.min(
       10,
-      Math.round(
-        (suggestionCount - suggestionThreshold) / suggestionDivisor,
-      ),
+      Math.round((suggestionCount - suggestionThreshold) / suggestionDivisor),
     );
   }
 

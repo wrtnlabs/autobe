@@ -46,7 +46,10 @@ import {
   restorePhaseResult,
   saveCache,
 } from "./incremental";
-import { collectReferenceInfo, createEmptyReference } from "./reference-collector";
+import {
+  collectReferenceInfo,
+  createEmptyReference,
+} from "./reference-collector";
 import { buildResult } from "./score-calculator";
 
 const phaseStrategies = [

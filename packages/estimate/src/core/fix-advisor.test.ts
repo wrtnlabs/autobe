@@ -2,7 +2,12 @@ import * as fs from "fs";
 import * as path from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { EvaluationResult, Issue, PhaseResult, ReferenceInfo } from "../types";
+import type {
+  EvaluationResult,
+  Issue,
+  PhaseResult,
+  ReferenceInfo,
+} from "../types";
 import { createEmptyPhaseResult } from "../types";
 import { generateFixAdvisory } from "./fix-advisor";
 
@@ -28,19 +33,31 @@ function phaseResult(
 
 function emptyReference(): ReferenceInfo {
   return {
-    complexity: { totalFunctions: 0, complexFunctions: 0, maxComplexity: 0, issues: [] },
+    complexity: {
+      totalFunctions: 0,
+      complexFunctions: 0,
+      maxComplexity: 0,
+      issues: [],
+    },
     duplication: { totalBlocks: 0, issues: [] },
     naming: { totalIssues: 0, issues: [] },
     jsdoc: { totalMissing: 0, totalApis: 0, issues: [] },
-    schemaSync: { totalTypes: 20, emptyTypes: 0, mismatchedProperties: 0, issues: [] },
+    schemaSync: {
+      totalTypes: 20,
+      emptyTypes: 0,
+      mismatchedProperties: 0,
+      issues: [],
+    },
   };
 }
 
-function makeResult(overrides?: Partial<{
-  phases: Partial<EvaluationResult.Phases>;
-  reference: Partial<ReferenceInfo>;
-  penalties: EvaluationResult["penalties"];
-}>): EvaluationResult {
+function makeResult(
+  overrides?: Partial<{
+    phases: Partial<EvaluationResult.Phases>;
+    reference: Partial<ReferenceInfo>;
+    penalties: EvaluationResult["penalties"];
+  }>,
+): EvaluationResult {
   return {
     targetPath: "/test/project",
     totalScore: 70,
@@ -55,7 +72,12 @@ function makeResult(overrides?: Partial<{
       ...overrides?.phases,
     },
     reference: { ...emptyReference(), ...overrides?.reference },
-    summary: { totalIssues: 0, criticalCount: 0, warningCount: 0, suggestionCount: 0 },
+    summary: {
+      totalIssues: 0,
+      criticalCount: 0,
+      warningCount: 0,
+      suggestionCount: 0,
+    },
     criticalIssues: [],
     warnings: [],
     suggestions: [],
@@ -131,7 +153,9 @@ describe("generateFixAdvisory", () => {
       const advisory = generateFixAdvisory(result, "/test");
       const logicAdvice = advisory.items.find((a) => a.issueId === "logic")!;
       const docAdvice = advisory.items.find((a) => a.issueId === "doc")!;
-      expect(logicAdvice.estimatedImpact).toBeGreaterThan(docAdvice.estimatedImpact);
+      expect(logicAdvice.estimatedImpact).toBeGreaterThan(
+        docAdvice.estimatedImpact,
+      );
     });
 
     it("critical issues have more impact than suggestions", () => {
@@ -166,7 +190,11 @@ describe("generateFixAdvisory", () => {
     });
 
     it("gate issues get estimated impact", () => {
-      const gateIssue = makeIssue({ id: "g1", severity: "critical", code: "TS2339" });
+      const gateIssue = makeIssue({
+        id: "g1",
+        severity: "critical",
+        code: "TS2339",
+      });
       const result = makeResult({
         phases: {
           gate: phaseResult("gate", 80, [gateIssue]),
@@ -259,7 +287,9 @@ describe("generateFixAdvisory", () => {
       const sharedIssue = makeIssue({ id: "shared1" });
       const result = makeResult({
         phases: {
-          logicCompleteness: phaseResult("logicCompleteness", 60, [sharedIssue]),
+          logicCompleteness: phaseResult("logicCompleteness", 60, [
+            sharedIssue,
+          ]),
         },
         reference: {
           complexity: {
@@ -271,7 +301,9 @@ describe("generateFixAdvisory", () => {
         },
       });
       const advisory = generateFixAdvisory(result, "/test");
-      const matchingItems = advisory.items.filter((a) => a.issueId === "shared1");
+      const matchingItems = advisory.items.filter(
+        (a) => a.issueId === "shared1",
+      );
       expect(matchingItems).toHaveLength(1);
       expect(matchingItems[0].source).toBe("phase"); // phase takes priority
     });
@@ -336,10 +368,7 @@ describe("generateFixAdvisory", () => {
 
     beforeEach(() => {
       fs.mkdirSync(tmpDir, { recursive: true });
-      const lines = Array.from(
-        { length: 20 },
-        (_, i) => `// line ${i + 1}`,
-      );
+      const lines = Array.from({ length: 20 }, (_, i) => `// line ${i + 1}`);
       fs.writeFileSync(testFile, lines.join("\n"));
     });
 

@@ -2,10 +2,10 @@ import * as p from "@clack/prompts";
 import * as fs from "fs";
 import * as path from "path";
 
-import { EvaluationPipeline } from "../../core/pipeline";
-import { DIAGNOSE_MODEL, runDiagnosis } from "../../core/diagnose";
-import type { EvaluationResult, EvaluationInput } from "../../types";
 import type { LLMProvider } from "../../agents/types";
+import { DIAGNOSE_MODEL, runDiagnosis } from "../../core/diagnose";
+import { EvaluationPipeline } from "../../core/pipeline";
+import type { EvaluationInput, EvaluationResult } from "../../types";
 
 export interface DiagnoseCLIOptions {
   input?: string;
@@ -29,7 +29,9 @@ export async function runDiagnose(options: DiagnoseCLIOptions): Promise<void> {
   }
 
   if (!options.input && !options.report) {
-    p.log.error("Either --input (project path) or --report (existing JSON report) is required");
+    p.log.error(
+      "Either --input (project path) or --report (existing JSON report) is required",
+    );
     process.exit(1);
   }
 
@@ -85,7 +87,9 @@ export async function runDiagnose(options: DiagnoseCLIOptions): Promise<void> {
     const pipeline = new EvaluationPipeline(options.verbose);
     result = await pipeline.evaluate(input);
 
-    spinner.stop(`Evaluation complete: ${result.totalScore}/100 (${result.grade})`);
+    spinner.stop(
+      `Evaluation complete: ${result.totalScore}/100 (${result.grade})`,
+    );
   }
 
   // Check if there are errors to diagnose
@@ -120,12 +124,16 @@ export async function runDiagnose(options: DiagnoseCLIOptions): Promise<void> {
   fs.writeFileSync(outputFile, diagResult.markdown);
 
   // Cost summary
-  const cost = (diagResult.tokensUsed.inputCost ?? 0) + (diagResult.tokensUsed.outputCost ?? 0);
+  const cost =
+    (diagResult.tokensUsed.inputCost ?? 0) +
+    (diagResult.tokensUsed.outputCost ?? 0);
 
   p.log.success(`Diagnosis written to: ${outputFile}`);
   p.log.info(`  Files analyzed: ${diagResult.filesAnalyzed}`);
   p.log.info(`  Total errors: ${diagResult.totalErrors}`);
-  p.log.info(`  Tokens: ${diagResult.tokensUsed.input} in / ${diagResult.tokensUsed.output} out`);
+  p.log.info(
+    `  Tokens: ${diagResult.tokensUsed.input} in / ${diagResult.tokensUsed.output} out`,
+  );
   if (cost > 0) {
     p.log.info(`  Cost: $${cost.toFixed(4)}`);
   }

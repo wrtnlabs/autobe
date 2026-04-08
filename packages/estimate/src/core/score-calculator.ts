@@ -6,11 +6,7 @@ import type {
   PhaseResult,
   ReferenceInfo,
 } from "../types";
-import {
-  GATE_MULTIPLIER_FLOOR,
-  PHASE_WEIGHTS,
-  scoreToGrade,
-} from "../types";
+import { GATE_MULTIPLIER_FLOOR, PHASE_WEIGHTS, scoreToGrade } from "../types";
 import { type PenaltyInput, calculatePenalties } from "./penalty";
 
 const { version } = require("../../package.json");
@@ -153,7 +149,10 @@ function calculateWeightedScore(phases: EvaluationPhases): number {
   let rawScore = activeKeys.reduce(
     (sum, k) =>
       sum +
-      safeScore((phases as unknown as Record<string, PhaseResult | undefined>)[k]?.score) *
+      safeScore(
+        (phases as unknown as Record<string, PhaseResult | undefined>)[k]
+          ?.score,
+      ) *
         (PHASE_WEIGHTS[k as keyof typeof PHASE_WEIGHTS] ?? 0) *
         normFactor,
     0,
@@ -169,8 +168,7 @@ function calculateWeightedScore(phases: EvaluationPhases): number {
   const gateMultiplier = phases.gate.passed
     ? gateScore === 100
       ? 1.0
-      : GATE_MULTIPLIER_FLOOR +
-        rawGateMultiplier * (1 - GATE_MULTIPLIER_FLOOR)
+      : GATE_MULTIPLIER_FLOOR + rawGateMultiplier * (1 - GATE_MULTIPLIER_FLOOR)
     : rawGateMultiplier;
 
   return Math.max(0, Math.round(rawScore * gateMultiplier));

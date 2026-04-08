@@ -7,11 +7,21 @@ import { type PenaltyInput, calculatePenalties } from "./penalty";
 /** Helper to create a minimal ReferenceInfo */
 function emptyReference(): ReferenceInfo {
   return {
-    complexity: { totalFunctions: 0, complexFunctions: 0, maxComplexity: 0, issues: [] },
+    complexity: {
+      totalFunctions: 0,
+      complexFunctions: 0,
+      maxComplexity: 0,
+      issues: [],
+    },
     duplication: { totalBlocks: 0, issues: [] },
     naming: { totalIssues: 0, issues: [] },
     jsdoc: { totalMissing: 0, totalApis: 0, issues: [] },
-    schemaSync: { totalTypes: 20, emptyTypes: 0, mismatchedProperties: 0, issues: [] },
+    schemaSync: {
+      totalTypes: 20,
+      emptyTypes: 0,
+      mismatchedProperties: 0,
+      issues: [],
+    },
   };
 }
 
@@ -88,7 +98,9 @@ describe("calculatePenalties", () => {
       const warnings = Array.from({ length: 500 }, (_, i) =>
         makeWarning(`warn ${i}`),
       );
-      const result = calculatePenalties(defaultInput({ warnings, totalFiles: 10 }));
+      const result = calculatePenalties(
+        defaultInput({ warnings, totalFiles: 10 }),
+      );
       // raw warning penalty capped at 20, and that's the only penalty
       expect(result.effectivePenalty).toBeLessThanOrEqual(MAX_COMBINED_PENALTY);
     });
@@ -138,7 +150,12 @@ describe("calculatePenalties", () => {
   describe("schema sync penalty", () => {
     it("applies base penalty of 3 when totalTypes is 0", () => {
       const ref = emptyReference();
-      ref.schemaSync = { totalTypes: 0, emptyTypes: 0, mismatchedProperties: 0, issues: [] };
+      ref.schemaSync = {
+        totalTypes: 0,
+        emptyTypes: 0,
+        mismatchedProperties: 0,
+        issues: [],
+      };
       const result = calculatePenalties(defaultInput({ reference: ref }));
       expect(result.effectivePenalty).toBe(3);
       expect(result.penalties?.schemaSync?.amount).toBe(3);
@@ -148,7 +165,12 @@ describe("calculatePenalties", () => {
       const ref = emptyReference();
       // 20 types, emptyThreshold = min(0.25, 0.15 + 0) = 0.15
       // emptyRatio = 5/20 = 0.25 → exceeds 0.15 → penalty = min(5, round(0.25*10)) = 3
-      ref.schemaSync = { totalTypes: 20, emptyTypes: 5, mismatchedProperties: 0, issues: [] };
+      ref.schemaSync = {
+        totalTypes: 20,
+        emptyTypes: 5,
+        mismatchedProperties: 0,
+        issues: [],
+      };
       const result = calculatePenalties(defaultInput({ reference: ref }));
       expect(result.penalties?.schemaSync).toBeDefined();
     });
@@ -157,7 +179,12 @@ describe("calculatePenalties", () => {
       const ref = emptyReference();
       // 20 types, mismatchThreshold = min(0.15, 0.05 + 0) = 0.05
       // mismatchRatio = 3/20 = 0.15 → exceeds 0.05 → penalty = min(5, round(0.15*10)) = 2
-      ref.schemaSync = { totalTypes: 20, emptyTypes: 0, mismatchedProperties: 3, issues: [] };
+      ref.schemaSync = {
+        totalTypes: 20,
+        emptyTypes: 0,
+        mismatchedProperties: 3,
+        issues: [],
+      };
       const result = calculatePenalties(defaultInput({ reference: ref }));
       expect(result.penalties?.schemaSync).toBeDefined();
     });
@@ -186,7 +213,12 @@ describe("calculatePenalties", () => {
       const ref = emptyReference();
       ref.duplication.totalBlocks = 200;
       ref.jsdoc = { totalMissing: 10, totalApis: 10, issues: [] };
-      ref.schemaSync = { totalTypes: 0, emptyTypes: 10, mismatchedProperties: 10, issues: [] };
+      ref.schemaSync = {
+        totalTypes: 0,
+        emptyTypes: 10,
+        mismatchedProperties: 10,
+        issues: [],
+      };
 
       const warnings = Array.from({ length: 300 }, (_, i) =>
         makeWarning(`warn ${i}`),
@@ -202,7 +234,12 @@ describe("calculatePenalties", () => {
     it("does not scale when raw total is within cap", () => {
       // Only a small schema sync penalty (totalTypes = 0 → base 3)
       const ref = emptyReference();
-      ref.schemaSync = { totalTypes: 0, emptyTypes: 0, mismatchedProperties: 0, issues: [] };
+      ref.schemaSync = {
+        totalTypes: 0,
+        emptyTypes: 0,
+        mismatchedProperties: 0,
+        issues: [],
+      };
       const result = calculatePenalties(defaultInput({ reference: ref }));
       // raw = 3, below MAX_COMBINED_PENALTY, no scaling
       expect(result.effectivePenalty).toBe(3);

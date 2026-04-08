@@ -63,7 +63,9 @@ export async function runDiagnosis(
 
   // 2. Group errors by file
   const groups = groupErrorsByFile(gateIssues);
-  log(`[Diagnose] ${groups.length} files with errors, ${gateIssues.length} total issues`);
+  log(
+    `[Diagnose] ${groups.length} files with errors, ${gateIssues.length} total issues`,
+  );
 
   // 3. Read source code for each error file
   for (const group of groups) {
@@ -74,7 +76,9 @@ export async function runDiagnosis(
   const prismaSchemas = readPrismaSchemas(targetPath);
   const dtoTypes = readDtoTypes(targetPath);
 
-  log(`[Diagnose] Context: ${prismaSchemas.length} chars schema, ${dtoTypes.length} chars DTO`);
+  log(
+    `[Diagnose] Context: ${prismaSchemas.length} chars schema, ${dtoTypes.length} chars DTO`,
+  );
 
   // 5. Call LLM for diagnosis
   const systemPrompt = loadDiagnosePrompt();
@@ -91,10 +95,16 @@ export async function runDiagnosis(
 
   const response = await client.chat(systemPrompt, userPrompt, { json: false });
 
-  log(`[Diagnose] LLM response: ${response.tokensUsed.input} in / ${response.tokensUsed.output} out tokens`);
+  log(
+    `[Diagnose] LLM response: ${response.tokensUsed.input} in / ${response.tokensUsed.output} out tokens`,
+  );
 
   // 6. Build final markdown
-  const markdown = buildDiagnosisReport(result, response.content, groups.length);
+  const markdown = buildDiagnosisReport(
+    result,
+    response.content,
+    groups.length,
+  );
 
   return {
     markdown,
@@ -141,7 +151,9 @@ function readPrismaSchemas(targetPath: string): string {
 
   if (fs.existsSync(schemaDir)) {
     try {
-      const files = fs.readdirSync(schemaDir).filter((f) => f.endsWith(".prisma"));
+      const files = fs
+        .readdirSync(schemaDir)
+        .filter((f) => f.endsWith(".prisma"));
       for (const f of files) {
         const content = fs.readFileSync(path.join(schemaDir, f), "utf-8");
         parts.push(`// --- ${f} ---\n${content}`);
@@ -167,7 +179,9 @@ function readDtoTypes(targetPath: string): string {
 
   const parts: string[] = [];
   try {
-    const files = fs.readdirSync(structuresDir).filter((f) => f.endsWith(".ts"));
+    const files = fs
+      .readdirSync(structuresDir)
+      .filter((f) => f.endsWith(".ts"));
     for (const f of files.slice(0, 50)) {
       // limit to 50 files
       const content = fs.readFileSync(path.join(structuresDir, f), "utf-8");
@@ -207,7 +221,9 @@ function buildUserPrompt(
 
   parts.push(`# Project: ${path.basename(result.targetPath)}`);
   parts.push(`Total score: ${result.totalScore}/100 (Grade: ${result.grade})`);
-  parts.push(`Gate score: ${result.phases.gate.score}/100 (${result.phases.gate.passed ? "PASSED" : "FAILED"})`);
+  parts.push(
+    `Gate score: ${result.phases.gate.score}/100 (${result.phases.gate.passed ? "PASSED" : "FAILED"})`,
+  );
   parts.push("");
 
   // Compile errors
@@ -248,7 +264,9 @@ function buildUserPrompt(
   }
 
   parts.push("---");
-  parts.push("Analyze ALL error files above using the 7-step forensic analysis. Do not skip any file.");
+  parts.push(
+    "Analyze ALL error files above using the 7-step forensic analysis. Do not skip any file.",
+  );
 
   return parts.join("\n");
 }

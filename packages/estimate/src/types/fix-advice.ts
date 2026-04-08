@@ -1,5 +1,5 @@
-import type { Phase } from "./score";
 import type { Severity } from "./issue";
+import type { Phase } from "./score";
 
 /** Code snippet surrounding an issue location */
 export interface CodeSnippet {

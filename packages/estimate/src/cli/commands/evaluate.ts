@@ -13,23 +13,20 @@ import {
   SECURITY_MODEL,
   SecurityAgent,
 } from "../../agents";
-import { EvaluationPipeline } from "../../core/pipeline";
 import { generateFixAdvisory } from "../../core/fix-advisor";
+import { EvaluationPipeline } from "../../core/pipeline";
+import { generateJsonReport, generateMarkdownReport } from "../../reporters";
 import {
-  generateJsonReport,
-  generateMarkdownReport,
-} from "../../reporters";
-import { flushLangfuse, getActiveTrace, recordAgentResults } from "../../telemetry";
+  flushLangfuse,
+  getActiveTrace,
+  recordAgentResults,
+} from "../../telemetry";
 import type {
   EvaluationContext,
   EvaluationInput,
   ScoreBreakdown,
 } from "../../types";
-import {
-  AGENT_WEIGHTS,
-  AGENT_WEIGHT_RATIO,
-  scoreToGrade,
-} from "../../types";
+import { AGENT_WEIGHTS, AGENT_WEIGHT_RATIO, scoreToGrade } from "../../types";
 import { printAgentResults, printFinalScore, printResults } from "../output";
 import type { CLIOptions } from "../types";
 
