@@ -1,5 +1,6 @@
 import { AutoBeRealizeCollectorReference } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -18,8 +19,8 @@ export interface IAutoBeRealizeCollectorPlanApplication {
    * Analyzes the given DTO type and generates a plan entry determining whether
    * a collector is needed. Returns exactly ONE plan entry.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   plan
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeRealizeCollectorPlanApplication.IProps): void;
 }
@@ -31,8 +32,10 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * For preliminary requests: what schemas (database, DTO, operations) are
      * missing?
      *
-     * For completion: is this DTO collectable or non-collectable? What database
+     * For write: is this DTO collectable or non-collectable? What database
      * table does it map to (if collectable)?
+     *
+     * For complete: why you consider the decision final.
      */
     thinking: string;
 
@@ -41,20 +44,21 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * union, physically preventing repeated calls.
      */
     request:
-      | IComplete
+      | IWrite
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetInterfaceOperations
-      | IAutoBePreliminaryGetInterfaceSchemas;
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryComplete;
   }
 
   /**
    * Generates exactly ONE plan entry indicating collectable (has DB schema
    * name) or not (null).
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Exactly ONE entry. databaseSchemaName non-null = collectable, null = no

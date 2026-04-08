@@ -14,6 +14,7 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { orchestrateRealizeCorrectOverall } from "./correct/orchestrateRealizeCorrectOverall";
 import { transformRealizeOperationCorrectHistory } from "./histories/transformRealizeOperationCorrectHistory";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
+import { IAutoBeRealizeFunctionResult } from "./structures/IAutoBeRealizeFunctionResult";
 import { IAutoBeRealizeOperationCorrectApplication } from "./structures/IAutoBeRealizeOperationCorrectApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
@@ -26,11 +27,23 @@ export const orchestrateRealizeOperationCorrectOverall = async (
     functions: AutoBeRealizeOperationFunction[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeRealizeOperationFunction[]> => {
+): Promise<IAutoBeRealizeFunctionResult<AutoBeRealizeOperationFunction>[]> => {
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
   return await orchestrateRealizeCorrectOverall(ctx, {
     programmer: {
       location: "src/providers",
+      template: (func) =>
+        AutoBeRealizeOperationProgrammer.writeTemplate({
+          authorizations: props.authorizations,
+          schemas: document.components.schemas,
+          operation: document.operations.find(
+            (o) =>
+              o.method === func.endpoint.method &&
+              o.path === func.endpoint.path,
+          )!,
+          collectors: props.collectors,
+          transformers: props.transformers,
+        }),
       replaceImportStatements: async (next) => {
         const scenario: IAutoBeRealizeScenarioResult =
           AutoBeRealizeOperationProgrammer.getScenario({
@@ -69,6 +82,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
           });
         return new AutoBePreliminaryController({
           source: next.source,
+          dispatch: (e) => ctx.dispatch(e),
           application:
             typia.json.application<IAutoBeRealizeOperationCorrectApplication>(),
           kinds: [
@@ -87,11 +101,12 @@ export const orchestrateRealizeOperationCorrectOverall = async (
               (c) =>
                 c.plan.dtoTypeName === scenario.operation.requestBody?.typeName,
             ),
-            realizeTransformers: props.transformers.filter(
-              (t) =>
-                t.plan.dtoTypeName ===
-                scenario.operation.responseBody?.typeName.replace(/^IPage/, ""),
-            ),
+            realizeTransformers:
+              AutoBeRealizeOperationProgrammer.getLocalTransformers({
+                operation: scenario.operation,
+                schemas: document.components.schemas,
+                transformers: props.transformers,
+              }),
           },
         });
       },
@@ -124,18 +139,26 @@ export const orchestrateRealizeOperationCorrectOverall = async (
               input,
             );
           if (result.success === false) return result;
-          else if (result.data.request.type !== "complete")
+          else if (result.data.request.type !== "write")
             return next.preliminary.validate({
               thinking: result.data.thinking,
               request: result.data.request,
             });
-          const errors: IValidation.IError[] = validateEmptyCode({
-            name: next.function.name,
-            draft: result.data.request.draft,
-            revise: result.data.request.revise,
-            path: "$input.request",
-            asynchronous: true,
-          });
+          const errors: IValidation.IError[] = [
+            ...validateEmptyCode({
+              name: next.function.name,
+              draft: result.data.request.draft,
+              revise: result.data.request.revise,
+              path: "$input.request",
+              asynchronous: true,
+            }),
+            ...AutoBeRealizeOperationProgrammer.validateSelectTransformContract(
+              {
+                draft: result.data.request.draft,
+                revise: result.data.request.revise,
+              },
+            ),
+          ];
           return errors.length
             ? {
                 success: false,
@@ -159,7 +182,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
           application,
           execute: {
             process: (v) => {
-              if (v.request.type === "complete") next.build(v.request);
+              if (v.request.type === "write") next.build(v.request);
             },
           } satisfies IAutoBeRealizeOperationCorrectApplication,
         };

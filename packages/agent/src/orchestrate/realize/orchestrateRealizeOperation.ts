@@ -7,6 +7,7 @@ import {
 } from "@autobe/interface";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { orchestrateRealizeCorrectWithRetry } from "./correct/orchestrateRealizeCorrectWithRetry";
 import { orchestrateRealizeOperationCorrectCasting } from "./orchestrateRealizeOperationCorrectCasting";
 import { orchestrateRealizeOperationCorrectOverall } from "./orchestrateRealizeOperationCorrectOverall";
 import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationWrite";
@@ -21,28 +22,40 @@ export async function orchestrateRealizeOperation(
     validateProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeOperationFunction[]> {
-  let functions: AutoBeRealizeOperationFunction[] =
-    await orchestrateRealizeOperationWrite(ctx, {
-      authorizations: props.authorizations,
-      collectors: props.collectors,
-      transformers: props.transformers,
-      progress: props.writeProgress,
-    });
-  props.validateProgress.total += 2 * functions.length;
-
-  functions = await orchestrateRealizeOperationCorrectCasting(ctx, {
-    authorizations: props.authorizations,
-    collectors: props.collectors,
-    transformers: props.transformers,
-    functions,
-    progress: props.validateProgress,
+  return orchestrateRealizeCorrectWithRetry({
+    write: () =>
+      orchestrateRealizeOperationWrite(ctx, {
+        authorizations: props.authorizations,
+        collectors: props.collectors,
+        transformers: props.transformers,
+        progress: props.writeProgress,
+      }),
+    rewrite: (failed) =>
+      orchestrateRealizeOperationWrite(ctx, {
+        authorizations: props.authorizations,
+        collectors: props.collectors,
+        transformers: props.transformers,
+        progress: props.writeProgress,
+        targetEndpoints: failed.map((f) => f.endpoint),
+      }),
+    correctCasting: (functions) =>
+      orchestrateRealizeOperationCorrectCasting(ctx, {
+        authorizations: props.authorizations,
+        collectors: props.collectors,
+        transformers: props.transformers,
+        functions,
+        progress: props.validateProgress,
+      }),
+    correctOverall: (functions) =>
+      orchestrateRealizeOperationCorrectOverall(ctx, {
+        functions,
+        authorizations: props.authorizations,
+        collectors: props.collectors,
+        transformers: props.transformers,
+        progress: props.validateProgress,
+      }),
+    addProgress: (count) => {
+      props.validateProgress.total += 2 * count;
+    },
   });
-  functions = await orchestrateRealizeOperationCorrectOverall(ctx, {
-    functions,
-    authorizations: props.authorizations,
-    collectors: props.collectors,
-    transformers: props.transformers,
-    progress: props.validateProgress,
-  });
-  return functions;
 }

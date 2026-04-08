@@ -28,9 +28,11 @@ export interface AutoBeInterfaceSchemaCasting {
 
   /**
    * API documentation for consumers (Swagger UI). Focus on WHAT the corrected
-   * type represents.
+   * type represents. No implementation details.
    *
-   * - MUST be written in English
+   * Format: summary sentence first, `\n\n`, then paragraphs grouped by topic.
+   *
+   * > MUST be written in English.
    */
   description: string;
 

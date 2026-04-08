@@ -5,10 +5,11 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestScenario,
+  AutoBeTestScenarioEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { NamingConvention } from "@typia/utils";
-import { HashMap, HashSet, IPointer } from "tstl";
+import { HashMap, HashSet, IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -20,7 +21,6 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformTestScenarioHistory } from "./histories/transformTestScenarioHistory";
-import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
 import { AutoBeTestScenarioProgrammer } from "./programmers/AutoBeTestScenarioProgrammer";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { getPrerequisites } from "./utils/getPrerequisites";
@@ -60,34 +60,28 @@ export const orchestrateTestScenario = async (
   const matrix: AutoBeTestScenario[][] = await executeCachedBatch(
     ctx,
     document.operations.map((operation) => async (promptCacheKey) => {
+      const counter = new Singleton(() => ++progress.completed);
       try {
         return await process(ctx, {
           dict,
           document,
           operation,
           progress,
+          counter,
           promptCacheKey,
           instruction,
         });
       } catch (error) {
+        counter.get();
         console.log(operation, error);
-        --progress.total;
         return [];
       }
     }),
   );
   const scenarios: AutoBeTestScenario[] = matrix.flat();
 
-  return await orchestrateTestScenarioReview(ctx, {
-    dict,
-    document,
-    scenarios,
-    progress: {
-      total: scenarios.length,
-      completed: 0,
-    },
-    instruction,
-  });
+  // review removed — write agents self-review during rewrite loop
+  return scenarios;
 };
 
 /**
@@ -107,6 +101,7 @@ async function process(
     operation: AutoBeOpenApi.IOperation;
     document: AutoBeOpenApi.IDocument;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
     instruction: string;
   },
@@ -136,11 +131,17 @@ async function process(
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
   const preliminary: AutoBePreliminaryController<
-    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas" | "complete"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeTestScenarioApplication>(),
     source: SOURCE,
-    kinds: ["analysisSections", "interfaceOperations", "interfaceSchemas"],
+    kinds: [
+      "analysisSections",
+      "interfaceOperations",
+      "interfaceSchemas",
+      "complete",
+    ],
+    dispatch: (e) => ctx.dispatch(e),
     state: ctx.state(),
     all: {
       interfaceOperations: props.document.operations,
@@ -166,53 +167,56 @@ async function process(
     },
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeTestScenario[] | null> = {
-      value: null,
-    };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        dict: props.dict,
-        operation: props.operation,
-        authorizations,
-        preliminary,
-        build: (scenarios) => {
-          // Normalize function name to snake_case
-          for (const s of scenarios)
-            s.functionName = NamingConvention.snake(s.functionName);
-          pointer.value ??= [];
-          pointer.value.push(...scenarios);
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformTestScenarioHistory({
-        state: ctx.state(),
-        operation: props.operation,
-        instruction: props.instruction,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  const event: AutoBeTestScenarioEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<AutoBeTestScenario[] | null> = {
+        value: null,
+      };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          dict: props.dict,
+          operation: props.operation,
+          authorizations,
+          preliminary,
+          build: (scenarios) => {
+            // Normalize function name to snake_case
+            for (const s of scenarios)
+              s.functionName = NamingConvention.snake(s.functionName);
+            pointer.value ??= [];
+            pointer.value.push(...scenarios);
+          },
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformTestScenarioHistory({
+          state: ctx.state(),
+          operation: props.operation,
+          instruction: props.instruction,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
 
-    pointer.value.splice(3);
+      pointer.value.splice(3);
 
-    // Dispatch event
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      scenarios: pointer.value,
-      acquisition: preliminary.getAcquisition(),
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      step: ctx.state().interface?.step ?? 0,
-      created_at: new Date().toISOString(),
-    });
-    return out(result)(pointer.value);
-  });
+      return out(result)({
+        type: SOURCE,
+        id: v7(),
+        metric: result.metric,
+        tokenUsage: result.tokenUsage,
+        scenarios: pointer.value,
+        acquisition: preliminary.getAcquisition(),
+        total: props.progress.total,
+        completed: props.counter.get(),
+        step: ctx.state().interface?.step ?? 0,
+        created_at: new Date().toISOString(),
+      });
+    },
+  );
+  ctx.dispatch(event);
+  return event.scenarios;
 }
 
 function createController(props: {
@@ -221,7 +225,7 @@ function createController(props: {
   operation: AutoBeOpenApi.IOperation;
   build: (scenarios: AutoBeTestScenario[]) => void;
   preliminary: AutoBePreliminaryController<
-    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas" | "complete"
   >;
 }): IAgenticaController.IClass {
   const validate = (
@@ -230,7 +234,7 @@ function createController(props: {
     const result: IValidation<IAutoBeTestScenarioApplication.IProps> =
       typia.validate<IAutoBeTestScenarioApplication.IProps>(next);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "write")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -270,7 +274,7 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") {
+        if (next.request.type === "write") {
           // Fulfill missing authentication dependencies for each scenario
           for (const scenario of next.request.scenarios) {
             AutoBeTestScenarioProgrammer.fulfill({

@@ -85,12 +85,13 @@ process({
 })
 ```
 
-### 3.2. Complete
+### 3.2. Write and Complete
 ```typescript
+// Step 1: Submit auth tables
 process({
   thinking: "Designed complete auth tables for user actor with member kind.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "Actor 'user' is kind 'member' requiring email/password login, password reset, email verification.",
     rationale: "Created main table with auth fields, session table for JWT, and password_resets per requirements.",
     tables: [
@@ -101,11 +102,40 @@ process({
     ]
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "All auth tables for user member kind designed. Submitted 4 auth tables: users, sessions, password_resets, email_verifications.",
+  request: { type: "complete" }
+})
 ```
+
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
-## 4. Final Checklist
+## 4. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+### Per-Actor Coverage
+For each actor defined in the scenario:
+- A main account table exists (stores identity data)
+- A session table exists (manages authentication tokens)
+- Support tables exist where needed (password reset, email verification, etc.)
+
+### Auth-Only Boundary
+- This component contains ONLY authentication/authorization tables
+- No business domain tables (products, articles, orders, etc.) should be here
+- Business entities belong in their respective domain components
+
+---
+
+## 5. Final Checklist
 
 **Actor Kind Compliance:**
 - [ ] Kind correctly identified (guest/member/admin)
@@ -123,4 +153,5 @@ process({
 - [ ] `analysis` documents auth requirements
 - [ ] `rationale` explains design decisions
 - [ ] Each table has name + description
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Submit tables via `write` (review against Self-Review Checklist before completing)
+- [ ] Finalize via `complete` after last `write`

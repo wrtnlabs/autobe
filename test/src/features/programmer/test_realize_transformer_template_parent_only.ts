@@ -4,6 +4,8 @@ import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * A DTO with a nullable N:1 self-reference (parent). writeTemplate must produce
  * the parent-only recursive skeleton with createParentCache and transformAll,
@@ -22,6 +24,22 @@ export const test_realize_transformer_template_parent_only = (): void => {
     "ICategory"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+  const model = createTestModel({
+    name: "categories",
+    plainFields: [{ name: "name" }],
+    foreignFields: [
+      {
+        name: "parent_id",
+        nullable: true,
+        relation: {
+          name: "parent",
+          targetModel: "categories",
+          oppositeName: "children",
+        },
+      },
+    ],
+  });
+
   const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
@@ -31,6 +49,7 @@ export const test_realize_transformer_template_parent_only = (): void => {
     },
     schema,
     schemas,
+    model,
   });
 
   const expectedBody: string = StringUtil.trim`
@@ -41,7 +60,8 @@ export const test_realize_transformer_template_parent_only = (): void => {
         // implicit return type for better type inference
         return {
           select: {
-            ...
+            id: true,
+            name: true,
             parent_id: true,
             parent: undefined, // DO NOT select recursive relation
           },
@@ -53,8 +73,8 @@ export const test_realize_transformer_template_parent_only = (): void => {
         cache: VariadicSingleton<Promise<ICategory>, [string]> = createParentCache(),
       ): Promise<ICategory> {
         return {
-          id: ...,
-          name: ...,
+          id: {string},
+          name: {string},
           parent: input.parent_id ? await cache.get(input.parent_id) : null,
         };
       }

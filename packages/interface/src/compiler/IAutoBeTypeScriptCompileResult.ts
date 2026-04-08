@@ -168,6 +168,23 @@ export namespace IAutoBeTypeScriptCompileResult {
     length: number | null | undefined;
 
     /**
+     * 1-based line number where the diagnostic begins.
+     *
+     * Provided when the compiler can resolve the source location to a specific
+     * line in the file. This is useful for human-readable review and
+     * pinpointing the failing statement without manually converting offsets.
+     */
+    line?: number | undefined;
+
+    /**
+     * 1-based character position where the diagnostic begins.
+     *
+     * Provided together with {@link line} when the compiler can compute the
+     * exact source location of the issue within the file.
+     */
+    character?: number | undefined;
+
+    /**
      * Human-readable description of the compilation issue.
      *
      * Provides a detailed explanation of the compilation problem in natural

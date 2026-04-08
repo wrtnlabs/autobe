@@ -29,9 +29,11 @@ export interface AutoBeInterfaceSchemaDesign {
 
   /**
    * API documentation for consumers (Swagger UI). Focus on WHAT the type
-   * represents. Reference DB schema documentation for consistency.
+   * represents, referencing DB schema documentation for consistency.
    *
-   * - MUST be written in English
+   * Format: summary sentence first, `\n\n`, then paragraphs grouped by topic.
+   *
+   * > MUST be written in English.
    */
   description: string;
 

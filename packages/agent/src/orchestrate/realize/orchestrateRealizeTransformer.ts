@@ -5,6 +5,7 @@ import {
 } from "@autobe/interface";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { orchestrateRealizeCorrectWithRetry } from "./correct/orchestrateRealizeCorrectWithRetry";
 import { orchestrateRealizeTransformerCorrectCasting } from "./orchestrateRealizeTransformerCorrectCasting";
 import { orchestrateRealizeTransformerCorrectOverall } from "./orchestrateRealizeTransformerCorrectOverall";
 import { orchestrateRealizeTransformerPlan } from "./orchestrateRealizeTransformerPlan";
@@ -22,20 +23,29 @@ export async function orchestrateRealizeTransformer(
     await orchestrateRealizeTransformerPlan(ctx, {
       progress: props.planProgress,
     });
-  let functions: AutoBeRealizeTransformerFunction[] =
-    await orchestrateRealizeTransformerWrite(ctx, {
-      plans,
-      progress: props.writeProgress,
-    });
-  props.validateProgress.total += functions.length;
-
-  functions = await orchestrateRealizeTransformerCorrectCasting(ctx, {
-    functions,
-    progress: props.validateProgress,
+  return orchestrateRealizeCorrectWithRetry({
+    write: () =>
+      orchestrateRealizeTransformerWrite(ctx, {
+        plans,
+        progress: props.writeProgress,
+      }),
+    rewrite: (failed) =>
+      orchestrateRealizeTransformerWrite(ctx, {
+        plans: failed.map((f) => f.plan),
+        progress: props.writeProgress,
+      }),
+    correctCasting: (functions) =>
+      orchestrateRealizeTransformerCorrectCasting(ctx, {
+        functions,
+        progress: props.validateProgress,
+      }),
+    correctOverall: (functions) =>
+      orchestrateRealizeTransformerCorrectOverall(ctx, {
+        functions,
+        progress: props.validateProgress,
+      }),
+    addProgress: (count) => {
+      props.validateProgress.total += count;
+    },
   });
-  functions = await orchestrateRealizeTransformerCorrectOverall(ctx, {
-    functions,
-    progress: props.validateProgress,
-  });
-  return functions;
 }

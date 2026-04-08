@@ -62,4 +62,15 @@ export interface AutoBeRealizeOperationFunction {
    * guidelines.
    */
   content: string;
+
+  /**
+   * Template code used as a reference for code generation.
+   *
+   * Contains the pre-generated template that guides the AI agent in producing
+   * the final operation implementation. When present, this template is embedded
+   * as a comment block in the saved output file.
+   *
+   * @internal
+   */
+  template: string | undefined;
 }

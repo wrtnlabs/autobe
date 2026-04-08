@@ -1,5 +1,6 @@
 import { CamelCasePattern, PascalCasePattern } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 /**
@@ -8,10 +9,10 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  */
 export interface IAutoBeRealizeAuthorizationWriteApplication {
   /**
-   * Process authentication generation task or preliminary data requests.
+   * Process authentication generation task.
    *
-   * @param next Request containing either preliminary data request or complete
-   *   task
+   * @param next Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(next: IAutoBeRealizeAuthorizationWriteApplication.IProps): void;
 }
@@ -23,8 +24,9 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
      *
      * For preliminary requests: what database schemas are missing and why?
      *
-     * For completion: what schemas did you acquire, what authentication
-     * patterns did you implement, why is it sufficient?
+     * For write: what authentication components you're submitting.
+     *
+     * For complete: why you consider the last write final.
      */
     thinking: string;
 
@@ -32,16 +34,19 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request:
+      | IWrite
+      | IAutoBePreliminaryGetDatabaseSchemas
+      | IAutoBePreliminaryComplete;
   }
 
   /**
    * Request to generate authentication components (provider, decorator,
    * payload).
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Authentication Provider function (JWT verification, role validation, DB

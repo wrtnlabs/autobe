@@ -9,7 +9,7 @@ import {
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { NamingConvention } from "@typia/utils";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
@@ -69,6 +69,7 @@ export async function orchestrateTestOperationWrite(
             ),
           );
 
+        const counter = new Singleton(() => ++props.progress.completed);
         try {
           return await forceRetry(async () => {
             const event: AutoBeTestWriteEvent = await process(ctx, {
@@ -79,6 +80,7 @@ export async function orchestrateTestOperationWrite(
               prepares: prepareFunctions,
               artifacts,
               progress: props.progress,
+              counter,
               promptCacheKey,
               instruction: props.instruction,
             });
@@ -98,6 +100,7 @@ export async function orchestrateTestOperationWrite(
             } satisfies IAutoBeTestOperationProcedure;
           });
         } catch {
+          counter.get();
           return null;
         }
       }),
@@ -115,6 +118,7 @@ async function process(
     scenario: AutoBeTestScenario;
     artifacts: IAutoBeTestScenarioArtifacts;
     progress: AutoBeProgressEventBase;
+    counter: Singleton<number>;
     promptCacheKey: string;
     instruction: string;
   },
@@ -143,7 +147,7 @@ async function process(
     })),
   });
   if (pointer.value === null) {
-    ++props.progress.completed;
+    props.counter.get();
     throw new Error("Failed to create test code.");
   }
 
@@ -170,7 +174,7 @@ async function process(
     },
     metric,
     tokenUsage,
-    completed: ++props.progress.completed,
+    completed: props.counter.get(),
     total: props.progress.total,
     step: ctx.state().interface?.step ?? 0,
   } satisfies AutoBeTestWriteEvent;

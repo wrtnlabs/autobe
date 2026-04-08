@@ -44,11 +44,7 @@ const main = async (): Promise<void> => {
       experiments.push(benchmark);
     }
   }
-  experiments.sort((a, b) =>
-    b.score === a.score
-      ? a.vendor.localeCompare(b.vendor)
-      : b.score.aggregate - a.score.aggregate,
-  );
+  experiments.sort(AutoBeReplayComputer.compare);
 
   await fs.promises.writeFile(
     `${TestGlobal.ROOT}/../website/src/data/benchmark.json`,

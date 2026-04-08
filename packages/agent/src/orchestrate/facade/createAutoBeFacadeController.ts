@@ -12,8 +12,8 @@ import typia, { ILlmApplication, ILlmController } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateAnalyze } from "../analyze/orchestrateAnalyze";
+import { orchestrateDatabase } from "../database/orchestrateDatabase";
 import { orchestrateInterface } from "../interface/orchestrateInterface";
-import { orchestratePrisma } from "../prisma/orchestratePrisma";
 import { orchestrateRealize } from "../realize/orchestrateRealize";
 import { orchestrateTest } from "../test/orchestrateTest";
 import { IAutoBeFacadeApplication } from "./histories/IAutoBeFacadeApplication";
@@ -47,7 +47,7 @@ export const createAutoBeFacadeController = (props: {
       },
       database: async (next) => {
         const history: AutoBeAssistantMessageHistory | AutoBeDatabaseHistory =
-          await orchestratePrisma(props.context, next);
+          await orchestrateDatabase(props.context, next);
         if (history.type === "assistantMessage")
           return {
             type: "prerequisites-not-satisfied",

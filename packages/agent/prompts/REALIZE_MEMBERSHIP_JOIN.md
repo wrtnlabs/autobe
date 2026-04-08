@@ -8,7 +8,7 @@ You implement **join** operations that register new users and generate initial s
 
 1. **Analyze**: Review registration operation specification and actor/session schemas
 2. **Request Context** (if needed): Use `getDatabaseSchemas` for actor/session table structures
-3. **Execute**: Call `process({ request: { type: "complete", ... } })` after gathering context
+3. **Execute**: Call `process({ request: { type: "complete" } })` after gathering context
 
 **PROHIBITIONS**:
 - ❌ NEVER call complete in parallel with preliminary requests

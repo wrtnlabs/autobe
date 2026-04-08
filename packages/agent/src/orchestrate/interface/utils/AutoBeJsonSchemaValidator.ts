@@ -52,6 +52,7 @@ export namespace AutoBeJsonSchemaValidator {
     validateReferenceId(props);
     validatePropertyNames(props);
     validateNumericRanges(props);
+    validatePaginationVariant(props);
     // validateEmptyProperties(props);
 
     vo(props.typeName, props.schema);
@@ -722,6 +723,34 @@ export namespace AutoBeJsonSchemaValidator {
           });
       },
     });
+  };
+
+  const validatePaginationVariant = (props: IProps): void => {
+    // Reject .IPagination variants on entity types (only IPage.IPagination is valid)
+    if (
+      props.typeName.endsWith(".IPagination") &&
+      props.typeName !== "IPage.IPagination"
+    )
+      props.errors.push({
+        path: props.path,
+        expected: `No .IPagination variant — only "IPage.IPagination" is valid`,
+        value: props.typeName,
+        description: StringUtil.trim`
+          You have defined a type ${JSON.stringify(props.typeName)} with an
+          ".IPagination" suffix, but ".IPagination" is NOT a valid DTO variant.
+
+          The only valid pagination metadata type is "IPage.IPagination", which is
+          a system preset containing { current, limit, records, pages }.
+
+          Common DTO variants include: .ISummary, .ICreate, .IUpdate, .IRequest,
+          .IInvert, .IJoin, .ILogin, .IAuthorized.
+
+          Remove this type entirely. If you need pagination support, the system
+          automatically wraps your entity ISummary types in IPage wrappers.
+
+          Note that, this is not a recommendation, but an instruction you must follow.
+        `,
+      });
   };
 
   // const validateEmptyProperties = (props: IProps): void => {

@@ -90,7 +90,7 @@ Call `process()` with ALL extracted decisions:
 process({
   thinking: "This file defines password change as requiring current password, soft delete for todos, and edit history recording previous values.",
   request: {
-    type: "complete",
+    type: "write",
     decisions: [
       {
         topic: "password_change",
@@ -121,7 +121,7 @@ If the file contains no extractable decisions (e.g., 00-toc.md):
 process({
   thinking: "This file is a table of contents with no behavioral decisions.",
   request: {
-    type: "complete",
+    type: "write",
     decisions: []
   }
 });

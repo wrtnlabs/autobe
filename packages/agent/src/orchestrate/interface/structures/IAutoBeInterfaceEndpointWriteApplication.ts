@@ -1,5 +1,6 @@
 import { AutoBeInterfaceEndpointDesign } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
@@ -14,8 +15,8 @@ export interface IAutoBeInterfaceEndpointWriteApplication {
 export namespace IAutoBeInterfaceEndpointWriteApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Reasoning: what's missing (preliminary), what you're submitting (write),
+     * or why you're finalizing (complete).
      */
     thinking: string;
 
@@ -24,7 +25,8 @@ export namespace IAutoBeInterfaceEndpointWriteApplication {
      * union.
      */
     request:
-      | IComplete
+      | IWrite
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections
@@ -32,10 +34,10 @@ export namespace IAutoBeInterfaceEndpointWriteApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /** Request to complete endpoint generation. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit endpoint designs. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of requirements and database schema for endpoint design. */
     analysis: string;

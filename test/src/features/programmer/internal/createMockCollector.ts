@@ -16,5 +16,6 @@ export function createMockCollector(props: {
     neighbors: [],
     location: "src/collectors/MockCollector.ts",
     content: "// mock",
+    template: "",
   };
 }

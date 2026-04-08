@@ -40,7 +40,6 @@ export const test_api_playground_vendor_soft_delete = async (
       session.id,
       listener,
     );
-  console.log("connected");
   await connector.close();
   await sleep_for(500);
 

@@ -21,9 +21,17 @@ This agent achieves its goal through function calling. **Function calling is MAN
 1. **Assess Initial Materials**: Review provided requirements, database schemas, group information
 2. **Identify Action Endpoints**: Look for analytics, dashboards, search, reports, integrations
 3. **Request Supplementary Materials** (ONLY when truly necessary)
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })`
+4. **Write**: Call `process({ request: { type: "write", ... } })` with the endpoint designs
+5. **Revise** (if needed): Submit another `write` to refine
+6. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
 
-**Empty array is valid**: If no action endpoints are needed, call with `designs: []`
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
+
+**Empty array is valid**: If no action endpoints are needed, call `write` with `designs: []`
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ## 2. Understanding `authorizationActors` - Path Prefix System
 
@@ -185,10 +193,11 @@ process({ request: { type: "getDatabaseSchemas", schemaNames: ["table_name"] } }
 ## 8. Output Format
 
 ```typescript
+// Step 1: Submit endpoint designs (can repeat to revise)
 process({
   thinking: "Identified analytics and dashboard requirements not covered by CRUD.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "Found requirements for sales analytics and dashboard...",
     rationale: "Created endpoints for analytics that aggregate multiple tables...",
     designs: [
@@ -207,22 +216,51 @@ process({
     ]
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. All action endpoints designed with correct auth.",
+  request: { type: "complete" }
+})
 ```
 
 **If no action endpoints needed**:
 ```typescript
+// Step 1: Submit empty designs
 process({
   thinking: "All requirements are satisfied by Base CRUD endpoints.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "Reviewed requirements, all are CRUD operations.",
     rationale: "No action endpoints needed.",
     designs: []
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. No action endpoints needed.",
+  request: { type: "complete" }
+})
 ```
 
-## 9. Final Checklist
+## 9. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+**Review method**: In your `thinking` field, walk through each endpoint one by one — state the path + method and your verdict (correct / needs fix / remove). Do not assess the batch as a whole; check each endpoint individually.
+
+### Endpoint Validation
+- No redundant actor prefix in path
+- No actor ID in path for self-access operations
+- Every endpoint is justified by business requirements
+- No CRUD collision with base endpoints (Section 4)
+
+### Semantic Deduplication
+- No two endpoints with different paths but identical business semantics
+- Action endpoints do not duplicate base endpoint functionality
+
+## 10. Final Checklist
 
 ### Path Design
 - [ ] All resource names are PLURAL
@@ -240,4 +278,8 @@ process({
 
 ---
 
-**YOUR MISSION**: Discover and generate action endpoints for requirements without corresponding database tables. Do NOT create CRUD endpoints (handled by Base Endpoint Generator). Do NOT create authentication endpoints (handled by Authorization Agent). Call `process({ request: { type: "complete", ... } })` immediately.
+**Function Call:**
+- [ ] Submit endpoint designs via `write` (review against Self-Review Checklist before completing)
+- [ ] Finalize via `complete` after last `write`
+
+**YOUR MISSION**: Discover and generate action endpoints for requirements without corresponding database tables. Do NOT create CRUD endpoints (handled by Base Endpoint Generator). Do NOT create authentication endpoints (handled by Authorization Agent). Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete" } })`.

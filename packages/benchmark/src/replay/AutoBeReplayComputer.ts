@@ -2,6 +2,7 @@ import {
   AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
+  IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundBenchmarkScore,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
@@ -16,16 +17,33 @@ export namespace AutoBeReplayComputer {
     "erp",
   ];
 
-  export const emoji = (
-    summaries: IAutoBePlaygroundReplay.ISummary[],
-  ): string => {
-    const success: number = summaries.filter(
-      (s) => s.realize !== null && s.realize.success === true,
-    ).length;
-    if (success >= 3) return "🟢";
+  export const compare = (
+    a: IAutoBePlaygroundBenchmark,
+    b: IAutoBePlaygroundBenchmark,
+  ): number => {
+    const x: number = a.score.aggregate;
+    const y: number = b.score.aggregate;
+    if (y !== x) return y - x;
+    return compareVendors(a.vendor, b.vendor);
+  };
 
-    const tested: boolean = !!summaries.find((s) => s.test !== null);
-    return tested ? "🟡" : "❌";
+  export const compareVendors = (a: string, b: string): number => {
+    const pa: string[] = a.split("-");
+    const pb: string[] = b.split("-");
+    const len: number = Math.max(pa.length, pb.length);
+    for (let i: number = 0; i < len; i++) {
+      const ra: string = pa[i] ?? "";
+      const rb: string = pb[i] ?? "";
+      const na: number | null = parsePart(ra);
+      const nb: number | null = parsePart(rb);
+      if (na !== null && nb !== null) {
+        if (na !== nb) return nb - na;
+      } else {
+        const cmp: number = ra.localeCompare(rb);
+        if (cmp !== 0) return cmp;
+      }
+    }
+    return 0;
   };
 
   export const score = (
@@ -37,12 +55,18 @@ export namespace AutoBeReplayComputer {
     );
 
     const individual = (project: AutoBeExampleProject): number => {
-      const found = summaries.find((s) => s.project === project);
+      const found: IAutoBePlaygroundReplay.ISummary | undefined =
+        summaries.find((s) => s.project === project);
       if (found === undefined) return 0;
       return compute(found);
     };
     return {
-      aggregate: round(summaries.map(compute).reduce((a, b) => a + b, 0) / 4),
+      aggregate: round(
+        summaries
+          .map(compute)
+          .filter((x) => x !== null)
+          .reduce((a, b) => a + b, 0) / 4,
+      ),
       todo: individual("todo"),
       reddit: individual("reddit"),
       shopping: individual("shopping"),
@@ -153,21 +177,53 @@ export namespace AutoBeReplayComputer {
         .reduce((a, b) => a + (b ?? 0), 0),
     };
   };
+
+  export const emoji = (
+    summaries: IAutoBePlaygroundReplay.ISummary[],
+  ): string => {
+    const success: number = summaries.filter(
+      (s) => s.realize !== null && s.realize.success === true,
+    ).length;
+    if (success >= 3) return "🟢";
+
+    const tested: boolean = !!summaries.find((s) => s.test !== null);
+    return tested ? "🟡" : "❌";
+  };
 }
+
+const parsePart = (s: string): number | null => {
+  let t: string;
+  if (s.startsWith("a") && s.endsWith("b")) t = s.slice(1, -1);
+  else if (s.endsWith("b")) t = s.slice(0, -1);
+  else t = s;
+  if (t === "") return null;
+  const n: number = Number(t);
+  return isNaN(n) ? null : n;
+};
 
 const compute = (summary: IAutoBePlaygroundReplay.ISummary): number => {
   const getScore = (phase: AutoBePhase): number => {
-    const state = summary[phase];
-    if (state === null) return 0;
+    const state: IAutoBePlaygroundReplay.IPhaseState | null = summary[phase];
+    if (!state) return 0;
 
-    const [success, failure] = FORMULA[phase];
+    const [success, failure]: [
+      number,
+      (commodity: Record<string, number>) => number,
+    ] = FORMULA[phase];
     return state.success === true
       ? success
       : success * failure(state.commodity);
   };
-  return round(sum(typia.misc.literals<AutoBePhase>().map(getScore)));
+  return round(
+    sum(
+      typia.misc
+        .literals<AutoBePhase>()
+        .map(getScore)
+        .filter((x) => x !== null && Number.isFinite(x)),
+    ),
+  );
 };
-const round = (value: number) => Math.round(value * 100) / 100;
+const round = (value: number): number => Math.round(value * 100) / 100;
 const sum = (targets: number[]): number => targets.reduce((a, b) => a + b, 0);
 
 // for type safety

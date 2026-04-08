@@ -6,6 +6,7 @@ import typia, { IValidation } from "typia";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
+import { IAutoBePreliminaryComplete } from "../structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -21,6 +22,7 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
   controller: AutoBePreliminaryController<Kind>,
   data: IAutoBePreliminaryRequest<Kind>,
 ): IValidation<IAutoBePreliminaryRequest<Kind>> => {
+  // discriminator
   const type: Exclude<
     IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
     `getPrevious${string}`
@@ -32,6 +34,68 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
     IAutoBePreliminaryRequest<AutoBePreliminaryKind>["request"]["type"],
     `getPrevious${string}`
   >;
+
+  // ---------------------------------------------------------------------------
+  // COMPLETE CASE
+  //
+  // Every IXApplication interface (e.g. IAutoBeRealizeCollectorWriteApplication,
+  // IAutoBeInterfaceEndpointWriteApplication, IAutoBeDatabaseSchemaApplication,
+  // etc.) exposes a single `process()` whose `request` parameter is a
+  // discriminated union:
+  //
+  //   request: IWrite                        — submit generated artifacts
+  //          | IAutoBePreliminaryGet*         — incremental RAG data loading
+  //          | IAutoBePreliminaryComplete     — finalize the loop
+  //
+  // The LLM sends `{ type: "complete" }` when it believes the cyclinic
+  // write → validate → correct loop is finished. However, LLMs frequently
+  // attempt to call complete() prematurely — before ever submitting a write —
+  // especially when the context window is thin or when exhausted preliminary
+  // types are removed from the union, leaving only `complete` as a seemingly
+  // valid choice.
+  //
+  // To guard against this, we check `controller.getPreviousWrite()`:
+  //
+  //   - Prior write EXISTS  → validate the `IAutoBePreliminaryComplete`
+  //     structure via typia and allow finalization.
+  //   - NO prior write      → reject with an explicit error instructing the
+  //     LLM to submit its write first before requesting completion.
+  //
+  // @see IAutoBePreliminaryComplete       — shared completion request structure
+  // @see AutoBePreliminaryController      — orchestrate() loop that consumes
+  //                                         the completed flag
+  // @see orchestratePreliminary           — sets completed.value when
+  //                                         confirm === true
+  // ---------------------------------------------------------------------------
+  if (type === "complete") {
+    const previousWrite: Record<string, unknown> | null =
+      controller.getPreviousWrite();
+    if (previousWrite !== null)
+      return typia.validate<{
+        thinking: string;
+        request: IAutoBePreliminaryComplete;
+      }>(data) as IValidation<IAutoBePreliminaryRequest<Kind>>;
+    return {
+      success: false,
+      data,
+      errors: [
+        {
+          path: "$input.request",
+          value: data.request,
+          expected: "IWrite",
+          description: StringUtil.trim`
+            No write has been submitted yet. 
+            
+            Please call \`process({ request: { type: "write", ... } })\`
+            with your content first, then call "complete" once you are
+            satisfied with the result.
+          `,
+        },
+      ],
+    };
+  }
+
+  // individual validation
   const func = PreliminaryApplicationValidator[type];
   // biome-ignore-start lint: intended
   return func(
@@ -658,13 +722,24 @@ const nonExisting = <Kind extends AutoBePreliminaryKind>(
         ⛔ NEVER request "${kind}" again - it is NOT available in this context!
         ⛔ NEVER assume data types that are not in the list below!
         ⛔ NEVER repeat the same invalid request type!
-        ⛔ You MUST choose ONLY from the available kinds listed below!
 
-        Available preliminary data kinds you can request:
-        ${controller
-          .getKinds()
-          .map((k) => `- ${k}`)
-          .join("\n")}
+        ${
+          controller.getKinds().length === 0
+            ? StringUtil.trim`
+              ⛔ NO preliminary data is available at all in this context.
+              ✅ You MUST call process({ request: { type: "write", ... } }) RIGHT NOW.
+              ✅ Stop requesting preliminary data and submit your write immediately.
+            `
+            : StringUtil.trim`
+              ⛔ You MUST choose ONLY from the available kinds listed below!
+
+              Available preliminary data kinds you can request:
+              ${controller
+                .getKinds()
+                .map((k) => `- ${k}`)
+                .join("\n")}
+            `
+        }
       `,
     },
   ],

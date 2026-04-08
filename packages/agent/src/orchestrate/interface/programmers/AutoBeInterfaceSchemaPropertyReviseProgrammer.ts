@@ -59,6 +59,28 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
           `,
         });
 
+    // check that at least one property survives after revisions
+    if (
+      props.revises.length > 0 &&
+      props.revises.every((r) => r.type === "erase")
+    )
+      props.errors.push({
+        path: `${props.path}.revises`,
+        expected: "At least one non-erase revision to retain a property",
+        value: props.revises.map((r) => r.type),
+        description: StringUtil.trim`
+          All revisions are "erase", which would leave the schema with zero
+          properties. An object type used as a DTO must have at least one
+          property — otherwise the downstream Realize stage will fail with
+          TypeScript compilation errors (TS2339).
+
+          Keep at least one property by using "depict", "create", or "update"
+          instead of "erase" for the essential fields.
+
+          Note that, this is not a recommendation, but an instruction you must follow.
+        `,
+      });
+
     if (props.model === null) return;
 
     // check all DB schema properties are revised

@@ -58,12 +58,13 @@ NEVER assume DB fields, DTO structures, or API patterns. Load actual data via fu
 
 ```typescript
 process({
-  thinking: string;   // Brief: gap (preliminary) or accomplishment (complete)
-  request: IComplete | IPreliminaryRequest;
+  thinking: string;   // Brief: gap (preliminary), accomplishment (write), or confirm (complete)
+  request: IWrite | IAutoBePreliminaryComplete | IPreliminaryRequest;
 });
 
-interface IComplete {
-  type: "complete";
+// Step 1: Submit schema design (can repeat to revise)
+interface IWrite {
+  type: "write";
   analysis: string;   // Missing type's purpose, reference context, structural influences
   rationale: string;  // Design decisions: property choices, required vs optional, patterns followed
   design: {
@@ -73,11 +74,32 @@ interface IComplete {
     schema: JsonSchema;             // The schema definition
   };
 }
+
+// Step 2: Confirm finalization (after at least one write)
+interface IAutoBePreliminaryComplete {
+  type: "complete";
+}
 ```
 
-**Flow**: Assess initial materials → Request additional context if needed → Call `complete`.
+**Chain of Thought**:
+```typescript
+// Write - summarize what you are submitting
+thinking: "Loaded products DB schema and existing IOrder/ICartItem. Designed IProduct.ISummary."
 
-NEVER call `complete` in parallel with preliminary requests — preliminary data must be loaded first.
+// Revise (if resubmitting) - explain what changed
+thinking: "Previous write missed the thumbnail nullable field. Correcting schema."
+
+// Complete - finalize the loop
+thinking: "Last write is correct. IProduct.ISummary designed with all required fields."
+```
+
+**Flow**: Assess initial materials → Request additional context if needed → Call `write` → Call `complete`.
+
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ## 5. Design Construction Order
 
@@ -100,25 +122,26 @@ Follow the mandatory 4-step order:
 Missing type: `IProduct.ISummary`, referenced by `IOrder.product` and `ICartItem.product`.
 
 ```typescript
+// Step 1: Submit schema design
 process({
   thinking: "Loaded products DB schema and existing IOrder/ICartItem. Ready to generate summary.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "IProduct.ISummary is referenced in IOrder.product and ICartItem.product. Both are response DTOs needing lightweight product display. Need essential fields only.",
     rationale: "Included id, name, price as core identifiers visible in order/cart contexts. Excluded heavy fields like description and inventory. All fields required since products always have these.",
     design: {
       databaseSchema: "products",
       specification: "Lightweight product representation. Direct mappings: id from products.id, name from products.name, price from products.price, thumbnail from products.thumbnail_url (nullable).",
-      description: "Summary view of a product with essential display information.",
+      description: "<summary>.\n\n<detailed description>",
       schema: {
         type: "object",
         properties: {
-          id: { type: "string", description: "Unique product identifier." },
-          name: { type: "string", description: "Product display name." },
-          price: { type: "number", description: "Product price." },
+          id: { type: "string", description: "<description...>" },
+          name: { type: "string", description: "<description...>" },
+          price: { type: "number", description: "<description...>" },
           thumbnail: {
             oneOf: [{ type: "string" }, { type: "null" }],
-            description: "Product thumbnail URL. Null if not uploaded."
+            description: "<description...>"
           }
         },
         required: ["id", "name", "price", "thumbnail"]
@@ -126,9 +149,18 @@ process({
     }
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Last write is correct. IProduct.ISummary designed with id, name, price, thumbnail.",
+  request: { type: "complete" }
+})
 ```
 
 ## 8. Checklist
+
+**Description Quality**:
+- [ ] All `description` fields follow: summary sentence first, `\n\n`, then paragraphs grouped by topic
 
 **Design**:
 - [ ] `databaseSchema` correct (table name or null)
@@ -144,7 +176,9 @@ process({
 - [ ] No reverse collection relationships
 
 **Function Calling**:
-- [ ] All needed materials loaded before calling `complete`
+- [ ] All needed materials loaded before calling `write`
 - [ ] No imagination — verified against actual data
 - [ ] No duplicate requests for already-loaded materials
 - [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
+- [ ] Submit schema design via `write` (revise only for critical flaws)
+- [ ] Finalize via `complete` after last `write`

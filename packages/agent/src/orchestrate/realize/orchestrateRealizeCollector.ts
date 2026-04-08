@@ -5,6 +5,7 @@ import {
 } from "@autobe/interface";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { orchestrateRealizeCorrectWithRetry } from "./correct/orchestrateRealizeCorrectWithRetry";
 import { orchestrateRealizeCollectorCorrectCasting } from "./orchestrateRealizeCollectorCorrectCasting";
 import { orchestrateRealizeCollectorCorrectOverall } from "./orchestrateRealizeCollectorCorrectOverall";
 import { orchestrateRealizeCollectorPlan } from "./orchestrateRealizeCollectorPlan";
@@ -22,20 +23,29 @@ export async function orchestrateRealizeCollector(
     await orchestrateRealizeCollectorPlan(ctx, {
       progress: props.planProgress,
     });
-  let functions: AutoBeRealizeCollectorFunction[] =
-    await orchestrateRealizeCollectorWrite(ctx, {
-      plans,
-      progress: props.writeProgress,
-    });
-  props.validateProgress.total += functions.length;
-
-  functions = await orchestrateRealizeCollectorCorrectCasting(ctx, {
-    functions,
-    progress: props.validateProgress,
+  return orchestrateRealizeCorrectWithRetry({
+    write: () =>
+      orchestrateRealizeCollectorWrite(ctx, {
+        plans,
+        progress: props.writeProgress,
+      }),
+    rewrite: (failed) =>
+      orchestrateRealizeCollectorWrite(ctx, {
+        plans: failed.map((f) => f.plan),
+        progress: props.writeProgress,
+      }),
+    correctCasting: (functions) =>
+      orchestrateRealizeCollectorCorrectCasting(ctx, {
+        functions,
+        progress: props.validateProgress,
+      }),
+    correctOverall: (functions) =>
+      orchestrateRealizeCollectorCorrectOverall(ctx, {
+        functions,
+        progress: props.validateProgress,
+      }),
+    addProgress: (count) => {
+      props.validateProgress.total += count;
+    },
   });
-  functions = await orchestrateRealizeCollectorCorrectOverall(ctx, {
-    functions,
-    progress: props.validateProgress,
-  });
-  return functions;
 }

@@ -1,6 +1,7 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import {
   AutoBeOpenApi,
+  AutoBePreliminaryKind,
   AutoBeRealizeAuthorization,
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
@@ -18,7 +19,9 @@ import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenar
 import { getRealizeWriteInputType } from "../utils/getRealizeWriteInputType";
 import { transformRealizeWriteMembershipHistory } from "./transformRealizeWriteMembershipHistory";
 
-export const transformRealizeOperationWriteHistory = (props: {
+export const transformRealizeOperationWriteHistory = <
+  K extends AutoBePreliminaryKind,
+>(props: {
   state: AutoBeState;
   scenario: IAutoBeRealizeScenarioResult;
   authorization: AutoBeRealizeAuthorization | null;
@@ -26,12 +29,7 @@ export const transformRealizeOperationWriteHistory = (props: {
   collectors: AutoBeRealizeCollectorFunction[];
   transformers: AutoBeRealizeTransformerFunction[];
   dto: Record<string, string>;
-  preliminary: AutoBePreliminaryController<
-    | "analysisSections"
-    | "databaseSchemas"
-    | "realizeCollectors"
-    | "realizeTransformers"
-  >;
+  preliminary: AutoBePreliminaryController<K>;
 }): IAutoBeOrchestrateHistory => {
   const payloads: Record<string, string> = Object.fromEntries(
     props.totalAuthorizations.map((el) => [

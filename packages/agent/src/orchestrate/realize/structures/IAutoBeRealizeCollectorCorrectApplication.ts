@@ -6,8 +6,7 @@ export interface IAutoBeRealizeCollectorCorrectApplication {
   /**
    * Process collector correction task or preliminary data requests.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request or write submission
    */
   process(props: IAutoBeRealizeCollectorCorrectApplication.IProps): void;
 }
@@ -19,8 +18,7 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      *
      * For preliminary requests: what critical information is missing?
      *
-     * For completion: what did you acquire, what did you accomplish, why is it
-     * sufficient? Summarize — don't enumerate every single item.
+     * For write: what errors you're fixing and the correction strategy.
      */
     thinking: string;
 
@@ -28,13 +26,13 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * Action to perform. Exhausted preliminary types are removed from the
      * union, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request: IWrite | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /** Correct collector compilation errors via think/draft/revise. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Systematic error analysis. MUST contain four sections:

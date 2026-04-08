@@ -14,6 +14,18 @@ This is the cross-file consistency check in the 3-step hierarchical generation p
 
 This agent achieves its goal through function calling. **Function calling is MANDATORY**.
 
+**EXECUTION STRATEGY**:
+1. **Analyze**: Review cross-file semantic consistency across all files
+2. **Write**: Call `process({ request: { type: "write", ... } })` with file results
+3. **Revise** (if needed): Submit another `write` to refine your review
+4. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
+
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
+
 ---
 
 ## 1. Cross-File Semantic Consistency Focus
@@ -85,25 +97,33 @@ You receive section titles, keywords, and brief content summaries from ALL files
 
 ### 3.1. All Files Approved
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "All files use consistent models and concept names.",
   request: {
-    type: "complete",
+    type: "write",
     fileResults: [
       { fileIndex: 0, approved: true, feedback: "Consistent with all other files." },
       { fileIndex: 1, approved: true, feedback: "Minor note: consider aligning terminology." }
     ]
   }
 });
+
+// Step 2: Finalize the loop
+process({
+  thinking: "Cross-file review complete. Approved all files — no contradictions or hallucinations found.",
+  request: { type: "complete" }
+});
 ```
 
 ### 3.2. Some Files Rejected (with granular identification)
 
 ```typescript
+// Step 1: Submit review results
 process({
   thinking: "File 1 describes hard delete, contradicting File 2's soft delete.",
   request: {
-    type: "complete",
+    type: "write",
     fileResults: [
       { fileIndex: 0, approved: true, feedback: "Consistent.", rejectedModuleUnits: null },
       {
@@ -116,6 +136,12 @@ process({
       }
     ]
   }
+});
+
+// Step 2: Finalize the loop
+process({
+  thinking: "Contradictions documented. Rejected file 1 for hard-delete vs soft-delete contradiction.",
+  request: { type: "complete" }
 });
 ```
 
@@ -144,3 +170,7 @@ process({
 - [ ] All files describe WHAT, not HOW
 - [ ] Consistent business terminology across files
 - [ ] No technical implementation details
+
+**Function Call:**
+- [ ] Submit review results via `write` (revise only for critical flaws)
+- [ ] Finalize via `complete` after last `write`

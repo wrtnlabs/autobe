@@ -18,6 +18,7 @@ export const transformInterfaceAuthorizationHistory = (props: {
     | "databaseSchemas"
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
+    | "complete"
   >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {

@@ -9,19 +9,14 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { IPointer } from "tstl";
+import { IPointer, Singleton } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeSectionCrossFileReviewHistory } from "./histories/transformAnalyzeSectionCrossFileReviewHistory";
-import {
-  IAutoBeAnalyzeSectionCrossFileReviewApplication,
-  IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete,
-  IAutoBeAnalyzeSectionCrossFileReviewApplicationProps,
-} from "./structures/IAutoBeAnalyzeSectionCrossFileReviewApplication";
-import { repairSectionReviewInput } from "./utils/repairSectionReviewUtils";
+import { IAutoBeAnalyzeSectionCrossFileReviewApplication } from "./structures/IAutoBeAnalyzeSectionCrossFileReviewApplication";
 
 /**
  * Orchestrate cross-file lightweight review of section metadata across ALL
@@ -53,72 +48,80 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
     retry: number;
   },
 ): Promise<AutoBeAnalyzeSectionReviewEvent> => {
-  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
-    new AutoBePreliminaryController({
-      application:
-        typia.json.application<IAutoBeAnalyzeSectionCrossFileReviewApplication>(),
-      source: SOURCE,
-      kinds: ["previousAnalysisSections"],
-      state: ctx.state(),
-    });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeSectionCrossFileReviewHistory(ctx, {
-        scenario: props.scenario,
-        allFileSummaries: props.allFileSummaries,
-        mechanicalViolationSummary: props.mechanicalViolationSummary,
-        fileDecisions: props.fileDecisions,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
-
-    const event: AutoBeAnalyzeSectionReviewEvent = {
-      type: SOURCE,
-      id: v7(),
-      fileResults: pointer.value.fileResults.map((fr) => ({
-        ...fr,
-        revisedSections: null,
-        rejectedModuleUnits: fr.rejectedModuleUnits ?? null,
-      })),
-      acquisition: preliminary.getAcquisition(),
-      tokenUsage: result.tokenUsage,
-      metric: result.metric,
-      step: (ctx.state().analyze?.step ?? -1) + 1,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      retry: props.retry,
-      created_at: new Date().toISOString(),
-    };
-    ctx.dispatch(event);
-    return out(result)(event);
+  const preliminary: AutoBePreliminaryController<
+    "previousAnalysisSections" | "complete"
+  > = new AutoBePreliminaryController({
+    application:
+      typia.json.application<IAutoBeAnalyzeSectionCrossFileReviewApplication>(),
+    source: SOURCE,
+    kinds: ["previousAnalysisSections", "complete"],
+    state: ctx.state(),
+    dispatch: (e) => ctx.dispatch(e),
   });
+  const counter = new Singleton(() => ++props.progress.completed);
+  const event: AutoBeAnalyzeSectionReviewEvent = await preliminary.orchestrate(
+    ctx,
+    async (out) => {
+      const pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplication.IWrite | null> =
+        {
+          value: null,
+        };
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          pointer,
+          preliminary,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformAnalyzeSectionCrossFileReviewHistory(ctx, {
+          scenario: props.scenario,
+          allFileSummaries: props.allFileSummaries,
+          mechanicalViolationSummary: props.mechanicalViolationSummary,
+          fileDecisions: props.fileDecisions,
+          preliminary,
+        }),
+      });
+      if (pointer.value === null) return out(result)(null);
+
+      const event: AutoBeAnalyzeSectionReviewEvent = {
+        type: SOURCE,
+        id: v7(),
+        fileResults: pointer.value.fileResults.map((fr) => ({
+          ...fr,
+          revisedSections: null,
+          rejectedModuleUnits: fr.rejectedModuleUnits ?? null,
+        })),
+        acquisition: preliminary.getAcquisition(),
+        tokenUsage: result.tokenUsage,
+        metric: result.metric,
+        step: (ctx.state().analyze?.step ?? -1) + 1,
+        total: props.progress.total,
+        completed: counter.get(),
+        retry: props.retry,
+        created_at: new Date().toISOString(),
+      };
+      return out(result)(event);
+    },
+  );
+  ctx.dispatch(event);
+  return event;
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete | null>;
-  preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
+  pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplication.IWrite | null>;
+  preliminary: AutoBePreliminaryController<
+    "previousAnalysisSections" | "complete"
+  >;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplicationProps> => {
-    input = repairSectionReviewInput(input);
-    const result: IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplicationProps> =
-      typia.validate<IAutoBeAnalyzeSectionCrossFileReviewApplicationProps>(
+  ): IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeSectionCrossFileReviewApplication.IProps>(
         input,
       );
-    if (result.success === false || result.data.request.type === "complete")
+    if (result.success === false || result.data.request.type === "write")
       return result;
     return props.preliminary.validate({
       thinking: result.data.thinking ?? "",
@@ -138,8 +141,7 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write") props.pointer.value = input.request;
       },
     } satisfies IAutoBeAnalyzeSectionCrossFileReviewApplication,
   };

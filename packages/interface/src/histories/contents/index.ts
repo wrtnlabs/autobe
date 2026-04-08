@@ -10,24 +10,12 @@ export * from "../../analyze/AutoBeAnalyze";
 
 export * from "./AutoBeDatabaseComponent";
 export * from "./AutoBeDatabaseComponentTableDesign";
-export * from "./AutoBeDatabaseComponentTableRevise";
-export * from "./AutoBeDatabaseComponentTableCreate";
-export * from "./AutoBeDatabaseComponentTableUpdate";
-export * from "./AutoBeDatabaseComponentTableErase";
 export * from "./AutoBeDatabaseGroup";
-export * from "./AutoBeDatabaseGroupRevise";
-export * from "./AutoBeDatabaseGroupReviseCreate";
-export * from "./AutoBeDatabaseGroupReviseUpdate";
-export * from "./AutoBeDatabaseGroupReviseErase";
 export * from "./AutoBeDatabaseSchemaDefinition";
 
 export * from "./AutoBeInterfaceAuthorization";
 export * from "./AutoBeInterfaceGroup";
 export * from "./AutoBeInterfaceSchemaRefactor";
-export * from "./AutoBeInterfaceEndpointRevise";
-export * from "./AutoBeInterfaceEndpointCreate";
-export * from "./AutoBeInterfaceEndpointUpdate";
-export * from "./AutoBeInterfaceEndpointErase";
 export * from "./AutoBeInterfaceEndpointDesign";
 export * from "./AutoBeInterfaceSchemaDesign";
 export * from "./AutoBeInterfaceSchemaCasting";

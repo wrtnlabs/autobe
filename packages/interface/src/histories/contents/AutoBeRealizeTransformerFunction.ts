@@ -64,4 +64,15 @@ export interface AutoBeRealizeTransformerFunction {
    * - Proper type annotations with Prisma payload types
    */
   content: string;
+
+  /**
+   * Template code used as a reference for code generation.
+   *
+   * Contains the pre-generated template that guides the AI agent in producing
+   * the final transformer implementation. When present, this template is
+   * embedded as a comment block in the saved output file.
+   *
+   * @internal
+   */
+  template: string | undefined;
 }

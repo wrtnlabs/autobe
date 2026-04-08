@@ -30,7 +30,9 @@ export const transformAnalyzeWriteSectionHistory = (
     moduleIndex: number;
     unitIndex: number;
     feedback?: string;
-    preliminary: null | AutoBePreliminaryController<"previousAnalysisSections">;
+    preliminary: null | AutoBePreliminaryController<
+      "previousAnalysisSections" | "complete"
+    >;
   },
 ): IAutoBeOrchestrateHistory => {
   const moduleSection: AutoBeAnalyzeModuleSection | undefined =

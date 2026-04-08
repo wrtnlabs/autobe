@@ -1,3 +1,4 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
@@ -16,8 +17,8 @@ export interface IAutoBeRealizeTransformerPlanApplication {
    * Analyzes the given DTO type and generates a plan entry determining whether
    * a transformer is needed. Returns exactly ONE plan entry.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   plan
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeRealizeTransformerPlanApplication.IProps): void;
 }
@@ -28,8 +29,10 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      *
      * For preliminary requests: what schemas (database or DTO) are missing?
      *
-     * For completion: is this DTO transformable or non-transformable? What
-     * database table does it map to (if transformable)?
+     * For write: is this DTO transformable or non-transformable? What database
+     * table does it map to (if transformable)?
+     *
+     * For complete: why you consider the decision final.
      */
     thinking: string;
 
@@ -38,19 +41,20 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      * union, physically preventing repeated calls.
      */
     request:
-      | IComplete
+      | IWrite
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
-      | IAutoBePreliminaryGetInterfaceSchemas;
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryComplete;
   }
 
   /**
    * Generates exactly ONE plan entry indicating transformable (has DB schema
    * name) or not (null).
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Exactly ONE entry. databaseSchemaName non-null = transformable, null = no

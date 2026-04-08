@@ -1,6 +1,7 @@
 import { AutoBeInterfaceGroup } from "@autobe/interface";
 import { tags } from "typia";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
@@ -15,8 +16,8 @@ export interface IAutoBeInterfaceGroupApplication {
 export namespace IAutoBeInterfaceGroupApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Reasoning: what's missing (preliminary), what you're submitting (write),
+     * or why you're finalizing (complete).
      */
     thinking: string;
 
@@ -25,7 +26,8 @@ export namespace IAutoBeInterfaceGroupApplication {
      * union.
      */
     request:
-      | IComplete
+      | IWrite
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections
@@ -33,10 +35,10 @@ export namespace IAutoBeInterfaceGroupApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /** Request to generate API endpoint groups. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit API endpoint groups. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of the database schema structure and grouping needs. */
     analysis: string;

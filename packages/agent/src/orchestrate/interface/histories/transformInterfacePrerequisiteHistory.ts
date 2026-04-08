@@ -21,6 +21,7 @@ export const transformInterfacePrerequisiteHistory = (props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
+    | "complete"
   >;
 }): IAutoBeOrchestrateHistory => {
   const domainSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =

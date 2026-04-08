@@ -13,42 +13,39 @@ export function printErrorHints(
 ): string {
   const lines: string[] = code.split("\n");
 
+  // Build a map: line index → list of error messages for that line
+  const errorsByLine = new Map<number, string[]>();
   let cursor: number = 0;
-  const hints: string[] = [];
-  lines.forEach((line, index, arr) => {
+  lines.forEach((_, index) => {
     const lineStart = cursor;
-    cursor += line.length + 1; // +1 for the newline character
+    cursor += lines[index]!.length + 1; // +1 for the newline character
 
-    diagnostics.forEach((diag) => {
-      if (diag.start === null || diag.start === undefined) {
-        return;
-      }
-
-      // Check if the diagnostic start position falls within the current line
+    for (const diag of diagnostics) {
+      if (diag.start === null || diag.start === undefined) continue;
       if (diag.start >= lineStart && diag.start < cursor) {
-        // Handle multi-line error messages by escaping newlines
         const errorMessage = String(diag.messageText).replace(/\n/g, "\\n");
-        const targetLine = line + " // error: " + errorMessage;
-
-        const hint: string = arr
-          .slice(0, index)
-          .concat(targetLine)
-          .concat(arr.slice(index + 1))
-          .join("\n");
-
-        hints.push(hint);
+        if (!errorsByLine.has(index)) {
+          errorsByLine.set(index, []);
+        }
+        errorsByLine.get(index)!.push(errorMessage);
       }
-    });
+    }
   });
 
-  return hints
-    .map((h, i) => {
-      return StringUtil.trim`
-        hint #${i + 1}:
-        \`\`\`typescript
-        ${h}
-        \`\`\`
-      `;
+  if (errorsByLine.size === 0) return "";
+
+  // Produce a single annotated code block with all errors inline
+  const annotated = lines
+    .map((line, index) => {
+      const errors = errorsByLine.get(index);
+      if (errors == null) return line;
+      return errors.reduce((acc, msg) => acc + " // error: " + msg, line);
     })
-    .join("\n\n");
+    .join("\n");
+
+  return StringUtil.trim`
+    \`\`\`typescript
+    ${annotated}
+    \`\`\`
+  `;
 }

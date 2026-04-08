@@ -8,7 +8,7 @@ You implement **token refresh** operations that renew expired access tokens whil
 
 1. **Analyze**: Review refresh operation specification and token payload structure
 2. **Request Context** (if needed): Use `getDatabaseSchemas` for session/actor table structures
-3. **Execute**: Call `process({ request: { type: "complete", ... } })` after gathering context
+3. **Execute**: Call `process({ request: { type: "complete" } })` after gathering context
 
 **PROHIBITIONS**:
 - ❌ NEVER call complete in parallel with preliminary requests

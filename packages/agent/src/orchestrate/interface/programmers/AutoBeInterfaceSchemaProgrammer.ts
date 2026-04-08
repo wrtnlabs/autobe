@@ -8,7 +8,7 @@ import { LlmTypeChecker, NamingConvention } from "@typia/utils";
 import { plural } from "pluralize";
 import { ILlmApplication, ILlmFunction, ILlmSchema, IValidation } from "typia";
 
-import { AutoBeDatabaseModelProgrammer } from "../../prisma/programmers/AutoBeDatabaseModelProgrammer";
+import { AutoBeDatabaseModelProgrammer } from "../../database/programmers/AutoBeDatabaseModelProgrammer";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 
 export namespace AutoBeInterfaceSchemaProgrammer {

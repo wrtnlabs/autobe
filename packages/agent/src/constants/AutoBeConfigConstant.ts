@@ -24,7 +24,7 @@ export const enum AutoBeConfigConstant {
    * diagnostics) back to the AI for correction. This iterative feedback loop
    * transforms hallucinations into learning opportunities.
    *
-   * Value of 5 provides sufficient attempts for complex validation scenarios
+   * Value of 3 provides sufficient attempts for complex validation scenarios
    * while keeping latency reasonable. Most validation errors resolve within 2-3
    * attempts, but complex schema corrections may need additional cycles.
    * Permanent issues (fundamentally misunderstood requirements) still fail fast
@@ -41,7 +41,7 @@ export const enum AutoBeConfigConstant {
    * scoped to compilation and code-fix phases where each iteration tends to be
    * more expensive and has diminishing returns after a few attempts.
    *
-   * Value of 5 provides a reasonable number of correction cycles for general
+   * Value of 4 provides a reasonable number of correction cycles for general
    * compiler issues. Most compiler issues are either resolved within the first
    * couple of passes or indicate a fundamental mismatch that won't benefit from
    * further attempts. For database schema corrections specifically, use
@@ -59,7 +59,7 @@ export const enum AutoBeConfigConstant {
    * multiple passes to fully resolve complex relationship and constraint
    * issues.
    *
-   * Value of 20 is intentionally higher than `COMPILER_RETRY` because database
+   * Value of 30 is intentionally higher than `COMPILER_RETRY` because database
    * schema corrections tend to be incremental - each iteration typically fixes
    * one or two issues rather than resolving everything at once. The higher
    * limit accommodates complex schemas with many inter-model relationships
@@ -121,12 +121,22 @@ export const enum AutoBeConfigConstant {
    * Batch count for parallel operation processing.
    *
    * Controls how many batches `divideArray` creates when splitting large
-   * operation lists for concurrent processing. Value of 2 provides optimal
-   * balance: parallelizes work to reduce latency while keeping batch sizes
-   * large enough for effective prompt caching. Higher values increase
-   * parallelism but reduce cache hit rates.
+   * operation lists for concurrent processing. Value of 1 means no splitting —
+   * the entire list is processed as a single batch, maximizing prompt cache hit
+   * rates at the cost of no parallelism.
    */
   INTERFACE_CAPACITY = 1,
+
+  /**
+   * Retry attempts for transient LLM API errors (rate limits, 5xx, timeouts).
+   *
+   * Applied by `randomBackoffRetry` around raw HTTP calls to the LLM vendor.
+   * Covers only transport-level failures — not validation or semantic errors,
+   * which are handled by `VALIDATION_RETRY` and `COMPILER_RETRY` respectively.
+   *
+   * Value of 3 keeps total back-off delay short while covering the vast
+   * majority of transient outages.
+   */
   API_ERROR_RETRY = 3,
 
   /**
@@ -134,14 +144,31 @@ export const enum AutoBeConfigConstant {
    *
    * Limits how many times `AutoBePreliminaryController` can fetch additional
    * context before forcing completion. Prevents infinite loops when LLM
-   * continuously requests more data without making progress. Value of 10
+   * continuously requests more data without making progress. Value of 7
    * accommodates complex scenarios requiring multiple context rounds while
    * preventing runaway execution.
    */
   RAG_LIMIT = 7,
 
   /**
-   * Default timeout for long-running operations in milliseconds (15 minutes).
+   * Maximum number of `write` submissions per cyclinic write → validate →
+   * correct loop.
+   *
+   * Enforced by `AutoBePreliminaryController`. The agent may call `write` up to
+   * this many times (initial submission + revisions). After the final write,
+   * completion is forced — the agent can no longer revise.
+   *
+   * Value of 3 gives the agent one initial attempt plus two revision
+   * opportunities, which is sufficient for most correction cycles without
+   * excessive token spend.
+   *
+   * @see IAutoBePreliminaryComplete — sent when the agent considers its last
+   *   write final (or when forced after reaching this limit)
+   */
+  PRELIMINARY_WRITE_LIMIT = 3,
+
+  /**
+   * Default timeout for long-running operations in milliseconds (20 minutes).
    *
    * Prevents operations from hanging indefinitely when LLM APIs become
    * unresponsive. Value of 20 minutes accommodates complex generation tasks
@@ -154,7 +181,7 @@ export const enum AutoBeConfigConstant {
    * Default concurrency limit for parallel LLM API calls.
    *
    * Controls maximum simultaneous requests in `executeCachedBatch` when vendor
-   * doesn't specify semaphore. Value of 16 balances throughput against API rate
+   * doesn't specify semaphore. Value of 8 balances throughput against API rate
    * limits and memory usage. Too high causes rate limit errors and resource
    * exhaustion; too low wastes potential parallelism.
    */

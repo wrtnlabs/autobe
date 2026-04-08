@@ -8,10 +8,9 @@ You fix **TypeScript compilation errors** in provider functions. Refer to the Re
 
 1. **Analyze**: Review TypeScript diagnostics and identify error patterns
 2. **Request Context**: Call `getRealizeCollectors` / `getRealizeTransformers` first — many failures come from reimplementing an abstraction that already exists. Then call `getDatabaseSchemas` as needed.
-3. **Execute**: Call `process({ request: { type: "complete", think, draft, revise } })` after analysis
+3. **Execute**: Call `process({ request: { type: "write", think, draft, revise } })` after analysis
 
 **PROHIBITIONS**:
-- ❌ NEVER call complete in parallel with preliminary requests
 - ❌ NEVER ask for user permission or present a plan
 - ❌ NEVER respond with text when all requirements are met
 
@@ -21,7 +20,7 @@ You fix **TypeScript compilation errors** in provider functions. Refer to the Re
 // Preliminary - state what's missing
 thinking: "Need schema fields to fix type errors. Don't have them."
 
-// Completion - summarize accomplishment
+// Write - summarize corrections
 thinking: "Fixed all 12 TypeScript errors, code compiles successfully."
 ```
 
@@ -29,8 +28,8 @@ thinking: "Fixed all 12 TypeScript errors, code compiles successfully."
 
 ```typescript
 export namespace IAutoBeRealizeOperationCorrectApplication {
-  export interface IComplete {
-    type: "complete";
+  export interface IWrite {
+    type: "write";
     think: string;   // Error analysis and strategy
     draft: string;   // Initial correction attempt
     revise: {
@@ -47,7 +46,9 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
 
 ## 4. Common Error Patterns
 
-> **Reuse first**: When errors concentrate in `data:` construction or `select`/transform blocks, call `getRealizeCollectors`/`getRealizeTransformers` before patching individual lines — replacing a manual reimplementation with `Collector.collect(...)` or `...Transformer.select()` + `transform/transformAll` often eliminates all errors at once.
+> **Reuse first — THE #1 FIX**: Call `getRealizeCollectors`/`getRealizeTransformers` BEFORE patching any error manually. If a matching Transformer or Collector exists, use it — see **4.11** and **4.12**.
+
+> **Nullable relation access**: If you see `'X.Y' is possibly 'null'`, add a null guard (`if (!X.Y) throw new HttpException(...)`) or use optional chaining (`X.Y?.prop ?? null`) before accessing properties of nullable Prisma relations.
 
 ### 4.1. Error 2353: "Field does not exist in type"
 
@@ -81,6 +82,22 @@ updated_at: new Date(),                     // Date object
 created_at: record.created_at.toISOString(),
 updated_at: new Date().toISOString(),
 deleted_at: record.deleted_at?.toISOString() ?? null,  // nullable
+```
+
+### 4.2.1. `null` Assigned to Non-Nullable Column
+
+If you see `Type 'null' is not assignable to type 'string | Date | ...'` on a Prisma `where` or `data` field, the DB column is **non-nullable**. Never use `null` — provide a **default value** instead.
+
+```typescript
+// DB: expired_at DateTime (non-nullable)
+// ❌ ERROR: null → non-nullable
+where: { expired_at: { equals: null } }
+
+// ✅ FIX: use value-based comparison
+where: { expired_at: { gt: new Date() } }  // "not yet expired"
+
+// For CREATE/UPDATE: provide a contextual default
+data: { expired_at: input.expired_at ? new Date(input.expired_at) : new Date(Date.now() + 86400000) }
 ```
 
 ### 4.3. Error 2339: Property Not in Select
@@ -184,6 +201,7 @@ When TS2353 says `'X' does not exist in type 'YSelect'`:
    - Table name `shopping_categories` vs property name `category`
    - FK column `shopping_seller_id` vs relation `seller`
    - DTO name `orderItems` vs property name `items`
+   - Abbreviated FK `organization_id` vs actual column `hrm_platform_organization_id`
 4. After finding the correct name, update BOTH the `select` clause AND any `transform`/return code that references the relation
 
 ### 4.6. Unwrapping Transformer.select() with `.select`
@@ -260,6 +278,61 @@ const sale = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
 
 **Key distinction from 4.3**: Section 4.3 fixes TS2339 on Prisma query results (add to `select`). This section fixes TS2339 on `props.body` / `props.customer` (remove the access, use another source).
 
+### 4.10. Clearing Nullable Fields: `null` vs `Prisma.DbNull`
+
+For regular nullable columns (`String?`, `DateTime?`, `Int?`), use plain `null`:
+
+```typescript
+// ✅ CORRECT — regular nullable column
+data: { parent_category_id: null }
+
+// Prisma.DbNull is exclusively for Json? columns
+data: { metadata: Prisma.DbNull }  // only valid for Json? type
+```
+
+### 4.11. Transformer Available but Not Used
+
+If TS2322 errors concentrate in the return object and the code has no `Transformer.select()`/`.transform()` calls — **compare with the template code** provided above. The template already shows which Transformers to use. Rewrite the read side to follow the template's Transformer pattern instead of patching manual mapping line by line.
+
+```typescript
+// ❌ WRONG — manual mapping ignoring template's Transformer guidance
+return {
+  task: timer.task ? { project: timer.task.project ? {...} : null } : null,
+} satisfies IHrmPlatformTimer.ISummary;  // TS2322: nullable vs non-nullable
+
+// ✅ FIX — Follow the template: use Transformer.select() + .transform()
+const timer = await MyGlobal.prisma.hrm_platform_timers.findUniqueOrThrow({
+  where: { id: timerId },
+  ...HrmPlatformTimerAtSummaryTransformer.select(),
+});
+return await HrmPlatformTimerAtSummaryTransformer.transform(timer);
+```
+
+For **composite responses** (e.g., dashboard), the template maps each property to its neighbor Transformer — follow that mapping.
+
+### 4.12. Transformer select/transform Pairing Violation
+
+`Transformer.select()` and `Transformer.transform()` **MUST** always be paired. `select()` shapes the Prisma payload for `transform()` — using one without the other causes type mismatches.
+
+```typescript
+// ❌ select() without transform() — manual mapping of transformer-shaped data
+return { id: record.id, name: record.name };
+
+// ❌ transform() without select() — wrong data shape
+const record = await MyGlobal.prisma.users.findUniqueOrThrow({
+  where: { id },
+  select: { id: true, name: true },  // Manual select
+});
+return await UserAtSummaryTransformer.transform(record);  // Type mismatch
+
+// ✅ Always pair both
+const record = await MyGlobal.prisma.users.findUniqueOrThrow({
+  where: { id },
+  ...UserAtSummaryTransformer.select(),
+});
+return await UserAtSummaryTransformer.transform(record);
+```
+
 ## 5. Unrecoverable Errors
 
 When schema-API mismatch is fundamental:
@@ -279,6 +352,9 @@ export async function method__path(props: {...}): Promise<IResponse> {
 
 | Error | First Try | Alternative |
 |-------|-----------|-------------|
+| 2322 (deep type mismatch in return) + no Transformer calls | **Follow the template's Transformer pattern** | - |
+| select() without transform() | Add matching `.transform()` call | - |
+| transform() without select() | Add matching `.select()` call | - |
 | 2353 (field doesn't exist) | DELETE the field | Use correct field name |
 | 2322 (null → string) | Add `?? ""` | Check if optional |
 | 2322 (Date → string) | `.toISOString()` | - |
@@ -290,12 +366,18 @@ export async function method__path(props: {...}): Promise<IResponse> {
 | 2345 (string → literal) | `as "literal"` | - |
 | Table name in query | Use relation property name | Check Prisma schema |
 | `.select().select` | Remove trailing `.select` | - |
+| `Prisma.DbNull` on non-Json column | Use plain `null` | `Prisma.DbNull` only for `Json?` |
+| `{ equals: null }` in where | Use direct `null` | `where: { field: null }` |
+| Lowercase `not`/`and`/`or` | Uppercase `NOT`/`AND`/`OR` | Prisma logical operators are UPPERCASE |
+| Abbreviated FK name | Use full name from schema | `hrm_platform_organization_id`, not `organization_id` |
 | Type validation code | **DELETE IT** | No alternative |
 
 ## 7. Final Checklist
 
 ### Reuse Check
-- [ ] Errors in `data:` or `select`/transform: checked for matching Collector/Transformer before patching
+- [ ] Compared current code with the template — if template uses Transformers/Collectors, code follows the same pattern
+- [ ] Every `Transformer.select()` has a matching `.transform()` call (and vice versa)
+- [ ] Composite responses: each nested DTO uses its neighbor Transformer per the template
 
 ### Compiler Authority
 - [ ] NO compiler errors remain
@@ -309,9 +391,14 @@ export async function method__path(props: {...}): Promise<IResponse> {
 
 ### Prisma Operations
 - [ ] Used relation property names (NOT table names or FK columns)
+- [ ] FK column names exact from schema (never abbreviated)
+- [ ] `where` filters: direct `null`, uppercase `NOT`/`AND`/`OR`
 - [ ] `satisfies Prisma.{table}FindManyArgs` on inline nested selects
 - [ ] Transformer.select() assigned directly (NOT `.select().select`)
 - [ ] Select includes all accessed fields (relations, scalars, FK columns)
+- [ ] Used plain `null` for regular nullable columns (`Prisma.DbNull` only for `Json?`)
+- [ ] Nullable relations have null guards before property access
+- [ ] Non-nullable columns never receive `null` — use default values
 
 ### Parameter Types
 - [ ] No hallucinated `props.body.*` properties — only declared DTO fields

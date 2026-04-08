@@ -130,6 +130,17 @@
   grid-template-columns: minmax(0, 1fr) 260px;
   gap: 2.5rem;
   align-items: start;
+  max-width: min(1100px, calc(100vw - 2rem));
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem 1.5rem 0;
+}
+
+.autobe-blog-post-no-toc {
+  max-width: min(800px, calc(100vw - 2rem));
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem 1.5rem 0;
 }
 
 .autobe-blog-post-main {

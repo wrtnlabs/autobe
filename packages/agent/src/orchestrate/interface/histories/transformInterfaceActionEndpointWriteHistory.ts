@@ -18,6 +18,7 @@ export const transformInterfaceActionEndpointWriteHistory = (props: {
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   >;
   authorizeOperations: AutoBeOpenApi.IOperation[];
   instruction: string;

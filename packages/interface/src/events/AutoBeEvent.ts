@@ -1,6 +1,5 @@
 import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
-import { AutoBeAnalyzeScenarioReviewEvent } from "./AutoBeAnalyzeScenarioReviewEvent";
 import { AutoBeAnalyzeSectionReviewEvent } from "./AutoBeAnalyzeSectionReviewEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteModuleEvent } from "./AutoBeAnalyzeWriteModuleEvent";
@@ -9,15 +8,11 @@ import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
-import { AutoBeDatabaseAuthorizationReviewEvent } from "./AutoBeDatabaseAuthorizationReviewEvent";
 import { AutoBeDatabaseCompleteEvent } from "./AutoBeDatabaseCompleteEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
-import { AutoBeDatabaseComponentReviewEvent } from "./AutoBeDatabaseComponentReviewEvent";
 import { AutoBeDatabaseCorrectEvent } from "./AutoBeDatabaseCorrectEvent";
 import { AutoBeDatabaseGroupEvent } from "./AutoBeDatabaseGroupEvent";
-import { AutoBeDatabaseGroupReviewEvent } from "./AutoBeDatabaseGroupReviewEvent";
 import { AutoBeDatabaseSchemaEvent } from "./AutoBeDatabaseSchemaEvent";
-import { AutoBeDatabaseSchemaReviewEvent } from "./AutoBeDatabaseSchemaReviewEvent";
 import { AutoBeDatabaseStartEvent } from "./AutoBeDatabaseStartEvent";
 import { AutoBeDatabaseValidateEvent } from "./AutoBeDatabaseValidateEvent";
 import { AutoBeImageDescribeCompleteEvent } from "./AutoBeImageDescribeCompleteEvent";
@@ -26,10 +21,8 @@ import { AutoBeImageDescribeStartEvent } from "./AutoBeImageDescribeStartEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
 import { AutoBeInterfaceEndpointEvent } from "./AutoBeInterfaceEndpointEvent";
-import { AutoBeInterfaceEndpointReviewEvent } from "./AutoBeInterfaceEndpointReviewEvent";
 import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
 import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
-import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationReviewEvent";
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
 import { AutoBeInterfaceSchemaCastingEvent } from "./AutoBeInterfaceSchemaCastingEvent";
 import { AutoBeInterfaceSchemaComplementEvent } from "./AutoBeInterfaceSchemaComplementEvent";
@@ -41,7 +34,8 @@ import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewE
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
 import { AutoBeJsonParseErrorEvent } from "./AutoBeJsonParseErrorEvent";
 import { AutoBeJsonValidateErrorEvent } from "./AutoBeJsonValidateErrorEvent";
-import { AutoBePreliminaryEvent } from "./AutoBePreliminaryEvent";
+import { AutoBePreliminaryAcquireEvent } from "./AutoBePreliminaryAcquireEvent";
+import { AutoBePreliminaryRewriteEvent } from "./AutoBePreliminaryRewriteEvent";
 import { AutoBeRealizeAuthorizationCompleteEvent } from "./AutoBeRealizeAuthorizationCompleteEvent";
 import { AutoBeRealizeAuthorizationCorrectEvent } from "./AutoBeRealizeAuthorizationCorrectEvent";
 import { AutoBeRealizeAuthorizationStartEvent } from "./AutoBeRealizeAuthorizationStartEvent";
@@ -60,7 +54,6 @@ import { AutoBeRealizeWriteEvent } from "./AutoBeRealizeWriteEvent";
 import { AutoBeTestCompleteEvent } from "./AutoBeTestCompleteEvent";
 import { AutoBeTestCorrectEvent } from "./AutoBeTestCorrectEvent";
 import { AutoBeTestScenarioEvent } from "./AutoBeTestScenarioEvent";
-import { AutoBeTestScenarioReviewEvent } from "./AutoBeTestScenarioReviewEvent";
 import { AutoBeTestStartEvent } from "./AutoBeTestStartEvent";
 import { AutoBeTestValidateEvent } from "./AutoBeTestValidateEvent";
 import { AutoBeTestWriteEvent } from "./AutoBeTestWriteEvent";
@@ -98,10 +91,13 @@ export type AutoBeEvent =
   | AutoBeVendorRequestEvent
   | AutoBeVendorResponseEvent
   | AutoBeVendorTimeoutEvent
+  // FUNCTION CALLING
   | AutoBeJsonValidateErrorEvent
   | AutoBeJsonParseErrorEvent
   | AutoBeConsentFunctionCallEvent
-  | AutoBePreliminaryEvent
+  // PRELIMINARY
+  | AutoBePreliminaryAcquireEvent
+  | AutoBePreliminaryRewriteEvent
   // DESCRIBE
   | AutoBeImageDescribeStartEvent
   | AutoBeImageDescribeDraftEvent
@@ -114,19 +110,14 @@ export type AutoBeEvent =
   | AutoBeAnalyzeWriteModuleEvent
   | AutoBeAnalyzeWriteUnitEvent
   | AutoBeAnalyzeWriteSectionEvent
-  // ANALYZE (Review)
+  // ANALYZE (Cross-File Review)
   | AutoBeAnalyzeSectionReviewEvent
-  | AutoBeAnalyzeScenarioReviewEvent
   // DATABASE
   | AutoBeDatabaseStartEvent
   | AutoBeDatabaseGroupEvent
-  | AutoBeDatabaseGroupReviewEvent
   | AutoBeDatabaseAuthorizationEvent
-  | AutoBeDatabaseAuthorizationReviewEvent
   | AutoBeDatabaseComponentEvent
-  | AutoBeDatabaseComponentReviewEvent
   | AutoBeDatabaseSchemaEvent
-  | AutoBeDatabaseSchemaReviewEvent
   | AutoBeDatabaseValidateEvent
   | AutoBeDatabaseCorrectEvent
   | AutoBeDatabaseCompleteEvent
@@ -134,8 +125,6 @@ export type AutoBeEvent =
   | AutoBeInterfaceStartEvent
   | AutoBeInterfaceGroupEvent
   | AutoBeInterfaceEndpointEvent
-  | AutoBeInterfaceEndpointReviewEvent
-  | AutoBeInterfaceOperationReviewEvent
   | AutoBeInterfaceOperationEvent
   | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemaEvent
@@ -150,7 +139,6 @@ export type AutoBeEvent =
   // TEST
   | AutoBeTestStartEvent
   | AutoBeTestScenarioEvent
-  | AutoBeTestScenarioReviewEvent
   | AutoBeTestWriteEvent
   | AutoBeTestValidateEvent
   | AutoBeTestCorrectEvent

@@ -252,27 +252,28 @@ mv_bbs_article_last_snapshots: {
 
 ---
 
-## 5. AST Structure
+## 5. Description Writing Style
 
-### 5.1. Model Structure
+Every `description` follows: **summary sentence first, `\n\n`, then paragraphs grouped by topic**. Use `{@link ModelName}` for cross-references.
+
+---
+
+## 6. AST Structure
+
+### 6.1. Model Structure
 ```typescript
 {
   name: "target_table_name",
-  description: `
-    Summary sentence.
-
-    Detailed explanation with proper line breaks.
-    Additional context and relationships.
-  `,
+  description: "<summary>.\n\n<detailed description>",
   material: false,
   stance: "primary" | "subsidiary" | "snapshot" | "actor" | "session",
-  
+
   primaryField: {
     name: "id",
     type: "uuid",
     description: "Primary Key."
   },
-  
+
   foreignFields: [{
     name: "{table}_id",
     type: "uuid",
@@ -283,23 +284,23 @@ mv_bbs_article_last_snapshots: {
     },
     unique: false,  // true for 1:1
     nullable: false,
-    description: "Description. {@link target_table.id}."
+    description: "<summary>.\n\n<detailed description>"
   }],
-  
+
   plainFields: [{
     name: "field_name",
     type: "string" | "int" | "double" | "boolean" | "datetime" | "uri" | "uuid",
     nullable: false,
-    description: "Business context."
+    description: "<summary>.\n\n<detailed description>"
   }],
-  
+
   uniqueIndexes: [{ fieldNames: ["field1", "field2"], unique: true }],
   plainIndexes: [{ fieldNames: ["field1", "field2"] }],  // Never single FK
   ginIndexes: [{ fieldName: "text_field" }]
 }
 ```
 
-### 5.2. Field Types
+### 6.2. Field Types
 
 | Type | Usage |
 |------|-------|
@@ -313,9 +314,9 @@ mv_bbs_article_last_snapshots: {
 
 ---
 
-## 6. Function Calling
+## 7. Function Calling
 
-### 6.1. Request Analysis Sections
+### 7.1. Request Analysis Sections
 
 ```typescript
 process({
@@ -324,14 +325,15 @@ process({
 })
 ```
 
-### 6.2. Complete (MANDATORY)
+### 7.2. Write (MANDATORY)
 ```typescript
+// Step 1: Submit model design (can repeat to revise)
 process({
   thinking: "Designed target table with proper normalization and stance.",
   request: {
-    type: "complete",
+    type: "write",
     plan: "Strategic analysis for [targetTable]...",
-    model: {
+    definition: {
       name: "target_table",
       stance: "primary",
       description: "...",
@@ -344,11 +346,23 @@ process({
     }
   }
 })
+
+// Step 2: Finalize
+process({
+  thinking: "Table designed with proper normalization. Submitted target_table with stance primary, 3NF compliant, proper FKs and indexes.",
+  request: { type: "complete" }
+})
 ```
+
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output against the Self-Review Checklist and call `complete` if satisfied. If any check fails, submit another `write` with corrections.
+
+**PROHIBITIONS**:
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 
 ---
 
-## 7. Planning Template
+## 8. Planning Template
 ```
 ASSIGNMENT VALIDATION:
 - Target Table: [targetTable] - THE SINGLE TABLE I MUST CREATE
@@ -379,7 +393,41 @@ FINAL DESIGN:
 
 ---
 
-## 8. Final Checklist
+## 9. Self-Review Checklist (Before Complete)
+
+Before calling `complete`, review your own output against these checks. If any check fails, submit another `write` with corrections.
+
+### Normalization
+- No JSON/array data serialized as strings — use proper Prisma types or relations
+- No transitive dependencies (3NF violations)
+- 1:1 dependent entities use separate tables with unique foreign keys, not nullable fields on the parent
+- No multiple foreign keys to the same target without clear semantic distinction
+
+### Relationship Correctness
+- No unintended circular references
+- All implied relationships have foreign key columns
+- Foreign key types match the referenced primary key type
+- Cascade behaviors are appropriate (onDelete, onUpdate)
+
+### Naming Conventions
+- Table names: snake_case, plural (e.g., `shopping_customers`, `bbs_articles`)
+- Field names: snake_case (e.g., `created_at`, `shopping_customer_id`)
+- Relation/oppositeName: camelCase (e.g., `customer`, `passwordResets`)
+
+### Stance Classification
+- Cross-check stance against Section 1.2: actor tables → `"actor"`, session tables → `"session"`, snapshot tables → `"snapshot"`, user-managed → `"primary"`, parent-dependent → `"subsidiary"`
+
+### Index Correctness
+- Cross-check index rules against Section 4 "Prohibited Patterns": no duplicate plain+gin, no duplicate unique+plain, no subset indexes, no duplicate composites
+
+### Required Fields
+- Every model has `id` (primary key)
+- Every model has `created_at` (DateTime)
+- Models with mutation have `updated_at` and/or `deleted_at` where soft-delete applies
+
+---
+
+## 10. Final Checklist
 
 **Table Creation:**
 - [ ] EXACTLY ONE table named `targetTable`
@@ -410,11 +458,16 @@ FINAL DESIGN:
 - [ ] All oppositeName values are unique per target model
 - [ ] All foreignField types are `uuid` only
 
-**Quality:**
+**Description Quality (Section 5)**:
+- [ ] All descriptions follow: summary sentence first, then paragraphs grouped by topic
+- [ ] Uses `{@link entity_name}` for cross-references
+
+**General Quality:**
 - [ ] No duplicate fields or relations
 - [ ] No prefix duplication in table name
 - [ ] All descriptions in English
 
 **Execution:**
 - [ ] `thinking` field completed
-- [ ] Ready to call `process()` with `type: "complete"`
+- [ ] Submit model via `write` (review against Self-Review Checklist before completing)
+- [ ] Finalize via `complete` after last `write`

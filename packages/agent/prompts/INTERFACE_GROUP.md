@@ -9,10 +9,15 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **EXECUTION STRATEGY**:
 1. **Assess Initial Materials**: Review requirements, database schemas, and API design instructions
 2. **Request Additional Data** (if needed): Use batch requests to minimize call count (max 8 calls)
-3. **Execute**: Call `process({ request: { type: "complete", ... } })` after gathering context
+3. **Write**: Call `process({ request: { type: "write", ... } })` with the group design
+4. **Revise** (if needed): Submit another `write` to refine
+5. **Complete**: Call `process({ request: { type: "complete" } })` to finalize
+
+You may submit `write` up to 3 times (initial + 2 revisions), but this is a safety cap — not a target. Review your output and call `complete` if satisfied. Revise only for critical flaws — structural errors, missing requirements, or broken logic that would cause downstream failure.
 
 **ABSOLUTE PROHIBITIONS**:
-- NEVER call complete in parallel with preliminary requests
+- ❌ NEVER call `write` or `complete` in parallel with preliminary requests
+- ❌ NEVER call `complete` before submitting at least one `write`
 - NEVER ask for user permission or present a plan and wait for approval
 - NEVER respond with assistant messages when all requirements are met
 
@@ -24,8 +29,14 @@ Before calling `process()`, fill the `thinking` field with brief self-reflection
 // Preliminary - state what's MISSING
 thinking: "Missing database schema details for comprehensive grouping. Need them."
 
-// Completion - summarize accomplishment
+// Write - summarize what you are submitting
 thinking: "Created complete group structure based on database schema organization and business domains."
+
+// Revise (if resubmitting) - explain what changed
+thinking: "Previous write had too few groups. Splitting Shopping into Products/Sales/Orders."
+
+// Complete - finalize the loop
+thinking: "Last write is correct. All business domains covered with appropriate group sizes."
 ```
 
 **IMPORTANT: Strategic Data Retrieval**:
@@ -39,16 +50,22 @@ thinking: "Created complete group structure based on database schema organizatio
 export namespace IAutoBeInterfaceGroupApplication {
   export interface IProps {
     thinking: string;
-    request: IComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
+    request: IWrite | IAutoBePreliminaryComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  export interface IComplete {
-    type: "complete";
+  // Step 1: Submit group design (can repeat to revise)
+  export interface IWrite {
+    type: "write";
     analysis: string;   // Analysis of database schema structure and grouping needs
     rationale: string;  // Reasoning for group organization decisions
     groups: AutoBeInterfaceGroup[];
+  }
+
+  // Step 2: Confirm finalization (after at least one write)
+  export interface IAutoBePreliminaryComplete {
+    type: "complete";
   }
 }
 ```
@@ -68,10 +85,11 @@ When a preliminary request returns an empty array, that type is **permanently re
 ### Example Output
 
 ```typescript
+// Step 1: Submit group design
 {
   thinking: "Created complete group structure based on database schema organization.",
   request: {
-    type: "complete",
+    type: "write",
     analysis: "The database has clear prefixes: shopping_* (15 tables), bbs_* (8 tables). Shopping tables are interconnected through sales, customers, and products. BBS tables form a separate content management domain.",
     rationale: "Created groups matching database prefixes. Each group is self-contained with minimal cross-group dependencies.",
     groups: [
@@ -87,6 +105,12 @@ When a preliminary request returns an empty array, that type is **permanently re
       }
     ]
   }
+}
+
+// Step 2: Finalize
+{
+  thinking: "Last write is correct. All schemas covered with proper group sizes.",
+  request: { type: "complete" }
 }
 ```
 
@@ -178,4 +202,8 @@ Creating 1-2 mega-groups for 50+ tables causes endpoint generation overload and 
 
 ---
 
-**YOUR MISSION**: Generate API endpoint groups covering all business domains. Start with database groups, adjust for API needs, ensure complete coverage. Call `process({ request: { type: "complete", ... } })` immediately.
+**Function Call:**
+- [ ] Submit group design via `write` (revise only for critical flaws)
+- [ ] Finalize via `complete` after last `write`
+
+**YOUR MISSION**: Generate API endpoint groups covering all business domains. Start with database groups, adjust for API needs, ensure complete coverage. Call `process({ request: { type: "write", ... } })` then `process({ request: { type: "complete" } })`.

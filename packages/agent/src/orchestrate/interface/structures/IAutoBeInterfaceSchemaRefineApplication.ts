@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceSchemaPropertyRefine,
 } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -20,8 +21,8 @@ export interface IAutoBeInterfaceSchemaRefineApplication {
   /**
    * Process schema refinement task or preliminary data requests.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeInterfaceSchemaRefineApplication.IProps): void;
 }
@@ -31,10 +32,10 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * Think before you act.
      *
      * For preliminary requests: what critical information is missing and why?
-     * Be brief — state the gap, don't list everything you have.
      *
-     * For completion: what key assets did you acquire, what did you accomplish,
-     * why is it sufficient? Summarize — don't enumerate every single item.
+     * For write: what refinements you're submitting and key decisions.
+     *
+     * For complete: why you consider the last write final.
      */
     thinking: string;
 
@@ -43,7 +44,8 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * union, physically preventing repeated calls.
      */
     request:
-      | IComplete
+      | IWrite
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
@@ -54,10 +56,10 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /** Complete schema refinement with object-level and property-level enrichment. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit schema refinement with object-level and property-level enrichment. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Summary of refinement analysis and actions taken. */
     review: string;

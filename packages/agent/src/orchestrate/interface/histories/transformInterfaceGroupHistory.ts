@@ -17,6 +17,7 @@ export const transformInterfaceGroupHistory = (props: {
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
+    | "complete"
   >;
 }): IAutoBeOrchestrateHistory => {
   const common = transformInterfaceCommonHistory(props.state);

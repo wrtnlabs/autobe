@@ -1,5 +1,6 @@
 import { AutoBePreliminaryKind } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "./IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "./IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "./IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "./IAutoBePreliminaryGetInterfaceOperations";
@@ -39,4 +40,5 @@ type Mapper = {
   previousDatabaseSchemas: IAutoBePreliminaryGetPreviousDatabaseSchemas;
   previousInterfaceSchemas: IAutoBePreliminaryGetPreviousInterfaceSchemas;
   previousInterfaceOperations: IAutoBePreliminaryGetPreviousInterfaceOperations;
+  complete: IAutoBePreliminaryComplete;
 };

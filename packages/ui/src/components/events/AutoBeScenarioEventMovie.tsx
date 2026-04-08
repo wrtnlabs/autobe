@@ -1,9 +1,7 @@
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeDatabaseAuthorizationEvent,
-  AutoBeDatabaseAuthorizationReviewEvent,
   AutoBeDatabaseGroupEvent,
-  AutoBeDatabaseGroupReviewEvent,
   AutoBeInterfaceGroupEvent,
   AutoBeRealizeTestResetEvent,
 } from "@autobe/interface";
@@ -15,9 +13,7 @@ export interface IAutoBeScenarioEventMovieProps {
   event:
     | AutoBeAnalyzeScenarioEvent
     | AutoBeDatabaseAuthorizationEvent
-    | AutoBeDatabaseAuthorizationReviewEvent
     | AutoBeDatabaseGroupEvent
-    | AutoBeDatabaseGroupReviewEvent
     | AutoBeInterfaceGroupEvent
     | AutoBeRealizeTestResetEvent;
 }
@@ -71,20 +67,6 @@ function getState(event: IAutoBeScenarioEventMovieProps["event"]): IState {
           </>
         ),
       };
-    case "databaseGroupReview":
-      return {
-        title: "Database Group Review",
-        description: (
-          <>
-            Reviewed Database group structure.
-            <br />
-            <br />
-            Revisions applied: #{event.revises.length}
-            <br />
-            Final groups: #{event.groups.length}
-          </>
-        ),
-      };
     case "databaseAuthorization":
       return {
         title: "Database Authorization",
@@ -94,20 +76,6 @@ function getState(event: IAutoBeScenarioEventMovieProps["event"]): IState {
             <br />
             <br />
             Tables created: #{event.component.tables.length}
-          </>
-        ),
-      };
-    case "databaseAuthorizationReview":
-      return {
-        title: "Database Authorization Review",
-        description: (
-          <>
-            Reviewed authorization tables.
-            <br />
-            <br />
-            Revisions applied: #{event.revises.length}
-            <br />
-            Final tables: #{event.modification.tables.length}
           </>
         ),
       };

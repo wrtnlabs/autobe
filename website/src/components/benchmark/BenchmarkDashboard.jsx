@@ -956,7 +956,7 @@ export function BenchmarkDashboard() {
   if (loading) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", fontFamily: FONT }}>
-        <span style={{ color: "#64748b", fontSize: "14px" }}>Loading benchmark data…</span>
+        <span style={{ color: "#64748b", fontSize: "14px" }}>Loading estimate data…</span>
       </div>
     );
   }
@@ -964,7 +964,7 @@ export function BenchmarkDashboard() {
   if (error || !data) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", gap: "12px", fontFamily: FONT }}>
-        <span style={{ color: "#f87171", fontSize: "14px" }}>Failed to load benchmark data: {error}</span>
+        <span style={{ color: "#f87171", fontSize: "14px" }}>Failed to load estimate data: {error}</span>
         <button onClick={load} style={{ padding: "8px 20px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", cursor: "pointer", fontSize: "13px", fontWeight: 600, color: "#cbd5e1", fontFamily: FONT }}>Retry</button>
       </div>
     );

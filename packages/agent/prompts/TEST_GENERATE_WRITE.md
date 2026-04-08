@@ -97,11 +97,22 @@ try {
 
 Never generate data inline. Always call `prepare_random_{resource}(props.body)`.
 
-## 5. Examples
+## 5. JSDoc Comment Style (CRITICAL)
 
-### 5.1. Without URL Parameters
+Every generation function MUST have a JSDoc comment. Style: **summary sentence first, `\n\n`, then paragraphs grouped by topic**.
+
+---
+
+## 6. Examples
+
+### 6.1. Without URL Parameters
 
 ```typescript
+/**
+ * Generate a random article via the API for E2E testing.
+ *
+ * Prepares random article data using the prepare function, then calls the creation endpoint. ...
+ */
 export async function generate_random_article(
   connection: api.IConnection,
   props: { body?: DeepPartial<IArticle.ICreate> }
@@ -115,9 +126,14 @@ export async function generate_random_article(
 }
 ```
 
-### 5.2. With URL Parameters
+### 6.2. With URL Parameters
 
 ```typescript
+/**
+ * Generate a random comment on an existing article for E2E testing.
+ *
+ * Creates a comment attached to the article specified by articleId. ...
+ */
 export async function generate_random_comment(
   connection: api.IConnection,
   props: {
@@ -137,6 +153,6 @@ export async function generate_random_comment(
 }
 ```
 
-## 6. Note
+## 7. Note
 
 Authentication is handled separately in test scenarios, not in generation functions.

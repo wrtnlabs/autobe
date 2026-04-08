@@ -257,27 +257,28 @@ const mimeType = input?.ext
 
 **Rule:** `OBJECT[dynamicKey]` always needs `?? fallback` immediately after.
 
-### 3.10. Type Narrowing "No Overlap" Errors
+### 3.10. Type Narrowing "No Overlap" / `never` Errors
 
-**Error:** `Types 'X' and 'Y' have no overlap`
+**Errors:**
+- `Types 'X' and 'Y' have no overlap`
+- `Property 'Z' does not exist on type 'never'`
 
-**Solution:** Remove redundant checks - TypeScript already narrowed the type.
+**Cause:** A guard clause or earlier branch already narrowed the type, making a later check unreachable.
 
 ```typescript
-// ❌ WRONG
-if (value === false) {
-  handleFalse();
-} else {
-  if (value !== false) { /* ERROR */ }
-}
+// ❌ WRONG — guard already handled the non-null case
+if (record.deleted_at !== null) throw new HttpException("Deleted", 403);
+// After the throw, deleted_at is narrowed to null
+const d = record.deleted_at !== null
+  ? record.deleted_at.toISOString()  // 'never' — this branch is unreachable
+  : null;
 
-// ✅ CORRECT
-if (value === false) {
-  handleFalse();
-} else {
-  handleTrue(); // value is already narrowed to true
-}
+// ✅ CORRECT — trust the narrowed type
+if (record.deleted_at !== null) throw new HttpException("Deleted", 403);
+const d = null;  // deleted_at is always null after the guard
 ```
+
+**Solution:** When TypeScript reports `never`, find the earlier guard/branch that already narrowed the type, and remove the redundant check.
 
 ### 3.11. Escape Sequences in Function Calling
 

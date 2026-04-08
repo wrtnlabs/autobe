@@ -19,6 +19,7 @@ export const transformInterfaceSchemaCastingHistory = (props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
+    | "complete"
   >;
   typeName: string;
   refineOperations: AutoBeOpenApi.IOperation[];

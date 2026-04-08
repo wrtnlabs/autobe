@@ -13,6 +13,7 @@ export const transformRealizeCollectorPlanHistory = (props: {
     | "databaseSchemas"
     | "interfaceSchemas"
     | "interfaceOperations"
+    | "complete"
   >;
   dtoTypeName: string;
 }): IAutoBeOrchestrateHistory => {

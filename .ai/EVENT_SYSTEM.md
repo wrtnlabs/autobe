@@ -25,23 +25,20 @@ export type AutoBeEvent =
   | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
 
-  // Database phase (9 events)
+  // Database phase (8 events)
   | AutoBeDatabaseStartEvent
   | AutoBeDatabaseComponentEvent
   | AutoBeDatabaseSchemaEvent
   | AutoBeDatabaseInsufficientEvent
-  | AutoBeDatabaseSchemaReviewEvent
   | AutoBeDatabaseValidateEvent
   | AutoBeDatabaseCorrectEvent
   | AutoBeDatabaseCompleteEvent
 
-  // Interface phase (15+ events)
+  // Interface phase (12+ events)
   | AutoBeInterfaceStartEvent
   | AutoBeInterfaceGroupEvent
   | AutoBeInterfaceEndpointEvent
-  | AutoBeInterfaceEndpointReviewEvent
   | AutoBeInterfaceOperationEvent
-  | AutoBeInterfaceOperationReviewEvent
   | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemaEvent
   | AutoBeInterfaceSchemaSecurityReviewEvent
@@ -51,10 +48,9 @@ export type AutoBeEvent =
   | AutoBeInterfacePrerequisiteEvent
   | AutoBeInterfaceCompleteEvent
 
-  // Test phase (7 events)
+  // Test phase (6 events)
   | AutoBeTestStartEvent
   | AutoBeTestScenarioEvent
-  | AutoBeTestScenarioReviewEvent
   | AutoBeTestWriteEvent
   | AutoBeTestCorrectEvent
   | AutoBeTestCorrectInvalidRequestEvent

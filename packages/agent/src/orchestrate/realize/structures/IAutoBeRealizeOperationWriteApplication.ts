@@ -1,3 +1,4 @@
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
@@ -9,10 +10,10 @@ import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structure
  */
 export interface IAutoBeRealizeOperationWriteApplication {
   /**
-   * Process operation function generation task or preliminary data requests.
+   * Process operation function generation task.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeRealizeOperationWriteApplication.IProps): void;
 }
@@ -22,10 +23,11 @@ export namespace IAutoBeRealizeOperationWriteApplication {
     /**
      * Think before you act.
      *
-     * For preliminary requests: what critical information is missing and why?
+     * For preliminary requests: what information is missing and why?
      *
-     * For completion: what key assets did you acquire, what did you accomplish,
-     * why is it sufficient? Summarize — don't enumerate every single item.
+     * For write: what you're submitting and key decisions made.
+     *
+     * For complete: why you consider the last write final.
      */
     thinking: string;
 
@@ -34,17 +36,18 @@ export namespace IAutoBeRealizeOperationWriteApplication {
      * union, physically preventing repeated calls.
      */
     request:
-      | IComplete
+      | IWrite
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetRealizeCollectors
-      | IAutoBePreliminaryGetRealizeTransformers;
+      | IAutoBePreliminaryGetRealizeTransformers
+      | IAutoBePreliminaryComplete;
   }
 
   /** Generate operation implementation via plan/draft/revise. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Operation implementation plan. Analyze requirements, identify related

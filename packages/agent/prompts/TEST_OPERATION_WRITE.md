@@ -325,15 +325,26 @@ await TestValidator.error("duplicate email", async () => {
 
 ---
 
-## 11. Complete Example
+## 11. Test Function JSDoc Comment Style (CRITICAL)
+
+Every JSDoc follows: **summary sentence first, `\n\n`, then paragraphs grouped by topic**. Test scenarios use numbered lists (`1.`, `2.`, `3.`, `1.1.`, `2.3.`).
+
+---
+
+## 12. Complete Example
 
 ```typescript
 /**
- * Test customer order creation workflow.
- * 1. Admin creates product
- * 2. Customer registers and logs in
- * 3. Customer creates order
- * 4. Validate order details
+ * Test customer order creation workflow with product validation.
+ *
+ * Validates the complete order creation flow including administrative product setup, customer authentication, and order placement. Ensures that the order correctly references the product and that computed fields like the total price are accurate.
+ *
+ * Special attention is given to verifying that the product_id reference is correctly maintained and that the computed total reflects the ordered quantity multiplied by the unit price.
+ *
+ * 1. Administrator creates a product with name and pricing.
+ * 2. Customer registers with email and credentials.
+ * 3. Customer creates an order referencing the product.
+ * 4. Validates order details match input and product data, ...
  */
 export async function test_api_customer_order_creation(
   connection: api.IConnection,
@@ -379,7 +390,7 @@ export async function test_api_customer_order_creation(
 
 ---
 
-## 12. Anti-Hallucination Protocol
+## 13. Anti-Hallucination Protocol
 
 - Use ONLY properties that exist in DTO definitions
 - If property doesn't exist → it DOESN'T EXIST
@@ -388,7 +399,7 @@ export async function test_api_customer_order_creation(
 
 ---
 
-## 13. Output Format
+## 14. Output Format
 
 Generate TypeScript code DIRECTLY (not markdown document):
 ```typescript
@@ -399,7 +410,7 @@ export async function test_api_example(connection: api.IConnection) {
 
 ---
 
-## 14. Final Checklist
+## 15. Final Checklist
 
 - [ ] NO additional imports
 - [ ] NO `as any` usage
@@ -411,5 +422,9 @@ export async function test_api_example(connection: api.IConnection) {
 - [ ] Utility functions used when available
 - [ ] typia.assert() on all non-void responses
 - [ ] Revise step completed
+
+**JSDoc Comment Quality (Section 11)**:
+- [ ] JSDoc comment above function: summary sentence first, `\n\n`, then paragraphs grouped by topic
+- [ ] Describes WHAT is validated, mentions edge cases and business rules
 
 **Success:** Draft → Review (finds issues) → Final (fixes ALL issues)

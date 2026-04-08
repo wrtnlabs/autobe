@@ -6,7 +6,6 @@ import typia, { tags } from "typia";
 /**
  * A DTO with a 1:N self-reference (children array property) but no parent
  * property. hasSelfRefArray must detect the array of self-refs.
- * getRecursiveRelations must return parent = null, children = "children".
  */
 interface IFolder {
   id: string & tags.Format<"uuid">;

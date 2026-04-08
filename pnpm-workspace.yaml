@@ -21,9 +21,9 @@ catalogs:
     '@typia/interface': ^12.0.1
     '@typia/unplugin': ^12.0.1
     '@typia/utils': ^12.0.1
-    embed-eslint: ^2.0.1
+    embed-eslint: ^3.1.0
     embed-prisma: ^3.0.0
-    embed-typescript: ^2.0.1
+    embed-typescript: ^3.1.0
     nestia: ^11.0.1
     prisma-markdown: ^4.0.0
     tgrid: ^1.2.1

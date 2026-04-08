@@ -13,7 +13,14 @@ export const getAutoBeRealizeGenerated = async (props: {
   functions: AutoBeRealizeFunction[];
   options: IAutoBeGetFilesOptions;
 }): Promise<Record<string, string>> => ({
-  ...Object.fromEntries(props.functions.map((f) => [f.location, f.content])),
+  ...Object.fromEntries(
+    props.functions.map((f) => [
+      f.location,
+      f.template
+        ? f.content + "\n\n" + embedTemplateComment(f.template)
+        : f.content,
+    ]),
+  ),
   ...Object.fromEntries(
     props.authorizations
       .map((auth) => [
@@ -29,3 +36,11 @@ export const getAutoBeRealizeGenerated = async (props: {
     authorizations: props.authorizations,
   })),
 });
+
+function embedTemplateComment(template: string): string {
+  const lines = template.split("\n").map((line) => `// ${line}`);
+  return [DIVIDER, "// TEMPLATE CODE", DIVIDER, ...lines, DIVIDER].join("\n");
+}
+
+const DIVIDER =
+  "//--------------------------------------------------------------";

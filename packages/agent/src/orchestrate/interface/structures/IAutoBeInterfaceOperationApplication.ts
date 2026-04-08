@@ -1,5 +1,6 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 
+import { IAutoBePreliminaryComplete } from "../../common/structures/IAutoBePreliminaryComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
@@ -8,10 +9,10 @@ import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/s
 
 export interface IAutoBeInterfaceOperationApplication {
   /**
-   * Process operation generation task or preliminary data requests.
+   * Process operation generation task.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request, write submission, or completion
+   *   confirmation
    */
   process(props: IAutoBeInterfaceOperationApplication.IProps): void;
 }
@@ -20,11 +21,11 @@ export namespace IAutoBeInterfaceOperationApplication {
     /**
      * Think before you act.
      *
-     * For preliminary requests: what critical information is missing and why?
-     * Be brief — state the gap, don't list everything you have.
+     * For preliminary requests: what information is missing and why?
      *
-     * For completion: what key assets did you acquire, what did you accomplish,
-     * why is it sufficient? Summarize — don't enumerate every single item.
+     * For write: what you're submitting and key design decisions.
+     *
+     * For complete: why you consider the last write final.
      */
     thinking: string;
 
@@ -33,7 +34,8 @@ export namespace IAutoBeInterfaceOperationApplication {
      * union, physically preventing repeated calls.
      */
     request:
-      | IComplete
+      | IWrite
+      | IAutoBePreliminaryComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections
@@ -41,10 +43,10 @@ export namespace IAutoBeInterfaceOperationApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /** Request to generate a detailed API operation. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit a detailed API operation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of the endpoint's purpose and context. */
     analysis: string;

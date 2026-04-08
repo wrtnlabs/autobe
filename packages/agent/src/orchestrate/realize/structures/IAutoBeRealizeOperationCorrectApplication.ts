@@ -7,8 +7,7 @@ export interface IAutoBeRealizeOperationCorrectApplication {
   /**
    * Process provider correction task or preliminary data requests.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Preliminary data request or write submission
    */
   process(props: IAutoBeRealizeOperationCorrectApplication.IProps): void;
 }
@@ -20,8 +19,7 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
      *
      * For preliminary requests: what critical information is missing and why?
      *
-     * For completion: what did you acquire, what did you accomplish, why is it
-     * sufficient? Summarize — don't enumerate every single item.
+     * For write: what errors you're fixing and the correction strategy.
      */
     thinking: string;
 
@@ -30,7 +28,7 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
      * union, physically preventing repeated calls.
      */
     request:
-      | IComplete
+      | IWrite
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetRealizeCollectors
@@ -38,9 +36,9 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
   }
 
   /** Correct provider compilation errors via think/draft/revise. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Error analysis and correction strategy. Understand:

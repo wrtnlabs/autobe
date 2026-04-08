@@ -4,6 +4,8 @@ import { StringUtil } from "@autobe/utils";
 import { TestValidator } from "@nestia/e2e";
 import typia, { tags } from "typia";
 
+import { createTestModel } from "./internal/createTestModel";
+
 /**
  * A DTO with both a nullable N:1 self-reference (parent) and a 1:N
  * self-reference (children) — the bidirectional tree node. writeTemplate must
@@ -25,6 +27,22 @@ export const test_realize_transformer_template_both = (): void => {
     "INode"
   ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 
+  const model = createTestModel({
+    name: "nodes",
+    plainFields: [{ name: "name" }],
+    foreignFields: [
+      {
+        name: "parent_id",
+        nullable: true,
+        relation: {
+          name: "parent",
+          targetModel: "nodes",
+          oppositeName: "children",
+        },
+      },
+    ],
+  });
+
   const result = AutoBeRealizeTransformerProgrammer.writeTemplate({
     plan: {
       type: "transformer",
@@ -34,6 +52,7 @@ export const test_realize_transformer_template_both = (): void => {
     },
     schema,
     schemas,
+    model,
   });
 
   const expectedBody: string = StringUtil.trim`
@@ -44,8 +63,8 @@ export const test_realize_transformer_template_both = (): void => {
         // implicit return type for better type inference
         return {
           select: {
-            ...
-            id: true, // required for children cache key
+            id: true,
+            name: true,
             parent_id: true,
             parent: undefined, // DO NOT select recursive relation
             children: undefined, // DO NOT select recursive relation
@@ -59,8 +78,8 @@ export const test_realize_transformer_template_both = (): void => {
         childrenCache: VariadicSingleton<Promise<INode[]>, [string]> = createChildrenCache(),
       ): Promise<INode> {
         return {
-          id: ...,
-          name: ...,
+          id: {string},
+          name: {string},
           parent: input.parent_id ? await parentCache.get(input.parent_id) : null,
           children: await childrenCache.get(input.id),
         };

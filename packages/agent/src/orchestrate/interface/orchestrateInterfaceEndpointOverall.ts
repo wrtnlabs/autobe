@@ -5,7 +5,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { HashMap, Pair } from "tstl";
+import { HashMap, Pair, Singleton } from "tstl";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
@@ -25,13 +25,9 @@ interface IProgrammer {
       | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
+      | "complete"
     >;
   }): IAutoBeOrchestrateHistory;
-  review(next: {
-    group: AutoBeInterfaceGroup;
-    designs: AutoBeInterfaceEndpointDesign[];
-    promptCacheKey: string;
-  }): Promise<AutoBeInterfaceEndpointDesign[]>;
 }
 
 export const orchestrateInterfaceEndpointOverall = async (
@@ -45,21 +41,22 @@ export const orchestrateInterfaceEndpointOverall = async (
   const matrix: AutoBeInterfaceEndpointDesign[][] = await executeCachedBatch(
     ctx,
     props.groups.map((group) => async (promptCacheKey) => {
-      let designs: AutoBeInterfaceEndpointDesign[] = await forceRetry(() =>
-        orchestrateInterfaceEndpointWrite(ctx, {
-          ...props,
-          group,
-          promptCacheKey,
-        }),
-      );
-      for (let i: number = 0; i < 2; ++i)
-        try {
-          designs = await props.programmer.review({
+      const counter = new Singleton(() => ++props.progress.completed);
+      let designs: AutoBeInterfaceEndpointDesign[];
+      try {
+        designs = await forceRetry(() =>
+          orchestrateInterfaceEndpointWrite(ctx, {
+            ...props,
+            counter,
             group,
-            designs,
-            promptCacheKey: promptCacheKey + "_review",
-          });
-        } catch {}
+            promptCacheKey,
+          }),
+        );
+      } catch (error) {
+        counter.get();
+        throw error;
+      }
+      // review removed — write agents self-review during rewrite loop
       return designs;
     }),
   );
