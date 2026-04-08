@@ -121,6 +121,9 @@ if [ ! -x "$TSNODE_BIN" ]; then
   echo "ERROR: ts-node not found at $TSNODE_BIN"
   exit 1
 fi
+# Force CJS module resolution for Node v22 compatibility
+# (workspace packages use "main": "src/index.ts" with extensionless imports)
+export TS_NODE_COMPILER_OPTIONS='{"module":"commonjs","moduleResolution":"node"}'
 ESTIMATE_CMD="$TSNODE_BIN $SCRIPT_DIR/src/bin/estimate.ts"
 
 # ── Run evaluations ──────────────────────────────────────
