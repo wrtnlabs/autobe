@@ -1,5 +1,6 @@
 import { AutoBeRealizeFunction } from "@autobe/interface";
 
+import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";
 import { IAutoBeRealizeFunctionResult } from "../structures/IAutoBeRealizeFunctionResult";
 
 export async function orchestrateRealizeCorrectWithRetry<
@@ -22,28 +23,38 @@ export async function orchestrateRealizeCorrectWithRetry<
     return await props.correctOverall(casted);
   };
 
-  //----
-  // FIRST ATTEMPT
-  //----
-  // write functions
-  const results: IAutoBeRealizeFunctionResult<Func>[] = await process(
-    await props.write(),
+  const partition = (
+    results: IAutoBeRealizeFunctionResult<Func>[],
+  ): IPartition<Func> => ({
+    success: results.filter((r) => r.success).map((r) => r.function),
+    failures: results.filter((r) => !r.success).map((r) => r.function),
+  });
+
+  // first attempt
+  const initial: IPartition<Func> = partition(
+    await process(await props.write()),
   );
+  const success: Func[] = initial.success;
+  let failures: Func[] = initial.failures;
 
-  // filter success and failures
-  const filter = (v: boolean) =>
-    results.filter((r) => r.success === v).map((r) => r.function);
-  const success: Func[] = filter(true);
-  const failures: Func[] = filter(false);
-
-  // no failures, return success
-  if (failures.length === 0) return success;
-
-  //----
-  // RETRY
-  //----
-  const retryResults: IAutoBeRealizeFunctionResult<Func>[] = await process(
-    await props.rewrite(failures),
+  // retry loop
+  const limit: number = Math.max(
+    Math.floor(AutoBeConfigConstant.COMPILER_RETRY / 2),
+    1,
   );
-  return [...success, ...retryResults.map((r) => r.function)];
+  for (let i: number = 0; failures.length !== 0 && i < limit; i++) {
+    const retry: IPartition<Func> = partition(
+      await process(await props.rewrite(failures)),
+    );
+    success.push(...retry.success);
+    failures = retry.failures;
+  }
+
+  // remaining failures are included as-is
+  return [...success, ...failures];
+}
+
+interface IPartition<Func extends AutoBeRealizeFunction> {
+  success: Func[];
+  failures: Func[];
 }
