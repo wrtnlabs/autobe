@@ -1,4 +1,5 @@
 import { AgentResult } from "../agents";
+import type { FixAdvisory } from "./fix-advice";
 import type { Issue } from "./issue";
 
 /** Evaluation grade */
@@ -153,6 +154,8 @@ export interface EvaluationResult {
   scoreBreakdown?: ScoreBreakdown;
   /** Code size and performance metrics (reference only) */
   performanceMetrics?: Record<string, number | string>;
+  /** Fix advice with code snippets and impact predictions */
+  fixAdvisory?: FixAdvisory;
 }
 export namespace EvaluationResult {
   export interface Phases {

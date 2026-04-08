@@ -40,6 +40,13 @@ export type {
   ScoreBreakdown,
 } from "./score";
 export type {
+  FixAdvice,
+  FixAdvisory,
+  FixAdviceSource,
+  CodeSnippet,
+  PenaltyRecovery,
+} from "./fix-advice";
+export type {
   EvaluationContext,
   EvaluationInput,
   EvaluationOptions,

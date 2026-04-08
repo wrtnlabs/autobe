@@ -1,7 +1,13 @@
 import * as path from "path";
 
 import type { AgentResult } from "../agents";
-import type { EvaluationResult, Issue, PhaseResult } from "../types";
+import type {
+  CodeSnippet,
+  EvaluationResult,
+  FixAdvisory,
+  Issue,
+  PhaseResult,
+} from "../types";
 import { AGENT_WEIGHT_RATIO, PHASE_NAMES, PHASE_WEIGHTS } from "../types";
 
 interface ExtendedResult extends EvaluationResult {
@@ -56,6 +62,8 @@ ${renderDetailedResults(result)}
 ${renderReferenceInfo(result)}
 
 ${renderAgentEvaluations(result.agentEvaluations)}
+
+${renderFixAdvisory(result.fixAdvisory)}
 
 ${renderSummary(result)}
 
@@ -613,4 +621,88 @@ function formatMetricName(key: string): string {
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (str) => str.toUpperCase())
     .trim();
+}
+
+/** Escape pipe characters for markdown table cells */
+function escapeTableCell(text: string): string {
+  return text.replace(/\|/g, "\\|");
+}
+
+function renderFixAdvisory(advisory?: FixAdvisory): string {
+  if (!advisory || advisory.items.length === 0) return "";
+
+  const topFixes = advisory.topFixes;
+  const rows = topFixes
+    .map((fix) => {
+      const severity = getSeverityEmoji(fix.severity);
+      const location = fix.file
+        ? `${path.basename(fix.file)}${fix.line ? ":" + fix.line : ""}`
+        : "-";
+      const phaseName =
+        PHASE_NAMES[fix.phase as keyof typeof PHASE_NAMES] || fix.phase;
+      const msg = escapeTableCell(fix.message);
+      const src = fix.source === "reference" ? " (ref)" : "";
+      return `| ${fix.priority} | ${severity} | ${fix.code} | ${msg} | ${phaseName}${src} | +${fix.estimatedImpact} | ${location} |`;
+    })
+    .join("\n");
+
+  const snippetBlocks = topFixes
+    .filter((fix) => fix.snippet)
+    .slice(0, 5)
+    .map((fix) => {
+      const location = fix.file
+        ? `${path.basename(fix.file)}:${fix.line || "?"}`
+        : "unknown";
+      return `
+**#${fix.priority}** \`${fix.code}\` — ${location}
+
+${renderSnippet(fix.snippet!)}`;
+    })
+    .join("\n");
+
+  const penaltySection = renderPenaltyRecovery(advisory.penaltyRecovery);
+
+  return `
+## Fix Priority Guide
+
+**Potential score gain:** up to +${advisory.totalPotentialGain} points (${advisory.items.length} issues total)
+
+### Top ${topFixes.length} Fixes by Impact
+
+| # | Severity | Code | Message | Phase | Est. Impact | Location |
+|---|----------|------|---------|-------|-------------|----------|
+${rows}
+
+${penaltySection}
+${snippetBlocks ? `### Code Snippets\n${snippetBlocks}` : ""}
+`.trim();
+}
+
+function renderPenaltyRecovery(
+  recovery?: Array<{ type: string; currentPenalty: number; description: string }>,
+): string {
+  if (!recovery || recovery.length === 0) return "";
+
+  const totalRecoverable = recovery.reduce((s, r) => s + r.currentPenalty, 0);
+  const rows = recovery
+    .map((r) => `| ${r.type} | -${r.currentPenalty} | ${r.description} |`)
+    .join("\n");
+
+  return `
+### Penalty Recovery (up to +${totalRecoverable} points)
+
+| Penalty Type | Current | How to Recover |
+|-------------|---------|----------------|
+${rows}
+`.trim();
+}
+
+function renderSnippet(snippet: CodeSnippet): string {
+  const lines = snippet.lines
+    .map(
+      (l) =>
+        `${l.isTarget ? ">" : " "} ${String(l.lineNumber).padStart(4)} | ${l.text}`,
+    )
+    .join("\n");
+  return "```" + snippet.language + "\n" + lines + "\n```";
 }

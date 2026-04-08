@@ -14,6 +14,7 @@ import {
   SecurityAgent,
 } from "../../agents";
 import { EvaluationPipeline } from "../../core/pipeline";
+import { generateFixAdvisory } from "../../core/fix-advisor";
 import {
   generateJsonReport,
   generateMarkdownReport,
@@ -260,12 +261,15 @@ export async function runCLI(options: CLIOptions): Promise<void> {
       : 0,
   };
 
+  const fixAdvisory = generateFixAdvisory(result, inputPath);
+
   const fullResult = {
     ...result,
     totalScore: adjustedScore,
     grade: scoreToGrade(adjustedScore),
     agentEvaluations: agentResults,
     scoreBreakdown,
+    fixAdvisory,
   };
 
   fs.writeFileSync(jsonPath, generateJsonReport(fullResult));

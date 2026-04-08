@@ -1,5 +1,5 @@
 export * from "./types";
-export { buildContext, EvaluationPipeline } from "./core";
+export { buildContext, EvaluationPipeline, generateFixAdvisory } from "./core";
 export * from "./evaluators";
 export { generateJsonReport, generateMarkdownReport } from "./reporters";
 export { runCLI, createProgram } from "./cli";
