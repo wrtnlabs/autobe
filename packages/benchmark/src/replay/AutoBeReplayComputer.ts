@@ -2,6 +2,7 @@ import {
   AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
+  IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundBenchmarkScore,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
@@ -16,16 +17,32 @@ export namespace AutoBeReplayComputer {
     "erp",
   ];
 
-  export const emoji = (
-    summaries: IAutoBePlaygroundReplay.ISummary[],
-  ): string => {
-    const success: number = summaries.filter(
-      (s) => s.realize !== null && s.realize.success === true,
-    ).length;
-    if (success >= 3) return "🟢";
+  export const compare = (
+    a: IAutoBePlaygroundBenchmark,
+    b: IAutoBePlaygroundBenchmark,
+  ): number => {
+    if (b.score.aggregate !== a.score.aggregate)
+      return b.score.aggregate - a.score.aggregate;
+    return compareVendors(a.vendor, b.vendor);
+  };
 
-    const tested: boolean = !!summaries.find((s) => s.test !== null);
-    return tested ? "🟡" : "❌";
+  export const compareVendors = (a: string, b: string): number => {
+    const pa = a.split("-");
+    const pb = b.split("-");
+    const len = Math.max(pa.length, pb.length);
+    for (let i = 0; i < len; i++) {
+      const ra = pa[i] ?? "";
+      const rb = pb[i] ?? "";
+      const na = parsePart(ra);
+      const nb = parsePart(rb);
+      if (na !== null && nb !== null) {
+        if (na !== nb) return nb - na;
+      } else {
+        const cmp = ra.localeCompare(rb);
+        if (cmp !== 0) return cmp;
+      }
+    }
+    return 0;
   };
 
   export const score = (
@@ -153,7 +170,29 @@ export namespace AutoBeReplayComputer {
         .reduce((a, b) => a + (b ?? 0), 0),
     };
   };
+
+  export const emoji = (
+    summaries: IAutoBePlaygroundReplay.ISummary[],
+  ): string => {
+    const success: number = summaries.filter(
+      (s) => s.realize !== null && s.realize.success === true,
+    ).length;
+    if (success >= 3) return "🟢";
+
+    const tested: boolean = !!summaries.find((s) => s.test !== null);
+    return tested ? "🟡" : "❌";
+  };
 }
+
+const parsePart = (s: string): number | null => {
+  let t: string;
+  if (s.startsWith("a") && s.endsWith("b")) t = s.slice(1, -1);
+  else if (s.endsWith("b")) t = s.slice(0, -1);
+  else t = s;
+  if (t === "") return null;
+  const n = Number(t);
+  return isNaN(n) ? null : n;
+};
 
 const compute = (summary: IAutoBePlaygroundReplay.ISummary): number => {
   const getScore = (phase: AutoBePhase): number => {
