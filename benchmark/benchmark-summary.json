@@ -3,7 +3,7 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "erp",
-      "totalScore": 85,
+      "totalScore": 83,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -12,7 +12,7 @@
           "maxScore": 100,
           "weightedScore": 97,
           "passed": true,
-          "durationMs": 5555,
+          "durationMs": 10096,
           "metrics": {
             "totalFiles": 258,
             "filesWithErrors": 0,
@@ -167,9 +167,9 @@
         "suggestionCount": 4
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:47:55.305Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.757Z",
-        "totalDurationMs": 5927,
+        "evaluatedAt": "2026-04-02T06:44:20.157Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.104Z",
+        "totalDurationMs": 10593,
         "evaluatedFiles": 258
       },
       "reference": {
@@ -197,7 +197,7 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "reddit",
-      "totalScore": 85,
+      "totalScore": 83,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -206,7 +206,7 @@
           "maxScore": 100,
           "weightedScore": 99,
           "passed": true,
-          "durationMs": 8097,
+          "durationMs": 7820,
           "metrics": {
             "totalFiles": 226,
             "filesWithErrors": 0,
@@ -357,9 +357,9 @@
         "suggestionCount": 5
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:48:05.081Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.758Z",
-        "totalDurationMs": 8432,
+        "evaluatedAt": "2026-04-02T06:54:55.490Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.106Z",
+        "totalDurationMs": 8109,
         "evaluatedFiles": 226
       },
       "reference": {
@@ -387,7 +387,7 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "shopping",
-      "totalScore": 72,
+      "totalScore": 70,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -396,7 +396,7 @@
           "maxScore": 100,
           "weightedScore": 97,
           "passed": true,
-          "durationMs": 16511,
+          "durationMs": 18202,
           "metrics": {
             "totalFiles": 581,
             "filesWithErrors": 0,
@@ -569,9 +569,9 @@
         "suggestionCount": 22
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:48:25.236Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.759Z",
-        "totalDurationMs": 18678,
+        "evaluatedAt": "2026-04-02T07:00:41.194Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.107Z",
+        "totalDurationMs": 19243,
         "evaluatedFiles": 581
       },
       "reference": {
@@ -599,7 +599,7 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "todo",
-      "totalScore": 87,
+      "totalScore": 86,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -608,7 +608,7 @@
           "maxScore": 100,
           "weightedScore": 99,
           "passed": true,
-          "durationMs": 2989,
+          "durationMs": 2858,
           "metrics": {
             "totalFiles": 90,
             "filesWithErrors": 0,
@@ -747,9 +747,9 @@
         "suggestionCount": 1
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:48:29.666Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.759Z",
-        "totalDurationMs": 3090,
+        "evaluatedAt": "2026-04-02T07:07:36.162Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.107Z",
+        "totalDurationMs": 2958,
         "evaluatedFiles": 90
       },
       "reference": {
@@ -898,9 +898,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:48:30.877Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.760Z",
-        "totalDurationMs": 12,
+        "evaluatedAt": "2026-04-02T07:13:24.149Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.108Z",
+        "totalDurationMs": 22,
         "evaluatedFiles": 0
       },
       "reference": {
@@ -928,7 +928,7 @@
     {
       "model": "deepseek-v3.2",
       "project": "reddit",
-      "totalScore": 69,
+      "totalScore": 68,
       "grade": "D",
       "pipeline": null,
       "phases": {
@@ -937,7 +937,7 @@
           "maxScore": 100,
           "weightedScore": 80,
           "passed": true,
-          "durationMs": 15266,
+          "durationMs": 13028,
           "metrics": {
             "totalFiles": 588,
             "filesWithErrors": 1,
@@ -1217,9 +1217,9 @@
         "suggestionCount": 41
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:48:48.183Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.761Z",
-        "totalDurationMs": 16098,
+        "evaluatedAt": "2026-04-02T07:13:43.672Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.108Z",
+        "totalDurationMs": 13587,
         "evaluatedFiles": 588
       },
       "reference": {
@@ -1368,9 +1368,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:48:49.569Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.761Z",
-        "totalDurationMs": 25,
+        "evaluatedAt": "2026-04-02T07:50:03.318Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.108Z",
+        "totalDurationMs": 21,
         "evaluatedFiles": 0
       },
       "reference": {
@@ -1398,7 +1398,7 @@
     {
       "model": "deepseek-v3.2",
       "project": "todo",
-      "totalScore": 86,
+      "totalScore": 84,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -1407,7 +1407,7 @@
           "maxScore": 100,
           "weightedScore": 98,
           "passed": true,
-          "durationMs": 4001,
+          "durationMs": 3214,
           "metrics": {
             "totalFiles": 121,
             "filesWithErrors": 0,
@@ -1557,9 +1557,9 @@
         "suggestionCount": 1
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:48:55.094Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.762Z",
-        "totalDurationMs": 4139,
+        "evaluatedAt": "2026-04-02T07:50:12.643Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.108Z",
+        "totalDurationMs": 3328,
         "evaluatedFiles": 121
       },
       "reference": {
@@ -1782,7 +1782,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:37.550Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.763Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.109Z",
         "totalDurationMs": 5763,
         "evaluatedFiles": 285
       },
@@ -1978,7 +1978,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:42.516Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.763Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.110Z",
         "totalDurationMs": 3650,
         "evaluatedFiles": 185
       },
@@ -2197,7 +2197,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:52.969Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.763Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.110Z",
         "totalDurationMs": 9165,
         "evaluatedFiles": 415
       },
@@ -2226,7 +2226,7 @@
     {
       "model": "glm-5",
       "project": "todo",
-      "totalScore": 88,
+      "totalScore": 86,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -2235,7 +2235,7 @@
           "maxScore": 100,
           "weightedScore": 96,
           "passed": true,
-          "durationMs": 4629,
+          "durationMs": 2835,
           "metrics": {
             "totalFiles": 84,
             "filesWithErrors": 0,
@@ -2380,9 +2380,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:55:59.092Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.763Z",
-        "totalDurationMs": 4739,
+        "evaluatedAt": "2026-04-02T06:41:42.433Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.110Z",
+        "totalDurationMs": 2943,
         "evaluatedFiles": 84
       },
       "reference": {
@@ -2593,7 +2593,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:50:40.681Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.765Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
         "totalDurationMs": 9071,
         "evaluatedFiles": 412
       },
@@ -2799,7 +2799,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:50:55.681Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.765Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
         "totalDurationMs": 13362,
         "evaluatedFiles": 460
       },
@@ -3005,7 +3005,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:51:12.937Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.765Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
         "totalDurationMs": 15917,
         "evaluatedFiles": 518
       },
@@ -3183,7 +3183,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:51:17.214Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.765Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
         "totalDurationMs": 2983,
         "evaluatedFiles": 97
       },
@@ -3212,7 +3212,7 @@
     {
       "model": "gpt-5.4-mini",
       "project": "erp",
-      "totalScore": 78,
+      "totalScore": 74,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -3221,7 +3221,7 @@
           "maxScore": 100,
           "weightedScore": 93,
           "passed": true,
-          "durationMs": 8072,
+          "durationMs": 8430,
           "metrics": {
             "totalFiles": 332,
             "filesWithErrors": 0,
@@ -3382,9 +3382,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:51:27.441Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.763Z",
-        "totalDurationMs": 8672,
+        "evaluatedAt": "2026-04-02T14:05:20.214Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.111Z",
+        "totalDurationMs": 9153,
         "evaluatedFiles": 332
       },
       "reference": {
@@ -3412,7 +3412,7 @@
     {
       "model": "gpt-5.4-mini",
       "project": "reddit",
-      "totalScore": 87,
+      "totalScore": 82,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -3421,7 +3421,7 @@
           "maxScore": 100,
           "weightedScore": 99,
           "passed": true,
-          "durationMs": 4808,
+          "durationMs": 4347,
           "metrics": {
             "totalFiles": 246,
             "filesWithErrors": 0,
@@ -3570,9 +3570,9 @@
         "suggestionCount": 1
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:51:33.866Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.763Z",
-        "totalDurationMs": 5081,
+        "evaluatedAt": "2026-04-02T14:14:16.182Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.111Z",
+        "totalDurationMs": 4608,
         "evaluatedFiles": 246
       },
       "reference": {
@@ -3777,7 +3777,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:51:49.373Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.764Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.112Z",
         "totalDurationMs": 14283,
         "evaluatedFiles": 525
       },
@@ -3806,7 +3806,7 @@
     {
       "model": "gpt-5.4-mini",
       "project": "todo",
-      "totalScore": 89,
+      "totalScore": 86,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -3815,7 +3815,7 @@
           "maxScore": 100,
           "weightedScore": 98,
           "passed": true,
-          "durationMs": 2788,
+          "durationMs": 3148,
           "metrics": {
             "totalFiles": 122,
             "filesWithErrors": 0,
@@ -3954,9 +3954,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:51:53.898Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.764Z",
-        "totalDurationMs": 3172,
+        "evaluatedAt": "2026-04-02T13:59:35.884Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.112Z",
+        "totalDurationMs": 3277,
         "evaluatedFiles": 122
       },
       "reference": {
@@ -3984,7 +3984,7 @@
     {
       "model": "gpt-5.4-nano",
       "project": "erp",
-      "totalScore": 57,
+      "totalScore": 56,
       "grade": "F",
       "pipeline": null,
       "phases": {
@@ -3993,7 +3993,7 @@
           "maxScore": 100,
           "weightedScore": 96,
           "passed": true,
-          "durationMs": 7562,
+          "durationMs": 7424,
           "metrics": {
             "totalFiles": 362,
             "filesWithErrors": 0,
@@ -4167,9 +4167,9 @@
         "suggestionCount": 8
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:52:03.210Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.765Z",
-        "totalDurationMs": 8091,
+        "evaluatedAt": "2026-04-02T14:02:38.020Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.113Z",
+        "totalDurationMs": 7898,
         "evaluatedFiles": 362
       },
       "reference": {
@@ -4387,7 +4387,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:12.280Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.765Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.113Z",
         "totalDurationMs": 7925,
         "evaluatedFiles": 333
       },
@@ -4616,7 +4616,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:25.453Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.765Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.113Z",
         "totalDurationMs": 11819,
         "evaluatedFiles": 488
       },
@@ -4794,7 +4794,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:31.058Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.765Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.113Z",
         "totalDurationMs": 4108,
         "evaluatedFiles": 134
       },
@@ -4823,7 +4823,7 @@
     {
       "model": "kimi-k2.5",
       "project": "erp",
-      "totalScore": 87,
+      "totalScore": 83,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -4832,7 +4832,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 4918,
+          "durationMs": 4407,
           "metrics": {
             "totalFiles": 244,
             "filesWithErrors": 0,
@@ -5001,9 +5001,9 @@
         "suggestionCount": 4
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:49:50.096Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.766Z",
-        "totalDurationMs": 5217,
+        "evaluatedAt": "2026-04-02T08:44:09.810Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
+        "totalDurationMs": 4671,
         "evaluatedFiles": 244
       },
       "reference": {
@@ -5031,7 +5031,7 @@
     {
       "model": "kimi-k2.5",
       "project": "reddit",
-      "totalScore": 78,
+      "totalScore": 76,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -5040,7 +5040,7 @@
           "maxScore": 100,
           "weightedScore": 96,
           "passed": true,
-          "durationMs": 10381,
+          "durationMs": 8102,
           "metrics": {
             "totalFiles": 410,
             "filesWithErrors": 0,
@@ -5231,9 +5231,9 @@
         "suggestionCount": 10
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:50:01.979Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.766Z",
-        "totalDurationMs": 10750,
+        "evaluatedAt": "2026-04-02T08:51:25.917Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.115Z",
+        "totalDurationMs": 8483,
         "evaluatedFiles": 410
       },
       "reference": {
@@ -5261,7 +5261,7 @@
     {
       "model": "kimi-k2.5",
       "project": "shopping",
-      "totalScore": 55,
+      "totalScore": 56,
       "grade": "F",
       "pipeline": null,
       "phases": {
@@ -5270,7 +5270,7 @@
           "maxScore": 100,
           "weightedScore": 96,
           "passed": true,
-          "durationMs": 20318,
+          "durationMs": 18811,
           "metrics": {
             "totalFiles": 748,
             "filesWithErrors": 0,
@@ -5467,9 +5467,9 @@
         "suggestionCount": 35
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:50:26.550Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.767Z",
-        "totalDurationMs": 21532,
+        "evaluatedAt": "2026-04-02T09:02:32.272Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.116Z",
+        "totalDurationMs": 19681,
         "evaluatedFiles": 748
       },
       "reference": {
@@ -5497,7 +5497,7 @@
     {
       "model": "kimi-k2.5",
       "project": "todo",
-      "totalScore": 89,
+      "totalScore": 86,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -5506,7 +5506,7 @@
           "maxScore": 100,
           "weightedScore": 99,
           "passed": true,
-          "durationMs": 2316,
+          "durationMs": 2888,
           "metrics": {
             "totalFiles": 87,
             "filesWithErrors": 0,
@@ -5639,9 +5639,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:50:30.399Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.767Z",
-        "totalDurationMs": 2505,
+        "evaluatedAt": "2026-04-02T14:00:01.583Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.116Z",
+        "totalDurationMs": 2971,
         "evaluatedFiles": 87
       },
       "reference": {
@@ -5669,7 +5669,7 @@
     {
       "model": "minimax-m2.7",
       "project": "erp",
-      "totalScore": 79,
+      "totalScore": 76,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -5678,7 +5678,7 @@
           "maxScore": 100,
           "weightedScore": 84,
           "passed": true,
-          "durationMs": 16027,
+          "durationMs": 7722,
           "metrics": {
             "totalFiles": 376,
             "filesWithErrors": 0,
@@ -5881,9 +5881,9 @@
         "suggestionCount": 64
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:49:13.134Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.768Z",
-        "totalDurationMs": 16648,
+        "evaluatedAt": "2026-04-02T07:52:14.330Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.117Z",
+        "totalDurationMs": 8210,
         "evaluatedFiles": 376
       },
       "reference": {
@@ -5920,7 +5920,7 @@
           "maxScore": 100,
           "weightedScore": 79,
           "passed": true,
-          "durationMs": 7117,
+          "durationMs": 5673,
           "metrics": {
             "totalFiles": 286,
             "filesWithErrors": 0,
@@ -6113,9 +6113,9 @@
         "suggestionCount": 8
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:49:22.004Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.768Z",
-        "totalDurationMs": 7463,
+        "evaluatedAt": "2026-04-02T08:02:56.229Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.117Z",
+        "totalDurationMs": 5967,
         "evaluatedFiles": 286
       },
       "reference": {
@@ -6143,7 +6143,7 @@
     {
       "model": "minimax-m2.7",
       "project": "shopping",
-      "totalScore": 77,
+      "totalScore": 74,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -6152,7 +6152,7 @@
           "maxScore": 100,
           "weightedScore": 87,
           "passed": true,
-          "durationMs": 15657,
+          "durationMs": 15255,
           "metrics": {
             "totalFiles": 648,
             "filesWithErrors": 0,
@@ -6402,9 +6402,9 @@
         "suggestionCount": 265
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:49:39.570Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.768Z",
-        "totalDurationMs": 16336,
+        "evaluatedAt": "2026-04-02T08:25:29.610Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.117Z",
+        "totalDurationMs": 15952,
         "evaluatedFiles": 648
       },
       "reference": {
@@ -6432,8 +6432,8 @@
     {
       "model": "minimax-m2.7",
       "project": "todo",
-      "totalScore": 90,
-      "grade": "A",
+      "totalScore": 88,
+      "grade": "B",
       "pipeline": null,
       "phases": {
         "gate": {
@@ -6441,7 +6441,7 @@
           "maxScore": 100,
           "weightedScore": 96,
           "passed": true,
-          "durationMs": 2782,
+          "durationMs": 2285,
           "metrics": {
             "totalFiles": 75,
             "filesWithErrors": 0,
@@ -6591,9 +6591,9 @@
         "suggestionCount": 1
       },
       "meta": {
-        "evaluatedAt": "2026-03-30T04:49:43.764Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.768Z",
-        "totalDurationMs": 2869,
+        "evaluatedAt": "2026-04-02T08:40:22.589Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.117Z",
+        "totalDurationMs": 2361,
         "evaluatedFiles": 75
       },
       "reference": {
@@ -6818,7 +6818,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:38.815Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.769Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.118Z",
         "totalDurationMs": 6602,
         "evaluatedFiles": 283
       },
@@ -7041,7 +7041,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:46.268Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.769Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.118Z",
         "totalDurationMs": 6229,
         "evaluatedFiles": 322
       },
@@ -7276,7 +7276,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:00.919Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.769Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.119Z",
         "totalDurationMs": 13503,
         "evaluatedFiles": 569
       },
@@ -7490,7 +7490,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:06.628Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.770Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.119Z",
         "totalDurationMs": 4211,
         "evaluatedFiles": 113
       },
@@ -7786,7 +7786,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:15.579Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.770Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.120Z",
         "totalDurationMs": 7634,
         "evaluatedFiles": 314
       },
@@ -7976,7 +7976,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:22.451Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.770Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.120Z",
         "totalDurationMs": 5642,
         "evaluatedFiles": 223
       },
@@ -8205,7 +8205,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:35.477Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.770Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.121Z",
         "totalDurationMs": 11717,
         "evaluatedFiles": 461
       },
@@ -8388,7 +8388,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:45.598Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.771Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.121Z",
         "totalDurationMs": 8208,
         "evaluatedFiles": 82
       },
@@ -8599,7 +8599,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:58.235Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.771Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.122Z",
         "totalDurationMs": 11164,
         "evaluatedFiles": 420
       },
@@ -8806,7 +8806,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:05.804Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.771Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.122Z",
         "totalDurationMs": 6124,
         "evaluatedFiles": 291
       },
@@ -9036,7 +9036,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:18.397Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.772Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.122Z",
         "totalDurationMs": 11440,
         "evaluatedFiles": 516
       },
@@ -9219,7 +9219,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:22.315Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.772Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.122Z",
         "totalDurationMs": 2553,
         "evaluatedFiles": 81
       },
@@ -9484,7 +9484,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:31.534Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.772Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.123Z",
         "totalDurationMs": 8088,
         "evaluatedFiles": 369
       },
@@ -9698,7 +9698,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:39.266Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.772Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.123Z",
         "totalDurationMs": 6582,
         "evaluatedFiles": 313
       },
@@ -9934,7 +9934,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:54.693Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.773Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.123Z",
         "totalDurationMs": 14297,
         "evaluatedFiles": 618
       },
@@ -10112,7 +10112,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:58.478Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.773Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.123Z",
         "totalDurationMs": 2394,
         "evaluatedFiles": 80
       },
@@ -10335,7 +10335,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:06.490Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.773Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.124Z",
         "totalDurationMs": 6919,
         "evaluatedFiles": 281
       },
@@ -10552,7 +10552,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:13.208Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.773Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.124Z",
         "totalDurationMs": 5587,
         "evaluatedFiles": 256
       },
@@ -10775,7 +10775,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:26.573Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.773Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.124Z",
         "totalDurationMs": 12291,
         "evaluatedFiles": 548
       },
@@ -10952,7 +10952,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:30.598Z",
-        "reportUpdatedAt": "2026-04-08T08:34:55.773Z",
+        "reportUpdatedAt": "2026-04-08T10:08:37.124Z",
         "totalDurationMs": 2661,
         "evaluatedFiles": 84
       },
@@ -11000,5 +11000,5 @@
     "shopping",
     "erp"
   ],
-  "generatedAt": "2026-04-08T08:35:56.344Z"
+  "generatedAt": "2026-04-08T10:09:44.428Z"
 }
