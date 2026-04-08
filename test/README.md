@@ -13,8 +13,7 @@ Integration test and benchmark archive suite for [AutoBE](https://github.com/wrt
 
 ```bash
 # Configure environment
-cp .env.example .env
-# Edit .env — set OPENROUTER_API_KEY
+# Create .env and set OPENROUTER_API_KEY
 
 # Run tests
 pnpm start

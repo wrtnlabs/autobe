@@ -11,10 +11,8 @@ NestJS + Prisma + PostgreSQL server that hosts multi-user hackathon sessions wit
 
 ## Prerequisites
 
-- PostgreSQL running on `127.0.0.1:5432`
-- Database `autobe` with schema `wrtnlabs` created
-- User `autobe:autobe` with appropriate permissions
-- `pg_trgm` extension enabled
+- PostgreSQL with `pg_trgm` extension enabled
+- Database and schema created per `.env.local` settings
 
 ## Setup
 

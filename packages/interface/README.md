@@ -19,25 +19,10 @@ import {
   AutoBeHistory,
   AutoBePhase,
   IAutoBeAgent,
-  IAutoBeCompiler,
   IAutoBeRpcService,
   IAutoBeRpcListener,
 } from "@autobe/interface";
 
-// Subscribe to typed events
-const handler = (event: AutoBeEvent) => {
-  switch (event.type) {
-    case "analyzeSectionStart":
-      console.log(event.section);
-      break;
-    case "databaseSchemaStart":
-      console.log("Generating schema...");
-      break;
-    // ... 65+ event types
-  }
-};
-
-// Check pipeline phase
-const phase: AutoBePhase | null = agent.getPhase();
-// "analyze" | "database" | "interface" | "test" | "realize"
+// Every package in AutoBE communicates through these types.
+// See @autobe/agent README for a runnable example.
 ```

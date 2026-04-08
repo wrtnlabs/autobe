@@ -34,22 +34,22 @@ Final Score = Phase Score × 85% + Agent Score × 15% − Penalties (max 20pt)
 
 ```bash
 # Evaluate a single project
-pnpm estimate -i <project-path> -o <output-path>
+pnpm estimate -- -i <project-path> -o <output-path>
 
 # Static analysis only (no LLM agents)
-pnpm estimate -i <project-path> -o <output-path> --no-agent
+pnpm estimate -- -i <project-path> -o <output-path> --no-agent
 
 # Include golden set evaluation
-pnpm estimate -i <project-path> -o <output-path> --golden --project todo
+pnpm estimate -- -i <project-path> -o <output-path> --golden --project todo
 
 # Batch evaluation across all models × projects
 pnpm estimate
 
 # Diagnose compile errors with LLM forensic analysis
-pnpm estimate diagnose -i <project-path> -o <output-path> --api-key <key>
+pnpm estimate diagnose -- -i <project-path> -o <output-path> --api-key <key>
 
 # Compare two model outputs side by side
-pnpm estimate compare -p "modelA:path/a" "modelB:path/b" -o <output-path>
+pnpm estimate compare -- -p "modelA:path/a" "modelB:path/b" -o <output-path>
 ```
 
 ### Options

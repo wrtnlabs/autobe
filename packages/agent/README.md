@@ -36,8 +36,8 @@ const agent = new AutoBeAgent({
 });
 
 // Listen to events
-agent.on("databaseSchemaStart", (e) => console.log("Generating schema..."));
-agent.on("realizeWriteStart", (e) => console.log("Writing code..."));
+agent.on("databaseStart", (e) => console.log("Generating schema..."));
+agent.on("realizeWrite", (e) => console.log(`Writing ${e.name}...`));
 
 // Conversate
 await agent.conversate("Create a discussion board with comments");

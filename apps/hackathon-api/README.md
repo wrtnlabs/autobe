@@ -7,4 +7,11 @@
 
 API SDK for the [AutoBE](https://github.com/wrtnlabs/autobe) hackathon server.
 
-Type-safe HTTP client generated from the hackathon server's OpenAPI specification.
+Type-safe HTTP client generated from the hackathon server's OpenAPI specification via [Nestia](https://github.com/samchon/nestia).
+
+## Scripts
+
+```bash
+pnpm run build          # Build SDK
+pnpm run dev            # Watch mode
+```

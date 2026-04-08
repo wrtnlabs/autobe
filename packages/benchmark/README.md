@@ -15,6 +15,8 @@ Runs different LLM vendors through 6 example projects (todo, bbs, reddit, shoppi
 
 ```typescript
 import { AutoBeExampleBenchmark, AutoBeExampleStorage } from "@autobe/benchmark";
+import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
 
 await AutoBeExampleBenchmark.execute(
   {
