@@ -10,3 +10,27 @@
 File system abstraction for [AutoBE](https://github.com/wrtnlabs/autobe).
 
 Recursive file traversal, gzip compression, and Git repository management with lazy caching.
+
+## Usage
+
+```typescript
+import { FileSystemIterator, CompressUtil } from "@autobe/filesystem";
+
+// Read all TypeScript files recursively
+const files = await FileSystemIterator.read({
+  root: "/path/to/repo/src",
+  extension: "ts",
+  prefix: "src/",
+});
+// → { "src/main.ts": "...", "src/utils/helper.ts": "..." }
+
+// Write files to disk
+await FileSystemIterator.save({
+  root: "/output/path",
+  files: { "main.ts": "export const x = 1;" },
+});
+
+// Gzip compress/decompress
+const compressed = await CompressUtil.gzip(jsonString);
+const restored = await CompressUtil.gunzip(compressed);
+```

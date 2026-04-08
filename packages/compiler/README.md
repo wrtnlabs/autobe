@@ -10,3 +10,27 @@
 Three-tier validation and code generation engine for [AutoBE](https://github.com/wrtnlabs/autobe).
 
 Validates AI-generated output through Prisma → OpenAPI → TypeScript compilation tiers. When validation fails, structured diagnostics feed back to agents for automatic correction — this is how AutoBE achieves 100% compilation guarantee.
+
+## Usage
+
+```typescript
+import { AutoBeCompiler } from "@autobe/compiler";
+
+const compiler = new AutoBeCompiler({
+  realize: {
+    test: {
+      onOperation: async () => {},
+      onReset: async () => {},
+    },
+  },
+});
+
+// Sub-compilers: compiler.database, compiler.interface,
+//   compiler.typescript, compiler.test, compiler.realize
+
+// Get project template files
+const template = await compiler.getTemplate({
+  phase: "interface",
+  dbms: "postgres",
+});
+```

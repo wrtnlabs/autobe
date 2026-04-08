@@ -19,19 +19,9 @@ cp .env.local .env
 # 2. Build (generates Prisma client + compiles TypeScript)
 pnpm run build
 
-# 3. Start server (auto-migrates DB, port 5889)
+# 3. Start server (auto-migrates DB, default port: 5889)
 pnpm run start
 ```
-
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PLAYGROUND_API_PORT` | `5889` | Server port |
-| `PLAYGROUND_COMPILERS` | `4` | Number of compiler workers |
-| `PLAYGROUND_TIMEOUT` | `NULL` | Compiler timeout (`NULL` = no timeout) |
-| `PLAYGROUND_ENCRYPTION_KEY` | — | Encryption key for stored API keys |
-| `PLAYGROUND_ENCRYPTION_IV` | — | Encryption IV for stored API keys |
 
 ## Scripts
 

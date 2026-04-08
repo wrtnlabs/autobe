@@ -10,3 +10,21 @@
 WebSocket RPC bridge for [AutoBE](https://github.com/wrtnlabs/autobe).
 
 Wraps `AutoBeAgent` and exposes it to remote clients over WebSocket with full type safety via [TGrid](https://github.com/samchon/tgrid). Events stream back in real time.
+
+## Usage
+
+```typescript
+import { AutoBeRpcService } from "@autobe/rpc";
+import { WebSocketAcceptor } from "tgrid";
+
+const service = new AutoBeRpcService({
+  agent,
+  listener: acceptor.getDriver(),
+  onStart: () => console.log("Generation started"),
+  onComplete: (histories) => {
+    // Save conversation histories to DB
+  },
+});
+
+await acceptor.accept(service);
+```

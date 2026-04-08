@@ -10,3 +10,26 @@
 Shared utility functions for the [AutoBE](https://github.com/wrtnlabs/autobe) monorepo.
 
 Collection helpers, string escaping, token usage computation, and code generation utilities used across packages.
+
+## Usage
+
+```typescript
+import { ArrayUtil, MapUtil, StringUtil, AutoBeEscaper } from "@autobe/utils";
+
+// Sequential async map
+const results = await ArrayUtil.asyncMap(items, async (item) => transform(item));
+
+// Lazy map get-or-create
+const actor = MapUtil.take(actorMap, "admin", () => createActor());
+
+// Template string dedent
+const text = StringUtil.trim`
+  This is a long
+  multiline string
+`;
+
+// Variable name validation
+AutoBeEscaper.variable("myVar");   // true
+AutoBeEscaper.variable("123var");  // false
+AutoBeEscaper.reserved("if");     // true
+```

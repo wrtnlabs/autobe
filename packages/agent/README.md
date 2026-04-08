@@ -10,3 +10,41 @@
 AI agent orchestration engine for [AutoBE](https://github.com/wrtnlabs/autobe).
 
 40+ specialized AI agents collaborate through the 5-phase waterfall pipeline (Analyze → Database → Interface → Test → Realize) to generate a complete NestJS + Prisma backend from natural language.
+
+## Usage
+
+```typescript
+import { AutoBeAgent, AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeCompiler } from "@autobe/compiler";
+import OpenAI from "openai";
+
+const agent = new AutoBeAgent({
+  vendor: {
+    api: new OpenAI({
+      apiKey: "sk-or-...",
+      baseURL: "https://openrouter.ai/api/v1",
+    }),
+    model: "qwen/qwen3.5-35b-a3b",
+    semaphore: 16,
+  },
+  config: {
+    locale: "en-US",
+    timezone: "Asia/Seoul",
+  },
+  compiler: (listener) => new AutoBeCompiler(listener),
+  tokenUsage: new AutoBeTokenUsage(),
+});
+
+// Listen to events
+agent.on("databaseSchemaStart", (e) => console.log("Generating schema..."));
+agent.on("realizeWriteStart", (e) => console.log("Writing code..."));
+
+// Conversate
+await agent.conversate("Create a discussion board with comments");
+
+// Retrieve results
+const files = await agent.getFiles();
+const phase = agent.getPhase();
+const usage = agent.getTokenUsage();
+const histories = agent.getHistories();
+```

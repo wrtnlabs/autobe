@@ -10,3 +10,35 @@
 React component library for the [AutoBE](https://github.com/wrtnlabs/autobe) frontend.
 
 Chat interface, real-time event visualization, and session management. Shared by the playground, hackathon, and dashboard apps.
+
+## Usage
+
+```tsx
+import {
+  AutoBeAgentProvider,
+  AutoBeListener,
+  IAutoBeServiceData,
+} from "@autobe/ui";
+
+const serviceFactory = async (config) => {
+  const listener = new AutoBeListener();
+  const session = await api.sessions.create(connection, {
+    vendor_id: config.vendorId,
+    model: config.model,
+    locale: config.locale,
+  });
+  const { driver: service, connector } =
+    await api.sessions.connect(connection, session.id, listener.getListener());
+
+  return {
+    service,
+    sessionId: session.id,
+    listener,
+    close: () => connector.close(),
+  } satisfies IAutoBeServiceData;
+};
+
+<AutoBeAgentProvider serviceFactory={serviceFactory}>
+  <YourApp />
+</AutoBeAgentProvider>
+```

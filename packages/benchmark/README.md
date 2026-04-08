@@ -10,3 +10,32 @@
 Benchmarking and replay testing framework for [AutoBE](https://github.com/wrtnlabs/autobe).
 
 Runs different LLM vendors through 6 example projects (todo, bbs, reddit, shopping, account, erp) across all 5 pipeline phases, archives every conversation history and event snapshot, then scores and ranks the results.
+
+## Usage
+
+```typescript
+import { AutoBeExampleBenchmark, AutoBeExampleStorage } from "@autobe/benchmark";
+
+await AutoBeExampleBenchmark.execute(
+  {
+    createAgent: async (props) =>
+      new AutoBeAgent({
+        vendor: { api, model: "gpt-4.1" },
+        compiler: (listener) => new AutoBeCompiler(listener),
+        histories: props.histories,
+      }),
+  },
+  {
+    vendors: ["openai", "anthropic"],
+    projects: ["todo", "reddit"],
+    progress: (state) => console.log(state),
+  },
+);
+
+// Load archived results
+const histories = await AutoBeExampleStorage.getHistories({
+  vendor: "openai",
+  project: "todo",
+  phase: "interface",
+});
+```

@@ -21,33 +21,14 @@ NestJS + Prisma + PostgreSQL server that hosts multi-user hackathon sessions wit
 ```bash
 # 1. Configure environment variables
 cp .env.local .env
-# Edit .env — set API keys and DB credentials
+# Edit .env — set API keys, DB credentials, JWT secrets
 
 # 2. Build (generates Prisma client + compiles TypeScript)
 pnpm run build
 
-# 3. Start server (port 5888)
+# 3. Start server (default port: 5888)
 pnpm run start
 ```
-
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `HACKATHON_API_PORT` | `5888` | Server port |
-| `HACKATHON_SEMAPHORE` | `4` | Concurrency limit for compilation |
-| `HACKATHON_COMPILERS` | `4` | Number of compiler workers |
-| `HACKATHON_TIMEOUT` | `NULL` | Compiler timeout (`NULL` = no timeout) |
-| `HACKATHON_POSTGRES_HOST` | `127.0.0.1` | PostgreSQL host |
-| `HACKATHON_POSTGRES_PORT` | `5432` | PostgreSQL port |
-| `HACKATHON_POSTGRES_DATABASE` | `autobe` | Database name |
-| `HACKATHON_POSTGRES_SCHEMA` | `wrtnlabs` | Database schema |
-| `HACKATHON_POSTGRES_USERNAME` | `autobe` | DB username |
-| `HACKATHON_POSTGRES_PASSWORD` | `autobe` | DB password |
-| `HACKATHON_JWT_SECRET_KEY` | — | JWT signing key |
-| `HACKATHON_JWT_REFRESH_KEY` | — | JWT refresh key |
-| `OPENAI_API_KEY` | — | OpenAI API key |
-| `OPENROUTER_API_KEY` | — | OpenRouter API key |
 
 ## Scripts
 
