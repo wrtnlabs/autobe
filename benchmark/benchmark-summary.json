@@ -1,1590 +1,6 @@
 {
   "entries": [
     {
-      "model": "claude-sonnet-4.6",
-      "project": "erp",
-      "totalScore": 83,
-      "grade": "B",
-      "pipeline": null,
-      "phases": {
-        "gate": {
-          "score": 97,
-          "maxScore": 100,
-          "weightedScore": 97,
-          "passed": true,
-          "durationMs": 10096,
-          "metrics": {
-            "totalFiles": 258,
-            "filesWithErrors": 0,
-            "errorRatio": 0,
-            "penalty": 3,
-            "typeCriticalCount": 0,
-            "typeWarningCount": 9,
-            "prismaCriticalCount": 0,
-            "prismaWarningCount": 0,
-            "softPass": true
-          },
-          "typeErrorCount": 0,
-          "typeWarningCount": 9,
-          "suggestionCount": 4,
-          "issuesByCode": [
-            {
-              "code": "TS2345",
-              "count": 5,
-              "severity": "warning",
-              "message": "Argument of type '(Promise<{ count: number; }> | Promise<erp_hrm_departments>)[]' is not assignable to parameter of type"
-            },
-            {
-              "code": "TS2694",
-              "count": 4,
-              "severity": "suggestion",
-              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeNullableFilter'."
-            },
-            {
-              "code": "TS2322",
-              "count": 3,
-              "severity": "warning",
-              "message": "Type '{ id: string; role_id: string & Format<\"uuid\">; permission_code: string; created_at: Date; }[]' is not assignable "
-            },
-            {
-              "code": "TS2554",
-              "count": 1,
-              "severity": "warning",
-              "message": "Expected 0 arguments, but got 1."
-            }
-          ]
-        },
-        "documentQuality": {
-          "score": 86,
-          "maxScore": 100,
-          "weightedScore": 6.0200000000000005,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "hasDocsFolder": true,
-            "hasReadme": true,
-            "docFileCount": 6,
-            "totalDocLength": 612375,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "requirementsCoverage": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 18,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "controllerCount": 26,
-            "providerCount": 92,
-            "structureCount": 38,
-            "requirementsDocCount": 6,
-            "hasRequirementsDocs": true,
-            "mappedControllers": 26,
-            "unmappedControllers": 0,
-            "mappingRatio": 1,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "testCoverage": {
-          "score": 73,
-          "maxScore": 100,
-          "weightedScore": 16.79,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "testCount": 174,
-            "controllerCount": 26,
-            "routeAnalysis": true,
-            "totalRoutes": 83,
-            "coveredRoutes": 46,
-            "routeCoveragePercent": 55,
-            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
-            "testedMethods": "PATCH,GET,PUT,DELETE,POST",
-            "controllersAnalyzed": 24,
-            "stubTests": 1,
-            "assertionTests": 173,
-            "runtimeVerified": false,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "logicCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 30,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalIncomplete": 0,
-            "criticalCount": 0,
-            "warningCount": 0,
-            "todoCount": 0,
-            "fixmeCount": 0,
-            "emptyMethods": 0,
-            "emptyCatch": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "apiCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 7.000000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalEndpoints": 89,
-            "emptyEndpoints": 0,
-            "stubEndpoints": 0,
-            "implementedEndpoints": 89,
-            "noProviderEndpoints": 0,
-            "passthroughEndpoints": 0,
-            "completionRate": 100,
-            "implementationRate": 100,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        }
-      },
-      "penalties": {
-        "duplication": {
-          "amount": 1,
-          "blocks": 107
-        },
-        "jsdoc": {
-          "amount": 5,
-          "missing": 26,
-          "ratio": "96%"
-        }
-      },
-      "summary": {
-        "totalIssues": 13,
-        "criticalCount": 0,
-        "warningCount": 9,
-        "suggestionCount": 4
-      },
-      "meta": {
-        "evaluatedAt": "2026-04-02T06:44:20.157Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.104Z",
-        "totalDurationMs": 10593,
-        "evaluatedFiles": 258
-      },
-      "reference": {
-        "complexity": {
-          "totalFunctions": 849,
-          "complexFunctions": 3,
-          "maxComplexity": 28
-        },
-        "duplication": {
-          "totalBlocks": 107
-        },
-        "naming": {
-          "totalIssues": 1
-        },
-        "jsdoc": {
-          "totalMissing": 26
-        },
-        "schemaSync": {
-          "totalTypes": 104,
-          "emptyTypes": 0,
-          "mismatchedProperties": 6
-        }
-      }
-    },
-    {
-      "model": "claude-sonnet-4.6",
-      "project": "reddit",
-      "totalScore": 83,
-      "grade": "B",
-      "pipeline": null,
-      "phases": {
-        "gate": {
-          "score": 99,
-          "maxScore": 100,
-          "weightedScore": 99,
-          "passed": true,
-          "durationMs": 7820,
-          "metrics": {
-            "totalFiles": 226,
-            "filesWithErrors": 0,
-            "errorRatio": 0,
-            "penalty": 1,
-            "typeCriticalCount": 0,
-            "typeWarningCount": 3,
-            "prismaCriticalCount": 0,
-            "prismaWarningCount": 0,
-            "softPass": true
-          },
-          "typeErrorCount": 0,
-          "typeWarningCount": 3,
-          "suggestionCount": 5,
-          "issuesByCode": [
-            {
-              "code": "TS2694",
-              "count": 4,
-              "severity": "suggestion",
-              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
-            },
-            {
-              "code": "TS2339",
-              "count": 2,
-              "severity": "warning",
-              "message": "Property '$queryRaw' does not exist on type 'PrismaClient'."
-            },
-            {
-              "code": "TS2554",
-              "count": 1,
-              "severity": "warning",
-              "message": "Expected 0 arguments, but got 1."
-            },
-            {
-              "code": "TS2724",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "'\"src/prisma/client\".Prisma' has no exported member named 'community_post_linksDefaultArgs'. Did you mean 'community_pos"
-            }
-          ]
-        },
-        "documentQuality": {
-          "score": 87,
-          "maxScore": 100,
-          "weightedScore": 6.090000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "hasDocsFolder": true,
-            "hasReadme": true,
-            "docFileCount": 6,
-            "totalDocLength": 320386,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "requirementsCoverage": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 18,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "controllerCount": 30,
-            "providerCount": 66,
-            "structureCount": 31,
-            "requirementsDocCount": 6,
-            "hasRequirementsDocs": true,
-            "mappedControllers": 30,
-            "unmappedControllers": 0,
-            "mappingRatio": 1,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "testCoverage": {
-          "score": 69,
-          "maxScore": 100,
-          "weightedScore": 15.870000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "testCount": 167,
-            "controllerCount": 30,
-            "routeAnalysis": true,
-            "totalRoutes": 63,
-            "coveredRoutes": 31,
-            "routeCoveragePercent": 49,
-            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
-            "testedMethods": "GET,PUT,DELETE,PATCH,POST",
-            "controllersAnalyzed": 30,
-            "stubTests": 4,
-            "assertionTests": 163,
-            "runtimeVerified": false,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "logicCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 30,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalIncomplete": 0,
-            "criticalCount": 0,
-            "warningCount": 0,
-            "todoCount": 0,
-            "fixmeCount": 0,
-            "emptyMethods": 0,
-            "emptyCatch": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "apiCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 7.000000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalEndpoints": 63,
-            "emptyEndpoints": 0,
-            "stubEndpoints": 0,
-            "implementedEndpoints": 63,
-            "noProviderEndpoints": 0,
-            "passthroughEndpoints": 0,
-            "completionRate": 100,
-            "implementationRate": 100,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        }
-      },
-      "penalties": {
-        "jsdoc": {
-          "amount": 5,
-          "missing": 30,
-          "ratio": "97%"
-        }
-      },
-      "summary": {
-        "totalIssues": 8,
-        "criticalCount": 0,
-        "warningCount": 3,
-        "suggestionCount": 5
-      },
-      "meta": {
-        "evaluatedAt": "2026-04-02T06:54:55.490Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.106Z",
-        "totalDurationMs": 8109,
-        "evaluatedFiles": 226
-      },
-      "reference": {
-        "complexity": {
-          "totalFunctions": 638,
-          "complexFunctions": 3,
-          "maxComplexity": 27
-        },
-        "duplication": {
-          "totalBlocks": 69
-        },
-        "naming": {
-          "totalIssues": 0
-        },
-        "jsdoc": {
-          "totalMissing": 30
-        },
-        "schemaSync": {
-          "totalTypes": 86,
-          "emptyTypes": 0,
-          "mismatchedProperties": 7
-        }
-      }
-    },
-    {
-      "model": "claude-sonnet-4.6",
-      "project": "shopping",
-      "totalScore": 70,
-      "grade": "C",
-      "pipeline": null,
-      "phases": {
-        "gate": {
-          "score": 97,
-          "maxScore": 100,
-          "weightedScore": 97,
-          "passed": true,
-          "durationMs": 18202,
-          "metrics": {
-            "totalFiles": 581,
-            "filesWithErrors": 0,
-            "errorRatio": 0,
-            "penalty": 3,
-            "typeCriticalCount": 0,
-            "typeWarningCount": 16,
-            "prismaCriticalCount": 0,
-            "prismaWarningCount": 0,
-            "softPass": true
-          },
-          "typeErrorCount": 0,
-          "typeWarningCount": 16,
-          "suggestionCount": 22,
-          "issuesByCode": [
-            {
-              "code": "TS2694",
-              "count": 19,
-              "severity": "suggestion",
-              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
-            },
-            {
-              "code": "TS18046",
-              "count": 6,
-              "severity": "warning",
-              "message": "'aggregate._count' is of type 'unknown'."
-            },
-            {
-              "code": "TS2345",
-              "count": 3,
-              "severity": "warning",
-              "message": "Argument of type '(Promise<{ count: number; }> | Promise<shopping_mall_products>)[]' is not assignable to parameter of t"
-            },
-            {
-              "code": "TS2749",
-              "count": 3,
-              "severity": "suggestion",
-              "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?"
-            },
-            {
-              "code": "TS2339",
-              "count": 3,
-              "severity": "warning",
-              "message": "Property '_count' does not exist on type 'shopping_mall_guests'."
-            },
-            {
-              "code": "TS2322",
-              "count": 3,
-              "severity": "warning",
-              "message": "Type '{ id: string; shopping_mall_product_variant_id: string; quantity: number; reason_type: string; note: null; created"
-            },
-            {
-              "code": "TS2554",
-              "count": 1,
-              "severity": "warning",
-              "message": "Expected 0 arguments, but got 1."
-            }
-          ]
-        },
-        "documentQuality": {
-          "score": 86,
-          "maxScore": 100,
-          "weightedScore": 6.0200000000000005,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "hasDocsFolder": true,
-            "hasReadme": true,
-            "docFileCount": 6,
-            "totalDocLength": 717612,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "requirementsCoverage": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 18,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "controllerCount": 83,
-            "providerCount": 208,
-            "structureCount": 79,
-            "requirementsDocCount": 6,
-            "hasRequirementsDocs": true,
-            "mappedControllers": 83,
-            "unmappedControllers": 0,
-            "mappingRatio": 1,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "testCoverage": {
-          "score": 70,
-          "maxScore": 100,
-          "weightedScore": 16.1,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "testCount": 473,
-            "controllerCount": 83,
-            "routeAnalysis": true,
-            "totalRoutes": 181,
-            "coveredRoutes": 90,
-            "routeCoveragePercent": 50,
-            "definedMethods": "PATCH,GET,POST,PUT,DELETE",
-            "testedMethods": "GET,PUT,DELETE,PATCH,POST",
-            "controllersAnalyzed": 73,
-            "stubTests": 3,
-            "assertionTests": 470,
-            "runtimeVerified": false,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "logicCompleteness": {
-          "score": 76,
-          "maxScore": 100,
-          "weightedScore": 22.8,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalIncomplete": 3,
-            "criticalCount": 3,
-            "warningCount": 0,
-            "todoCount": 0,
-            "fixmeCount": 0,
-            "emptyMethods": 0,
-            "emptyCatch": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "apiCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 7.000000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalEndpoints": 202,
-            "emptyEndpoints": 0,
-            "stubEndpoints": 0,
-            "implementedEndpoints": 202,
-            "noProviderEndpoints": 0,
-            "passthroughEndpoints": 0,
-            "completionRate": 100,
-            "implementationRate": 100,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        }
-      },
-      "penalties": {
-        "duplication": {
-          "amount": 5,
-          "blocks": 365
-        },
-        "jsdoc": {
-          "amount": 5,
-          "missing": 83,
-          "ratio": "99%"
-        }
-      },
-      "summary": {
-        "totalIssues": 38,
-        "criticalCount": 0,
-        "warningCount": 16,
-        "suggestionCount": 22
-      },
-      "meta": {
-        "evaluatedAt": "2026-04-02T07:00:41.194Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.107Z",
-        "totalDurationMs": 19243,
-        "evaluatedFiles": 581
-      },
-      "reference": {
-        "complexity": {
-          "totalFunctions": 1931,
-          "complexFunctions": 7,
-          "maxComplexity": 32
-        },
-        "duplication": {
-          "totalBlocks": 365
-        },
-        "naming": {
-          "totalIssues": 0
-        },
-        "jsdoc": {
-          "totalMissing": 83
-        },
-        "schemaSync": {
-          "totalTypes": 205,
-          "emptyTypes": 1,
-          "mismatchedProperties": 9
-        }
-      }
-    },
-    {
-      "model": "claude-sonnet-4.6",
-      "project": "todo",
-      "totalScore": 86,
-      "grade": "B",
-      "pipeline": null,
-      "phases": {
-        "gate": {
-          "score": 99,
-          "maxScore": 100,
-          "weightedScore": 99,
-          "passed": true,
-          "durationMs": 2858,
-          "metrics": {
-            "totalFiles": 90,
-            "filesWithErrors": 0,
-            "errorRatio": 0,
-            "penalty": 1,
-            "typeCriticalCount": 0,
-            "typeWarningCount": 1,
-            "prismaCriticalCount": 0,
-            "prismaWarningCount": 0,
-            "softPass": true
-          },
-          "typeErrorCount": 0,
-          "typeWarningCount": 1,
-          "suggestionCount": 1,
-          "issuesByCode": [
-            {
-              "code": "TS2554",
-              "count": 1,
-              "severity": "warning",
-              "message": "Expected 0 arguments, but got 1."
-            },
-            {
-              "code": "TS2724",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "'\"src/prisma/client\".Prisma' has no exported member named 'todo_app_todosDefaultArgs'. Did you mean 'todo_app_todosDelet"
-            }
-          ]
-        },
-        "documentQuality": {
-          "score": 87,
-          "maxScore": 100,
-          "weightedScore": 6.090000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "hasDocsFolder": true,
-            "hasReadme": true,
-            "docFileCount": 6,
-            "totalDocLength": 132332,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "requirementsCoverage": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 18,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "controllerCount": 9,
-            "providerCount": 24,
-            "structureCount": 12,
-            "requirementsDocCount": 6,
-            "hasRequirementsDocs": true,
-            "mappedControllers": 9,
-            "unmappedControllers": 0,
-            "mappingRatio": 1,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "testCoverage": {
-          "score": 70,
-          "maxScore": 100,
-          "weightedScore": 16.1,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "testCount": 53,
-            "controllerCount": 9,
-            "routeAnalysis": true,
-            "totalRoutes": 21,
-            "coveredRoutes": 11,
-            "routeCoveragePercent": 52,
-            "definedMethods": "POST,GET,PUT,PATCH,DELETE",
-            "testedMethods": "GET,PUT,POST,PATCH,DELETE",
-            "controllersAnalyzed": 9,
-            "stubTests": 2,
-            "assertionTests": 51,
-            "runtimeVerified": false,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "logicCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 30,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalIncomplete": 0,
-            "criticalCount": 0,
-            "warningCount": 0,
-            "todoCount": 0,
-            "fixmeCount": 0,
-            "emptyMethods": 0,
-            "emptyCatch": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "apiCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 7.000000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalEndpoints": 21,
-            "emptyEndpoints": 0,
-            "stubEndpoints": 0,
-            "implementedEndpoints": 21,
-            "noProviderEndpoints": 0,
-            "passthroughEndpoints": 0,
-            "completionRate": 100,
-            "implementationRate": 100,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        }
-      },
-      "penalties": {
-        "jsdoc": {
-          "amount": 4,
-          "missing": 9,
-          "ratio": "90%"
-        }
-      },
-      "summary": {
-        "totalIssues": 2,
-        "criticalCount": 0,
-        "warningCount": 1,
-        "suggestionCount": 1
-      },
-      "meta": {
-        "evaluatedAt": "2026-04-02T07:07:36.162Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.107Z",
-        "totalDurationMs": 2958,
-        "evaluatedFiles": 90
-      },
-      "reference": {
-        "complexity": {
-          "totalFunctions": 205,
-          "complexFunctions": 0,
-          "maxComplexity": 14
-        },
-        "duplication": {
-          "totalBlocks": 3
-        },
-        "naming": {
-          "totalIssues": 0
-        },
-        "jsdoc": {
-          "totalMissing": 9
-        },
-        "schemaSync": {
-          "totalTypes": 27,
-          "emptyTypes": 0,
-          "mismatchedProperties": 1
-        }
-      }
-    },
-    {
-      "model": "deepseek-v3.2",
-      "project": "erp",
-      "totalScore": 0,
-      "grade": "F",
-      "pipeline": null,
-      "phases": {
-        "gate": {
-          "score": 0,
-          "maxScore": 100,
-          "weightedScore": 0,
-          "passed": false,
-          "durationMs": 0,
-          "metrics": {
-            "failedAt": "no-source",
-            "reason": "No TypeScript files found"
-          },
-          "typeErrorCount": 1,
-          "typeWarningCount": 0,
-          "suggestionCount": 0,
-          "issuesByCode": [
-            {
-              "code": "GATE001",
-              "count": 1,
-              "severity": "critical",
-              "message": "No TypeScript files found in src/ — pipeline may not have generated code"
-            }
-          ]
-        },
-        "documentQuality": {
-          "score": 89,
-          "maxScore": 100,
-          "weightedScore": 6.23,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "hasDocsFolder": true,
-            "hasReadme": true,
-            "docFileCount": 6,
-            "totalDocLength": 544811,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "requirementsCoverage": {
-          "score": 5,
-          "maxScore": 100,
-          "weightedScore": 0.8999999999999999,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "controllerCount": 0,
-            "providerCount": 0,
-            "structureCount": 0,
-            "requirementsDocCount": 6,
-            "hasRequirementsDocs": true,
-            "mappedControllers": 0,
-            "unmappedControllers": 0,
-            "mappingRatio": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "testCoverage": {
-          "score": 0,
-          "maxScore": 100,
-          "weightedScore": 0,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "testCount": 0,
-            "controllerCount": 0,
-            "routeAnalysis": false,
-            "runtimeVerified": false,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "logicCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 30,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalIncomplete": 0,
-            "criticalCount": 0,
-            "warningCount": 0,
-            "todoCount": 0,
-            "fixmeCount": 0,
-            "emptyMethods": 0,
-            "emptyCatch": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "apiCompleteness": {
-          "score": 0,
-          "maxScore": 100,
-          "weightedScore": 0,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalEndpoints": 0,
-            "emptyEndpoints": 0,
-            "stubEndpoints": 0,
-            "implementedEndpoints": 0,
-            "noProviderEndpoints": 0,
-            "passthroughEndpoints": 0,
-            "completionRate": 0,
-            "implementationRate": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        }
-      },
-      "penalties": null,
-      "summary": {
-        "totalIssues": 1,
-        "criticalCount": 1,
-        "warningCount": 0,
-        "suggestionCount": 0
-      },
-      "meta": {
-        "evaluatedAt": "2026-04-02T07:13:24.149Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.108Z",
-        "totalDurationMs": 22,
-        "evaluatedFiles": 0
-      },
-      "reference": {
-        "complexity": {
-          "totalFunctions": 0,
-          "complexFunctions": 0,
-          "maxComplexity": 0
-        },
-        "duplication": {
-          "totalBlocks": 0
-        },
-        "naming": {
-          "totalIssues": 0
-        },
-        "jsdoc": {
-          "totalMissing": 0
-        },
-        "schemaSync": {
-          "totalTypes": 0,
-          "emptyTypes": 0,
-          "mismatchedProperties": 0
-        }
-      }
-    },
-    {
-      "model": "deepseek-v3.2",
-      "project": "reddit",
-      "totalScore": 68,
-      "grade": "D",
-      "pipeline": null,
-      "phases": {
-        "gate": {
-          "score": 80,
-          "maxScore": 100,
-          "weightedScore": 80,
-          "passed": true,
-          "durationMs": 13028,
-          "metrics": {
-            "totalFiles": 588,
-            "filesWithErrors": 1,
-            "errorRatio": 0,
-            "penalty": 20,
-            "typeCriticalCount": 10,
-            "typeWarningCount": 286,
-            "prismaCriticalCount": 0,
-            "prismaWarningCount": 0,
-            "softPass": true
-          },
-          "typeErrorCount": 20,
-          "typeWarningCount": 286,
-          "suggestionCount": 42,
-          "issuesByCode": [
-            {
-              "code": "TS2304",
-              "count": 151,
-              "severity": "warning",
-              "message": "Cannot find name 'Need'."
-            },
-            {
-              "code": "TS2339",
-              "count": 92,
-              "severity": "warning",
-              "message": "Property 'user' does not exist on type 'community_platform_subscription_snapshots'."
-            },
-            {
-              "code": "TS18046",
-              "count": 14,
-              "severity": "warning",
-              "message": "'whereConditions.banned_at' is of type 'unknown'."
-            },
-            {
-              "code": "TS2353",
-              "count": 14,
-              "severity": "suggestion",
-              "message": "Object literal may only specify known properties, and 'id' does not exist in type 'PrismaFindArgs'."
-            },
-            {
-              "code": "TS2551",
-              "count": 11,
-              "severity": "warning",
-              "message": "Property 'community' does not exist on type 'community_platform_subscription_snapshots'. Did you mean 'community_id'?"
-            },
-            {
-              "code": "TS1002",
-              "count": 10,
-              "severity": "critical",
-              "message": "Unterminated string literal."
-            },
-            {
-              "code": "TS2305",
-              "count": 9,
-              "severity": "warning",
-              "message": "Module '\"../../../../providers/getCommunityPlatformAdminCommunityIdBansBanId\"' has no exported member 'getCommunityPlatf"
-            },
-            {
-              "code": "TS2694",
-              "count": 7,
-              "severity": "suggestion",
-              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
-            },
-            {
-              "code": "TS1003",
-              "count": 6,
-              "severity": "critical",
-              "message": "Identifier expected."
-            },
-            {
-              "code": "TS2769",
-              "count": 6,
-              "severity": "warning",
-              "message": "No overload matches this call.\n  Overload 1 of 5, '(value: string | number | Date): Date', gave the following error.\n   "
-            },
-            {
-              "code": "TS1101",
-              "count": 5,
-              "severity": "suggestion",
-              "message": "'with' statements are not allowed in strict mode."
-            },
-            {
-              "code": "TS1109",
-              "count": 4,
-              "severity": "critical",
-              "message": "Expression expected."
-            },
-            {
-              "code": "TS2362",
-              "count": 3,
-              "severity": "suggestion",
-              "message": "The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type."
-            },
-            {
-              "code": "TS2300",
-              "count": 2,
-              "severity": "suggestion",
-              "message": "Duplicate identifier 'AdminPayload'."
-            },
-            {
-              "code": "TS2451",
-              "count": 2,
-              "severity": "suggestion",
-              "message": "Cannot redeclare block-scoped variable 'adminSession'."
-            },
-            {
-              "code": "TS2695",
-              "count": 2,
-              "severity": "suggestion",
-              "message": "Left side of comma operator is unused and has no side effects."
-            },
-            {
-              "code": "TS2395",
-              "count": 2,
-              "severity": "suggestion",
-              "message": "Individual declarations in merged declaration 'CommunityPlatformBanAtSummaryTransformer' must be all exported or all loc"
-            },
-            {
-              "code": "TS2322",
-              "count": 2,
-              "severity": "warning",
-              "message": "Type '{ id: string; content: string; voteScore: number; createdAt: string & tags.Format<\"date-time\">; updatedAt: string "
-            },
-            {
-              "code": "TS2554",
-              "count": 1,
-              "severity": "warning",
-              "message": "Expected 0 arguments, but got 1."
-            },
-            {
-              "code": "TS2749",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?"
-            },
-            {
-              "code": "TS2693",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "'AdminPayload' only refers to a type, but is being used as a value here."
-            },
-            {
-              "code": "TS2503",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "Cannot find namespace 'type'."
-            },
-            {
-              "code": "TS2582",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or "
-            },
-            {
-              "code": "TSeslint",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "Parsing error: Expression expected."
-            }
-          ]
-        },
-        "documentQuality": {
-          "score": 89,
-          "maxScore": 100,
-          "weightedScore": 6.23,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "hasDocsFolder": true,
-            "hasReadme": true,
-            "docFileCount": 6,
-            "totalDocLength": 393326,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "requirementsCoverage": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 18,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "controllerCount": 96,
-            "providerCount": 183,
-            "structureCount": 78,
-            "requirementsDocCount": 6,
-            "hasRequirementsDocs": true,
-            "mappedControllers": 96,
-            "unmappedControllers": 0,
-            "mappingRatio": 1,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "testCoverage": {
-          "score": 66,
-          "maxScore": 100,
-          "weightedScore": 15.180000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "testCount": 478,
-            "controllerCount": 96,
-            "routeAnalysis": true,
-            "totalRoutes": 171,
-            "coveredRoutes": 79,
-            "routeCoveragePercent": 46,
-            "definedMethods": "POST,PUT,DELETE,PATCH,GET",
-            "testedMethods": "GET,POST,DELETE,PUT,PATCH",
-            "controllersAnalyzed": 90,
-            "stubTests": 21,
-            "assertionTests": 457,
-            "runtimeVerified": false,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "logicCompleteness": {
-          "score": 82,
-          "maxScore": 100,
-          "weightedScore": 24.599999999999998,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalIncomplete": 6,
-            "criticalCount": 1,
-            "warningCount": 5,
-            "todoCount": 5,
-            "fixmeCount": 0,
-            "emptyMethods": 0,
-            "emptyCatch": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "apiCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 7.000000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalEndpoints": 179,
-            "emptyEndpoints": 0,
-            "stubEndpoints": 0,
-            "implementedEndpoints": 179,
-            "noProviderEndpoints": 0,
-            "passthroughEndpoints": 0,
-            "completionRate": 100,
-            "implementationRate": 100,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        }
-      },
-      "penalties": {
-        "duplication": {
-          "amount": 5,
-          "blocks": 281
-        },
-        "jsdoc": {
-          "amount": 5,
-          "missing": 96,
-          "ratio": "99%"
-        },
-        "schemaSync": {
-          "amount": 2,
-          "emptyTypes": 1,
-          "mismatchedProperties": 37
-        }
-      },
-      "summary": {
-        "totalIssues": 347,
-        "criticalCount": 20,
-        "warningCount": 286,
-        "suggestionCount": 41
-      },
-      "meta": {
-        "evaluatedAt": "2026-04-02T07:13:43.672Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.108Z",
-        "totalDurationMs": 13587,
-        "evaluatedFiles": 588
-      },
-      "reference": {
-        "complexity": {
-          "totalFunctions": 1618,
-          "complexFunctions": 15,
-          "maxComplexity": 34
-        },
-        "duplication": {
-          "totalBlocks": 281
-        },
-        "naming": {
-          "totalIssues": 17
-        },
-        "jsdoc": {
-          "totalMissing": 96
-        },
-        "schemaSync": {
-          "totalTypes": 197,
-          "emptyTypes": 1,
-          "mismatchedProperties": 37
-        }
-      }
-    },
-    {
-      "model": "deepseek-v3.2",
-      "project": "shopping",
-      "totalScore": 0,
-      "grade": "F",
-      "pipeline": null,
-      "phases": {
-        "gate": {
-          "score": 0,
-          "maxScore": 100,
-          "weightedScore": 0,
-          "passed": false,
-          "durationMs": 0,
-          "metrics": {
-            "failedAt": "no-source",
-            "reason": "No TypeScript files found"
-          },
-          "typeErrorCount": 1,
-          "typeWarningCount": 0,
-          "suggestionCount": 0,
-          "issuesByCode": [
-            {
-              "code": "GATE001",
-              "count": 1,
-              "severity": "critical",
-              "message": "No TypeScript files found in src/ — pipeline may not have generated code"
-            }
-          ]
-        },
-        "documentQuality": {
-          "score": 89,
-          "maxScore": 100,
-          "weightedScore": 6.23,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "hasDocsFolder": true,
-            "hasReadme": true,
-            "docFileCount": 6,
-            "totalDocLength": 647504,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "requirementsCoverage": {
-          "score": 5,
-          "maxScore": 100,
-          "weightedScore": 0.8999999999999999,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "controllerCount": 0,
-            "providerCount": 0,
-            "structureCount": 0,
-            "requirementsDocCount": 6,
-            "hasRequirementsDocs": true,
-            "mappedControllers": 0,
-            "unmappedControllers": 0,
-            "mappingRatio": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "testCoverage": {
-          "score": 0,
-          "maxScore": 100,
-          "weightedScore": 0,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "testCount": 0,
-            "controllerCount": 0,
-            "routeAnalysis": false,
-            "runtimeVerified": false,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "logicCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 30,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalIncomplete": 0,
-            "criticalCount": 0,
-            "warningCount": 0,
-            "todoCount": 0,
-            "fixmeCount": 0,
-            "emptyMethods": 0,
-            "emptyCatch": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "apiCompleteness": {
-          "score": 0,
-          "maxScore": 100,
-          "weightedScore": 0,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalEndpoints": 0,
-            "emptyEndpoints": 0,
-            "stubEndpoints": 0,
-            "implementedEndpoints": 0,
-            "noProviderEndpoints": 0,
-            "passthroughEndpoints": 0,
-            "completionRate": 0,
-            "implementationRate": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        }
-      },
-      "penalties": null,
-      "summary": {
-        "totalIssues": 1,
-        "criticalCount": 1,
-        "warningCount": 0,
-        "suggestionCount": 0
-      },
-      "meta": {
-        "evaluatedAt": "2026-04-02T07:50:03.318Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.108Z",
-        "totalDurationMs": 21,
-        "evaluatedFiles": 0
-      },
-      "reference": {
-        "complexity": {
-          "totalFunctions": 0,
-          "complexFunctions": 0,
-          "maxComplexity": 0
-        },
-        "duplication": {
-          "totalBlocks": 0
-        },
-        "naming": {
-          "totalIssues": 0
-        },
-        "jsdoc": {
-          "totalMissing": 0
-        },
-        "schemaSync": {
-          "totalTypes": 0,
-          "emptyTypes": 0,
-          "mismatchedProperties": 0
-        }
-      }
-    },
-    {
-      "model": "deepseek-v3.2",
-      "project": "todo",
-      "totalScore": 84,
-      "grade": "B",
-      "pipeline": null,
-      "phases": {
-        "gate": {
-          "score": 98,
-          "maxScore": 100,
-          "weightedScore": 98,
-          "passed": true,
-          "durationMs": 3214,
-          "metrics": {
-            "totalFiles": 121,
-            "filesWithErrors": 0,
-            "errorRatio": 0,
-            "penalty": 2,
-            "typeCriticalCount": 0,
-            "typeWarningCount": 2,
-            "prismaCriticalCount": 0,
-            "prismaWarningCount": 0,
-            "softPass": true
-          },
-          "typeErrorCount": 0,
-          "typeWarningCount": 2,
-          "suggestionCount": 1,
-          "issuesByCode": [
-            {
-              "code": "TS2554",
-              "count": 1,
-              "severity": "warning",
-              "message": "Expected 0 arguments, but got 1."
-            },
-            {
-              "code": "TS2694",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
-            },
-            {
-              "code": "TS2345",
-              "count": 1,
-              "severity": "warning",
-              "message": "Argument of type '{ memberSessions: { id: string; todo_app_member_id: string; access_token: string; refresh_token: strin"
-            }
-          ]
-        },
-        "documentQuality": {
-          "score": 91,
-          "maxScore": 100,
-          "weightedScore": 6.370000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "hasDocsFolder": true,
-            "hasReadme": true,
-            "docFileCount": 6,
-            "totalDocLength": 137345,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "requirementsCoverage": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 18,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "controllerCount": 12,
-            "providerCount": 32,
-            "structureCount": 21,
-            "requirementsDocCount": 6,
-            "hasRequirementsDocs": true,
-            "mappedControllers": 12,
-            "unmappedControllers": 0,
-            "mappingRatio": 1,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "testCoverage": {
-          "score": 72,
-          "maxScore": 100,
-          "weightedScore": 16.560000000000002,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "testCount": 77,
-            "controllerCount": 12,
-            "routeAnalysis": true,
-            "totalRoutes": 27,
-            "coveredRoutes": 15,
-            "routeCoveragePercent": 56,
-            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
-            "testedMethods": "POST,PUT,GET,PATCH,DELETE",
-            "controllersAnalyzed": 11,
-            "stubTests": 3,
-            "assertionTests": 74,
-            "runtimeVerified": false,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "logicCompleteness": {
-          "score": 98,
-          "maxScore": 100,
-          "weightedScore": 29.4,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalIncomplete": 1,
-            "criticalCount": 0,
-            "warningCount": 1,
-            "todoCount": 1,
-            "fixmeCount": 0,
-            "emptyMethods": 0,
-            "emptyCatch": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "apiCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 7.000000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalEndpoints": 29,
-            "emptyEndpoints": 0,
-            "stubEndpoints": 0,
-            "implementedEndpoints": 29,
-            "noProviderEndpoints": 0,
-            "passthroughEndpoints": 0,
-            "completionRate": 100,
-            "implementationRate": 100,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        }
-      },
-      "penalties": {
-        "jsdoc": {
-          "amount": 4,
-          "missing": 12,
-          "ratio": "92%"
-        },
-        "schemaSync": {
-          "amount": 1,
-          "emptyTypes": 0,
-          "mismatchedProperties": 4
-        }
-      },
-      "summary": {
-        "totalIssues": 3,
-        "criticalCount": 0,
-        "warningCount": 2,
-        "suggestionCount": 1
-      },
-      "meta": {
-        "evaluatedAt": "2026-04-02T07:50:12.643Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.108Z",
-        "totalDurationMs": 3328,
-        "evaluatedFiles": 121
-      },
-      "reference": {
-        "complexity": {
-          "totalFunctions": 288,
-          "complexFunctions": 1,
-          "maxComplexity": 29
-        },
-        "duplication": {
-          "totalBlocks": 9
-        },
-        "naming": {
-          "totalIssues": 3
-        },
-        "jsdoc": {
-          "totalMissing": 12
-        },
-        "schemaSync": {
-          "totalTypes": 45,
-          "emptyTypes": 0,
-          "mismatchedProperties": 4
-        }
-      }
-    },
-    {
       "model": "glm-5",
       "project": "erp",
       "totalScore": 87,
@@ -1782,7 +198,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:37.550Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.109Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.066Z",
         "totalDurationMs": 5763,
         "evaluatedFiles": 285
       },
@@ -1978,7 +394,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:42.516Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.110Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.067Z",
         "totalDurationMs": 3650,
         "evaluatedFiles": 185
       },
@@ -2197,7 +613,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:52.969Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.110Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.068Z",
         "totalDurationMs": 9165,
         "evaluatedFiles": 415
       },
@@ -2381,7 +797,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T06:41:42.433Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.110Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.068Z",
         "totalDurationMs": 2943,
         "evaluatedFiles": 84
       },
@@ -2593,7 +1009,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:50:40.681Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.072Z",
         "totalDurationMs": 9071,
         "evaluatedFiles": 412
       },
@@ -2799,7 +1215,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:50:55.681Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.072Z",
         "totalDurationMs": 13362,
         "evaluatedFiles": 460
       },
@@ -3005,7 +1421,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:51:12.937Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.072Z",
         "totalDurationMs": 15917,
         "evaluatedFiles": 518
       },
@@ -3183,7 +1599,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:51:17.214Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.072Z",
         "totalDurationMs": 2983,
         "evaluatedFiles": 97
       },
@@ -3383,7 +1799,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T14:05:20.214Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.111Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.069Z",
         "totalDurationMs": 9153,
         "evaluatedFiles": 332
       },
@@ -3571,7 +1987,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T14:14:16.182Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.111Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.069Z",
         "totalDurationMs": 4608,
         "evaluatedFiles": 246
       },
@@ -3777,7 +2193,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:51:49.373Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.112Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.069Z",
         "totalDurationMs": 14283,
         "evaluatedFiles": 525
       },
@@ -3955,7 +2371,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T13:59:35.884Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.112Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.070Z",
         "totalDurationMs": 3277,
         "evaluatedFiles": 122
       },
@@ -4168,7 +2584,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T14:02:38.020Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.113Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.071Z",
         "totalDurationMs": 7898,
         "evaluatedFiles": 362
       },
@@ -4387,7 +2803,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:12.280Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.113Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.071Z",
         "totalDurationMs": 7925,
         "evaluatedFiles": 333
       },
@@ -4616,7 +3032,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:25.453Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.113Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.071Z",
         "totalDurationMs": 11819,
         "evaluatedFiles": 488
       },
@@ -4794,7 +3210,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:31.058Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.113Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.071Z",
         "totalDurationMs": 4108,
         "evaluatedFiles": 134
       },
@@ -5002,7 +3418,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T08:44:09.810Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.114Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.073Z",
         "totalDurationMs": 4671,
         "evaluatedFiles": 244
       },
@@ -5232,7 +3648,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T08:51:25.917Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.115Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.073Z",
         "totalDurationMs": 8483,
         "evaluatedFiles": 410
       },
@@ -5468,7 +3884,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T09:02:32.272Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.116Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.074Z",
         "totalDurationMs": 19681,
         "evaluatedFiles": 748
       },
@@ -5640,7 +4056,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T14:00:01.583Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.116Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.074Z",
         "totalDurationMs": 2971,
         "evaluatedFiles": 87
       },
@@ -5663,248 +4079,6 @@
           "totalTypes": 28,
           "emptyTypes": 1,
           "mismatchedProperties": 0
-        }
-      }
-    },
-    {
-      "model": "minimax-m2.7",
-      "project": "erp",
-      "totalScore": 76,
-      "grade": "C",
-      "pipeline": null,
-      "phases": {
-        "gate": {
-          "score": 84,
-          "maxScore": 100,
-          "weightedScore": 84,
-          "passed": true,
-          "durationMs": 7722,
-          "metrics": {
-            "totalFiles": 376,
-            "filesWithErrors": 0,
-            "errorRatio": 0,
-            "penalty": 16,
-            "typeCriticalCount": 0,
-            "typeWarningCount": 138,
-            "prismaCriticalCount": 0,
-            "prismaWarningCount": 0,
-            "softPass": true
-          },
-          "typeErrorCount": 0,
-          "typeWarningCount": 138,
-          "suggestionCount": 64,
-          "issuesByCode": [
-            {
-              "code": "TS18046",
-              "count": 45,
-              "severity": "warning",
-              "message": "'stat._count' is of type 'unknown'."
-            },
-            {
-              "code": "TS2571",
-              "count": 39,
-              "severity": "suggestion",
-              "message": "Object is of type 'unknown'."
-            },
-            {
-              "code": "TS2339",
-              "count": 37,
-              "severity": "warning",
-              "message": "Property '_count' does not exist on type 'erp_hrm_projects'."
-            },
-            {
-              "code": "TS2551",
-              "count": 21,
-              "severity": "warning",
-              "message": "Property 'erp_hrm_role' does not exist on type 'erp_hrm_employees'. Did you mean 'erp_hrm_role_id'?"
-            },
-            {
-              "code": "TS2353",
-              "count": 18,
-              "severity": "suggestion",
-              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
-            },
-            {
-              "code": "TS2322",
-              "count": 15,
-              "severity": "warning",
-              "message": "Type 'unknown' is not assignable to type 'string'."
-            },
-            {
-              "code": "TS18047",
-              "count": 13,
-              "severity": "warning",
-              "message": "'input' is possibly 'null'."
-            },
-            {
-              "code": "TS2345",
-              "count": 6,
-              "severity": "warning",
-              "message": "Argument of type '(Promise<{ count: number; }> | Promise<erp_hrm_departments>)[]' is not assignable to parameter of type"
-            },
-            {
-              "code": "TS2739",
-              "count": 5,
-              "severity": "suggestion",
-              "message": "Type 'ISummary' is missing the following properties from type 'IErpHrmMember': activeTimers, projectSummary, taskOvervie"
-            },
-            {
-              "code": "TS2554",
-              "count": 1,
-              "severity": "warning",
-              "message": "Expected 0 arguments, but got 1."
-            },
-            {
-              "code": "TS2740",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "Type 'IErpHrmReport[]' is missing the following properties from type 'IErpHrmReport': id, report_type, created_at, updat"
-            },
-            {
-              "code": "TS2694",
-              "count": 1,
-              "severity": "suggestion",
-              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
-            }
-          ]
-        },
-        "documentQuality": {
-          "score": 89,
-          "maxScore": 100,
-          "weightedScore": 6.23,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "hasDocsFolder": true,
-            "hasReadme": true,
-            "docFileCount": 6,
-            "totalDocLength": 530755,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "requirementsCoverage": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 18,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "controllerCount": 48,
-            "providerCount": 147,
-            "structureCount": 47,
-            "requirementsDocCount": 6,
-            "hasRequirementsDocs": true,
-            "mappedControllers": 48,
-            "unmappedControllers": 0,
-            "mappingRatio": 1,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "testCoverage": {
-          "score": 83,
-          "maxScore": 100,
-          "weightedScore": 19.09,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "testCount": 380,
-            "controllerCount": 48,
-            "routeAnalysis": true,
-            "totalRoutes": 139,
-            "coveredRoutes": 107,
-            "routeCoveragePercent": 77,
-            "definedMethods": "PATCH,GET,POST,PUT,DELETE",
-            "testedMethods": "GET,POST,PATCH,PUT,DELETE",
-            "controllersAnalyzed": 46,
-            "stubTests": 38,
-            "assertionTests": 342,
-            "runtimeVerified": false,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "logicCompleteness": {
-          "score": 92,
-          "maxScore": 100,
-          "weightedScore": 27.599999999999998,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalIncomplete": 1,
-            "criticalCount": 1,
-            "warningCount": 0,
-            "todoCount": 0,
-            "fixmeCount": 0,
-            "emptyMethods": 0,
-            "emptyCatch": 0,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        },
-        "apiCompleteness": {
-          "score": 100,
-          "maxScore": 100,
-          "weightedScore": 7.000000000000001,
-          "passed": true,
-          "durationMs": 0,
-          "metrics": {
-            "totalEndpoints": 143,
-            "emptyEndpoints": 0,
-            "stubEndpoints": 0,
-            "implementedEndpoints": 143,
-            "noProviderEndpoints": 0,
-            "passthroughEndpoints": 0,
-            "completionRate": 100,
-            "implementationRate": 100,
-            "cached": true,
-            "originalDurationMs": 0
-          }
-        }
-      },
-      "penalties": {
-        "duplication": {
-          "amount": 5,
-          "blocks": 545
-        },
-        "jsdoc": {
-          "amount": 5,
-          "missing": 48,
-          "ratio": "98%"
-        }
-      },
-      "summary": {
-        "totalIssues": 202,
-        "criticalCount": 0,
-        "warningCount": 138,
-        "suggestionCount": 64
-      },
-      "meta": {
-        "evaluatedAt": "2026-04-02T07:52:14.330Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.117Z",
-        "totalDurationMs": 8210,
-        "evaluatedFiles": 376
-      },
-      "reference": {
-        "complexity": {
-          "totalFunctions": 1387,
-          "complexFunctions": 12,
-          "maxComplexity": 60
-        },
-        "duplication": {
-          "totalBlocks": 545
-        },
-        "naming": {
-          "totalIssues": 5
-        },
-        "jsdoc": {
-          "totalMissing": 48
-        },
-        "schemaSync": {
-          "totalTypes": 132,
-          "emptyTypes": 0,
-          "mismatchedProperties": 13
         }
       }
     },
@@ -6114,7 +4288,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T08:02:56.229Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.117Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.076Z",
         "totalDurationMs": 5967,
         "evaluatedFiles": 286
       },
@@ -6403,7 +4577,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T08:25:29.610Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.117Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.076Z",
         "totalDurationMs": 15952,
         "evaluatedFiles": 648
       },
@@ -6592,7 +4766,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-02T08:40:22.589Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.117Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.076Z",
         "totalDurationMs": 2361,
         "evaluatedFiles": 75
       },
@@ -6818,7 +4992,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:38.815Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.118Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.076Z",
         "totalDurationMs": 6602,
         "evaluatedFiles": 283
       },
@@ -7041,7 +5215,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:52:46.268Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.118Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.076Z",
         "totalDurationMs": 6229,
         "evaluatedFiles": 322
       },
@@ -7276,7 +5450,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:00.919Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.119Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.077Z",
         "totalDurationMs": 13503,
         "evaluatedFiles": 569
       },
@@ -7490,7 +5664,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:06.628Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.119Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.077Z",
         "totalDurationMs": 4211,
         "evaluatedFiles": 113
       },
@@ -7786,7 +5960,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:15.579Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.120Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.078Z",
         "totalDurationMs": 7634,
         "evaluatedFiles": 314
       },
@@ -7976,7 +6150,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:22.451Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.120Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.078Z",
         "totalDurationMs": 5642,
         "evaluatedFiles": 223
       },
@@ -8205,7 +6379,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:35.477Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.121Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.079Z",
         "totalDurationMs": 11717,
         "evaluatedFiles": 461
       },
@@ -8388,7 +6562,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:45.598Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.121Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.079Z",
         "totalDurationMs": 8208,
         "evaluatedFiles": 82
       },
@@ -8599,7 +6773,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:53:58.235Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.122Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.080Z",
         "totalDurationMs": 11164,
         "evaluatedFiles": 420
       },
@@ -8806,7 +6980,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:05.804Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.122Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.080Z",
         "totalDurationMs": 6124,
         "evaluatedFiles": 291
       },
@@ -9036,7 +7210,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:18.397Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.122Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.080Z",
         "totalDurationMs": 11440,
         "evaluatedFiles": 516
       },
@@ -9219,7 +7393,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:22.315Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.122Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.080Z",
         "totalDurationMs": 2553,
         "evaluatedFiles": 81
       },
@@ -9484,7 +7658,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:31.534Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.123Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.081Z",
         "totalDurationMs": 8088,
         "evaluatedFiles": 369
       },
@@ -9698,7 +7872,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:39.266Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.123Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.081Z",
         "totalDurationMs": 6582,
         "evaluatedFiles": 313
       },
@@ -9934,7 +8108,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:54.693Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.123Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.081Z",
         "totalDurationMs": 14297,
         "evaluatedFiles": 618
       },
@@ -10112,7 +8286,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:54:58.478Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.123Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.081Z",
         "totalDurationMs": 2394,
         "evaluatedFiles": 80
       },
@@ -10335,7 +8509,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:06.490Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.124Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.082Z",
         "totalDurationMs": 6919,
         "evaluatedFiles": 281
       },
@@ -10552,7 +8726,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:13.208Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.124Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.082Z",
         "totalDurationMs": 5587,
         "evaluatedFiles": 256
       },
@@ -10775,7 +8949,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:26.573Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.124Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.082Z",
         "totalDurationMs": 12291,
         "evaluatedFiles": 548
       },
@@ -10952,7 +9126,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-03-30T04:55:30.598Z",
-        "reportUpdatedAt": "2026-04-08T10:08:37.124Z",
+        "reportUpdatedAt": "2026-04-08T10:41:17.082Z",
         "totalDurationMs": 2661,
         "evaluatedFiles": 84
       },
@@ -10980,8 +9154,6 @@
     }
   ],
   "models": [
-    "claude-sonnet-4.6",
-    "deepseek-v3.2",
     "glm-5",
     "gpt-5.4",
     "gpt-5.4-mini",
@@ -11000,5 +9172,5 @@
     "shopping",
     "erp"
   ],
-  "generatedAt": "2026-04-08T10:09:44.428Z"
+  "generatedAt": "2026-04-08T10:42:21.477Z"
 }
