@@ -6,6 +6,13 @@
     <description>Engineering notes, releases, and deep dives from AutoBE.</description>
     <language>en</language>
     <item>
+      <title>Qwen 3.5-27B Just Built Complete Backends from Scratch — 100% Compilation, 25x Cheaper</title>
+      <link>https://autobe.dev/blog/autobe-qwen3.5-27b-success/</link>
+      <guid>https://autobe.dev/blog/autobe-qwen3.5-27b-success/</guid>
+      <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+      <description>Qwen 3.5-27B generated complete backends with 100% compilation at 1/25th the cost of Claude Opus 4.6 — and the output quality is nearly identical. The benchmark proves it.</description>
+    </item>
+    <item>
       <title>AutoBE vs. Claude Code: 3rd-gen coding agent developer&apos;s review of the leaked source code</title>
       <link>https://autobe.dev/blog/autobe-vs-claude-code/</link>
       <guid>https://autobe.dev/blog/autobe-vs-claude-code/</guid>
