@@ -8,7 +8,8 @@ import { TestValidator } from "@nestia/e2e";
 import { createMockTransformer } from "./internal/createMockTransformer";
 
 /**
- * A nullable $ref (oneOf [null, $ref]) should unwrap and resolve with isArray=false.
+ * A nullable $ref (oneOf [null, $ref]) should unwrap and resolve with
+ * isArray=false.
  */
 export const test_resolve_property_transformer_nullable_ref = (): void => {
   const transformer = createMockTransformer({
@@ -17,10 +18,7 @@ export const test_resolve_property_transformer_nullable_ref = (): void => {
   });
 
   const schema: AutoBeOpenApi.IJsonSchemaProperty = {
-    oneOf: [
-      { type: "null" },
-      { $ref: "#/components/schemas/IUser" },
-    ],
+    oneOf: [{ type: "null" }, { $ref: "#/components/schemas/IUser" }],
   } as AutoBeOpenApi.IJsonSchemaProperty;
 
   const result: IResolvedTransformer | null = resolvePropertyTransformer({
@@ -29,6 +27,10 @@ export const test_resolve_property_transformer_nullable_ref = (): void => {
   });
 
   TestValidator.equals("should not be null", result !== null, true);
-  TestValidator.equals("should match user transformer", result!.transformer, transformer);
+  TestValidator.equals(
+    "should match user transformer",
+    result!.transformer,
+    transformer,
+  );
   TestValidator.equals("should not be array", result!.isArray, false);
 };

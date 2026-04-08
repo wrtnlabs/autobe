@@ -4,7 +4,8 @@ import { IValidation } from "typia";
 
 /**
  * Composite operation using two transformers: ArticleTransformer (both present)
- * and UserTransformer (select only, missing transform). Should emit exactly 1 error.
+ * and UserTransformer (select only, missing transform). Should emit exactly 1
+ * error.
  */
 export const test_realize_operation_validate_contract_multiple = (): void => {
   const code: string = [

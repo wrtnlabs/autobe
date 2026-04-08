@@ -3,8 +3,8 @@ import { TestValidator } from "@nestia/e2e";
 import { IValidation } from "typia";
 
 /**
- * Draft is valid but revise.final has a broken contract (transform without select).
- * Should emit 1 error on the revise.final path.
+ * Draft is valid but revise.final has a broken contract (transform without
+ * select). Should emit 1 error on the revise.final path.
  */
 export const test_realize_operation_validate_contract_revise_final =
   (): void => {

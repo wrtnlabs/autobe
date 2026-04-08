@@ -7,9 +7,7 @@ import { TestValidator } from "@nestia/e2e";
 
 import { createMockTransformer } from "./internal/createMockTransformer";
 
-/**
- * A direct $ref property should resolve to its transformer with isArray=false.
- */
+/** A direct $ref property should resolve to its transformer with isArray=false. */
 export const test_resolve_property_transformer_direct_ref = (): void => {
   const transformer = createMockTransformer({
     dtoTypeName: "IArticle",
@@ -26,6 +24,10 @@ export const test_resolve_property_transformer_direct_ref = (): void => {
   });
 
   TestValidator.equals("should not be null", result !== null, true);
-  TestValidator.equals("should match transformer", result!.transformer, transformer);
+  TestValidator.equals(
+    "should match transformer",
+    result!.transformer,
+    transformer,
+  );
   TestValidator.equals("should not be array", result!.isArray, false);
 };

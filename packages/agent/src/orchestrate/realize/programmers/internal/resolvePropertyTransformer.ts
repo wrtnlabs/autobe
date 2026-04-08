@@ -12,8 +12,8 @@ export interface IResolvedTransformer {
 /**
  * Resolves a JSON schema property to its matching Transformer.
  *
- * Handles direct `$ref`, `array` of `$ref`, and `oneOf` (nullable) wrappers
- * by recursively unwrapping until a Transformer match is found.
+ * Handles direct `$ref`, `array` of `$ref`, and `oneOf` (nullable) wrappers by
+ * recursively unwrapping until a Transformer match is found.
  */
 export function resolvePropertyTransformer(props: {
   schema: AutoBeOpenApi.IJsonSchemaProperty;

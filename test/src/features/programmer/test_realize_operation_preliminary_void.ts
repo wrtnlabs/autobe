@@ -24,5 +24,9 @@ export const test_realize_operation_preliminary_void = (): void => {
       ],
     });
 
-  TestValidator.equals("should return empty for void response", result.length, 0);
+  TestValidator.equals(
+    "should return empty for void response",
+    result.length,
+    0,
+  );
 };

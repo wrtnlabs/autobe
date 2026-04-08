@@ -8,8 +8,8 @@ import { TestValidator } from "@nestia/e2e";
 import { createMockTransformer } from "./internal/createMockTransformer";
 
 /**
- * A nullable array (oneOf [null, array { items: $ref }]) should unwrap
- * and resolve with isArray=true.
+ * A nullable array (oneOf [null, array { items: $ref }]) should unwrap and
+ * resolve with isArray=true.
  */
 export const test_resolve_property_transformer_nullable_array = (): void => {
   const transformer = createMockTransformer({
@@ -33,6 +33,10 @@ export const test_resolve_property_transformer_nullable_array = (): void => {
   });
 
   TestValidator.equals("should not be null", result !== null, true);
-  TestValidator.equals("should match article transformer", result!.transformer, transformer);
+  TestValidator.equals(
+    "should match article transformer",
+    result!.transformer,
+    transformer,
+  );
   TestValidator.equals("should be array", result!.isArray, true);
 };

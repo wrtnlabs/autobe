@@ -152,10 +152,12 @@ export const orchestrateRealizeOperationCorrectOverall = async (
               path: "$input.request",
               asynchronous: true,
             }),
-            ...AutoBeRealizeOperationProgrammer.validateSelectTransformContract({
-              draft: result.data.request.draft,
-              revise: result.data.request.revise,
-            }),
+            ...AutoBeRealizeOperationProgrammer.validateSelectTransformContract(
+              {
+                draft: result.data.request.draft,
+                revise: result.data.request.revise,
+              },
+            ),
           ];
           return errors.length
             ? {
