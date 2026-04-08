@@ -1,6 +1,6 @@
 ---
-title: "Qwen 3.5-27B Just Built Complete Backends from Scratch — 100% Compilation, 50x Cheaper"
-description: "Qwen 3.5-27B generated complete backends with 100% compilation at 1/50th the cost of frontier models — and the output quality is nearly identical. The benchmark doesn't lie."
+title: "Qwen 3.5-27B Just Built Complete Backends from Scratch — 100% Compilation, 25x Cheaper"
+description: "Qwen 3.5-27B generated complete backends with 100% compilation at 1/25th the cost of frontier models — and the output quality is nearly identical. The benchmark doesn't lie."
 date: "2026-04-08"
 author: "Jeongho Nam"
 tags:
@@ -12,15 +12,13 @@ tags:
 
 # Qwen 3.5-27B Just Built Complete Backends from Scratch
 
-What if you could generate a complete backend application for **50x less** than frontier model pricing?
+We ran Qwen 3.5-27B on 8 backend generation tasks — from a todo app to a full ERP system. Every single project compiled. At ~25x less than frontier model pricing, the output was nearly identical.
 
-Not OpenAI/GPT-5.4. Not Anthropic/Claude-Opus-4.6. **Qwen-3.5-27B** — a local model you can run on a high-end laptop — just did exactly that. Complete backends from natural language. Every project compiled successfully.
+**25x cheaper. Same compilation rate. Same quality.**
 
-**100% compilation. 50x cheaper. Same quality as frontier models.**
+This is [AutoBe](https://github.com/wrtnlabs/autobe) — an open-source system that turns natural language into complete, compilable backend applications.
 
-This is [AutoBe](https://github.com/wrtnlabs/autobe).
-
-![](https://autobe.dev/images/demonstrate/replay-qwen-qwen3.5-27b.png)
+![AutoBe generating a Shopping Mall backend with Qwen 3.5-27B](https://autobe.dev/images/demonstrate/replay-qwen-qwen3.5-27b.png)
 
 ## Generated Examples
 
@@ -39,44 +37,38 @@ From a simple todo app to a full-scale ERP system. Each includes requirements sp
 
 ## Cost and Quality
 
-| Model                     | Cost per 1M tokens |
-|---------------------------|-------------------:|
-| Claude Opus 4.6           |            $10.000 |
-| Qwen 3.5-27B (OpenRouter) |             $0.195 |
+| Model                     | Input / 1M tokens | Output / 1M tokens |
+|---------------------------|-------------------:|-------------------:|
+| Claude Opus 4.6           |             $5.000 |            $25.000 |
+| Qwen 3.5-27B (OpenRouter) |             $0.195 |             $1.560 |
 
-**~50x cheaper.** But what about quality? See for yourself:
+**~25x cheaper on input, ~16x on output.** But what about quality? See for yourself:
 
-[![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xk2fro01vvvwm1ox4cb7.png)](https://autobe.dev/benchmark)
+[![Benchmark comparison across 11 AI models showing near-identical quality scores](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/xk2fro01vvvwm1ox4cb7.png)](https://autobe.dev/benchmark)
 
-Why is the distribution so uniform? Because AutoBe fixes the output shape. Every model fills the same AST structure, and the compiler rejects anything that doesn't fit. The model's "personality" gets erased — what survives is only what the compiler approves. So `qwen3.5-27b` and `claude-sonnet-4.6` produce nearly identical backends. Bigger models just need fewer retries.
+## Why Every Model Scores the Same
+
+Look at that benchmark chart. The scores are almost uniform across all models. That's not a coincidence — it's by design.
+
+AutoBe fixes the output shape. Every model fills the same AST structure, and the compiler rejects anything that doesn't fit. The model's "personality" gets erased — what survives is only what the compiler approves. So `qwen3.5-27b` and `claude-sonnet-4.6` produce nearly identical backends. Bigger models just need fewer retries.
 
 **Different models, same result.** Self-host and the cost drops to electricity.
 
-## Build and Evolve
-
-```
-Natural Language → AutoBe → Complete Backend (100% compilation)
-                                    ↓
-                             Claude Code → Maintenance & Evolution
-```
-
-AutoBe delivers the complete backend. 
-
-After that, use Claude Code for maintenance — adding features, tweaking logic, debugging.
-
-AutoBe handles the heavy lifting where compound effects make 100% accuracy mandatory. Claude Code handles the rest.
-
 ## How It Works
 
-AutoBe doesn't ask LLMs to write free-form text code. Instead, LLMs fill compiler AST structures through function calling — database schemas, API specs, test definitions, implementation code.
+### The Problem: Compound Effects Kill Free-Form Generation
 
-Our four AI-native compilers (Database, OpenAPI, Test, TypeScript) validate the output, diagnose exactly what's wrong, and feed structured errors back to the LLM. The LLM corrects only the broken parts and resubmits. This loop repeats until every compiler says "pass."
+Ask an LLM to write a backend with 400 interdependent components — database schema, API endpoints, type definitions, controllers, tests. Even if each component has 95% accuracy, the probability of the whole system working is:
 
-> *"If you can verify, you converge."*
+**0.95^400 ≈ 0.000000000000000013**
 
-For the full story — compound effect math, the Pink Elephant Problem, why small models make the best QA engineers — see the deep dives at the bottom.
+That's effectively zero. This is why "vibe coding" tools generate code that looks right but doesn't compile. One wrong type cascades through the entire codebase.
 
-Here's what one of those AST structures looks like — this is the test expression type that LLMs fill through function calling:
+### The Solution: AST + Compiler Feedback Loops
+
+AutoBe doesn't ask LLMs to write free-form code. Instead, LLMs fill structured AST (Abstract Syntax Tree) nodes through function calling — database schemas, API specs, test definitions, implementation code.
+
+Here's what one of those structures looks like — the test expression type that LLMs fill:
 
 ```typescript
 export namespace AutoBeTest {
@@ -99,24 +91,39 @@ export namespace AutoBeTest {
 }
 ```
 
+Four AI-native compilers (Database, OpenAPI, Test, TypeScript) validate every output. When something fails, the compiler doesn't just say "error" — it generates structured diagnostics pinpointing exactly which node failed and why. The LLM corrects only the broken parts and resubmits.
+
+This loop repeats until every compiler says "pass."
+
+### Why Small Models Win on Cost
+
+Each retry on Qwen 3.5-27B costs almost nothing. A frontier model might get it right in 2 attempts; Qwen might need 5. But 5 × $0.195 is still drastically cheaper than 2 × $5. The compiler doesn't care which model generated the code — it only cares whether it compiles.
+
+> *"If you can verify, you converge."*
 
 ## Deep Dives
 
-Want to know how 6.75% first-attempt accuracy becomes 100% compilation? Why 0.95^400 is effectively zero? Why small models are actually better QA engineers? Why AutoBe and Claude Code complement each other instead of competing?
+Want the full math behind compound effects? The Pink Elephant Problem? Why small models make the best QA engineers?
 
 - [Function Calling Harness: From 6.75% to 100%](https://dev.to/samchon/qwen-meetup-function-calling-harness-from-675-to-100-3830)
 - [AutoBe vs. Claude Code: 3rd-Gen Coding Agent](https://dev.to/samchon/autobe-vs-claude-code-3rd-gen-coding-agent-developers-review-of-the-leaked-source-code-313b)
 
 ## Coming Soon: Qwen 3.5-35B-A3B
 
-![Qwen 3.5-35B-A3B Legacy](/images/blog/qwen3.5-35b-a3b-legacy.png)
+![Qwen 3.5-35B-A3B benchmark showing near-complete compilation success](/images/blog/qwen3.5-35b-a3b-legacy.png)
 
 This is Qwen 3.5-35B-A3B — only 3B active parameters. It doesn't hit 100% compilation yet. But it's close.
 
-When it does, that's **100x cheaper** than frontier models, running on a normal laptop. No high-end GPU. No cloud API. Just your everyday machine building entire backends.
+When it does, that's **77x cheaper** than frontier models, running on a normal laptop. No high-end GPU. No cloud API. Just your everyday machine building entire backends.
 
 Next article drops when we crack it. Stay tuned.
 
----
+## Try It
 
-**AutoBe**: [github.com/wrtnlabs/autobe](https://github.com/wrtnlabs/autobe)
+```bash
+git clone https://github.com/wrtnlabs/autobe
+pnpm install
+pnpm playground
+```
+
+Star the repo if this is useful: **[github.com/wrtnlabs/autobe](https://github.com/wrtnlabs/autobe)**
