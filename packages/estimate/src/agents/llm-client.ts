@@ -41,7 +41,11 @@ export class LLMClient {
     });
   }
 
-  async chat(systemPrompt: string, userPrompt: string): Promise<LLMResponse> {
+  async chat(
+    systemPrompt: string,
+    userPrompt: string,
+    options?: { json?: boolean },
+  ): Promise<LLMResponse> {
     const trace = getActiveTrace();
     const generation = trace?.generation({
       name: "llm-chat",
@@ -58,7 +62,9 @@ export class LLMClient {
       max_tokens: this.maxTokens,
       temperature: 0,
       seed: 42,
-      response_format: { type: "json_object" },
+      ...(options?.json !== false
+        ? { response_format: { type: "json_object" as const } }
+        : {}),
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },

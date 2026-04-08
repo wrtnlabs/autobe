@@ -2,6 +2,7 @@ import { Command } from "commander";
 
 import { runBatch } from "./commands/batch";
 import { runCompare } from "./commands/compare";
+import { runDiagnose } from "./commands/diagnose";
 import { runCLI } from "./commands/evaluate";
 
 export function createProgram(): Command {
@@ -64,6 +65,33 @@ export function createProgram(): Command {
     .option("--project <name>", "Run only a specific project (e.g., reddit)")
     .action(async (options) => {
       await runBatch(options);
+    });
+
+  program
+    .command("diagnose")
+    .description(
+      "Diagnose compile errors using LLM-powered 7-step forensic analysis",
+    )
+    .option("-i, --input <path>", "Input project path (runs evaluation first)")
+    .option(
+      "--report <path>",
+      "Existing estimate-report.json (skips evaluation)",
+    )
+    .requiredOption(
+      "-o, --output <path>",
+      "Output directory for diagnosis markdown",
+    )
+    .option("--api-key <key>", "API key for LLM provider")
+    .option("--provider <provider>", "LLM provider", "openrouter")
+    .option("--model <model>", "LLM model for diagnosis")
+    .option("-v, --verbose", "Enable verbose output", false)
+    .option(
+      "--continue-on-gate-failure",
+      "Continue evaluation even if gate fails",
+      true,
+    )
+    .action(async (options) => {
+      await runDiagnose(options);
     });
 
   program
