@@ -136,6 +136,34 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       excludes: props.excludes,
       revises: props.revises,
     });
+
+    // check bidirectional self-reference on the resulting schema
+    const det = AutoBeJsonSchemaValidator.detectBidirectionalRecursive(
+      props.typeName,
+      AutoBeInterfaceSchemaReviewProgrammer.execute({
+        schema: props.schema,
+        revises: props.revises,
+      }),
+    );
+    if (det !== null)
+      props.errors.push({
+        path: `${props.path}.revises[]`,
+        expected:
+          "No bidirectional self-reference — use ID scalar for parent direction",
+        value: det.singular,
+        description: StringUtil.trim`
+          After applying revisions, ${props.typeName} would have both
+          singular self-reference (${det.singular.map((k) => JSON.stringify(k)).join(", ")})
+          and array self-reference (${det.array.map((k) => JSON.stringify(k)).join(", ")}),
+          creating a bidirectional recursive structure that causes infinite
+          expansion during serialization.
+
+          Fix the singular self-reference properties to use ID references
+          (e.g., ${det.singular[0]}_id: string, format: uuid) instead of
+          \$ref to ${props.typeName}.
+          Note that, this is not a recommendation, but an instruction you must follow.
+        `,
+      });
   };
 
   export const execute = (props: {

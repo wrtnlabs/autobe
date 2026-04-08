@@ -324,6 +324,10 @@ interface ITeam.ICreate {
 }
 ```
 
+#### Self-Reference Relations
+
+When a type references itself (e.g., tree structures), only one direction may use an object reference. If `children: ICategory[]` exists, the parent must be `parent_id: string | null` — never `parent: ICategory | null`. Bidirectional object self-references cause infinite serialization.
+
 ### 4.4. Security (Actor DTOs Only)
 
 **Applies ONLY to**: `IActor`, `IActor.ISummary`, `IActor.IJoin`, `IActor.ILogin`, `IActor.IAuthorized`, `IActor.IRefresh`, `IActorSession`
@@ -488,6 +492,7 @@ Before calling `complete`:
 - [ ] Did NOT "fix" DB non-null → DTO nullable (it's intentional, e.g., `@default`)
 - [ ] Phantom: No fields without valid source; DB-mapped non-relation and recognized-role fields never erased
 - [ ] Relation: FK → `$ref` in Read DTOs; `databaseSchemaProperty` uses relation name (Read) or column name (Request)
+- [ ] Self-reference: No bidirectional (parent object + children array); use `parent_id` scalar instead
 - [ ] Security (Actor DTOs): No exposed passwords/secrets; guest IJoin has no `password`; `ip` optional in IJoin/ILogin
 
 **Function Calling**:

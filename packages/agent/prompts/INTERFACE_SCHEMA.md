@@ -227,7 +227,7 @@ When a DB `String` column description mentions "JSON key-value pairs", "JSON obj
 
 **Special cases**:
 - **Many-to-Many**: Use `.ISummary[]` array (e.g., `roles: IRole.ISummary[]`, `categories: ICategory.ISummary[]`). If the related entities are independent actors (e.g., team members), access via separate API endpoint instead.
-- **Recursive/Self-Reference**: Include immediate parent as `.ISummary`, access children via separate API (e.g., `parent: ICategory.ISummary`, children via `GET /categories/:id/children`).
+- **Recursive/Self-Reference**: Unidirectional only — use `children: ICategory[]` OR `parent_id: string | null`, never both object references. Bidirectional self-reference (parent object + children array) causes infinite serialization.
 
 ### 3.7. Atomic Operations
 
@@ -475,6 +475,7 @@ const IBbsArticle_IRequest = {
 - [ ] ISummary excludes HAS-MANY compositions
 - [ ] Compositions nested in Create DTOs
 - [ ] Update DTOs: only changeable references, no ownership/structural relations
+- [ ] No bidirectional self-reference (use `parent_id` instead of `parent` object when `children` array exists)
 - [ ] No phantom fields
 - [ ] `required` array correct for DTO type
 - [ ] Nullable uses `oneOf` (not array type)

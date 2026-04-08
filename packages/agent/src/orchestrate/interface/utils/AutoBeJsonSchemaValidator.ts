@@ -3,6 +3,7 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { NamingConvention } from "@typia/utils";
 import { IValidation } from "typia";
 
+import { IAutoBeBidirectionalRecursiveDetection } from "../structures/IAutoBeBidirectionalRecursiveDetection";
 import { AutoBeJsonSchemaFactory } from "./AutoBeJsonSchemaFactory";
 
 export namespace AutoBeJsonSchemaValidator {
@@ -49,6 +50,7 @@ export namespace AutoBeJsonSchemaValidator {
     });
     validateAuthorization(props);
     validateRecursive(props);
+    validateBidirectionalRecursive(props);
     validateReferenceId(props);
     validatePropertyNames(props);
     validateNumericRanges(props);
@@ -343,7 +345,7 @@ export namespace AutoBeJsonSchemaValidator {
         instantiate or validate.
 
         If you need tree or graph structures, use explicit relationships with
-        ID references (e.g., parentId: string) instead of recursive type definitions.
+        ID references (e.g., parent_id: string) instead of recursive type definitions.
         Remove the self-reference and redesign the schema at the next time.
         Note that, this is not a recommendation, but an instruction you must follow.
       `);
@@ -425,10 +427,104 @@ export namespace AutoBeJsonSchemaValidator {
         impossible.
 
         If you need parent-child or graph relationships, make the self-referencing
-        property either nullable or optional, or use ID references (e.g., parentId: string).
+        property either nullable or optional, or use ID references (e.g., parent_id: string).
         Remove the required self-reference and redesign the schema at the next time.
         Note that, this is not a recommendation, but an instruction you must follow.
       `);
+  };
+
+  export const isSelfReference = (
+    schema: AutoBeOpenApi.IJsonSchema,
+    typeName: string,
+  ): boolean => {
+    const selfRef = `#/components/schemas/${typeName}`;
+    if (AutoBeOpenApiTypeChecker.isReference(schema) && schema.$ref === selfRef)
+      return true;
+    if (
+      AutoBeOpenApiTypeChecker.isOneOf(schema) &&
+      schema.oneOf.some(
+        (v) => AutoBeOpenApiTypeChecker.isReference(v) && v.$ref === selfRef,
+      )
+    )
+      return true;
+    return false;
+  };
+
+  const isArraySelfReference = (
+    schema: AutoBeOpenApi.IJsonSchema,
+    typeName: string,
+  ): boolean => {
+    const selfRef = `#/components/schemas/${typeName}`;
+    const checkArray = (s: AutoBeOpenApi.IJsonSchema): boolean =>
+      AutoBeOpenApiTypeChecker.isArray(s) &&
+      AutoBeOpenApiTypeChecker.isReference(s.items) &&
+      s.items.$ref === selfRef;
+    if (checkArray(schema)) return true;
+    if (
+      AutoBeOpenApiTypeChecker.isOneOf(schema) &&
+      schema.oneOf.some((v) => checkArray(v))
+    )
+      return true;
+    return false;
+  };
+
+  export const detectBidirectionalRecursive = (
+    typeName: string,
+    schema: AutoBeOpenApi.IJsonSchema.IObject,
+  ): IAutoBeBidirectionalRecursiveDetection | null => {
+    const singular: string[] = [];
+    const array: string[] = [];
+
+    for (const [key, value] of Object.entries(schema.properties)) {
+      if (isSelfReference(value, typeName)) singular.push(key);
+      if (isArraySelfReference(value, typeName)) array.push(key);
+    }
+
+    return singular.length > 0 && array.length > 0 ? { singular, array } : null;
+  };
+
+  const describeBidirectional = (
+    typeName: string,
+    det: IAutoBeBidirectionalRecursiveDetection,
+  ): string =>
+    StringUtil.trim`
+      ${typeName} has a bidirectional recursive self-reference:
+
+      \`\`\`typescript
+      interface ${typeName} {
+        ${det.singular.map((k) => `${k}: ${typeName} | null;`).join("\n  ")}
+        ${det.array.map((k) => `${k}: ${typeName}[];`).join("\n  ")}
+      }
+      \`\`\`
+
+      Having BOTH parent-direction (${det.singular.map((k) => JSON.stringify(k)).join(", ")})
+      AND children-direction (${det.array.map((k) => JSON.stringify(k)).join(", ")})
+      self-references causes infinite expansion during serialization — the parent
+      embeds all its children, each child embeds its parent again, infinitely.
+
+      A unidirectional self-reference (ONLY children OR ONLY parent) is acceptable.
+
+      **Fix**: Replace the singular self-reference properties
+      (${det.singular.map((k) => JSON.stringify(k)).join(", ")}) with ID
+      references. For example, change "${det.singular[0]}" to
+      "${det.singular[0]}_id" (type: string, format: uuid, nullable).
+      Note that, this is not a recommendation, but an instruction you must follow.
+    `;
+
+  const validateBidirectionalRecursive = (props: IProps): void => {
+    if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
+
+    const det = detectBidirectionalRecursive(props.typeName, props.schema);
+    if (det === null) return;
+
+    for (const key of det.singular)
+      props.errors.push({
+        path: `${props.path}.properties${NamingConvention.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`}`,
+        expected:
+          "ID reference (e.g., parent_id: string) instead of bidirectional self-reference",
+        value: props.schema.properties[key],
+        description: describeBidirectional(props.typeName, det),
+      });
   };
 
   const validateObjectType = (props: {

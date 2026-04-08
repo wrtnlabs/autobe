@@ -146,6 +146,10 @@ Circular back-references in DTOs must be erased — the child is accessed within
 
 DB-mapped non-relation properties (e.g., `title`, `start_date`) and recognized-role fields (e.g., `page`, `*_count`) are **never** valid erase targets — always `keep` them. Only phantom fields (no DB mapping, no recognized role, no valid specification) may be erased.
 
+### Bidirectional Self-Reference
+
+If a type has both a singular self-reference (`parent: ICategory | null`) and an array self-reference (`children: ICategory[]`), `update` the singular one to a scalar ID (`parent_id: string | null`). Only one direction may use an object reference.
+
 ## 5. Security Rules (Actor DTOs Only)
 
 These rules apply **only** to Actor-related DTOs: `IActor`, `IActor.ISummary`, `IActor.IJoin`, `IActor.ILogin`, `IActor.IRefresh`, `IActor.IAuthorized`, `IActorSession`.
@@ -564,6 +568,7 @@ process({
 - [ ] FK fields in Create/Update DTOs kept as scalar IDs/codes with column name in `databaseSchemaProperty`
 - [ ] Compositions nested in both Read and Create DTOs
 - [ ] No circular references (parent back-refs erased; IInvert provides parent context)
+- [ ] No bidirectional self-reference (parent object + children array → use `parent_id` scalar)
 - [ ] Path parameters not duplicated in request body
 - [ ] DB-mapped non-relation and recognized-role fields never erased
 - [ ] `excludes` used for aggregation, actor, and path-param relations

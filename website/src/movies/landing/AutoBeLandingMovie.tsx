@@ -1,6 +1,5 @@
 "use client";
 
-import FadeIn from "./FadeIn";
 import AutoBeLandingBenchmarkMovie from "./AutoBeLandingBenchmarkMovie";
 import AutoBeLandingBlogMovie from "./AutoBeLandingBlogMovie";
 import AutoBeDemoMovie from "./AutoBeLandingDemoMovie";
@@ -8,6 +7,7 @@ import AutoBeLandingHeroMovie from "./AutoBeLandingHeroMovie";
 import AutoBeLandingLimitMovie from "./AutoBeLandingLimitMovie";
 import AutoBeLandingStrengthMovie from "./AutoBeLandingStrengthMovie";
 import AutoBeLandingTechMovie from "./AutoBeLandingTechMovie";
+import FadeIn from "./FadeIn";
 
 function SectionDivider() {
   return (
@@ -39,7 +39,7 @@ export default function AutoBeLandingMovie() {
         <SectionDivider />
 
         {/* Demo: real examples */}
-        <AutoBeDemoMovie />
+        <AutoBeDemoMovie model="qwen/qwen3.5-35b-a3b" />
 
         <SectionDivider />
 
