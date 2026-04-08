@@ -45,8 +45,10 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     process.exit(1);
   }
 
-  if (options.useAgent && !options.apiKey) {
-    p.log.error("--api-key is required when using --use-agent");
+  if (options.agent && !options.apiKey) {
+    p.log.error(
+      "--api-key is required for agent evaluation (disable with --no-agent)",
+    );
     p.log.info("Or set OPENROUTER_API_KEY environment variable");
     process.exit(1);
   }
@@ -67,7 +69,7 @@ export async function runCLI(options: CLIOptions): Promise<void> {
 
   p.log.info(`Input: ${inputPath}`);
   p.log.info(`Output: ${outputPath}`);
-  if (options.useAgent) {
+  if (options.agent) {
     p.log.info(`Agent: ${options.provider} (AI evaluation enabled)`);
   }
 
@@ -159,7 +161,7 @@ export async function runCLI(options: CLIOptions): Promise<void> {
 
   // Agent evaluations
   let agentResults: AgentResult[] = [];
-  if (options.useAgent && options.apiKey) {
+  if (options.agent && options.apiKey) {
     const agentSpinner = p.spinner();
     agentSpinner.start("Running AI Agent Evaluations...");
 

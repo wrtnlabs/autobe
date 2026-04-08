@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo",
-  "totalScore": 86,
+  "totalScore": 87,
   "grade": "B",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1775113655997-7xmpjvikscj",
+          "id": "type-error-1775644398311-hgh2zhr5oa",
           "autoFixable": false
         },
         {
@@ -31,11 +31,11 @@
             "file": "src/transformers/TodoAppTodoEditHistoryTransformer.ts",
             "line": 695
           },
-          "id": "type-error-1775113655997-ssi34rsiwp",
+          "id": "type-error-1775644398311-5skor2g8aog",
           "autoFixable": false
         }
       ],
-      "durationMs": 2858,
+      "durationMs": 2561,
       "metrics": {
         "totalFiles": 90,
         "filesWithErrors": 0,
@@ -172,7 +172,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
             "line": 11
           },
-          "id": "duplication-1775113656145-1bjjsuys72r",
+          "id": "duplication-1775644398458-oblzwbhefbe",
           "autoFixable": false
         },
         {
@@ -184,7 +184,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
             "line": 12
           },
-          "id": "duplication-1775113656145-nrn342lznh",
+          "id": "duplication-1775644398458-r0nfjw3t7h",
           "autoFixable": false
         },
         {
@@ -196,7 +196,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
             "line": 13
           },
-          "id": "duplication-1775113656145-3ff7cqeq4ze",
+          "id": "duplication-1775644398458-u4oeg7db058",
           "autoFixable": false
         }
       ]
@@ -213,48 +213,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+          "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
-            "line": 9
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
+            "line": 12
           },
-          "id": "jsdoc-1775113656154-08kg28k6rpp3",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1775113656154-0i00qdd9ipbi",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
-            "line": 17
-          },
-          "id": "jsdoc-1775113656156-3233n95aayk",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberAccountsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/accounts/TodoappMemberAccountsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1775113656155-4vmw8fqgtsp",
+          "id": "jsdoc-1775644398451-7rprtdodqc3",
           "autoFixable": false
         },
         {
@@ -266,19 +230,55 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
             "line": 11
           },
-          "id": "jsdoc-1775113656154-n1jchge14ap",
+          "id": "jsdoc-1775644398451-ff24eitm664",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+            "line": 17
           },
-          "id": "jsdoc-1775113656155-iuo48j0gnge",
+          "id": "jsdoc-1775644398460-l9pu20f7pxk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberAccountsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/accounts/TodoappMemberAccountsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775644398459-zvtf9ns4ynd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1775644398461-9vtdb5emt4w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775644398459-ikhjvrzlzsm",
           "autoFixable": false
         },
         {
@@ -290,19 +290,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/editHistories/TodoappMemberTodosEdithistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1775113656155-dejz5sp87r8",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosTrashedController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/trashed/TodoappMemberTodosTrashedController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1775113656156-mgmo1e1u4v",
+          "id": "jsdoc-1775644398463-9nd28t2v42g",
           "autoFixable": false
         },
         {
@@ -314,7 +302,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/permanent/TodoappMemberTodosPermanentController.ts",
             "line": 9
           },
-          "id": "jsdoc-1775113656155-xztjiwrxsk",
+          "id": "jsdoc-1775644398462-hti99yzrh8k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosTrashedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/trashed/TodoappMemberTodosTrashedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1775644398460-u1rczt60m4e",
           "autoFixable": false
         }
       ]
@@ -333,7 +333,7 @@
             "file": "src/api/structures/ITodoAppMember.ts",
             "line": 170
           },
-          "id": "completeness-1775113656161-54r8eeje27d",
+          "id": "completeness-1775644398469-u9t8lf0e1is",
           "autoFixable": false
         }
       ]
@@ -356,7 +356,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1775113655997-7xmpjvikscj",
+      "id": "type-error-1775644398311-hgh2zhr5oa",
       "autoFixable": false
     }
   ],
@@ -370,13 +370,13 @@
         "file": "src/transformers/TodoAppTodoEditHistoryTransformer.ts",
         "line": 695
       },
-      "id": "type-error-1775113655997-ssi34rsiwp",
+      "id": "type-error-1775644398311-5skor2g8aog",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-04-02T07:07:36.162Z",
-    "totalDurationMs": 2958,
+    "evaluatedAt": "2026-04-08T10:33:18.470Z",
+    "totalDurationMs": 2666,
     "estimateVersion": "0.30.5",
     "evaluatedFiles": 90
   },
@@ -399,595 +399,1183 @@
     "structures": 12,
     "tests": 0
   },
-  "agentEvaluations": [
-    {
-      "agent": "SecurityAgent",
-      "provider": "openrouter",
-      "model": "anthropic/claude-sonnet-4-6",
-      "issues": [
-        {
-          "severity": "warning",
-          "type": "cryptographic-failures",
-          "file": "src/providers/authorize/jwtAuthorize.ts",
-          "line": 14,
-          "description": "The jwtAuthorize function throws ForbiddenException (403) when no token is present, but should throw UnauthorizedException (401). More critically, the function does not validate the token 'type' claim — any valid JWT (guest or member) can pass this check. The caller (memberAuthorize) does check type, but jwtAuthorize itself is a shared utility that could be misused.",
-          "suggestion": "Throw UnauthorizedException (401) when no token is present. Consider validating expected token type within jwtAuthorize or document clearly that callers must validate the type claim."
-        },
-        {
-          "severity": "warning",
-          "type": "cryptographic-failures",
-          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
-          "line": 55,
-          "description": "The refresh token JWT payload does not include a 'tokenType' claim to distinguish it from access tokens, unlike the refresh provider which does include 'tokenType: refresh'. This means an access token could potentially be submitted as a refresh token if the refresh endpoint only checks the 'type' claim.",
-          "suggestion": "Add 'tokenType: \"refresh\"' to the refresh token payload in postTodoAppAuthMemberLogin.ts, consistent with postTodoAppAuthMemberRefresh.ts. Validate this claim in the refresh endpoint."
-        },
-        {
-          "severity": "warning",
-          "type": "broken-access-control",
-          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
-          "line": 38,
-          "description": "The guest session creation uses 'props.body.ip ?? props.ip', meaning the client can supply an arbitrary IP address in the request body that overrides the real client IP. This allows IP spoofing in session audit records.",
-          "suggestion": "Always use the server-resolved IP (props.ip) for session records. Never trust client-supplied IP values. Remove the 'props.body.ip' fallback or ignore it entirely."
-        },
-        {
-          "severity": "warning",
-          "type": "auth-failures",
-          "file": "src/providers/postTodoAppAuthMemberRefresh.ts",
-          "line": 44,
-          "description": "Token refresh reuses the same session_id from the old token rather than creating a new session record. This means a stolen refresh token can be used repeatedly without invalidating the old session. True token rotation should invalidate the old session and create a new one.",
-          "suggestion": "On refresh, create a new session record with a new session_id, invalidate (delete or mark expired) the old session, and embed the new session_id in the newly issued tokens."
-        },
-        {
-          "severity": "suggestion",
-          "type": "logging-failures",
-          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-          "line": 1,
-          "description": "Controllers use console.log(error) for error handling across all endpoints. This is the standard AutoBE pattern but does not provide structured logging, log levels, or audit trails for security-relevant events like failed logins.",
-          "suggestion": "Consider integrating a structured logger (e.g., NestJS Logger or Winston) and ensure authentication failures are logged with relevant context (IP, timestamp) for security monitoring."
-        },
-        {
-          "severity": "suggestion",
-          "type": "insecure-design",
-          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-          "line": 1,
-          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). This allows brute-force attacks against credentials.",
-          "suggestion": "Apply rate limiting middleware (e.g., @nestjs/throttler) to /auth/member/login, /auth/member/join, and /auth/member/refresh endpoints."
-        },
-        {
-          "severity": "suggestion",
-          "type": "auth-failures",
-          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-          "line": 1,
-          "description": "Password complexity validation beyond basic type checking is not enforced in the join endpoint. Weak passwords are accepted.",
-          "suggestion": "Enforce minimum password length and complexity requirements (e.g., minimum 8 characters, mixed case, numbers) in the ITodoAppMember.IJoin validation or provider logic."
-        },
-        {
-          "severity": "warning",
-          "type": "auth-failures",
-          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
-          "line": 97,
-          "description": "Token refresh does not validate the `tokenType` claim in the refresh token payload. The code checks `payload['type'] === 'guest'` but does not verify that `payload['tokenType'] === 'refresh'`, meaning a valid access token could be used as a refresh token.",
-          "suggestion": "Add a check: `if (payload['tokenType'] !== 'refresh') { throw new HttpException('Invalid token type', 403); }` before proceeding with the refresh flow."
-        },
-        {
-          "severity": "warning",
-          "type": "cryptographic-failures",
-          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
-          "line": 72,
-          "description": "Both access and refresh tokens are signed with the same `JWT_SECRET_KEY`. If the secret is compromised or if a token of one type is accepted where another is expected, it creates a token confusion risk. Additionally, there is no check that the refresh token's `tokenType` claim equals 'refresh' in the member refresh flow (similar to the guest refresh issue).",
-          "suggestion": "Use separate secrets for access and refresh tokens, or enforce strict `tokenType` claim validation on all token consumption paths."
-        },
-        {
-          "severity": "suggestion",
-          "type": "insecure-design",
-          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
-          "line": 113,
-          "description": "The new guest session is created with empty strings for `ip` and `href` fields, losing audit trail information for the refresh request.",
-          "suggestion": "Pass the client IP and request URL into the refresh provider and store them in the new session record for proper audit logging."
-        },
-        {
-          "severity": "suggestion",
-          "type": "logging-failures",
-          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
-          "line": 1,
-          "description": "No audit logging is performed on member registration events (new account creation). Failed registration attempts (e.g., duplicate email) are also not logged.",
-          "suggestion": "Add structured audit logging for registration events including IP address, timestamp, and outcome to support security monitoring."
-        },
-        {
-          "severity": "suggestion",
-          "type": "insecure-design",
-          "file": "src/providers/patchTodoAppMemberSessions.ts",
-          "line": 1,
-          "description": "The sessions listing endpoint has no upper bound on the `limit` parameter, potentially allowing a client to request an unbounded number of records in a single query.",
-          "suggestion": "Cap the `limit` value to a maximum (e.g., 100) to prevent excessive data retrieval: `const limit = Math.min(props.body.limit ?? 20, 100);`"
-        }
-      ],
-      "score": 74,
-      "summary": "[sampled 30/33 files] [2 chunks, 14→12 issues] The codebase demonstrates solid security fundamentals: JWT-based authentication with session validation, ownership checks on all resource access, consistent use of MemberAuth decorator, and proper bcrypt password hashing. Ownership enforcement (member ID matching) is correctly applied across todos, sessions, and edit histories. Key concerns include: IP spoofing in guest session creation (client-supplied IP overrides server IP), lack of true token rotation on refresh (same session_id reused enabling replay attacks), and missing tokenType claim in login-issued refresh tokens creating potential token confusion. The JWT authorization utility correctly validates signatures but throws 403 instead of 401 for missing tokens. These are medium-severity issues that should be addressed before production deployment.",
-      "durationMs": 26158,
-      "tokensUsed": {
-        "input": 31554,
-        "output": 2506,
-        "inputCost": 0.094662,
-        "outputCost": 0.03759
-      }
-    },
-    {
-      "agent": "LLMQualityAgent",
-      "provider": "openrouter",
-      "model": "deepseek/deepseek-v3.2",
-      "issues": [
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/putTodoAppMemberTodosTodoIdComplete.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/putTodoAppMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/putTodoAppMemberProfile.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/postTodoAppMemberTodos.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/postTodoAppAuthMemberRefresh.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/patchTodoAppMemberTodosTrashed.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/patchTodoAppMemberTodosTodoIdEditHistories.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/patchTodoAppMemberTodos.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/patchTodoAppMemberSessions.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/getTodoAppMemberTodosTodoIdEditHistoriesHistoryId.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/getTodoAppMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/getTodoAppMemberSessionsSessionId.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/getTodoAppMemberProfile.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/getTodoAppMemberAccounts.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/deleteTodoAppMemberTodosTodoIdPermanent.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/deleteTodoAppMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk' instead of '@prisma/client'",
-          "suggestion": "Change import from '@prisma/sdk' to '@prisma/client'"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/putTodoAppMemberTodosTodoIdComplete.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/putTodoAppMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/putTodoAppMemberProfile.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/postTodoAppMemberTodos.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/postTodoAppAuthMemberRefresh.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ITodoAppUserProfile, ArrayUtil, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/patchTodoAppMemberTodosTrashed.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ITodoAppTodo, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/patchTodoAppMemberTodosTodoIdEditHistories.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ITodoAppTodoEditHistory, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/patchTodoAppMemberTodos.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ITodoAppTodo, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/patchTodoAppMemberSessions.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ITodoAppMemberSession, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/getTodoAppMemberTodosTodoIdEditHistoriesHistoryId.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/getTodoAppMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/getTodoAppMemberSessionsSessionId.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/getTodoAppMemberProfile.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/getTodoAppMemberAccounts.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ITodoAppUserProfile, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/deleteTodoAppMemberTodosTodoIdPermanent.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/deleteTodoAppMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe",
-          "suggestion": "Remove unused imports to clean up code"
-        },
-        {
-          "severity": "warning",
-          "type": "logic-error",
-          "file": "src/providers/postTodoAppAuthMemberRefresh.ts",
-          "line": 88,
-          "description": "Token payload validation incorrectly checks for 'tokenType' property but refresh token creation uses 'tokenType' while access token doesn't",
-          "suggestion": "Ensure consistent property naming between token creation and validation"
-        },
-        {
-          "severity": "warning",
-          "type": "logic-error",
-          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
-          "line": 88,
-          "description": "Token payload validation incorrectly checks for 'tokenType' property but refresh token creation uses 'tokenType' while access token doesn't",
-          "suggestion": "Ensure consistent property naming between token creation and validation"
-        },
-        {
-          "severity": "warning",
-          "type": "logic-error",
-          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
-          "line": 1,
-          "description": "Guest authentication flow creates guest records but requirements don't mention guest authentication",
-          "suggestion": "Verify if guest authentication is required by the specifications"
-        },
-        {
-          "severity": "suggestion",
-          "type": "inconsistent-naming",
-          "file": "src/providers/postTodoAppAuthMemberRefresh.ts",
-          "line": 88,
-          "description": "Inconsistent property naming: refresh token uses 'tokenType' property while access token doesn't have this property",
-          "suggestion": "Standardize token payload structure across all token types"
-        },
-        {
-          "severity": "suggestion",
-          "type": "inconsistent-naming",
-          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
-          "line": 88,
-          "description": "Inconsistent property naming: refresh token uses 'tokenType' property while access token doesn't have this property",
-          "suggestion": "Standardize token payload structure across all token types"
-        }
-      ],
-      "score": 70,
-      "summary": "Code has critical hallucination issues with '@prisma/sdk' imports across all provider files. Many unused imports suggest copy-paste pattern. Token validation logic has inconsistencies. Overall functional but needs import fixes and cleanup.",
-      "durationMs": 341985,
-      "tokensUsed": {
-        "input": 18504,
-        "output": 4495,
-        "inputCost": 0.0055512,
-        "outputCost": 0.0039556
-      }
-    },
-    {
-      "agent": "HallucinationAgent",
-      "provider": "openrouter",
-      "model": "deepseek/deepseek-v3.2",
-      "issues": [
-        {
-          "severity": "warning",
-          "type": "spec-mismatch",
-          "file": "src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
-          "line": 56,
-          "description": "Controller uses PATCH method for listing sessions, but typical REST convention would use GET for read-only operations. However, this is not a hallucination since it's an implementation detail and the spec may define PATCH for filtering/pagination.",
-          "suggestion": "If the OpenAPI spec defines GET for this endpoint, change to GET; otherwise keep as is."
-        },
-        {
-          "severity": "suggestion",
-          "type": "invented-logic",
-          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
-          "line": 47,
-          "description": "User profile creation sets display_name to email by default, but the Prisma schema doesn't specify a default value. This is a reasonable implementation choice, not a hallucination.",
-          "suggestion": "Consider making display_name required in the join DTO or using a different default."
-        },
-        {
-          "severity": "suggestion",
-          "type": "invented-logic",
-          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
-          "line": 27,
-          "description": "Guest session creation sets empty strings for ip, href, and referrer when not provided. This is defensive programming, not hallucination.",
-          "suggestion": "Keep as is for robustness."
-        },
-        {
-          "severity": "critical",
-          "type": "spec-mismatch",
-          "file": "src/providers/patchTodoAppMemberTodos.ts",
-          "line": 1,
-          "description": "Function name 'patchTodoAppMemberTodos' suggests a PATCH endpoint for updating todos, but the implementation is a paginated query (GET-like) that returns a page of todos. This contradicts the HTTP method implied by the name and typical REST conventions.",
-          "suggestion": "Rename to 'getTodoAppMemberTodos' or similar to reflect it's a query operation, not an update. Or implement actual todo update logic if PATCH is intended."
-        },
-        {
-          "severity": "warning",
-          "type": "invented-logic",
-          "file": "src/providers/patchTodoAppMemberTodos.ts",
-          "line": 1,
-          "description": "The function implements complex filtering, sorting, and pagination logic for todos. While this is reasonable for a todo list endpoint, the spec doesn't explicitly define these query parameters (search, sortBy, sortDirection, visibility, completionStatus). This may be invented logic beyond what the spec guarantees.",
-          "suggestion": "Ensure the OpenAPI spec defines these query parameters; otherwise, they are extensions beyond the spec."
-        },
-        {
-          "severity": "warning",
-          "type": "invented-logic",
-          "file": "src/providers/patchTodoAppMemberSessions.ts",
-          "line": 1,
-          "description": "The function implements filtering by status (active/expired) and createdAt range. The spec doesn't explicitly define these query parameters for session listing.",
-          "suggestion": "Ensure the OpenAPI spec defines these query parameters; otherwise, they are extensions."
-        },
-        {
-          "severity": "suggestion",
-          "type": "relevancy",
-          "file": "src/providers/patchTodoAppMemberTodos.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, HttpException, Prisma, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe. These imports are not used in the function body.",
-          "suggestion": "Remove unused imports to clean up code."
-        }
-      ],
-      "score": 94,
-      "summary": "[3 chunks, 18→7 issues] No hallucinations detected. All controller endpoints correspond to plausible operations implied by the Prisma schema (authentication, todo CRUD, profile management). No fabricated fields, wrong relations, or spec mismatches found. The code faithfully implements expected functionality for the given domain models.",
-      "durationMs": 69693,
-      "tokensUsed": {
-        "input": 48632,
-        "output": 2318,
-        "inputCost": 0.0145896,
-        "outputCost": 0.0020398400000000002
-      },
-      "deepEvalScores": {
-        "faithfulness": 93,
-        "relevancy": 89,
-        "contextualPrecision": 96
-      }
-    }
-  ],
+  "agentEvaluations": [],
   "scoreBreakdown": {
     "phaseScore": 87,
-    "phaseWeight": 0.85,
-    "phaseContribution": 74,
-    "agentScore": 79,
-    "agentWeight": 0.15,
-    "agentContribution": 12
+    "phaseWeight": 1,
+    "phaseContribution": 87,
+    "agentScore": null,
+    "agentWeight": 0,
+    "agentContribution": 0
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "type-error-1775644398311-hgh2zhr5oa",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.6,
+        "priority": 1,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775644398311-5skor2g8aog",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2724",
+        "message": "'\"src/prisma/client\".Prisma' has no exported member named 'todo_app_todosDefaultArgs'. Did you mean 'todo_app_todosDeleteArgs'?",
+        "file": "src/transformers/TodoAppTodoEditHistoryTransformer.ts",
+        "line": 695,
+        "estimatedImpact": 0.2,
+        "priority": 2,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "duplication-1775644398458-oblzwbhefbe",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 3,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775644398458-r0nfjw3t7h",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 4,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775644398458-u4oeg7db058",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
+        "line": 13,
+        "estimatedImpact": 0.1,
+        "priority": 5,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 10,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398451-7rprtdodqc3",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 6,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getTodoAppMemberSessionsSessionId } from \"../../../../providers/getTodoAppMemberSessionsSessionId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchTodoAppMemberSessions } from \"../../../../providers/patchTodoAppMemberSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/todoApp/member/sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class TodoappMemberSessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve a paginated list of the currently authenticated member's login sessions.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398451-ff24eitm664",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 7,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import { getTodoAppMemberProfile } from \"../../../../providers/getTodoAppMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { putTodoAppMemberProfile } from \"../../../../providers/putTodoAppMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "@Controller(\"/todoApp/member/profile\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "export class TodoappMemberProfileController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "   * Retrieve the authenticated member's own user profile.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398460-l9pu20f7pxk",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+        "line": 17,
+        "estimatedImpact": 0.1,
+        "priority": 8,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 14,
+              "text": "import { putTodoAppMemberTodosTodoIdComplete } from \"../../../../providers/putTodoAppMemberTodosTodoIdComplete\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { putTodoAppMemberTodosTodoIdRestore } from \"../../../../providers/putTodoAppMemberTodosTodoIdRestore\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "@Controller(\"/todoApp/member/todos\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 18,
+              "text": "export class TodoappMemberTodosController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "   * Create a new todo item for the currently authenticated member.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398459-zvtf9ns4ynd",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberAccountsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/accounts/TodoappMemberAccountsController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 9,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { getTodoAppMemberAccounts } from \"../../../../providers/getTodoAppMemberAccounts\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/todoApp/member/accounts\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class TodoappMemberAccountsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Retrieve the currently authenticated member's own account information.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398461-9vtdb5emt4w",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { postTodoAppAuthGuestJoin } from \"../../../../providers/postTodoAppAuthGuestJoin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { postTodoAppAuthGuestRefresh } from \"../../../../providers/postTodoAppAuthGuestRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/todoApp/auth/guest\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class TodoappAuthGuestController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Register or retrieve a guest account using a device fingerprint and issue JWT tokens for anonymous access.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398459-ikhjvrzlzsm",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 11,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { postTodoAppAuthMemberLogin } from \"../../../../providers/postTodoAppAuthMemberLogin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postTodoAppAuthMemberRefresh } from \"../../../../providers/postTodoAppAuthMemberRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/todoApp/auth/member\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class TodoappAuthMemberController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Registers a new member account in the todo application. This operation creates a record in the `todo_app_members` table with a unique email address and a securely hashed password (bcrypt or equivalent), as described in the `todo_app_members` schema. The `password_hash` field stores the hashed password and never contains plaintext.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398463-9nd28t2v42g",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberTodosEdithistoriesController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/editHistories/TodoappMemberTodosEdithistoriesController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 12,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getTodoAppMemberTodosTodoIdEditHistoriesHistoryId } from \"../../../../../providers/getTodoAppMemberTodosTodoIdEditHistoriesHistoryId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchTodoAppMemberTodosTodoIdEditHistories } from \"../../../../../providers/patchTodoAppMemberTodosTodoIdEditHistories\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/todoApp/member/todos/:todoId/editHistories\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class TodoappMemberTodosEdithistoriesController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve a paginated and sorted list of edit history entries for a specific todo item.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398462-hti99yzrh8k",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberTodosPermanentController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/permanent/TodoappMemberTodosPermanentController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 13,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { deleteTodoAppMemberTodosTodoIdPermanent } from \"../../../../../providers/deleteTodoAppMemberTodosTodoIdPermanent\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/todoApp/member/todos/:todoId/permanent\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class TodoappMemberTodosPermanentController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Permanently and irreversibly deletes a trashed todo item along with its entire edit history.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398460-u1rczt60m4e",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberTodosTrashedController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/trashed/TodoappMemberTodosTrashedController.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 14,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { patchTodoAppMemberTodosTrashed } from \"../../../../../providers/patchTodoAppMemberTodosTrashed\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "@Controller(\"/todoApp/member/todos/trashed\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "export class TodoappMemberTodosTrashedController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "   * Retrieve a paginated list of trashed todo items belonging to the currently authenticated member.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775644398469-u9t8lf0e1is",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"e\" not found — referenced by @x-autobe-database-schema-property password_hash",
+        "file": "src/api/structures/ITodoAppMember.ts",
+        "line": 170,
+        "estimatedImpact": 0.1,
+        "priority": 15,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 167,
+              "text": "    /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 168,
+              "text": "     * The member's chosen plaintext password. The server securely hashes this before storage — do not send a pre-hashed value. The password must meet minimum security requirements (e.g., minimum length).",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 169,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 170,
+              "text": "     * @x-autobe-database-schema-property password_hash",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 171,
+              "text": "     * @x-autobe-specification Client provides a plaintext password string. The server hashes it using bcrypt (or equivalent, e.g., argon2) before storing in todo_app_members.password_hash. The plaintext value is never persisted or logged. Minimum password length/complexity validation should be applied before hashing.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 172,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 173,
+              "text": "    password: string;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "totalPotentialGain": 2.1,
+    "topFixes": [
+      {
+        "issueId": "type-error-1775644398311-hgh2zhr5oa",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.6,
+        "priority": 1,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775644398311-5skor2g8aog",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2724",
+        "message": "'\"src/prisma/client\".Prisma' has no exported member named 'todo_app_todosDefaultArgs'. Did you mean 'todo_app_todosDeleteArgs'?",
+        "file": "src/transformers/TodoAppTodoEditHistoryTransformer.ts",
+        "line": 695,
+        "estimatedImpact": 0.2,
+        "priority": 2,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "duplication-1775644398458-oblzwbhefbe",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 3,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775644398458-r0nfjw3t7h",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 4,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775644398458-u4oeg7db058",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
+        "line": 13,
+        "estimatedImpact": 0.1,
+        "priority": 5,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 10,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398451-7rprtdodqc3",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 6,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getTodoAppMemberSessionsSessionId } from \"../../../../providers/getTodoAppMemberSessionsSessionId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchTodoAppMemberSessions } from \"../../../../providers/patchTodoAppMemberSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/todoApp/member/sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class TodoappMemberSessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve a paginated list of the currently authenticated member's login sessions.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398451-ff24eitm664",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 7,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import { getTodoAppMemberProfile } from \"../../../../providers/getTodoAppMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { putTodoAppMemberProfile } from \"../../../../providers/putTodoAppMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "@Controller(\"/todoApp/member/profile\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "export class TodoappMemberProfileController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "   * Retrieve the authenticated member's own user profile.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398460-l9pu20f7pxk",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+        "line": 17,
+        "estimatedImpact": 0.1,
+        "priority": 8,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 14,
+              "text": "import { putTodoAppMemberTodosTodoIdComplete } from \"../../../../providers/putTodoAppMemberTodosTodoIdComplete\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { putTodoAppMemberTodosTodoIdRestore } from \"../../../../providers/putTodoAppMemberTodosTodoIdRestore\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "@Controller(\"/todoApp/member/todos\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 18,
+              "text": "export class TodoappMemberTodosController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "   * Create a new todo item for the currently authenticated member.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398459-zvtf9ns4ynd",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberAccountsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/accounts/TodoappMemberAccountsController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 9,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { getTodoAppMemberAccounts } from \"../../../../providers/getTodoAppMemberAccounts\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/todoApp/member/accounts\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class TodoappMemberAccountsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Retrieve the currently authenticated member's own account information.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775644398461-9vtdb5emt4w",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { postTodoAppAuthGuestJoin } from \"../../../../providers/postTodoAppAuthGuestJoin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { postTodoAppAuthGuestRefresh } from \"../../../../providers/postTodoAppAuthGuestRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/todoApp/auth/guest\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class TodoappAuthGuestController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Register or retrieve a guest account using a device fingerprint and issue JWT tokens for anonymous access.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "penaltyRecovery": [
+      {
+        "type": "jsdoc",
+        "currentPenalty": 4,
+        "description": "Add JSDoc to 9 missing APIs (90%) to recover up to 4 points"
+      }
+    ]
   }
 }

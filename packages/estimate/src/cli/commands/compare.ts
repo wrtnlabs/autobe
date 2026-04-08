@@ -36,7 +36,7 @@ export async function runCompare(
   const result = await evaluator.compare({
     projects,
     outputPath: path.resolve(options.output),
-    useAgent: options.useAgent,
+    agent: options.agent,
     provider: options.provider,
     apiKey: options.apiKey,
     verbose: options.verbose,

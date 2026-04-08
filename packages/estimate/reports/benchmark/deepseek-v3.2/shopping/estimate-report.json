@@ -15,7 +15,7 @@
           "severity": "critical",
           "category": "syntax",
           "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-          "id": "syntax-1775116203314-1276aysesja",
+          "id": "syntax-1775644433414-7a8p5oq8yu",
           "autoFixable": false
         }
       ],
@@ -161,15 +161,15 @@
       "severity": "critical",
       "category": "syntax",
       "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-      "id": "syntax-1775116203314-1276aysesja",
+      "id": "syntax-1775644433414-7a8p5oq8yu",
       "autoFixable": false
     }
   ],
   "warnings": [],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-04-02T07:50:03.318Z",
-    "totalDurationMs": 21,
+    "evaluatedAt": "2026-04-08T10:33:53.419Z",
+    "totalDurationMs": 22,
     "estimateVersion": "0.30.5",
     "evaluatedFiles": 0
   },
@@ -185,35 +185,7 @@
     "structures": 0,
     "tests": 0
   },
-  "agentEvaluations": [
-    {
-      "agent": "SecurityAgent",
-      "provider": "openrouter",
-      "model": "anthropic/claude-sonnet-4-6",
-      "issues": [],
-      "score": -1,
-      "summary": "No files to evaluate — excluded from scoring",
-      "durationMs": 0
-    },
-    {
-      "agent": "LLMQualityAgent",
-      "provider": "openrouter",
-      "model": "deepseek/deepseek-v3.2",
-      "issues": [],
-      "score": -1,
-      "summary": "No files to evaluate — excluded from scoring",
-      "durationMs": 0
-    },
-    {
-      "agent": "HallucinationAgent",
-      "provider": "openrouter",
-      "model": "deepseek/deepseek-v3.2",
-      "issues": [],
-      "score": -1,
-      "summary": "No files to evaluate — excluded from scoring",
-      "durationMs": 0
-    }
-  ],
+  "agentEvaluations": [],
   "scoreBreakdown": {
     "phaseScore": 0,
     "phaseWeight": 1,
@@ -221,5 +193,32 @@
     "agentScore": null,
     "agentWeight": 0,
     "agentContribution": 0
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "syntax-1775644433414-7a8p5oq8yu",
+        "phase": "gate",
+        "severity": "critical",
+        "code": "GATE001",
+        "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+        "estimatedImpact": 2,
+        "priority": 1,
+        "source": "phase"
+      }
+    ],
+    "totalPotentialGain": 2,
+    "topFixes": [
+      {
+        "issueId": "syntax-1775644433414-7a8p5oq8yu",
+        "phase": "gate",
+        "severity": "critical",
+        "code": "GATE001",
+        "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+        "estimatedImpact": 2,
+        "priority": 1,
+        "source": "phase"
+      }
+    ]
   }
 }

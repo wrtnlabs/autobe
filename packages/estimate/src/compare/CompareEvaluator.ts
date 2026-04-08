@@ -67,7 +67,7 @@ export class CompareEvaluator {
       output: outputPath,
       verbose: this.verbose,
       continueOnGateFailure: true,
-      useAgent: options.useAgent,
+      agent: options.agent,
       provider: options.provider as CLIOptions["provider"],
       apiKey: options.apiKey,
     };

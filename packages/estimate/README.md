@@ -16,11 +16,11 @@ cp packages/estimate/.env.example packages/estimate/.env
 ## Quick Start
 
 ```bash
-# Evaluate a single project (static analysis + AI agents)
-corepack pnpm estimate -- -i <project-path> -o <output-path> --use-agent
-
-# Static analysis only
+# Evaluate a single project (static analysis + AI agents, enabled by default)
 corepack pnpm estimate -- -i <project-path> -o <output-path>
+
+# Static analysis only (disable AI agents)
+corepack pnpm estimate -- -i <project-path> -o <output-path> --no-agent
 ```
 
 ## Commands
@@ -31,7 +31,7 @@ Evaluate a single AutoBE-generated project.
 
 ```bash
 corepack pnpm estimate -- -i <project-path> -o <output-path>
-corepack pnpm estimate -- -i <project-path> -o <output-path> --use-agent --golden --project todo
+corepack pnpm estimate -- -i <project-path> -o <output-path> --golden --project todo
 ```
 
 ### batch
@@ -76,7 +76,7 @@ corepack pnpm estimate compare -- -p "modelA:path/a" "modelB:path/b" -o <output-
 |--------|---------|-------------|
 | `-i, --input <path>` | (required) | Input project path |
 | `-o, --output <path>` | (required) | Output directory for reports |
-| `--use-agent` | false | Enable AI agent evaluation |
+| `--no-agent` | agent=true | Disable AI agent evaluation |
 | `--api-key <key>` | env | API key (or `OPENROUTER_API_KEY` env var) |
 | `--provider <name>` | openrouter | LLM provider |
 | `--continue-on-gate-failure` | false | Continue evaluation even if gate fails |
@@ -100,7 +100,7 @@ corepack pnpm estimate compare -- -p "modelA:path/a" "modelB:path/b" -o <output-
 
 ### AI Agent Evaluators
 
-When agent evaluation is enabled (`--use-agent`), three AI agents provide deeper analysis:
+When agent evaluation is enabled (default), three AI agents provide deeper analysis:
 
 | Agent | Weight | Description |
 |-------|--------|-------------|

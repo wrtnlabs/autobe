@@ -5,7 +5,7 @@ export interface CLIOptions {
   output: string;
   verbose?: boolean;
   continueOnGateFailure?: boolean;
-  useAgent?: boolean;
+  agent?: boolean;
   provider?: LLMProvider;
   apiKey?: string;
   autoFix?: boolean;
@@ -18,7 +18,7 @@ export interface CompareCommandOptions {
   projects: string[];
   output: string;
   verbose?: boolean;
-  useAgent?: boolean;
+  agent?: boolean;
   provider?: string;
   apiKey?: string;
 }
@@ -26,7 +26,7 @@ export interface CompareCommandOptions {
 export interface BatchCommandOptions {
   examples: string;
   output: string;
-  useAgent?: boolean;
+  agent?: boolean;
   provider?: string;
   apiKey?: string;
   continueOnGateFailure?: boolean;

@@ -143,7 +143,7 @@ for entry in "${TARGETS[@]}"; do
 
   echo "[$TOTAL/$TOTAL_COUNT] $model/$project"
 
-  ARGS="-i $input -o $OUTPUT --continue-on-gate-failure --project $project --use-agent"
+  ARGS="-i $input -o $OUTPUT --continue-on-gate-failure --project $project"
   $FULL_MODE && ARGS="$ARGS --run-tests --golden"
 
   LOG_FILE=$(mktemp)

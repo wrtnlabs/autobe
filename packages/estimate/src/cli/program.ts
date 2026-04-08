@@ -20,7 +20,7 @@ export function createProgram(): Command {
       "Continue evaluation even if gate fails (default: false)",
       false,
     )
-    .option("--use-agent", "Enable AI agent evaluation (default: false)", false)
+    .option("--no-agent", "Disable AI agent evaluation (enabled by default)")
     .option(
       "--provider <provider>",
       "LLM provider (default: openrouter)",
@@ -52,7 +52,7 @@ export function createProgram(): Command {
       "Output base directory for reports",
       "reports/benchmark",
     )
-    .option("--use-agent", "Enable AI agent evaluation", false)
+    .option("--no-agent", "Disable AI agent evaluation (enabled by default)")
     .option("--provider <provider>", "LLM provider", "openrouter")
     .option("--api-key <key>", "API key for LLM provider")
     .option(
@@ -106,7 +106,7 @@ export function createProgram(): Command {
       "Output directory for comparison report",
     )
     .option("-v, --verbose", "Enable verbose output", false)
-    .option("--use-agent", "Enable AI agent evaluation", false)
+    .option("--no-agent", "Disable AI agent evaluation (enabled by default)")
     .option("--provider <provider>", "LLM provider", "openrouter")
     .option("--api-key <key>", "API key for LLM provider")
     .action(async (options) => {

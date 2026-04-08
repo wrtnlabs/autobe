@@ -2,7 +2,7 @@
 export interface CompareInput {
   projects: ProjectInput[];
   outputPath: string;
-  useAgent?: boolean;
+  agent?: boolean;
   provider?: string;
   apiKey?: string;
   verbose?: boolean;

@@ -34,7 +34,7 @@ export interface IncrementalCache {
   /** Hash of docs/ directory contents for documentQuality change detection */
   docsHash?: string;
   /** Whether agent evaluation was included in this cache */
-  useAgent?: boolean;
+  agent?: boolean;
 }
 
 const CACHE_VERSION = 2;
@@ -120,7 +120,7 @@ export function loadCache(rootPath: string): IncrementalCache | null {
 export function saveCache(
   context: EvaluationContext,
   phaseResults?: Record<string, PhaseResult>,
-  useAgent?: boolean,
+  agent?: boolean,
 ): void {
   const cachedPhases: Record<string, CachedPhaseResult> = {};
   if (phaseResults) {
@@ -145,7 +145,7 @@ export function saveCache(
     phaseResults:
       Object.keys(cachedPhases).length > 0 ? cachedPhases : undefined,
     docsHash: hashDocsDir(context.project.rootPath),
-    useAgent,
+    agent,
   };
 
   const cachePath = path.join(context.project.rootPath, CACHE_FILENAME);

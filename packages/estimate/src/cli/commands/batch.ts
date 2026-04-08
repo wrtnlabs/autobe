@@ -115,7 +115,7 @@ export async function runBatch(options: BatchCommandOptions): Promise<void> {
         output: outputPath,
         verbose: options.verbose,
         continueOnGateFailure: options.continueOnGateFailure,
-        useAgent: options.useAgent,
+        agent: options.agent,
         provider: options.provider as LLMProvider | undefined,
         apiKey: options.apiKey,
         project: target.project,

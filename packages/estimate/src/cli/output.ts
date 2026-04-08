@@ -215,7 +215,7 @@ export function printFinalScore(
     console.log(
       `\n   ⚠️  AI Agent evaluation disabled. Score may be inflated.`,
     );
-    console.log(`   Run with --use-agent for more accurate results.`);
+    console.log(`   Agent evaluation was disabled via --no-agent.`);
   }
 
   console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
