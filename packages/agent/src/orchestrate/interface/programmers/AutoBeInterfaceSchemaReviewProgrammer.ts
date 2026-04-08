@@ -14,6 +14,7 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { LlmTypeChecker } from "@typia/utils";
 import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
 
+import { IAutoBeBidirectionalRecursiveDetection } from "../structures/IAutoBeBidirectionalRecursiveDetection";
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
@@ -138,13 +139,14 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     });
 
     // check bidirectional self-reference on the resulting schema
-    const det = AutoBeJsonSchemaValidator.detectBidirectionalRecursive(
-      props.typeName,
-      AutoBeInterfaceSchemaReviewProgrammer.execute({
-        schema: props.schema,
-        revises: props.revises,
-      }),
-    );
+    const det: IAutoBeBidirectionalRecursiveDetection | null =
+      AutoBeJsonSchemaValidator.detectBidirectionalRecursive(
+        props.typeName,
+        AutoBeInterfaceSchemaReviewProgrammer.execute({
+          schema: props.schema,
+          revises: props.revises,
+        }),
+      );
     if (det !== null)
       props.errors.push({
         path: `${props.path}.revises[]`,

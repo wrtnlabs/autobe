@@ -433,7 +433,7 @@ export namespace AutoBeJsonSchemaValidator {
       `);
   };
 
-  export const isSelfReference = (
+  const isSelfReference = (
     schema: AutoBeOpenApi.IJsonSchema,
     typeName: string,
   ): boolean => {
