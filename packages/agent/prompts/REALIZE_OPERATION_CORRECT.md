@@ -46,7 +46,7 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
 
 ## 4. Common Error Patterns
 
-> **Reuse first**: When errors concentrate in `data:` or `select`/transform blocks, call `getRealizeCollectors`/`getRealizeTransformers` first. If a Transformer exists for the model you're querying, use `Transformer.select()` + `Transformer.transform()` — this is the **MOST COMMON fix** for "missing properties" errors. Similarly, `Collector.collect(...)` eliminates write-side errors.
+> **Reuse first — THE #1 FIX**: Call `getRealizeCollectors`/`getRealizeTransformers` BEFORE patching any error manually. If a matching Transformer or Collector exists, use it — see **4.11** and **4.12**.
 
 > **Nullable relation access**: If you see `'X.Y' is possibly 'null'`, add a null guard (`if (!X.Y) throw new HttpException(...)`) or use optional chaining (`X.Y?.prop ?? null`) before accessing properties of nullable Prisma relations.
 
@@ -290,6 +290,49 @@ data: { parent_category_id: null }
 data: { metadata: Prisma.DbNull }  // only valid for Json? type
 ```
 
+### 4.11. Transformer Available but Not Used
+
+If TS2322 errors concentrate in the return object and the code has no `Transformer.select()`/`.transform()` calls — **compare with the template code** provided above. The template already shows which Transformers to use. Rewrite the read side to follow the template's Transformer pattern instead of patching manual mapping line by line.
+
+```typescript
+// ❌ WRONG — manual mapping ignoring template's Transformer guidance
+return {
+  task: timer.task ? { project: timer.task.project ? {...} : null } : null,
+} satisfies IHrmPlatformTimer.ISummary;  // TS2322: nullable vs non-nullable
+
+// ✅ FIX — Follow the template: use Transformer.select() + .transform()
+const timer = await MyGlobal.prisma.hrm_platform_timers.findUniqueOrThrow({
+  where: { id: timerId },
+  ...HrmPlatformTimerAtSummaryTransformer.select(),
+});
+return await HrmPlatformTimerAtSummaryTransformer.transform(timer);
+```
+
+For **composite responses** (e.g., dashboard), the template maps each property to its neighbor Transformer — follow that mapping.
+
+### 4.12. Transformer select/transform Pairing Violation
+
+`Transformer.select()` and `Transformer.transform()` **MUST** always be paired. `select()` shapes the Prisma payload for `transform()` — using one without the other causes type mismatches.
+
+```typescript
+// ❌ select() without transform() — manual mapping of transformer-shaped data
+return { id: record.id, name: record.name };
+
+// ❌ transform() without select() — wrong data shape
+const record = await MyGlobal.prisma.users.findUniqueOrThrow({
+  where: { id },
+  select: { id: true, name: true },  // Manual select
+});
+return await UserAtSummaryTransformer.transform(record);  // Type mismatch
+
+// ✅ Always pair both
+const record = await MyGlobal.prisma.users.findUniqueOrThrow({
+  where: { id },
+  ...UserAtSummaryTransformer.select(),
+});
+return await UserAtSummaryTransformer.transform(record);
+```
+
 ## 5. Unrecoverable Errors
 
 When schema-API mismatch is fundamental:
@@ -309,6 +352,9 @@ export async function method__path(props: {...}): Promise<IResponse> {
 
 | Error | First Try | Alternative |
 |-------|-----------|-------------|
+| 2322 (deep type mismatch in return) + no Transformer calls | **Follow the template's Transformer pattern** | - |
+| select() without transform() | Add matching `.transform()` call | - |
+| transform() without select() | Add matching `.select()` call | - |
 | 2353 (field doesn't exist) | DELETE the field | Use correct field name |
 | 2322 (null → string) | Add `?? ""` | Check if optional |
 | 2322 (Date → string) | `.toISOString()` | - |
@@ -329,7 +375,9 @@ export async function method__path(props: {...}): Promise<IResponse> {
 ## 7. Final Checklist
 
 ### Reuse Check
-- [ ] Errors in `data:` or `select`/transform: checked for matching Collector/Transformer before patching
+- [ ] Compared current code with the template — if template uses Transformers/Collectors, code follows the same pattern
+- [ ] Every `Transformer.select()` has a matching `.transform()` call (and vice versa)
+- [ ] Composite responses: each nested DTO uses its neighbor Transformer per the template
 
 ### Compiler Authority
 - [ ] NO compiler errors remain

@@ -145,11 +145,12 @@ async function process(
         (c) =>
           c.plan.dtoTypeName === props.scenario.operation.requestBody?.typeName,
       ),
-      realizeTransformers: props.transformers.filter(
-        (t) =>
-          t.plan.dtoTypeName ===
-          props.scenario.operation.responseBody?.typeName.replace(/^IPage/, ""),
-      ),
+      realizeTransformers:
+        AutoBeRealizeOperationProgrammer.getLocalTransformers({
+          operation: props.scenario.operation,
+          schemas: props.document.components.schemas,
+          transformers: props.transformers,
+        }),
       analysisSections: ragSections,
     },
   });
@@ -254,13 +255,19 @@ function createController(props: {
         request: result.data.request,
       });
 
-    const errors: IValidation.IError[] = validateEmptyCode({
-      name: props.functionName,
-      draft: result.data.request.draft,
-      revise: result.data.request.revise,
-      path: "$input.request",
-      asynchronous: true,
-    });
+    const errors: IValidation.IError[] = [
+      ...validateEmptyCode({
+        name: props.functionName,
+        draft: result.data.request.draft,
+        revise: result.data.request.revise,
+        path: "$input.request",
+        asynchronous: true,
+      }),
+      ...AutoBeRealizeOperationProgrammer.validateSelectTransformContract({
+        draft: result.data.request.draft,
+        revise: result.data.request.revise,
+      }),
+    ];
     return errors.length
       ? {
           success: false,

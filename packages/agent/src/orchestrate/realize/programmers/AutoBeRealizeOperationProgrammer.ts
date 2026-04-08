@@ -5,7 +5,7 @@ import {
   AutoBeRealizeTransformerFunction,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { OpenApiTypeChecker } from "@typia/utils";
 import { IValidation } from "typia";
 
@@ -13,6 +13,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "./AutoBeRealizeTransformerProgrammer";
+import { resolvePropertyTransformer } from "./internal/resolvePropertyTransformer";
 import { writeRealizeOperationTemplate } from "./internal/writeRealizeOperationTemplate";
 
 export namespace AutoBeRealizeOperationProgrammer {
@@ -177,6 +178,43 @@ export namespace AutoBeRealizeOperationProgrammer {
     );
   }
 
+  /**
+   * Resolves transformers relevant to an operation, including neighbor
+   * transformers for composite response types (e.g., dashboard endpoints).
+   * Falls back to direct top-level match for simple response types.
+   */
+  export function getLocalTransformers(props: {
+    operation: AutoBeOpenApi.IOperation;
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    transformers: AutoBeRealizeTransformerFunction[];
+  }): AutoBeRealizeTransformerFunction[] {
+    const responseTypeName = props.operation.responseBody?.typeName;
+    if (!responseTypeName) return [];
+
+    const innerTypeName = responseTypeName.replace(/^IPage/, "");
+
+    // Direct match (covers simple and paginated types)
+    const direct = props.transformers.filter(
+      (t) => t.plan.dtoTypeName === innerTypeName,
+    );
+    if (direct.length > 0) return direct;
+
+    // Composite: resolve each property's transformer
+    const schema = props.schemas[innerTypeName];
+    if (!schema || !AutoBeOpenApiTypeChecker.isObject(schema)) return [];
+
+    const results: AutoBeRealizeTransformerFunction[] = [];
+    for (const value of Object.values(schema.properties ?? {})) {
+      const resolved = resolvePropertyTransformer({
+        schema: value as AutoBeOpenApi.IJsonSchemaProperty,
+        transformers: props.transformers,
+      });
+      if (resolved && !results.includes(resolved.transformer))
+        results.push(resolved.transformer);
+    }
+    return results;
+  }
+
   export function validateEmptyCode(props: {
     functionName: string;
     draft: string;
@@ -203,6 +241,81 @@ export namespace AutoBeRealizeOperationProgrammer {
         description: description(props.functionName),
       });
     return errors;
+  }
+
+  /**
+   * Validates that Transformer.select() and Transformer.transform() are always
+   * used as a pair in operation code. Using one without the other causes type
+   * mismatches: select() shapes the Prisma payload for transform(), so they
+   * must appear together.
+   */
+  export function validateSelectTransformContract(props: {
+    draft: string;
+    revise: {
+      final: string | null;
+    };
+  }): IValidation.IError[] {
+    const errors: IValidation.IError[] = [];
+    validateSelectTransformContractForCode({
+      content: props.draft,
+      path: "$input.request.draft",
+      errors,
+    });
+    if (props.revise.final !== null) {
+      validateSelectTransformContractForCode({
+        content: props.revise.final,
+        path: "$input.request.revise.final",
+        errors,
+      });
+    }
+    return errors;
+  }
+}
+
+function validateSelectTransformContractForCode(props: {
+  content: string;
+  path: string;
+  errors: IValidation.IError[];
+}): void {
+  const selectUsers: Set<string> = new Set();
+  const transformUsers: Set<string> = new Set();
+  const selectRegex: RegExp = /(\w+Transformer)\.select/g;
+  const transformRegex: RegExp = /(\w+Transformer)\.transform/g;
+  let match: RegExpExecArray | null;
+  while ((match = selectRegex.exec(props.content)) !== null)
+    selectUsers.add(match[1]!);
+  while ((match = transformRegex.exec(props.content)) !== null)
+    transformUsers.add(match[1]!);
+  for (const name of transformUsers) {
+    if (selectUsers.has(name) === false)
+      props.errors.push({
+        path: props.path,
+        expected: `${name}.select() must appear in the query when ${name}.transform() is used.`,
+        value: props.content,
+        description: StringUtil.trim`
+          You call ${name}.transform() but never include ${name}.select()
+          in your Prisma query. The Payload type of ${name}.transform()
+          is derived from ${name}.select() — without it, the data shape
+          will not match and you will get type mismatch compile errors.
+          Add \`...${name}.select()\` to your Prisma query's select/spread.
+        `,
+      });
+  }
+  for (const name of selectUsers) {
+    if (transformUsers.has(name) === false)
+      props.errors.push({
+        path: props.path,
+        expected: `${name}.transform() must be called when ${name}.select() is used.`,
+        value: props.content,
+        description: StringUtil.trim`
+          You include ${name}.select() in your query but never call
+          ${name}.transform() to convert the result. The data fetched
+          via ${name}.select() is a raw Prisma payload shaped for
+          ${name}.transform() — assigning it directly to a DTO field
+          or transforming it inline will cause type mismatches. Call
+          ${name}.transform() on the fetched data.
+        `,
+      });
   }
 }
 

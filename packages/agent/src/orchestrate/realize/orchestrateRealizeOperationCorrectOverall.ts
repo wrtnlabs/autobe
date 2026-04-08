@@ -101,11 +101,12 @@ export const orchestrateRealizeOperationCorrectOverall = async (
               (c) =>
                 c.plan.dtoTypeName === scenario.operation.requestBody?.typeName,
             ),
-            realizeTransformers: props.transformers.filter(
-              (t) =>
-                t.plan.dtoTypeName ===
-                scenario.operation.responseBody?.typeName.replace(/^IPage/, ""),
-            ),
+            realizeTransformers:
+              AutoBeRealizeOperationProgrammer.getLocalTransformers({
+                operation: scenario.operation,
+                schemas: document.components.schemas,
+                transformers: props.transformers,
+              }),
           },
         });
       },
@@ -143,13 +144,19 @@ export const orchestrateRealizeOperationCorrectOverall = async (
               thinking: result.data.thinking,
               request: result.data.request,
             });
-          const errors: IValidation.IError[] = validateEmptyCode({
-            name: next.function.name,
-            draft: result.data.request.draft,
-            revise: result.data.request.revise,
-            path: "$input.request",
-            asynchronous: true,
-          });
+          const errors: IValidation.IError[] = [
+            ...validateEmptyCode({
+              name: next.function.name,
+              draft: result.data.request.draft,
+              revise: result.data.request.revise,
+              path: "$input.request",
+              asynchronous: true,
+            }),
+            ...AutoBeRealizeOperationProgrammer.validateSelectTransformContract({
+              draft: result.data.request.draft,
+              revise: result.data.request.revise,
+            }),
+          ];
           return errors.length
             ? {
                 success: false,
