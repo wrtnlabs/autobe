@@ -1,117 +1,76 @@
-# @autobe/estimate
+# `@autobe/estimate`
 
-Automated evaluation tool for AutoBE-generated backend projects. Scores code quality through static analysis and AI agent evaluation on a 0-100 scale (grades A-F).
+[![GitHub License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://github.com/wrtnlabs/autobe/blob/master/LICENSE)
+[![NPM Version](https://img.shields.io/npm/v/@autobe/estimate.svg)](https://www.npmjs.com/package/@autobe/estimate)
+[![NPM Downloads](https://img.shields.io/npm/dm/@autobe/estimate.svg)](https://www.npmjs.com/package/@autobe/estimate)
+[![Build Status](https://github.com/wrtnlabs/autobe/workflows/build/badge.svg?branch=main)](https://github.com/wrtnlabs/autobe/actions?query=workflow%3Abuild)
+[![Guide Documents](https://img.shields.io/badge/Guide-Documents-forestgreen)](https://autobe.dev/docs/)
+[![Discord Badge](https://dcbadge.limes.pink/api/server/https://discord.gg/aMhRmzkqCx?style=flat)](https://discord.gg/aMhRmzkqCx)
 
-## Setup
+Automated quality evaluation for [AutoBE](https://github.com/wrtnlabs/autobe)-generated backend projects.
 
-```bash
-# From autobe repo root
-corepack pnpm install
+Scores generated code on a 0–100 scale (grades A–F) through static analysis, compiler validation, and optional LLM-based deep review.
 
-# Set your OpenRouter API key (required for AI agent evaluation)
-cp packages/estimate/.env.example packages/estimate/.env
-# Edit .env and set OPENROUTER_API_KEY=sk-or-...
+## Pipeline
+
+```
+Gate Check (pass/fail)
+  → Syntax · Types · Prisma · Runtime
+     ↓ pass
+Scoring Phases (weighted 0-100)
+  → Document Quality (7%) · Requirements Coverage (18%)
+  → Test Coverage (23%) · Logic Completeness (30%) · API Completeness (7%)
+     ↓
+Golden Set (15%, optional)
+  → Contract-based API scenario tests
+     ↓
+Agent Evaluations (15%, optional)
+  → Security (25%) · LLM Quality (40%) · Hallucination (35%)
+     ↓
+Final Score = Phase Score × 85% + Agent Score × 15% − Penalties (max 20pt)
 ```
 
-## Quick Start
+## CLI
 
 ```bash
-# Evaluate a single project (static analysis + AI agents, enabled by default)
-corepack pnpm estimate -- -i <project-path> -o <output-path>
+# Evaluate a single project
+pnpm estimate -i <project-path> -o <output-path>
 
-# Static analysis only (disable AI agents)
-corepack pnpm estimate -- -i <project-path> -o <output-path> --no-agent
+# Static analysis only (no LLM agents)
+pnpm estimate -i <project-path> -o <output-path> --no-agent
+
+# Include golden set evaluation
+pnpm estimate -i <project-path> -o <output-path> --golden --project todo
+
+# Batch evaluation across all models × projects
+pnpm estimate
+
+# Diagnose compile errors with LLM forensic analysis
+pnpm estimate diagnose -i <project-path> -o <output-path> --api-key <key>
+
+# Compare two model outputs side by side
+pnpm estimate compare -p "modelA:path/a" "modelB:path/b" -o <output-path>
 ```
 
-## Commands
-
-### evaluate (default)
-
-Evaluate a single AutoBE-generated project.
-
-```bash
-corepack pnpm estimate -- -i <project-path> -o <output-path>
-corepack pnpm estimate -- -i <project-path> -o <output-path> --golden --project todo
-```
-
-### batch
-
-Run evaluation across all models/projects in the `autobe-examples` directory. This is what `run-benchmark.sh` uses internally.
-
-```bash
-# All models x all projects
-corepack pnpm estimate
-
-# Filter by model or project
-corepack pnpm estimate -- --model glm-5
-corepack pnpm estimate -- --project todo
-corepack pnpm estimate -- --model glm-5 --project todo
-```
-
-> The `autobe-examples` directory should be located next to the autobe repo. Use `--examples <path>` to specify a custom path.
-
-### diagnose
-
-Diagnose compile errors using LLM-powered 7-step forensic analysis. Outputs a markdown diagnosis report.
-
-```bash
-# Evaluate project first, then diagnose
-corepack pnpm estimate diagnose -- -i <project-path> -o <output-path> --api-key <key>
-
-# Use an existing report
-corepack pnpm estimate diagnose -- --report <report.json> -o <output-path> --api-key <key>
-```
-
-### compare
-
-Compare multiple model results side by side.
-
-```bash
-corepack pnpm estimate compare -- -p "modelA:path/a" "modelB:path/b" -o <output-path>
-```
-
-## CLI Options
+### Options
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `-i, --input <path>` | (required) | Input project path |
-| `-o, --output <path>` | (required) | Output directory for reports |
-| `--no-agent` | agent=true | Disable AI agent evaluation |
-| `--api-key <key>` | env | API key (or `OPENROUTER_API_KEY` env var) |
-| `--provider <name>` | openrouter | LLM provider |
-| `--continue-on-gate-failure` | false | Continue evaluation even if gate fails |
-| `--golden` | false | Include Golden Set evaluation |
-| `--project <name>` | - | Project type (todo\|bbs\|reddit\|shopping\|erp\|gauzy) |
+| `-i, --input` | required | Input project path |
+| `-o, --output` | required | Output directory for reports |
+| `--no-agent` | agent=true | Disable LLM agent evaluation |
+| `--api-key` | env | API key (or `OPENROUTER_API_KEY` env var) |
+| `--golden` | false | Enable golden set evaluation |
+| `--project` | — | Project type (todo, bbs, reddit, shopping, erp, gauzy) |
 | `--run-tests` | false | Start Docker server and run E2E tests |
 | `--auto-fix` | false | Auto-fix simple issues after evaluation |
+| `--continue-on-gate-failure` | false | Score even if gate fails |
 | `-v, --verbose` | false | Verbose output |
 
-## Evaluation Phases
+## Output
 
-| Phase | Weight | Description |
-|-------|--------|-------------|
-| Gate (Type Check) | pass/fail | TypeScript compilation + ESLint (must pass) |
-| Document Quality | 5% | Documentation quality |
-| Requirements Coverage | 20% | Requirements fulfillment |
-| Test Coverage | 20% | Test coverage |
-| Logic Completeness | 30% | Business logic completeness |
-| API Completeness | 10% | API endpoint completeness |
-| Golden Set | 15% | E2E scenario tests (when `--golden` is used) |
-
-### AI Agent Evaluators
-
-When agent evaluation is enabled (default), three AI agents provide deeper analysis:
-
-| Agent | Weight | Description |
-|-------|--------|-------------|
-| Security | 40% | Security vulnerability analysis |
-| LLM Quality | 30% | Code quality deep analysis |
-| Hallucination | 30% | Detects unimplemented functions and fake logic |
-
-## Output Files
-
-Reports are generated in the output directory:
-
-- `estimate-report.json` - Full evaluation result (scores, grade, phase details)
-- `estimate-report.md` - Markdown report with Fix Advisory (prioritized fix suggestions)
-- `diagnosis.md` - Compile error diagnosis (when using `diagnose` command)
+| File | Contents |
+|------|----------|
+| `estimate-report.json` | Scores, grade, phase details, agent findings |
+| `estimate-report.md` | Markdown report with prioritized fix suggestions |
+| `diagnosis.md` | Compile error diagnosis (`diagnose` command) |

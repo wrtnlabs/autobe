@@ -4,20 +4,7 @@ lib/
 node_modules/
 playground-result/
 temporary/
-
 repositories/
-apps/**/README.md
-internals/**/README.md
-packages/**/README.md
-test/README.md
-website/README.md
-apps/**/LICENSE
-internals/**/LICENSE
-packages/**/LICENSE
-test/LICENSE
-website/LICENSE
-!internals/template/*/README.md
-!internals/template/*/LICENSE
 
 *.log
 .env
@@ -27,4 +14,4 @@ website/LICENSE
 
 !.claude/settings.json
 
-*.temp.MD
+*.temp.md
