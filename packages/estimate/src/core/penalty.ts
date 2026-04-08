@@ -18,7 +18,7 @@ export interface PenaltyOutput {
  * Calculate all quality penalties proportionally, capped at MAX_COMBINED_PENALTY.
  *
  * Five penalty types:
- *   1. Warning penalty (max 20) — non-infra, non-gate-penalised warnings
+ *   1. Warning penalty (max 20) — non-infra, non-gate-penalized warnings
  *   2. Duplication penalty (max 5)
  *   3. JSDoc penalty (max 5)
  *   4. Schema sync penalty (max 10)
