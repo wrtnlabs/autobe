@@ -9,7 +9,6 @@ import type {
 } from "../types";
 import {
   GATE_MULTIPLIER_FLOOR,
-  PHASE_WEIGHTS,
   createEmptyPhaseResult,
 } from "../types";
 import { buildResult } from "./score-calculator";

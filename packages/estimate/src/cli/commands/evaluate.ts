@@ -23,7 +23,6 @@ import { flushLangfuse, getActiveTrace, recordAgentResults } from "../../telemet
 import type {
   EvaluationContext,
   EvaluationInput,
-  EvaluationResult,
   ScoreBreakdown,
 } from "../../types";
 import {

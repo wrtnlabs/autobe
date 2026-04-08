@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 import { LLMClient } from "../agents/llm-client";
-import type { AgentConfig, LLMProvider, TokenUsage } from "../agents/types";
+import type { LLMProvider, TokenUsage } from "../agents/types";
 import type { EvaluationResult, Issue } from "../types";
 
 /** Default model for diagnosis (cheap, good at code analysis) */
