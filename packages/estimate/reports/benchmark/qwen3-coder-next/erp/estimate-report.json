@@ -1,1959 +1,592 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp",
-  "totalScore": 88,
-  "grade": "B",
+  "totalScore": 0,
+  "grade": "F",
   "phases": {
     "gate": {
       "phase": "gate",
-      "passed": true,
-      "score": 96,
+      "passed": false,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 96,
+      "weightedScore": 0,
       "issues": [
         {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2554",
-          "message": "Expected 0 arguments, but got 1.",
-          "location": {
-            "file": "src/MyGlobal.ts",
-            "line": 903
-          },
-          "id": "type-error-1774846358157-2ga0wubo257",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2305",
-          "message": "Module '\"../../../../providers/postHrmTrackerAuthMemberRefresh\"' has no exported member 'postHrmTrackerAuthMemberRefresh'.",
-          "location": {
-            "file": "src/controllers/hrmTracker/auth/member/HrmtrackerAuthMemberController.ts",
-            "line": 422
-          },
-          "id": "type-error-1774846358158-tanjrvkf6e",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2305",
-          "message": "Module '\"../../../providers/patchHrmTrackerEmployees\"' has no exported member 'patchHrmTrackerEmployees'.",
-          "location": {
-            "file": "src/controllers/hrmTracker/employees/HrmtrackerEmployeesController.ts",
-            "line": 312
-          },
-          "id": "type-error-1774846358158-ae45rfslsy5",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2740",
-          "message": "Type 'IHrmTrackerEmployeeHistory[]' is missing the following properties from type 'IHrmTrackerEmployeeHistory': id, action_type, previous_status, current_status, and 12 more.",
-          "location": {
-            "file": "src/controllers/hrmTracker/employees/histories/HrmtrackerEmployeesHistoriesController.ts",
-            "line": 2034
-          },
-          "id": "type-error-1774846358158-mi34rsuvm3n",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2305",
-          "message": "Module '\"../../../../providers/getHrmTrackerMemberDashboard\"' has no exported member 'getHrmTrackerMemberDashboard'.",
-          "location": {
-            "file": "src/controllers/hrmTracker/member/dashboard/HrmtrackerMemberDashboardController.ts",
-            "line": 355
-          },
-          "id": "type-error-1774846358158-hsb9ok3aeec",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2305",
-          "message": "Module '\"../../../../../../providers/getHrmTrackerMemberProjectsProjectIdTasksTimeline\"' has no exported member 'getHrmTrackerMemberProjectsProjectIdTasksTimeline'.",
-          "location": {
-            "file": "src/controllers/hrmTracker/member/projects/tasks/timeline/HrmtrackerMemberProjectsTasksTimelineController.ts",
-            "line": 375
-          },
-          "id": "type-error-1774846358158-nnl933pjio",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2345",
-          "message": "Argument of type '(Promise<{ count: number; }> | Promise<hrm_tracker_departments>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<hrm_tracker_departments>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
-          "location": {
-            "file": "src/providers/deleteHrmTrackerMemberDepartmentsDepartmentId.ts",
-            "line": 1459
-          },
-          "id": "type-error-1774846358158-eqadvxgjipb",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2353",
-          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-          "location": {
-            "file": "src/providers/patchHrmTrackerMemberOrganizationsOrganizationIdAnalyticsEmployees.ts",
-            "line": 1207
-          },
-          "id": "type-error-1774846358158-ek5jwghuvt6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2353",
-          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-          "location": {
-            "file": "src/providers/patchHrmTrackerMemberOrganizationsOrganizationIdAnalyticsEmployees.ts",
-            "line": 1483
-          },
-          "id": "type-error-1774846358158-ghuny1oie1",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS18046",
-          "message": "'where.created_at' is of type 'unknown'.",
-          "location": {
-            "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
-            "line": 1961
-          },
-          "id": "type-error-1774846358158-9aee9jcx5dh",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS18046",
-          "message": "'where.created_at' is of type 'unknown'.",
-          "location": {
-            "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
-            "line": 2079
-          },
-          "id": "type-error-1774846358158-i5odn2q2w7k",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2322",
-          "message": "Type '{ id: string & Format<\"uuid\">; role: string; created_at: string & Format<\"date-time\">; updated_at: string & Format<\"date-time\">; employee: { id: string & Format<\"uuid\">; status: string; position: string | null; created_at: string & Format<\"date-time\">; user: { id: string & Format<\"uuid\">; display_name: string; avatar_url: string | null; phone: string | null; status: \"active\" | \"deactivated\"; email_verified: boolean; }; }; project: { id: string & Format<\"uuid\">; name: string; color: string; status: string; start_date: (string & Format<\"date-time\">) | null; end_date: (string & Format<\"date-time\">) | null; created_at: string & Format<\"date-time\">; organization: ISummary | null; }; }[]' is not assignable to type 'ISummary[]'.\n  Type '{ id: string & tags.Format<\"uuid\">; role: string; created_at: string & tags.Format<\"date-time\">; updated_at: string & tags.Format<\"date-time\">; employee: { id: string & tags.Format<\"uuid\">; status: string; position: string | null; created_at: string & tags.Format<\"date-time\">; user: { id: string & tags.Format<\"uuid\">; display_name: string; avatar_url: string | null; phone: string | null; status: \"active\" | \"deactivated\"; email_verified: boolean; }; }; project: { id: string & tags.Format<\"uuid\">; name: string; color: string; status: string; start_date: (string & tags.Format<\"date-time\">) | null; end_date: (string & tags.Format<\"date-time\">) | null; created_at: string & tags.Format<\"date-time\">; organization: IHrmTrackerOrganization.ISummary | null; }; }' is not assignable to type 'ISummary'.\n    The types of 'project.organization' are incompatible between these types.\n      Type 'ISummary | null' is not assignable to type 'ISummary'.\n        Type 'null' is not assignable to type 'ISummary'.",
-          "location": {
-            "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
-            "line": 6176
-          },
-          "id": "type-error-1774846358158-byvrcllk9m6",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS18046",
-          "message": "'whereCondition.date' is of type 'unknown'.",
-          "location": {
-            "file": "src/providers/patchHrmTrackerMemberTimelogs.ts",
-            "line": 2038
-          },
-          "id": "type-error-1774846358158-f62vrqqyejq",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS18046",
-          "message": "'whereCondition.date' is of type 'unknown'.",
-          "location": {
-            "file": "src/providers/patchHrmTrackerMemberTimelogs.ts",
-            "line": 2140
-          },
-          "id": "type-error-1774846358158-ewmtoghpzva",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2694",
-          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'StringFilter'.",
-          "location": {
-            "file": "src/providers/patchHrmTrackerMemberVersions.ts",
-            "line": 1370
-          },
-          "id": "type-error-1774846358158-zukk9i1ydsd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2694",
-          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
-          "location": {
-            "file": "src/providers/patchHrmTrackerMemberVersions.ts",
-            "line": 1480
-          },
-          "id": "type-error-1774846358158-yh4ggn52r48",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2367",
-          "message": "This comparison appears to be unintentional because the types 'hrm_tracker_permissions' and 'string' have no overlap.",
-          "location": {
-            "file": "src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
-            "line": 2270
-          },
-          "id": "type-error-1774846358158-rtdopg0mdhq",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS1117",
-          "message": "An object literal cannot have multiple properties with the same name.",
-          "location": {
-            "file": "src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
-            "line": 3442
-          },
-          "id": "type-error-1774846358158-dpfqj95hkxl",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2322",
-          "message": "Type '{ id: string; permission: \"org:manage\" | \"employee:manage\" | \"employee:view\" | \"project:manage\" | \"project:view\" | \"time:manage\" | \"time:approve\" | \"time:view_all\" | \"report:view\"; hrm_tracker_role_id: string; created_at: Date; updated_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; permission: \"org:manage\" | \"employee:manage\" | \"employee:view\" | \"project:manage\" | \"project:view\" | \"time:manage\" | \"time:approve\" | \"time:view_all\" | \"report:view\"; hrm_tracker_role_id: string; created_at: Date; updated_at: Date; }[]'.",
-          "location": {
-            "file": "src/providers/postHrmTrackerMemberRolesRoleIdPermissions.ts",
-            "line": 1444
-          },
-          "id": "type-error-1774846358158-i5y6ixk9ly",
+          "code": "GATE001",
+          "severity": "critical",
+          "category": "syntax",
+          "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+          "id": "syntax-1775680198591-c6buttmz4ln",
           "autoFixable": false
         }
       ],
-      "durationMs": 6348,
+      "durationMs": 0,
       "metrics": {
-        "totalFiles": 283,
-        "filesWithErrors": 0,
-        "errorRatio": 0,
-        "penalty": 4,
-        "typeCriticalCount": 0,
-        "typeWarningCount": 12,
-        "prismaCriticalCount": 0,
-        "prismaWarningCount": 0,
-        "softPass": true
+        "failedAt": "no-source",
+        "reason": "No TypeScript files found"
       }
     },
     "documentQuality": {
       "phase": "documentQuality",
       "passed": true,
-      "score": 91,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 6.370000000000001,
-      "issues": [],
-      "durationMs": 0,
+      "weightedScore": 0,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "documentation",
+          "code": "DOC001",
+          "message": "No documentation found (missing docs/analysis/ and README.md)",
+          "id": "documentation-1775680198591-cmmrlq922i",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 1,
       "metrics": {
-        "hasDocsFolder": true,
-        "hasReadme": true,
-        "docFileCount": 6,
-        "totalDocLength": 334250,
-        "cached": true,
-        "originalDurationMs": 0
+        "hasDocsFolder": false,
+        "hasReadme": false,
+        "docFileCount": 0,
+        "totalDocLength": 0
+      },
+      "explanation": {
+        "reasons": [
+          "1 critical issue(s) found",
+          "1x No documentation found (missing docs/analysis/ and README.md)"
+        ],
+        "issueSummaries": [
+          {
+            "code": "DOC001",
+            "count": 1,
+            "message": "No documentation found (missing docs/analysis/ and README.md)",
+            "severity": "critical"
+          }
+        ],
+        "suggestions": [
+          "Fix all critical issues first"
+        ]
       }
     },
     "requirementsCoverage": {
       "phase": "requirementsCoverage",
       "passed": true,
-      "score": 100,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 18,
-      "issues": [],
+      "weightedScore": 0,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "requirements",
+          "code": "REQ001",
+          "message": "No controllers found - API endpoints not implemented",
+          "id": "requirements-1775680198591-fs4aku7gq8",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "requirements",
+          "code": "REQ002",
+          "message": "No providers found - business logic not implemented",
+          "id": "requirements-1775680198591-c0kmok1ulj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "requirements",
+          "code": "REQ003",
+          "message": "No structures/DTOs found",
+          "id": "requirements-1775680198591-bi2uyno0rdf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "requirements",
+          "code": "REQ004",
+          "message": "No requirements documents found in docs/analysis/",
+          "id": "requirements-1775680198591-fw51066hf7s",
+          "autoFixable": false
+        }
+      ],
       "durationMs": 0,
       "metrics": {
-        "controllerCount": 38,
-        "providerCount": 87,
-        "structureCount": 42,
-        "requirementsDocCount": 6,
-        "hasRequirementsDocs": true,
-        "mappedControllers": 38,
+        "controllerCount": 0,
+        "providerCount": 0,
+        "structureCount": 0,
+        "requirementsDocCount": 0,
+        "hasRequirementsDocs": false,
+        "mappedControllers": 0,
         "unmappedControllers": 0,
-        "mappingRatio": 1,
-        "cached": true,
-        "originalDurationMs": 0
+        "mappingRatio": 0
+      },
+      "explanation": {
+        "reasons": [
+          "2 critical issue(s) found",
+          "1x No controllers found - API endpoints not implemented",
+          "1x No providers found - business logic not implemented",
+          "1x No structures/DTOs found"
+        ],
+        "issueSummaries": [
+          {
+            "code": "REQ001",
+            "count": 1,
+            "message": "No controllers found - API endpoints not implemented",
+            "severity": "critical"
+          },
+          {
+            "code": "REQ002",
+            "count": 1,
+            "message": "No providers found - business logic not implemented",
+            "severity": "critical"
+          },
+          {
+            "code": "REQ003",
+            "count": 1,
+            "message": "No structures/DTOs found",
+            "severity": "warning"
+          },
+          {
+            "code": "REQ004",
+            "count": 1,
+            "message": "No requirements documents found in docs/analysis/",
+            "severity": "warning"
+          }
+        ],
+        "suggestions": [
+          "Fix all critical issues first"
+        ]
       }
     },
     "testCoverage": {
       "phase": "testCoverage",
       "passed": true,
-      "score": 80,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 18.400000000000002,
-      "issues": [],
+      "weightedScore": 0,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "test",
+          "code": "TEST001",
+          "message": "No test files found",
+          "id": "test-1775680198591-xeh3twjtn1j",
+          "autoFixable": false
+        }
+      ],
       "durationMs": 0,
       "metrics": {
-        "testCount": 199,
-        "controllerCount": 38,
-        "routeAnalysis": true,
-        "totalRoutes": 80,
-        "coveredRoutes": 56,
-        "routeCoveragePercent": 70,
-        "definedMethods": "GET,PATCH,POST,PUT,DELETE",
-        "testedMethods": "POST,GET,PATCH,PUT,DELETE",
-        "controllersAnalyzed": 35,
-        "stubTests": 6,
-        "assertionTests": 193,
-        "runtimeVerified": false,
-        "cached": true,
-        "originalDurationMs": 0
+        "testCount": 0,
+        "controllerCount": 0,
+        "routeAnalysis": false,
+        "runtimeVerified": false
+      },
+      "explanation": {
+        "reasons": [
+          "1 critical issue(s) found",
+          "1x No test files found"
+        ],
+        "issueSummaries": [
+          {
+            "code": "TEST001",
+            "count": 1,
+            "message": "No test files found",
+            "severity": "critical"
+          }
+        ],
+        "suggestions": [
+          "Fix all critical issues first"
+        ]
       }
     },
     "logicCompleteness": {
       "phase": "logicCompleteness",
       "passed": true,
-      "score": 98,
+      "score": 100,
       "maxScore": 100,
-      "weightedScore": 29.4,
+      "weightedScore": 30,
       "issues": [],
       "durationMs": 0,
       "metrics": {
-        "totalIncomplete": 1,
+        "totalIncomplete": 0,
         "criticalCount": 0,
-        "warningCount": 1,
-        "todoCount": 1,
+        "warningCount": 0,
+        "todoCount": 0,
         "fixmeCount": 0,
         "emptyMethods": 0,
-        "emptyCatch": 0,
-        "cached": true,
-        "originalDurationMs": 0
+        "emptyCatch": 0
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "apiCompleteness": {
       "phase": "apiCompleteness",
       "passed": true,
-      "score": 100,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 7.000000000000001,
-      "issues": [],
+      "weightedScore": 0,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "api",
+          "code": "API002",
+          "message": "No API endpoints found",
+          "id": "api-1775680198591-m2qtkl1g03",
+          "autoFixable": false
+        }
+      ],
       "durationMs": 0,
       "metrics": {
-        "totalEndpoints": 84,
+        "totalEndpoints": 0,
         "emptyEndpoints": 0,
         "stubEndpoints": 0,
-        "implementedEndpoints": 84,
+        "implementedEndpoints": 0,
         "noProviderEndpoints": 0,
         "passthroughEndpoints": 0,
-        "completionRate": 100,
-        "implementationRate": 100,
-        "cached": true,
-        "originalDurationMs": 0
+        "completionRate": 0,
+        "implementationRate": 0
+      },
+      "explanation": {
+        "reasons": [
+          "1 critical issue(s) found",
+          "1x No API endpoints found"
+        ],
+        "issueSummaries": [
+          {
+            "code": "API002",
+            "count": 1,
+            "message": "No API endpoints found",
+            "severity": "critical"
+          }
+        ],
+        "suggestions": [
+          "Fix all critical issues first"
+        ]
       }
     }
   },
   "reference": {
     "complexity": {
-      "totalFunctions": 769,
-      "complexFunctions": 1,
-      "maxComplexity": 22,
-      "issues": [
-        {
-          "severity": "warning",
-          "category": "complexity",
-          "code": "C002",
-          "message": "Function \"putHrmTrackerMemberProjectsProjectId\" has complexity 17 (recommended: 15)",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberProjectsProjectId.ts",
-            "line": 15
-          },
-          "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846358642-1khd6snbb9q",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "complexity",
-          "code": "C002",
-          "message": "Function \"putHrmTrackerMemberDepartmentsDepartmentId\" has complexity 18 (recommended: 15)",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberDepartmentsDepartmentId.ts",
-            "line": 16
-          },
-          "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846358645-i6u99g5ysr",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "complexity",
-          "code": "C002",
-          "message": "Function \"postHrmTrackerMemberTimesheetsTimesheetIdSubmit\" has complexity 20 (recommended: 15)",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 18
-          },
-          "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846358644-utg2oqdsij",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "complexity",
-          "code": "C002",
-          "message": "Function \"patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories\" has complexity 17 (recommended: 15)",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
-            "line": 22
-          },
-          "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846358659-rd7qmwhpbqn",
-          "autoFixable": false
-        },
-        {
-          "severity": "critical",
-          "category": "complexity",
-          "code": "C001",
-          "message": "Function \"patchHrmTrackerMemberProjectsProjectIdProjectMembers\" has complexity 22 (max: 20)",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
-            "line": 21
-          },
-          "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846358662-hixdak5hb4h",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "complexity",
-          "code": "C002",
-          "message": "Function \"patchHrmTrackerMemberInvitations\" has complexity 18 (recommended: 15)",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberInvitations.ts",
-            "line": 18
-          },
-          "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846358664-jjwq5yfudkq",
-          "autoFixable": false
-        }
-      ]
+      "totalFunctions": 0,
+      "complexFunctions": 0,
+      "maxComplexity": 0,
+      "issues": []
     },
     "duplication": {
-      "totalBlocks": 48,
-      "issues": [
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timesheets/HrmtrackerMemberTimesheetsController.ts",
-            "line": 100
-          },
-          "id": "duplication-1774846358765-8w7jtecrcwf",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timesheets/HrmtrackerMemberTimesheetsController.ts",
-            "line": 101
-          },
-          "id": "duplication-1774846358765-2a2rpaom9ob",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/HrmtrackerMemberProjectsTasksController.ts",
-            "line": 190
-          },
-          "id": "duplication-1774846358765-h6qrwgxplj",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/HrmtrackerMemberProjectsTasksController.ts",
-            "line": 191
-          },
-          "id": "duplication-1774846358765-wknbeif9spm",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
-            "line": 13
-          },
-          "id": "duplication-1774846358765-u1oxzwx4rx",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
-            "line": 14
-          },
-          "id": "duplication-1774846358765-8m535k0anaw",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
-            "line": 15
-          },
-          "id": "duplication-1774846358765-n78tylt1k8",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
-            "line": 16
-          },
-          "id": "duplication-1774846358765-dwpowj8rc6c",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
-            "line": 17
-          },
-          "id": "duplication-1774846358765-3pth6fzl32t",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 3 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
-            "line": 76
-          },
-          "id": "duplication-1774846358765-tkftgdah3vh",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 3 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
-            "line": 77
-          },
-          "id": "duplication-1774846358765-e9yflm6vydb",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 3 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
-            "line": 78
-          },
-          "id": "duplication-1774846358765-kr1y7vfpkf",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberProjectsProjectIdTasksTaskId.ts",
-            "line": 15
-          },
-          "id": "duplication-1774846358765-5q8efipwb3y",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberProjectsProjectIdTasksTaskId.ts",
-            "line": 16
-          },
-          "id": "duplication-1774846358765-7nfpq1ytoe",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 30
-          },
-          "id": "duplication-1774846358765-fw9ndynkew9",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 31
-          },
-          "id": "duplication-1774846358765-08gttyuq8p5c",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 32
-          },
-          "id": "duplication-1774846358765-amtktsg4cz8",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 33
-          },
-          "id": "duplication-1774846358765-86ujh4lhlxc",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 34
-          },
-          "id": "duplication-1774846358765-1ugz9dyq28s",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 35
-          },
-          "id": "duplication-1774846358765-vrnradfxm1",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 36
-          },
-          "id": "duplication-1774846358765-kht469kfqz",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 37
-          },
-          "id": "duplication-1774846358765-16zwqswvooo",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 38
-          },
-          "id": "duplication-1774846358765-asfnjwpb5f",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 39
-          },
-          "id": "duplication-1774846358765-jp4mws4mt",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 40
-          },
-          "id": "duplication-1774846358765-z0lkp5pay9s",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 41
-          },
-          "id": "duplication-1774846358765-vs1glcg7839",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 4 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 42
-          },
-          "id": "duplication-1774846358765-zm65d4zq85",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 5 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 43
-          },
-          "id": "duplication-1774846358765-qaztzbdycyf",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 5 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 44
-          },
-          "id": "duplication-1774846358765-yayoq1am1p",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 5 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 45
-          },
-          "id": "duplication-1774846358765-5isjo2hxyj9",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 5 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 46
-          },
-          "id": "duplication-1774846358765-a80h99lel85",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 5 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 47
-          },
-          "id": "duplication-1774846358765-77fu3poowyu",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 5 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 48
-          },
-          "id": "duplication-1774846358765-el9tmmddxqh",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 49
-          },
-          "id": "duplication-1774846358765-kffj5ljdqxa",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 50
-          },
-          "id": "duplication-1774846358765-7va9u59hkal",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 51
-          },
-          "id": "duplication-1774846358765-rmyyurk25jp",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
-            "line": 52
-          },
-          "id": "duplication-1774846358765-0uxmt4pv4e8q",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
-            "line": 12
-          },
-          "id": "duplication-1774846358765-fidlqchfc37",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerAuthMemberJoin.ts",
-            "line": 42
-          },
-          "id": "duplication-1774846358765-ppqcjj1fd6r",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerAuthMemberJoin.ts",
-            "line": 43
-          },
-          "id": "duplication-1774846358765-v0yaa8gas5",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberTimesheetsMetrics.ts",
-            "line": 10
-          },
-          "id": "duplication-1774846358765-hp8novjcxys",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberTimesheetsMetrics.ts",
-            "line": 11
-          },
-          "id": "duplication-1774846358765-n1egk8f82rl",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberTimesheetsMetrics.ts",
-            "line": 12
-          },
-          "id": "duplication-1774846358765-01wkrang78ti",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
-            "line": 97
-          },
-          "id": "duplication-1774846358765-uc35tr34q6f",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
-            "line": 98
-          },
-          "id": "duplication-1774846358765-aabqn1yrrnd",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
-            "line": 99
-          },
-          "id": "duplication-1774846358765-ir17jcknf49",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
-            "line": 100
-          },
-          "id": "duplication-1774846358765-82w6zztkzdh",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
-            "line": 101
-          },
-          "id": "duplication-1774846358765-p9ejba8i9jg",
-          "autoFixable": false
-        }
-      ]
+      "totalBlocks": 0,
+      "issues": []
     },
     "naming": {
-      "totalIssues": 6,
-      "issues": [
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmtrackerActivity_logsController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/activity-logs/HrmtrackerActivity_logsController.ts",
-            "line": 10
-          },
-          "id": "naming-1774846358765-aryn90vq8cw",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmtrackerEmployeesRole_changesController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/employees/role-changes/HrmtrackerEmployeesRole_changesController.ts",
-            "line": 8
-          },
-          "id": "naming-1774846358766-iosej4wnwdr",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmtrackerMemberProjectsStatus_changeController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/status-change/HrmtrackerMemberProjectsStatus_changeController.ts",
-            "line": 10
-          },
-          "id": "naming-1774846358770-rqck4ii7fqp",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmtrackerMemberProjectsActivity_summaryController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/activity-summary/HrmtrackerMemberProjectsActivity_summaryController.ts",
-            "line": 10
-          },
-          "id": "naming-1774846358771-i5009crqsvk",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmtrackerMemberOrganizationsStatus_historyController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/status-history/HrmtrackerMemberOrganizationsStatus_historyController.ts",
-            "line": 10
-          },
-          "id": "naming-1774846358771-i0fg6jq27we",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmtrackerMemberAuditRole_changesController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/audit/role-changes/HrmtrackerMemberAuditRole_changesController.ts",
-            "line": 11
-          },
-          "id": "naming-1774846358771-1pkcsv9nekqi",
-          "autoFixable": false
-        }
-      ]
+      "totalIssues": 0,
+      "issues": []
     },
     "jsdoc": {
-      "totalMissing": 38,
-      "totalApis": 39,
-      "issues": [
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerEmployeesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/employees/HrmtrackerEmployeesController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846358790-ljr3wdl3qxc",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerActivity_logsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/activity-logs/HrmtrackerActivity_logsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358791-u9dqmmw1rvj",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerDepartmentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/departments/HrmtrackerDepartmentsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358791-fsw0elwpavs",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerRolesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/roles/HrmtrackerRolesController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358791-etbabjgthys",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerEmployeesRole_changesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/employees/role-changes/HrmtrackerEmployeesRole_changesController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774846358791-uddlwjs7w9c",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/auth/guest/HrmtrackerAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846358792-ikqdhuymsec",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/auth/member/HrmtrackerAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358792-6x53e3wtwnt",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerEmployeesHistoriesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/employees/histories/HrmtrackerEmployeesHistoriesController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774846358791-nlvb3jhcd1d",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberVersionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/versions/HrmtrackerMemberVersionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846358792-anxnlvlk6nn",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberTimesheetsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timesheets/HrmtrackerMemberTimesheetsController.ts",
-            "line": 18
-          },
-          "id": "jsdoc-1774846358794-c2i685y647w",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberTimelogsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timelogs/HrmtrackerMemberTimelogsController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774846358794-t9jg3noof9k",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/sessions/HrmtrackerMemberSessionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846358793-yzp6xnbmo2",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberSettingsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/settings/HrmtrackerMemberSettingsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846358793-1hqj43strmg",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberRolesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/roles/HrmtrackerMemberRolesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846358793-ac1jv6pxeb6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/HrmtrackerMemberProjectsController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774846358793-4o7es8c694i",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/profile/HrmtrackerMemberProfileController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846358797-1qo4ytvnjdg",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberEmployeesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/employees/HrmtrackerMemberEmployeesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846358795-e8dtxx9iq9",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberOrganizationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/HrmtrackerMemberOrganizationsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846358795-2oe5twnxczl",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberDepartmentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/departments/HrmtrackerMemberDepartmentsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846358795-7piaw4uzw29",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberDashboardController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/dashboard/HrmtrackerMemberDashboardController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358796-uyxa8wufbfp",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberInvitationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/invitations/HrmtrackerMemberInvitationsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846358796-ay2rbbbkl5d",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberConfigsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/configs/HrmtrackerMemberConfigsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846358796-ytooyyo1klk",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberTimesheetsMetricsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timesheets/metrics/HrmtrackerMemberTimesheetsMetricsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846358796-7pq032epo2o",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberTimersStatusController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timers/status/HrmtrackerMemberTimersStatusController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358799-x7vm41c8vi",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberRolesPermissionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/roles/permissions/HrmtrackerMemberRolesPermissionsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846358797-ovque8pqlej",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsStatus_changeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/status-change/HrmtrackerMemberProjectsStatus_changeController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358797-3pdziaipl41",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsDashboardController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/dashboard/HrmtrackerMemberProjectsDashboardController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358797-iv97q0g43li",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsProjectmembersController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/projectMembers/HrmtrackerMemberProjectsProjectmembersController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846358798-f7nenkznd67",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsTasksController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/HrmtrackerMemberProjectsTasksController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774846358797-ceogvlkagzm",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberEmployeesRoleController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/employees/role/HrmtrackerMemberEmployeesRoleController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358798-2vczplcx2k",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsActivity_summaryController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/activity-summary/HrmtrackerMemberProjectsActivity_summaryController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358798-u2d99i4zzz",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberOrganizationsStatus_historyController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/status-history/HrmtrackerMemberOrganizationsStatus_historyController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358798-oz0ipdiidj",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberAuditRole_changesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/audit/role-changes/HrmtrackerMemberAuditRole_changesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846358798-lausegxm91",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberAnalyticsActivitiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/analytics/activities/HrmtrackerMemberAnalyticsActivitiesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846358799-ff0eqg6qy1d",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsTasksTimelineController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/timeline/HrmtrackerMemberProjectsTasksTimelineController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358799-i5nwjvf9h6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsTasksTaskhistoriesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/taskHistories/HrmtrackerMemberProjectsTasksTaskhistoriesController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846358799-n30zsk81pxr",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberOrganizationsDashboardOverviewController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/dashboard/overview/HrmtrackerMemberOrganizationsDashboardOverviewController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846358799-3gsguwgg8y2",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberOrganizationsAnalyticsEmployeesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/analytics/employees/HrmtrackerMemberOrganizationsAnalyticsEmployeesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846358799-rkpdaw58qre",
-          "autoFixable": false
-        }
-      ]
+      "totalMissing": 0,
+      "totalApis": 0,
+      "issues": []
     },
     "schemaSync": {
-      "totalTypes": 106,
-      "emptyTypes": 1,
-      "mismatchedProperties": 9,
-      "issues": [
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Prisma model \"e\" not found — referenced by @x-autobe-database-schema-property value",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerSystemConfig.ts",
-            "line": 80
-          },
-          "id": "completeness-1774846358814-2323cf7gt3j",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Prisma model \"IHrmTrackerMemberSession\" not found — referenced by @x-autobe-database-schema-property invitedByMemberSession",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerPendingInvitation.ts",
-            "line": 29
-          },
-          "id": "completeness-1774846358814-djy4dp590jm",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Prisma model \"IHrmTrackerMemberSession\" not found — referenced by @x-autobe-database-schema-property email",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerPendingInvitation.ts",
-            "line": 33
-          },
-          "id": "completeness-1774846358814-wm5fspajuod",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Prisma model \"IHrmTrackerOrganization\" not found — referenced by @x-autobe-database-schema-property organization",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerPendingInvitation.ts",
-            "line": 197
-          },
-          "id": "completeness-1774846358814-9nygdd52zb6",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Prisma model \"hrm_organizations\" not found — referenced by @x-autobe-database-schema-property deleted_at",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerOrganization.ts",
-            "line": 94
-          },
-          "id": "completeness-1774846358814-8twfeof9m26",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Column \"employee\" not found in Prisma model \"hrm_tracker_employees\"",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerEmployeeRoleChange.ts",
-            "line": 74
-          },
-          "id": "completeness-1774846358815-s4qihgpkewl",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Column \"actor\" not found in Prisma model \"hrm_tracker_members\"",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerEmployeeRoleChange.ts",
-            "line": 82
-          },
-          "id": "completeness-1774846358815-w01w7da2c5p",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Column \"oldRole\" not found in Prisma model \"hrm_tracker_roles\"",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerEmployeeRoleChange.ts",
-            "line": 90
-          },
-          "id": "completeness-1774846358815-u5vtv6f00t",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Column \"newRole\" not found in Prisma model \"hrm_tracker_roles\"",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerEmployeeRoleChange.ts",
-            "line": 98
-          },
-          "id": "completeness-1774846358815-xn7r1e3drk",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC001",
-          "message": "Empty type alias: IEmployeeStatisticsRequest = {} — missing properties",
-          "location": {
-            "file": "src/api/structures/IHrmTrackerAnalytic.ts",
-            "line": 33
-          },
-          "id": "completeness-1774846358815-602bn5a8l1j",
-          "autoFixable": false
-        }
-      ]
+      "totalTypes": 0,
+      "emptyTypes": 0,
+      "mismatchedProperties": 0,
+      "issues": []
     }
   },
   "summary": {
-    "totalIssues": 19,
-    "criticalCount": 0,
-    "warningCount": 12,
-    "suggestionCount": 7
+    "totalIssues": 8,
+    "criticalCount": 6,
+    "warningCount": 2,
+    "suggestionCount": 0
   },
-  "criticalIssues": [],
+  "criticalIssues": [
+    {
+      "code": "GATE001",
+      "severity": "critical",
+      "category": "syntax",
+      "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+      "id": "syntax-1775680198591-c6buttmz4ln",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "documentation",
+      "code": "DOC001",
+      "message": "No documentation found (missing docs/analysis/ and README.md)",
+      "id": "documentation-1775680198591-cmmrlq922i",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "requirements",
+      "code": "REQ001",
+      "message": "No controllers found - API endpoints not implemented",
+      "id": "requirements-1775680198591-fs4aku7gq8",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "requirements",
+      "code": "REQ002",
+      "message": "No providers found - business logic not implemented",
+      "id": "requirements-1775680198591-c0kmok1ulj",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "test",
+      "code": "TEST001",
+      "message": "No test files found",
+      "id": "test-1775680198591-xeh3twjtn1j",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "api",
+      "code": "API002",
+      "message": "No API endpoints found",
+      "id": "api-1775680198591-m2qtkl1g03",
+      "autoFixable": false
+    }
+  ],
   "warnings": [
     {
       "severity": "warning",
-      "category": "type-error",
-      "code": "TS2554",
-      "message": "Expected 0 arguments, but got 1.",
-      "location": {
-        "file": "src/MyGlobal.ts",
-        "line": 903
-      },
-      "id": "type-error-1774846358157-2ga0wubo257",
+      "category": "requirements",
+      "code": "REQ003",
+      "message": "No structures/DTOs found",
+      "id": "requirements-1775680198591-bi2uyno0rdf",
       "autoFixable": false
     },
     {
       "severity": "warning",
-      "category": "type-error",
-      "code": "TS2305",
-      "message": "Module '\"../../../../providers/postHrmTrackerAuthMemberRefresh\"' has no exported member 'postHrmTrackerAuthMemberRefresh'.",
-      "location": {
-        "file": "src/controllers/hrmTracker/auth/member/HrmtrackerAuthMemberController.ts",
-        "line": 422
-      },
-      "id": "type-error-1774846358158-tanjrvkf6e",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2305",
-      "message": "Module '\"../../../providers/patchHrmTrackerEmployees\"' has no exported member 'patchHrmTrackerEmployees'.",
-      "location": {
-        "file": "src/controllers/hrmTracker/employees/HrmtrackerEmployeesController.ts",
-        "line": 312
-      },
-      "id": "type-error-1774846358158-ae45rfslsy5",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2305",
-      "message": "Module '\"../../../../providers/getHrmTrackerMemberDashboard\"' has no exported member 'getHrmTrackerMemberDashboard'.",
-      "location": {
-        "file": "src/controllers/hrmTracker/member/dashboard/HrmtrackerMemberDashboardController.ts",
-        "line": 355
-      },
-      "id": "type-error-1774846358158-hsb9ok3aeec",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2305",
-      "message": "Module '\"../../../../../../providers/getHrmTrackerMemberProjectsProjectIdTasksTimeline\"' has no exported member 'getHrmTrackerMemberProjectsProjectIdTasksTimeline'.",
-      "location": {
-        "file": "src/controllers/hrmTracker/member/projects/tasks/timeline/HrmtrackerMemberProjectsTasksTimelineController.ts",
-        "line": 375
-      },
-      "id": "type-error-1774846358158-nnl933pjio",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2345",
-      "message": "Argument of type '(Promise<{ count: number; }> | Promise<hrm_tracker_departments>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<hrm_tracker_departments>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
-      "location": {
-        "file": "src/providers/deleteHrmTrackerMemberDepartmentsDepartmentId.ts",
-        "line": 1459
-      },
-      "id": "type-error-1774846358158-eqadvxgjipb",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS18046",
-      "message": "'where.created_at' is of type 'unknown'.",
-      "location": {
-        "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
-        "line": 1961
-      },
-      "id": "type-error-1774846358158-9aee9jcx5dh",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS18046",
-      "message": "'where.created_at' is of type 'unknown'.",
-      "location": {
-        "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
-        "line": 2079
-      },
-      "id": "type-error-1774846358158-i5odn2q2w7k",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2322",
-      "message": "Type '{ id: string & Format<\"uuid\">; role: string; created_at: string & Format<\"date-time\">; updated_at: string & Format<\"date-time\">; employee: { id: string & Format<\"uuid\">; status: string; position: string | null; created_at: string & Format<\"date-time\">; user: { id: string & Format<\"uuid\">; display_name: string; avatar_url: string | null; phone: string | null; status: \"active\" | \"deactivated\"; email_verified: boolean; }; }; project: { id: string & Format<\"uuid\">; name: string; color: string; status: string; start_date: (string & Format<\"date-time\">) | null; end_date: (string & Format<\"date-time\">) | null; created_at: string & Format<\"date-time\">; organization: ISummary | null; }; }[]' is not assignable to type 'ISummary[]'.\n  Type '{ id: string & tags.Format<\"uuid\">; role: string; created_at: string & tags.Format<\"date-time\">; updated_at: string & tags.Format<\"date-time\">; employee: { id: string & tags.Format<\"uuid\">; status: string; position: string | null; created_at: string & tags.Format<\"date-time\">; user: { id: string & tags.Format<\"uuid\">; display_name: string; avatar_url: string | null; phone: string | null; status: \"active\" | \"deactivated\"; email_verified: boolean; }; }; project: { id: string & tags.Format<\"uuid\">; name: string; color: string; status: string; start_date: (string & tags.Format<\"date-time\">) | null; end_date: (string & tags.Format<\"date-time\">) | null; created_at: string & tags.Format<\"date-time\">; organization: IHrmTrackerOrganization.ISummary | null; }; }' is not assignable to type 'ISummary'.\n    The types of 'project.organization' are incompatible between these types.\n      Type 'ISummary | null' is not assignable to type 'ISummary'.\n        Type 'null' is not assignable to type 'ISummary'.",
-      "location": {
-        "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
-        "line": 6176
-      },
-      "id": "type-error-1774846358158-byvrcllk9m6",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS18046",
-      "message": "'whereCondition.date' is of type 'unknown'.",
-      "location": {
-        "file": "src/providers/patchHrmTrackerMemberTimelogs.ts",
-        "line": 2038
-      },
-      "id": "type-error-1774846358158-f62vrqqyejq",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS18046",
-      "message": "'whereCondition.date' is of type 'unknown'.",
-      "location": {
-        "file": "src/providers/patchHrmTrackerMemberTimelogs.ts",
-        "line": 2140
-      },
-      "id": "type-error-1774846358158-ewmtoghpzva",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2322",
-      "message": "Type '{ id: string; permission: \"org:manage\" | \"employee:manage\" | \"employee:view\" | \"project:manage\" | \"project:view\" | \"time:manage\" | \"time:approve\" | \"time:view_all\" | \"report:view\"; hrm_tracker_role_id: string; created_at: Date; updated_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; permission: \"org:manage\" | \"employee:manage\" | \"employee:view\" | \"project:manage\" | \"project:view\" | \"time:manage\" | \"time:approve\" | \"time:view_all\" | \"report:view\"; hrm_tracker_role_id: string; created_at: Date; updated_at: Date; }[]'.",
-      "location": {
-        "file": "src/providers/postHrmTrackerMemberRolesRoleIdPermissions.ts",
-        "line": 1444
-      },
-      "id": "type-error-1774846358158-i5y6ixk9ly",
+      "category": "requirements",
+      "code": "REQ004",
+      "message": "No requirements documents found in docs/analysis/",
+      "id": "requirements-1775680198591-fw51066hf7s",
       "autoFixable": false
     }
   ],
-  "suggestions": [
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2740",
-      "message": "Type 'IHrmTrackerEmployeeHistory[]' is missing the following properties from type 'IHrmTrackerEmployeeHistory': id, action_type, previous_status, current_status, and 12 more.",
-      "location": {
-        "file": "src/controllers/hrmTracker/employees/histories/HrmtrackerEmployeesHistoriesController.ts",
-        "line": 2034
-      },
-      "id": "type-error-1774846358158-mi34rsuvm3n",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2353",
-      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-      "location": {
-        "file": "src/providers/patchHrmTrackerMemberOrganizationsOrganizationIdAnalyticsEmployees.ts",
-        "line": 1207
-      },
-      "id": "type-error-1774846358158-ek5jwghuvt6",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2353",
-      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-      "location": {
-        "file": "src/providers/patchHrmTrackerMemberOrganizationsOrganizationIdAnalyticsEmployees.ts",
-        "line": 1483
-      },
-      "id": "type-error-1774846358158-ghuny1oie1",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2694",
-      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'StringFilter'.",
-      "location": {
-        "file": "src/providers/patchHrmTrackerMemberVersions.ts",
-        "line": 1370
-      },
-      "id": "type-error-1774846358158-zukk9i1ydsd",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2694",
-      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
-      "location": {
-        "file": "src/providers/patchHrmTrackerMemberVersions.ts",
-        "line": 1480
-      },
-      "id": "type-error-1774846358158-yh4ggn52r48",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2367",
-      "message": "This comparison appears to be unintentional because the types 'hrm_tracker_permissions' and 'string' have no overlap.",
-      "location": {
-        "file": "src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
-        "line": 2270
-      },
-      "id": "type-error-1774846358158-rtdopg0mdhq",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS1117",
-      "message": "An object literal cannot have multiple properties with the same name.",
-      "location": {
-        "file": "src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
-        "line": 3442
-      },
-      "id": "type-error-1774846358158-dpfqj95hkxl",
-      "autoFixable": false
-    }
-  ],
+  "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:52:38.815Z",
-    "totalDurationMs": 6602,
-    "estimateVersion": "0.30.4",
-    "evaluatedFiles": 283
-  },
-  "penalties": {
-    "jsdoc": {
-      "amount": 5,
-      "missing": 38,
-      "ratio": "97%"
-    }
+    "evaluatedAt": "2026-04-08T20:29:58.593Z",
+    "totalDurationMs": 7,
+    "estimateVersion": "0.30.5",
+    "evaluatedFiles": 0
   },
   "performanceMetrics": {
-    "totalSizeKB": 1024,
-    "totalFiles": 283,
-    "totalLines": 27269,
-    "avgLinesPerFile": 96,
-    "largestFile": "src/api/functional/hrmTracker/member/timesheets/index.ts",
-    "largestFileSizeKB": 30,
-    "controllers": 38,
-    "providers": 87,
-    "structures": 42,
+    "totalSizeKB": 0,
+    "totalFiles": 0,
+    "totalLines": 0,
+    "avgLinesPerFile": 0,
+    "largestFile": "N/A",
+    "largestFileSizeKB": 0,
+    "controllers": 0,
+    "providers": 0,
+    "structures": 0,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 0,
+    "phaseWeight": 1,
+    "phaseContribution": 0,
+    "agentScore": null,
+    "agentWeight": 0,
+    "agentContribution": 0
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "test-1775680198591-xeh3twjtn1j",
+        "phase": "testCoverage",
+        "severity": "critical",
+        "code": "TEST001",
+        "message": "No test files found",
+        "estimatedImpact": 27.1,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "documentation-1775680198591-cmmrlq922i",
+        "phase": "documentQuality",
+        "severity": "critical",
+        "code": "DOC001",
+        "message": "No documentation found (missing docs/analysis/ and README.md)",
+        "estimatedImpact": 8.2,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "api-1775680198591-m2qtkl1g03",
+        "phase": "apiCompleteness",
+        "severity": "critical",
+        "code": "API002",
+        "message": "No API endpoints found",
+        "estimatedImpact": 8.2,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680198591-fs4aku7gq8",
+        "phase": "requirementsCoverage",
+        "severity": "critical",
+        "code": "REQ001",
+        "message": "No controllers found - API endpoints not implemented",
+        "estimatedImpact": 5.3,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680198591-c0kmok1ulj",
+        "phase": "requirementsCoverage",
+        "severity": "critical",
+        "code": "REQ002",
+        "message": "No providers found - business logic not implemented",
+        "estimatedImpact": 5.3,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680198591-bi2uyno0rdf",
+        "phase": "requirementsCoverage",
+        "severity": "warning",
+        "code": "REQ003",
+        "message": "No structures/DTOs found",
+        "estimatedImpact": 3.2,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680198591-fw51066hf7s",
+        "phase": "requirementsCoverage",
+        "severity": "warning",
+        "code": "REQ004",
+        "message": "No requirements documents found in docs/analysis/",
+        "estimatedImpact": 3.2,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "syntax-1775680198591-c6buttmz4ln",
+        "phase": "gate",
+        "severity": "critical",
+        "code": "GATE001",
+        "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+        "estimatedImpact": 2,
+        "priority": 8,
+        "source": "phase"
+      }
+    ],
+    "totalPotentialGain": 62.5,
+    "topFixes": [
+      {
+        "issueId": "test-1775680198591-xeh3twjtn1j",
+        "phase": "testCoverage",
+        "severity": "critical",
+        "code": "TEST001",
+        "message": "No test files found",
+        "estimatedImpact": 27.1,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "documentation-1775680198591-cmmrlq922i",
+        "phase": "documentQuality",
+        "severity": "critical",
+        "code": "DOC001",
+        "message": "No documentation found (missing docs/analysis/ and README.md)",
+        "estimatedImpact": 8.2,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "api-1775680198591-m2qtkl1g03",
+        "phase": "apiCompleteness",
+        "severity": "critical",
+        "code": "API002",
+        "message": "No API endpoints found",
+        "estimatedImpact": 8.2,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680198591-fs4aku7gq8",
+        "phase": "requirementsCoverage",
+        "severity": "critical",
+        "code": "REQ001",
+        "message": "No controllers found - API endpoints not implemented",
+        "estimatedImpact": 5.3,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680198591-c0kmok1ulj",
+        "phase": "requirementsCoverage",
+        "severity": "critical",
+        "code": "REQ002",
+        "message": "No providers found - business logic not implemented",
+        "estimatedImpact": 5.3,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680198591-bi2uyno0rdf",
+        "phase": "requirementsCoverage",
+        "severity": "warning",
+        "code": "REQ003",
+        "message": "No structures/DTOs found",
+        "estimatedImpact": 3.2,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680198591-fw51066hf7s",
+        "phase": "requirementsCoverage",
+        "severity": "warning",
+        "code": "REQ004",
+        "message": "No requirements documents found in docs/analysis/",
+        "estimatedImpact": 3.2,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "syntax-1775680198591-c6buttmz4ln",
+        "phase": "gate",
+        "severity": "critical",
+        "code": "GATE001",
+        "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+        "estimatedImpact": 2,
+        "priority": 8,
+        "source": "phase"
+      }
+    ]
+  }
 }

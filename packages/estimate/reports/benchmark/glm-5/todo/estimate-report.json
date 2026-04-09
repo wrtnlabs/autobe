@@ -1,6 +1,6 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo",
-  "totalScore": 86,
+  "totalScore": 82,
   "grade": "B",
   "phases": {
     "gate": {
@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1775112102259-818h73tggfs",
+          "id": "type-error-1775686097523-6dgfg9sbwxi",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/decorators/MemberAuth.ts",
             "line": 189
           },
-          "id": "type-error-1775112102259-knf3hg4gjbe",
+          "id": "type-error-1775686097523-4hut5t6s4dv",
           "autoFixable": false
         },
         {
@@ -43,11 +43,11 @@
             "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
             "line": 3658
           },
-          "id": "type-error-1775112102259-pevmxfp2k49",
+          "id": "type-error-1775686097523-aara1kmb7ip",
           "autoFixable": false
         }
       ],
-      "durationMs": 2835,
+      "durationMs": 2513,
       "metrics": {
         "totalFiles": 84,
         "filesWithErrors": 0,
@@ -181,10 +181,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
-            "line": 110
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
+            "line": 46
           },
-          "id": "duplication-1775112102419-lntd64cze5j",
+          "id": "duplication-1775686097658-vchy6aczdx",
           "autoFixable": false
         },
         {
@@ -193,10 +193,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
-            "line": 111
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
+            "line": 47
           },
-          "id": "duplication-1775112102419-mv7yrcmg7j",
+          "id": "duplication-1775686097658-w9uahdqqzp",
           "autoFixable": false
         },
         {
@@ -208,7 +208,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
             "line": 10
           },
-          "id": "duplication-1775112102419-njlgohtf8ye",
+          "id": "duplication-1775686097658-vb00y4hay5",
           "autoFixable": false
         },
         {
@@ -220,7 +220,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
             "line": 11
           },
-          "id": "duplication-1775112102419-md1vhl53ny",
+          "id": "duplication-1775686097658-n8uh5zm6cha",
           "autoFixable": false
         },
         {
@@ -232,7 +232,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 49
           },
-          "id": "duplication-1775112102419-0n7x6t0yn5i",
+          "id": "duplication-1775686097658-q7u2dr3tj7n",
           "autoFixable": false
         },
         {
@@ -244,7 +244,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 50
           },
-          "id": "duplication-1775112102419-7layfl661kj",
+          "id": "duplication-1775686097658-q2e1015cal",
           "autoFixable": false
         },
         {
@@ -256,7 +256,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 51
           },
-          "id": "duplication-1775112102419-cmohp8g0n6j",
+          "id": "duplication-1775686097658-l8tegx6a1i",
           "autoFixable": false
         },
         {
@@ -268,7 +268,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 52
           },
-          "id": "duplication-1775112102419-xrp6qt0upba",
+          "id": "duplication-1775686097658-lxl6i7d9pv",
           "autoFixable": false
         },
         {
@@ -280,7 +280,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 53
           },
-          "id": "duplication-1775112102419-aq8mygq5xg5",
+          "id": "duplication-1775686097658-wsy9lywqe4",
           "autoFixable": false
         },
         {
@@ -292,7 +292,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 54
           },
-          "id": "duplication-1775112102419-1iljr18w9jy",
+          "id": "duplication-1775686097658-70ydlqraw7a",
           "autoFixable": false
         },
         {
@@ -304,7 +304,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 67
           },
-          "id": "duplication-1775112102419-9mh01tn3rb",
+          "id": "duplication-1775686097658-bjtapqtdenl",
           "autoFixable": false
         },
         {
@@ -316,7 +316,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 68
           },
-          "id": "duplication-1775112102419-sufq0juxz8",
+          "id": "duplication-1775686097658-3y7ydz6ekb3",
           "autoFixable": false
         },
         {
@@ -328,7 +328,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 69
           },
-          "id": "duplication-1775112102419-znp43wtf0jh",
+          "id": "duplication-1775686097658-kr9xacad9ls",
           "autoFixable": false
         },
         {
@@ -340,7 +340,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 70
           },
-          "id": "duplication-1775112102419-b88o6u2lgtc",
+          "id": "duplication-1775686097658-2toijutc3by",
           "autoFixable": false
         },
         {
@@ -352,7 +352,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 71
           },
-          "id": "duplication-1775112102419-yyajjgw1n78",
+          "id": "duplication-1775686097658-af4mhviaeo5",
           "autoFixable": false
         },
         {
@@ -364,7 +364,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 72
           },
-          "id": "duplication-1775112102419-di3fb28vebu",
+          "id": "duplication-1775686097658-dzy0ofnbb16",
           "autoFixable": false
         },
         {
@@ -376,7 +376,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 73
           },
-          "id": "duplication-1775112102419-v35xkhufywd",
+          "id": "duplication-1775686097658-0osxowoygnoq",
           "autoFixable": false
         },
         {
@@ -388,7 +388,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 74
           },
-          "id": "duplication-1775112102419-nug7fqetct",
+          "id": "duplication-1775686097658-c3r3zoqu5n7",
           "autoFixable": false
         },
         {
@@ -400,7 +400,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 75
           },
-          "id": "duplication-1775112102419-euceotk8aj",
+          "id": "duplication-1775686097658-pja2indthkc",
           "autoFixable": false
         },
         {
@@ -412,7 +412,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 76
           },
-          "id": "duplication-1775112102419-mwboeyk51xj",
+          "id": "duplication-1775686097658-pj90ymya9mn",
           "autoFixable": false
         },
         {
@@ -424,7 +424,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 11
           },
-          "id": "duplication-1775112102419-oeewa6fvhx",
+          "id": "duplication-1775686097658-25bgmp0twjwj",
           "autoFixable": false
         },
         {
@@ -436,7 +436,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 12
           },
-          "id": "duplication-1775112102419-s70g87rqbyp",
+          "id": "duplication-1775686097658-yn61oi3bxkg",
           "autoFixable": false
         },
         {
@@ -448,7 +448,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 13
           },
-          "id": "duplication-1775112102419-c604a5kmcbb",
+          "id": "duplication-1775686097658-yaccvsfn5s7",
           "autoFixable": false
         },
         {
@@ -460,7 +460,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 14
           },
-          "id": "duplication-1775112102419-piy5or3x8a",
+          "id": "duplication-1775686097658-etjgdjn8grl",
           "autoFixable": false
         },
         {
@@ -472,7 +472,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 15
           },
-          "id": "duplication-1775112102419-0un7kmw4y1mf",
+          "id": "duplication-1775686097658-y60sn10up",
           "autoFixable": false
         },
         {
@@ -484,7 +484,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 52
           },
-          "id": "duplication-1775112102419-rpbhwhtvjf",
+          "id": "duplication-1775686097658-75ntd37pg1d",
           "autoFixable": false
         },
         {
@@ -496,7 +496,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 53
           },
-          "id": "duplication-1775112102419-e68xkpj6vmu",
+          "id": "duplication-1775686097658-hzsa8ioskni",
           "autoFixable": false
         },
         {
@@ -508,7 +508,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 54
           },
-          "id": "duplication-1775112102419-pwdtifuoj7",
+          "id": "duplication-1775686097658-xz8yszpdlcp",
           "autoFixable": false
         },
         {
@@ -520,7 +520,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 55
           },
-          "id": "duplication-1775112102419-2aabfuyjoyt",
+          "id": "duplication-1775686097658-os6nkwm9my",
           "autoFixable": false
         },
         {
@@ -532,7 +532,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 56
           },
-          "id": "duplication-1775112102419-hdd22qhlvw",
+          "id": "duplication-1775686097658-ut2zp5x0brj",
           "autoFixable": false
         },
         {
@@ -544,7 +544,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 57
           },
-          "id": "duplication-1775112102419-uu7w6dc7vz",
+          "id": "duplication-1775686097658-t8g6q2n339",
           "autoFixable": false
         },
         {
@@ -556,7 +556,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 58
           },
-          "id": "duplication-1775112102419-c68eyyp2ci",
+          "id": "duplication-1775686097658-xqo1plaltf",
           "autoFixable": false
         },
         {
@@ -568,7 +568,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 59
           },
-          "id": "duplication-1775112102419-6o6slzu260p",
+          "id": "duplication-1775686097658-5e5coc7ghae",
           "autoFixable": false
         },
         {
@@ -580,7 +580,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 60
           },
-          "id": "duplication-1775112102419-9o1jnkwfqov",
+          "id": "duplication-1775686097658-psqtkzwjrl",
           "autoFixable": false
         },
         {
@@ -592,7 +592,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 61
           },
-          "id": "duplication-1775112102419-014diurpkzx4",
+          "id": "duplication-1775686097658-glzy3bas8cd",
           "autoFixable": false
         },
         {
@@ -604,7 +604,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 62
           },
-          "id": "duplication-1775112102419-og8x9kbmznb",
+          "id": "duplication-1775686097658-r67rvwmz1z",
           "autoFixable": false
         },
         {
@@ -616,7 +616,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 63
           },
-          "id": "duplication-1775112102419-878evbch4p",
+          "id": "duplication-1775686097658-648n94rp5dr",
           "autoFixable": false
         },
         {
@@ -628,7 +628,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 64
           },
-          "id": "duplication-1775112102419-pcejiitn0ye",
+          "id": "duplication-1775686097658-a7tarqq5ja4",
           "autoFixable": false
         }
       ]
@@ -645,36 +645,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"PrivatetodoappMemberSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/sessions/PrivatetodoappMemberSessionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1775112102424-s2ad0vd7hb",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
           "message": "Class \"PrivatetodoappAuthMemberController\" missing JSDoc",
           "location": {
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1775112102427-2n116ancgi6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"PrivatetodoappMemberTodosController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
-            "line": 16
-          },
-          "id": "jsdoc-1775112102426-1026s1e8ge9l",
+          "id": "jsdoc-1775686097664-38fkonowfxo",
           "autoFixable": false
         },
         {
@@ -686,7 +662,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/guest/PrivatetodoappAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1775112102424-09dksnygd8c7",
+          "id": "jsdoc-1775686097665-spjsvtidwm",
           "autoFixable": false
         },
         {
@@ -698,7 +674,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
             "line": 13
           },
-          "id": "jsdoc-1775112102429-z1ucegfsvvq",
+          "id": "jsdoc-1775686097669-fodpihbra67",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/sessions/PrivatetodoappMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775686097669-2l78kmqfjti",
           "autoFixable": false
         },
         {
@@ -710,7 +698,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/profile/PrivatetodoappMemberProfileController.ts",
             "line": 11
           },
-          "id": "jsdoc-1775112102425-b936g2o8yqf",
+          "id": "jsdoc-1775686097672-7a7w4zsy4zp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1775686097671-p7my52o0sz",
           "autoFixable": false
         },
         {
@@ -722,7 +722,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/editHistories/PrivatetodoappMemberTodosEdithistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1775112102426-ay3ea2myahv",
+          "id": "jsdoc-1775686097669-q8wzrmeb1p",
           "autoFixable": false
         }
       ]
@@ -741,7 +741,7 @@
             "file": "src/api/structures/IPrivateTodoAppTodoEditHistory.ts",
             "line": 61
           },
-          "id": "completeness-1775112102432-l1g4a4p29hh",
+          "id": "completeness-1775686097674-luaysa1ihif",
           "autoFixable": false
         }
       ]
@@ -764,7 +764,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1775112102259-818h73tggfs",
+      "id": "type-error-1775686097523-6dgfg9sbwxi",
       "autoFixable": false
     },
     {
@@ -776,7 +776,7 @@
         "file": "src/decorators/MemberAuth.ts",
         "line": 189
       },
-      "id": "type-error-1775112102259-knf3hg4gjbe",
+      "id": "type-error-1775686097523-4hut5t6s4dv",
       "autoFixable": false
     },
     {
@@ -788,14 +788,14 @@
         "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
         "line": 3658
       },
-      "id": "type-error-1775112102259-pevmxfp2k49",
+      "id": "type-error-1775686097523-aara1kmb7ip",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-04-02T06:41:42.433Z",
-    "totalDurationMs": 2943,
+    "evaluatedAt": "2026-04-08T22:08:17.675Z",
+    "totalDurationMs": 2610,
     "estimateVersion": "0.30.5",
     "evaluatedFiles": 84
   },
@@ -826,50 +826,50 @@
       "issues": [
         {
           "severity": "warning",
-          "type": "integrity-failures",
+          "type": "auth-failures",
           "file": "src/providers/postPrivateTodoAppAuthMemberRefresh.ts",
-          "line": 55,
-          "description": "Refresh token rotation is not implemented. The same session_id is reused and the old refresh token is never invalidated. If a refresh token is stolen, it can be used indefinitely until the session expires, enabling token replay attacks.",
-          "suggestion": "Implement refresh token rotation: store a token identifier or hash in the session record, invalidate the old refresh token on use, and issue a new one. Reject any refresh attempt with a previously-used token."
+          "line": 45,
+          "description": "Refresh token rotation is not implemented. The same session_id is reused and old refresh tokens remain valid after a refresh. If a refresh token is stolen, an attacker can continue using it indefinitely until session expiry.",
+          "suggestion": "Implement refresh token rotation: store a token identifier or hash in the session record, invalidate the old refresh token on use, and issue a new one. Reject any refresh token that doesn't match the stored value (replay detection)."
         },
         {
           "severity": "warning",
           "type": "broken-access-control",
           "file": "src/providers/postPrivateTodoAppMemberTodosTodoIdToggle.ts",
-          "line": 30,
-          "description": "The toggle endpoint reveals whether a todo exists for another user by returning 403 (Access denied) vs 404 (Not found). The controller spec says to return 403 for another user's todo, which allows user enumeration of todo IDs.",
-          "suggestion": "Return 404 for both non-existent todos and todos belonging to other users to prevent resource enumeration. Do not distinguish between 'not found' and 'belongs to another user' in the response."
+          "line": 28,
+          "description": "The toggle endpoint reveals whether a todo exists for another user by returning 403 (exists but owned by another) vs 404 (does not exist). The controller spec acknowledges this but the implementation leaks ownership information, enabling user enumeration via todo IDs.",
+          "suggestion": "Return 404 for both cases (todo not found AND todo owned by another user) to prevent ownership enumeration. Use a single query with both id and user_id filters."
         },
         {
           "severity": "warning",
           "type": "broken-access-control",
           "file": "src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
-          "line": 35,
-          "description": "The restore endpoint returns 403 (Access denied) when a todo belongs to another user, revealing that the todo ID exists in the system. This enables resource enumeration.",
-          "suggestion": "Return 404 for both non-existent todos and todos belonging to other users to prevent resource enumeration."
+          "line": 28,
+          "description": "Same ownership enumeration issue: returns 403 when todo belongs to another user vs 404 when not found, leaking whether a given todo ID exists in the system.",
+          "suggestion": "Combine the existence and ownership check into a single query (WHERE id = todoId AND user_id = memberId) and return 404 for any mismatch to avoid leaking resource existence."
         },
         {
           "severity": "warning",
-          "type": "broken-access-control",
+          "type": "insecure-design",
           "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
-          "line": 35,
-          "description": "After updating the todo, the final fetch uses findUniqueOrThrow without re-checking user_id ownership. If a race condition or logic error occurs, data from another user could theoretically be returned.",
-          "suggestion": "Include user_id: props.member.id in the final fetch query to ensure the returned record still belongs to the authenticated member."
+          "line": 44,
+          "description": "The todo update performs a findFirstOrThrow with ownership check, but the subsequent update uses only WHERE id = todoId without re-checking user_id. In a race condition or if the ORM behaves unexpectedly, this could allow updating a todo after ownership changes.",
+          "suggestion": "Include user_id in the update WHERE clause: update WHERE id = todoId AND user_id = memberId, and verify the update affected exactly one row."
         },
         {
           "severity": "suggestion",
           "type": "logging-failures",
           "file": "src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
-          "line": 1,
-          "description": "All controllers use console.log(error) for error handling. This is the standard AutoBE pattern but does not provide structured logging with request context, user ID, or severity levels, making security incident investigation difficult.",
-          "suggestion": "Consider adopting a structured logging library (e.g., Winston, Pino) with request correlation IDs and user context for production deployments."
+          "line": 68,
+          "description": "All controllers use console.log(error) for error handling. This is the standard AutoBE pattern but provides no structured logging, log levels, or correlation IDs for security monitoring.",
+          "suggestion": "Consider adopting a structured logging library (e.g., Winston, Pino) with log levels and request correlation IDs for production security monitoring."
         },
         {
           "severity": "suggestion",
           "type": "insecure-design",
           "file": "src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
           "line": 1,
-          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). This allows brute-force attacks against credentials and token endpoints.",
+          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). This allows brute-force attacks against passwords and refresh tokens.",
           "suggestion": "Apply rate limiting middleware (e.g., @nestjs/throttler) to authentication endpoints, especially login and refresh."
         },
         {
@@ -877,82 +877,82 @@
           "type": "auth-failures",
           "file": "src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
           "line": 1,
-          "description": "Password complexity validation beyond basic type checking is not enforced at the controller/provider level. Weak passwords may be accepted.",
-          "suggestion": "Add password complexity validation (minimum length, character requirements) using a validation pipe or library such as zxcvbn."
+          "description": "No password complexity validation is enforced beyond type checking. Weak passwords are accepted.",
+          "suggestion": "Add password complexity requirements (minimum length, character classes) via a custom validation pipe or typia constraints."
         },
         {
           "severity": "warning",
           "type": "auth-failures",
           "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
           "line": 33,
-          "description": "Soft-deleted account check occurs AFTER password verification. A timing-based enumeration attack could confirm whether a deleted account's password is correct by observing different error codes (401 vs 403). The deleted_at check should occur before or simultaneously with password verification to avoid leaking account state.",
-          "suggestion": "Check deleted_at as part of the initial database query filter, or return a generic 401 for all failure cases including deleted accounts."
+          "description": "Soft-deleted account check occurs AFTER password verification. A timing side-channel exists: attackers can determine if a deleted account's password is correct by observing that the error message changes from 'Invalid credentials' to 'Account has been deleted'.",
+          "suggestion": "Check deleted_at status before or combined with the password verification step, or return a generic 'Invalid credentials' message for deleted accounts as well."
         },
         {
           "severity": "warning",
-          "type": "broken-access-control",
-          "file": "src/providers/postPrivateTodoAppAuthGuestJoin.ts",
-          "line": 27,
-          "description": "The guest join flow creates a member record in private_todo_app_members (not a guest table) and issues a JWT with type 'member', but the function is named 'GuestJoin' and returns IPrivateTodoAppGuest.IAuthorized. This type confusion could allow guest-registered users to bypass member-only authorization checks if the type field in the JWT is trusted without additional validation.",
-          "suggestion": "Ensure the guest join flow uses the correct table (private_todo_app_guests) and issues tokens with type 'guest', or clarify the intended design. The current implementation creates a member account via the guest endpoint, which may be an unintended privilege escalation path."
-        },
-        {
-          "severity": "warning",
-          "type": "broken-access-control",
-          "file": "src/providers/authorize/guestAuthorize.ts",
-          "line": 24,
-          "description": "The guest session validation does not check that the session belongs to the guest (missing guest_id filter). The query only checks session id and expiry, not that session.guest_id === payload.id. A valid guest token with a stolen/guessed session_id from another guest could pass validation.",
-          "suggestion": "Add `private_todo_app_guest_id: payload.id` to the session findFirst where clause, matching the pattern used in memberAuthorize.ts which correctly checks `member_id: payload.id`."
+          "type": "auth-failures",
+          "file": "src/providers/postPrivateTodoAppAuthMemberJoin.ts",
+          "line": 52,
+          "description": "Same client-supplied IP spoofing issue as in the login provider: `props.body.ip ?? props.ip` allows clients to inject arbitrary IP values into session records.",
+          "suggestion": "Use only the server-detected IP (props.ip) for session recording."
         },
         {
           "severity": "warning",
           "type": "cryptographic-failures",
           "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
-          "line": 55,
-          "description": "Both access and refresh tokens are signed with the same JWT_SECRET_KEY and the only differentiation is a 'tokenType' field in the payload. If an attacker obtains a refresh token, they could potentially use it as an access token if the consuming endpoint does not strictly validate the tokenType claim.",
-          "suggestion": "Use separate secrets for access and refresh tokens, or enforce strict tokenType validation in jwtAuthorize/memberAuthorize before accepting any token."
+          "line": 62,
+          "description": "Both access and refresh tokens are signed with the same JWT_SECRET_KEY and the only distinction is a `tokenType: 'refresh'` claim inside the payload. If an access token is compromised, an attacker could potentially craft a refresh token by modifying the payload (if the secret is weak). More critically, the refresh token validation in postPrivateTodoAppAuthGuestRefresh.ts only checks the `type` claim, not `tokenType`, meaning an access token could potentially be used as a refresh token.",
+          "suggestion": "Use separate secrets for access and refresh tokens, or include an audience claim (`aud`) to distinguish token purposes and validate it during verification."
         },
         {
           "severity": "warning",
-          "type": "insecure-design",
-          "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
-          "line": 47,
-          "description": "The client-supplied `props.body.ip` takes precedence over the server-detected `props.ip` via `props.body.ip ?? props.ip`. This allows clients to spoof their IP address in session records, undermining session tracking and audit capabilities.",
-          "suggestion": "Use only the server-detected IP (`props.ip`) for session recording. Do not trust client-supplied IP values."
+          "type": "auth-failures",
+          "file": "src/providers/postPrivateTodoAppAuthGuestRefresh.ts",
+          "line": 38,
+          "description": "The refresh token validation does not check the `tokenType` claim. The decoded token is only checked for `type === 'guest'`, but not for `tokenType === 'refresh'`. This means a valid guest access token could be used to obtain new tokens via the refresh endpoint.",
+          "suggestion": "Add a check: `if (decoded.tokenType !== 'refresh') throw new HttpException('Invalid token type', 403);`"
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 22,
+          "description": "Guest session validation does not verify that the session belongs to the guest (missing `guest_id` or equivalent field in the where clause). The session lookup only checks `id` and `expired_at`, not that the session is associated with the authenticated guest ID.",
+          "suggestion": "Add `private_todo_app_guest_id: payload.id` to the session findFirst where clause, similar to how memberAuthorize validates `member_id: payload.id`."
         },
         {
           "severity": "warning",
           "type": "insecure-design",
           "file": "src/providers/postPrivateTodoAppAuthGuestJoin.ts",
-          "line": 57,
-          "description": "Same as login: `props.body.ip ?? props.ip` allows client-supplied IP spoofing in session records.",
-          "suggestion": "Use only the server-detected IP for session recording."
+          "line": 20,
+          "description": "The guest join endpoint creates a full member account (in `private_todo_app_members` table with email and hashed password) but returns a guest-typed response. The JWT token issued has `type: 'member'` but the endpoint is named 'guest join'. This inconsistency could lead to authorization confusion where guest tokens are treated as member tokens or vice versa.",
+          "suggestion": "Clarify the data model: if guests are stored in a separate `private_todo_app_guests` table, use that. If guests are members, ensure the token type is consistent. The current code creates a member record but the function is named guestJoin, which is a design inconsistency."
         },
         {
           "severity": "suggestion",
           "type": "logging-failures",
           "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
-          "line": 38,
-          "description": "Failed login attempts are not logged. This makes it impossible to detect brute-force attacks or account enumeration attempts after the fact.",
-          "suggestion": "Log failed authentication attempts with timestamp, IP address, and email (hashed or partial) for security monitoring purposes."
+          "line": 36,
+          "description": "Failed login attempts are not logged. This makes it impossible to detect brute-force attacks or account enumeration attempts.",
+          "suggestion": "Log failed authentication attempts with timestamp, IP address, and email (consider hashing the email in logs) for security monitoring."
         },
         {
           "severity": "suggestion",
           "type": "insecure-design",
-          "file": "src/providers/postPrivateTodoAppAuthMemberJoin.ts",
+          "file": "src/providers/patchPrivateTodoAppMemberSessions.ts",
           "line": 1,
-          "description": "No rate limiting on registration or login endpoints. These endpoints are susceptible to brute-force and account enumeration attacks.",
-          "suggestion": "Implement rate limiting at the infrastructure level (e.g., API gateway, reverse proxy) or use a NestJS throttling guard (@nestjs/throttler)."
+          "description": "No rate limiting on session listing or filtering endpoints. Combined with date range filters, this could be used to enumerate session data.",
+          "suggestion": "Apply rate limiting at the infrastructure level (API gateway or NestJS ThrottlerModule)."
         }
       ],
       "score": 71,
-      "summary": "[2 chunks, 17→15 issues] The codebase demonstrates good baseline security practices: member-scoped data isolation via user_id filtering, JWT-based authentication with MemberAuth guards on all protected endpoints, and ownership checks before mutations. The main concerns are: (1) refresh token replay vulnerability due to missing token rotation/invalidation, (2) resource enumeration via inconsistent 403 vs 404 responses in toggle and restore providers, and (3) a minor ownership re-check gap in the todo update final fetch. Authentication endpoints lack rate limiting (deployment concern). Overall the access control architecture is sound but needs the token lifecycle and error response consistency hardened.",
-      "durationMs": 30856,
+      "summary": "[2 chunks, 19→15 issues] The codebase demonstrates generally sound access control patterns: member-scoped endpoints use MemberAuth guards, ownership is validated in providers, and sensitive operations require authentication. The main concerns are: (1) refresh token rotation is not implemented, leaving stolen refresh tokens valid indefinitely; (2) two providers leak resource ownership via differential 403/404 responses enabling enumeration; (3) a minor TOCTOU issue in the todo update provider. Auth endpoints lack rate limiting (suggestion-level per AutoBE norms). No injection, cryptographic, or SSRF issues were identified. Overall security posture is moderate with targeted fixes needed.",
+      "durationMs": 34630,
       "tokensUsed": {
         "input": 35890,
-        "output": 2821,
+        "output": 3176,
         "inputCost": 0.10766999999999999,
-        "outputCost": 0.042315
+        "outputCost": 0.04764
       }
     },
     {
@@ -963,84 +963,76 @@
         {
           "severity": "critical",
           "type": "hallucination",
+          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+          "line": -1,
+          "description": "Importing '@prisma/sdk' which doesn't exist. Prisma's main package is '@prisma/client' for database operations.",
+          "suggestion": "Replace '@prisma/sdk' with '@prisma/client' in all files where it's imported."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
           "file": "src/providers/postPrivateTodoAppAuthGuestJoin.ts",
-          "line": 11,
-          "description": "Handler function `postPrivateTodoAppAuthGuestJoin` creates a member account, not a guest account. According to requirements, guests cannot create accounts. This function is likely a hallucinated endpoint that doesn't match the documented authentication flows.",
-          "suggestion": "Remove this endpoint or rename it to `postPrivateTodoAppAuthMemberJoin` (which already exists) to avoid duplicate functionality."
+          "line": -1,
+          "description": "Function creates a 'member' but returns 'IPrivateTodoAppGuest.IAuthorized'. This is a type mismatch - guest join should create a guest, not a member.",
+          "suggestion": "Either rename function to member join, or implement actual guest creation with guest tables."
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postPrivateTodoAppAuthGuestRefresh.ts",
-          "line": 10,
-          "description": "Guest refresh endpoint references guest database tables (`private_todo_app_guests`, `private_todo_app_guest_sessions`) that don't exist in the requirements. Requirements only specify User (member) actors; there are no guest tables.",
-          "suggestion": "Remove this endpoint since guests have no persistent state and no refresh token mechanism."
+          "line": -1,
+          "description": "Uses 'private_todo_app_guests' and 'private_todo_app_guest_sessions' tables which don't exist in the requirements. Requirements only mention User (member), Todo, and EditHistory.",
+          "suggestion": "Remove guest authentication functions or implement proper guest tables if they're actually needed."
         },
         {
-          "severity": "critical",
-          "type": "hallucination",
-          "file": "src/providers/authorize/guestAuthorize.ts",
-          "line": 12,
-          "description": "Guest authorization function references non-existent guest tables (`private_todo_app_guests`, `private_todo_app_guest_sessions`). Requirements state guests are unauthenticated visitors who cannot access member features.",
-          "suggestion": "Remove guest authorization logic; guests should not have JWT tokens or persistent sessions."
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+          "line": 85,
+          "description": "Edit history creation creates separate entries for each changed field instead of a single entry with all changes. This doesn't match typical edit history patterns.",
+          "suggestion": "Create a single edit history entry with all changed fields to maintain atomic changes."
         },
         {
           "severity": "warning",
           "type": "logic-error",
-          "file": "src/providers/postPrivateTodoAppAuthMemberRefresh.ts",
-          "line": 67,
-          "description": "Refresh token payload includes a redundant `tokenType: \"refresh\"` property, but the access token payload does not include `tokenType`. This may cause token validation inconsistency.",
-          "suggestion": "Either remove the `tokenType` field from refresh token payload or add a consistent token type field to access token payload."
-        },
-        {
-          "severity": "warning",
-          "type": "logic-error",
-          "file": "src/providers/deletePrivateTodoAppMemberTodosTodoId.ts",
-          "line": 22,
-          "description": "Soft delete logic throws 404 if todo is already deleted (`deleted_at !== null`), but requirements state 'members have access to their deleted todos through the trash view'. Already deleted todos should be accessible via trash endpoints.",
-          "suggestion": "Change error to 400 ('Todo is already deleted') or allow soft-delete only on non-deleted todos without mixing with 'not found' errors."
+          "file": "src/providers/postPrivateTodoAppMemberTodos.ts",
+          "line": 30,
+          "description": "Passes 'privateTodoAppMemberSessions: { id: props.member.session_id }' to collector but session relationship isn't defined in requirements (Todo belongs to User, not Session).",
+          "suggestion": "Remove session reference from todo creation since Todo only has userId relationship."
         },
         {
           "severity": "warning",
           "type": "placeholder",
-          "file": "src/providers/authorize/jwtAuthorize.ts",
-          "line": 21,
-          "description": "BEARER_PREFIX constant defined inside function scope, not imported/module scoped. This is a stylistic placeholder that could cause duplication.",
-          "suggestion": "Move BEARER_PREFIX to module scope or a shared constants file."
+          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies: IEntity, ArrayUtil, HttpException, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe. These are likely copy-paste artifacts.",
+          "suggestion": "Remove unused imports from all provider files to clean up code."
         },
         {
           "severity": "warning",
-          "type": "logic-error",
-          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
-          "line": 86,
-          "description": "Edit history creation creates separate entries for each changed field, but requirements don't specify format. This could lead to multiple history entries per edit rather than a single entry capturing all changes.",
-          "suggestion": "Consider creating one edit history entry with all changed fields to match typical audit log patterns."
-        },
-        {
-          "severity": "suggestion",
-          "type": "inconsistent-naming",
-          "file": "src/providers/patchPrivateTodoAppMemberTrash.ts",
-          "line": 42,
-          "description": "Method named `patch` but performs GET/list operation (no mutation). Should be `getPrivateTodoAppMemberTrash` or similar.",
-          "suggestion": "Rename endpoint to reflect read-only nature (GET) or ensure it actually performs patch/update operation."
-        },
-        {
-          "severity": "suggestion",
-          "type": "dead-code",
+          "type": "assumption",
           "file": "src/providers/postPrivateTodoAppAuthMemberRefresh.ts",
-          "line": 59,
-          "description": "Unused variable `now` declared but not used in token generation (uses `new Date()` separately).",
-          "suggestion": "Remove redundant `now` variable or use it consistently."
+          "line": 60,
+          "description": "Refresh token includes 'tokenType: \"refresh\"' property but access token doesn't have corresponding 'tokenType: \"access\"'. Inconsistent JWT payload structure.",
+          "suggestion": "Standardize JWT payload structure or remove redundant tokenType field."
+        },
+        {
+          "severity": "suggestion",
+          "type": "naming",
+          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+          "line": 85,
+          "description": "Edit history entries use snake_case field names (private_todo_app_todo_id) but other parts of code use camelCase. Inconsistent naming convention.",
+          "suggestion": "Use consistent naming - either all snake_case for database or all camelCase with @map() annotations."
         }
       ],
-      "score": 70,
-      "summary": "Code contains critical hallucinations: guest endpoints that shouldn't exist, missing consistency between requirements and implementation. Authorization logic generally works, but some guest-related tables are hallucinated. Some logic errors in delete and refresh token handling. Overall, core member operations are functional but with inconsistencies.",
-      "durationMs": 15908,
+      "score": 0,
+      "summary": "Code has critical hallucinations (non-existent @prisma/sdk, guest tables), type mismatches (guest join returns member), and incomplete implementations. However, core member/todo operations follow requirements with proper ownership checks. Needs significant fixes for imports and guest-related code.",
+      "durationMs": 9801,
       "tokensUsed": {
-        "input": 18184,
-        "output": 1098,
-        "inputCost": 0.0054551999999999995,
-        "outputCost": 0.00096624
+        "input": 18176,
+        "output": 940,
+        "inputCost": 0.0054528,
+        "outputCost": 0.0008271999999999999
       }
     },
     {
@@ -1051,65 +1043,89 @@
         {
           "severity": "critical",
           "type": "phantom-endpoint",
+          "file": "src/controllers/privateTodoApp/auth/guest/PrivatetodoappAuthGuestController.ts",
+          "line": 1,
+          "description": "The guest authentication controller has two endpoints (/join and /refresh) that have no basis in the provided Prisma schema. The schema defines guest models but does not specify any authentication operations for guests. The spec only mentions guests as temporary identifiers before signup/login, not as having their own authentication endpoints.",
+          "suggestion": "Remove the guest authentication controller entirely or verify if there is an OpenAPI spec that defines these guest authentication operations. If no spec exists, these endpoints are completely fabricated."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
+          "line": 1,
+          "description": "The trash controller uses PATCH method for listing trash items (index operation). Typically, listing operations use GET, not PATCH. This could be a spec mismatch if the OpenAPI defines PATCH for listing, but it's unusual and may indicate incorrect HTTP method mapping.",
+          "suggestion": "Verify the OpenAPI specification to confirm if the trash listing operation should indeed be PATCH. If not, correct the HTTP method to match the spec."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
           "file": "src/controllers/privateTodoApp/member/sessions/PrivatetodoappMemberSessionsController.ts",
-          "line": 0,
-          "description": "Controller defines a PATCH route at '/' for listing sessions, but there is no corresponding OpenAPI path specification provided. This appears to be a completely fabricated endpoint.",
-          "suggestion": "Remove this endpoint unless there is a corresponding OpenAPI spec path for listing member sessions."
+          "line": 1,
+          "description": "The sessions controller uses PATCH method for listing sessions (index operation). Similar to the trash controller, listing typically uses GET. This could indicate a pattern of incorrect HTTP method usage for listing operations.",
+          "suggestion": "Verify the OpenAPI specification to confirm if session listing should use PATCH. If not, correct to match the spec."
         },
         {
           "severity": "warning",
           "type": "spec-mismatch",
           "file": "src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
-          "line": 0,
-          "description": "The controller defines a POST route at '/:todoId/toggle' for toggling todo completion. While this is a plausible operation, it's not explicitly defined in the provided Prisma schema or OpenAPI spec. The spec only defines CRUD operations; toggle is an invented business logic.",
-          "suggestion": "Ensure this operation is defined in the OpenAPI specification. If not, it should be removed or considered an extension beyond the spec."
+          "line": 1,
+          "description": "The todos controller uses PATCH method for listing todos (index operation). This continues the pattern of using PATCH for listing, which is unconventional and may not match the OpenAPI specification.",
+          "suggestion": "Verify the OpenAPI specification to confirm if todo listing should use PATCH. If not, correct to match the spec."
         },
         {
           "severity": "critical",
           "type": "phantom-endpoint",
           "file": "src/controllers/privateTodoApp/member/todos/editHistories/PrivatetodoappMemberTodosEdithistoriesController.ts",
-          "line": 61,
-          "description": "Controller defines a PATCH route at '/privateTodoApp/member/todos/:todoId/editHistories' for listing edit histories, but there is no corresponding OpenAPI path for this operation. The spec only defines GET endpoints for edit histories, not PATCH.",
-          "suggestion": "Change the HTTP method to GET or verify if the OpenAPI spec defines a PATCH operation for listing edit histories."
+          "line": 1,
+          "description": "Controller defines a PATCH route at '/privateTodoApp/member/todos/:todoId/editHistories' for listing edit histories, but the OpenAPI spec (not provided in chunk) likely defines a GET method for listing. PATCH is typically used for updates, not for retrieving lists. This is a spec mismatch in HTTP method.",
+          "suggestion": "Change @TypedRoute.Patch() to @TypedRoute.Get() for the index method, or verify the spec defines PATCH for listing edit histories."
         },
         {
           "severity": "warning",
           "type": "spec-mismatch",
           "file": "src/providers/postPrivateTodoAppAuthGuestJoin.ts",
           "line": 1,
-          "description": "Provider 'postPrivateTodoAppAuthGuestJoin' creates a member (private_todo_app_members) instead of a guest, contradicting the spec. The function name suggests guest join but implements member registration.",
-          "suggestion": "Rename the provider to reflect member registration or implement actual guest creation as per the Prisma schema (private_todo_app_guests)."
+          "description": "Provider 'postPrivateTodoAppAuthGuestJoin' creates a member and member session, but based on the Prisma schema, guests and members are separate actor types. A guest join operation should likely create a guest record, not a member. This appears to be a member signup/join endpoint misnamed as guest join.",
+          "suggestion": "Rename the provider and associated controller to reflect member join (e.g., postPrivateTodoAppAuthMemberJoin) or refactor to create a guest record if the spec intends guest join."
         },
         {
           "severity": "warning",
-          "type": "fabricated-field",
-          "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
-          "line": 56,
-          "description": "The provider accesses 'props.body.ip' and 'props.body.href' which are not defined in the provided spec. The IPrivateTodoAppMember.ILogin interface likely doesn't include these fields.",
-          "suggestion": "Remove references to 'props.body.ip' and 'props.body.href' or ensure they are part of the ILogin DTO."
+          "type": "invented-logic",
+          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+          "line": 70,
+          "description": "The provider creates multiple edit history entries (one per changed field) instead of a single entry capturing all changes at once. The Prisma schema for 'private_todo_app_todo_edit_histories' has nullable fields for title, description, start_date, due_date, suggesting a single row per edit event. Creating multiple rows per edit is an invented logic not implied by the schema.",
+          "suggestion": "Create a single edit history entry with all changed fields (some null) per edit operation, aligning with the schema design."
         },
         {
           "severity": "suggestion",
-          "type": "invented-logic",
-          "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
-          "line": 62,
-          "description": "The provider creates multiple edit history entries (one per changed field) instead of a single entry capturing all changes at once. The spec describes 'a single edit event' recording which fields were altered, but doesn't specify the exact implementation. This is a minor deviation.",
-          "suggestion": "Consider consolidating into a single edit history entry with all changed fields, but this is an implementation detail."
+          "type": "fabricated-field",
+          "file": "src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+          "line": 60,
+          "description": "The provider accesses 'props.body.ip' and 'props.body.href', 'props.body.referrer' from the login request body. The Prisma schema for 'private_todo_app_member_sessions' includes ip, href, referrer columns, but the spec may define these as coming from request headers or context, not the body. This could be a field mapping issue if the body DTO doesn't include these fields.",
+          "suggestion": "Verify the IPrivateTodoAppMember.ILogin interface includes ip, href, referrer fields. If not, obtain them from request context (e.g., request.ip, request.headers)."
+        },
+        {
+          "severity": "suggestion",
+          "type": "fabricated-field",
+          "file": "src/providers/postPrivateTodoAppAuthMemberJoin.ts",
+          "line": 60,
+          "description": "Similar to login, the join provider uses 'props.body.ip', 'props.body.href', 'props.body.referrer' from the request body. Ensure the IPrivateTodoAppMember.IJoin interface includes these fields; otherwise, they are fabricated.",
+          "suggestion": "Check the DTO structure; if missing, source from request context."
         }
       ],
-      "score": 89,
-      "summary": "[2 chunks, 8→6 issues] The implementation mostly aligns with the spec but includes several phantom endpoints (PATCH routes for listing) that have no basis in the provided OpenAPI paths. There's also one potentially invented operation (toggle) not explicitly in the spec. No fabricated fields or wrong relations were detected. The code is generally relevant and contextually precise.",
-      "durationMs": 61893,
+      "score": 79,
+      "summary": "[2 chunks, 9→9 issues] The implementation shows one critical hallucination (phantom guest authentication endpoints) and a pattern of potential spec mismatches with HTTP methods for listing operations. Most of the code appears to correctly implement the Prisma schema models and relationships, but the guest authentication endpoints are completely fabricated without basis in the provided schema. The HTTP method choices for listing operations are unconventional and may not match the OpenAPI specification.",
+      "durationMs": 52541,
       "tokensUsed": {
         "input": 37052,
-        "output": 1275,
+        "output": 1637,
         "inputCost": 0.0111156,
-        "outputCost": 0.0011220000000000002
+        "outputCost": 0.00144056
       },
       "deepEvalScores": {
-        "faithfulness": 85,
-        "relevancy": 95,
-        "contextualPrecision": 93
+        "faithfulness": 83,
+        "relevancy": 83,
+        "contextualPrecision": 73
       }
     }
   ],
@@ -1117,8 +1133,2874 @@
     "phaseScore": 88,
     "phaseWeight": 0.85,
     "phaseContribution": 75,
-    "agentScore": 77,
+    "agentScore": 45,
     "agentWeight": 0.15,
-    "agentContribution": 12
+    "agentContribution": 7
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "type-error-1775686097523-6dgfg9sbwxi",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.4,
+        "priority": 1,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775686097523-4hut5t6s4dv",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2307",
+        "message": "Cannot find module '../../providers/authorize/memberAuthorize' or its corresponding type declarations.",
+        "file": "src/decorators/MemberAuth.ts",
+        "line": 189,
+        "estimatedImpact": 0.4,
+        "priority": 2,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775686097523-aara1kmb7ip",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2322",
+        "message": "Type '({ id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; title: string & MinLength<1>; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; description: string | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; start_date: Date | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; due_date: Date | null; })[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '({ id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; title: string & MinLength<1>; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; description: string | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; start_date: Date | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; due_date: Date | null; })[]'.",
+        "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+        "line": 3658,
+        "estimatedImpact": 0.4,
+        "priority": 3,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "duplication-1775686097658-vchy6aczdx",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
+        "line": 46,
+        "estimatedImpact": 0.1,
+        "priority": 4,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 43,
+              "text": "   *    - Use created_at or id as cursor for stable pagination",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 44,
+              "text": "   *    - Return pagination metadata with next cursor",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "   * Database query should use the existing indexes on [user_id, deleted_at] for optimal performance.",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 47,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "   * Return only todos belonging to the authenticated member to enforce privacy.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "   * @nestia Generated by Nestia - https://github.com/samchon/nestia",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-w9uahdqqzp",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
+        "line": 47,
+        "estimatedImpact": 0.1,
+        "priority": 5,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 44,
+              "text": "   *    - Return pagination metadata with next cursor",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "   * Database query should use the existing indexes on [user_id, deleted_at] for optimal performance.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "   *",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 48,
+              "text": "   * Return only todos belonging to the authenticated member to enforce privacy.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "   * @nestia Generated by Nestia - https://github.com/samchon/nestia",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "   */",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-vb00y4hay5",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 6,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { PrivateTodoAppTodoTransformer } from \"../transformers/PrivateTodoAppTodoTransformer\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-n8uh5zm6cha",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 7,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { PrivateTodoAppTodoTransformer } from \"../transformers/PrivateTodoAppTodoTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-q7u2dr3tj7n",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 49,
+        "estimatedImpact": 0.1,
+        "priority": 8,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 46,
+              "text": "  if (deletedAtDate !== null) {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "    throw new HttpException(\"Account has been deleted\", 403);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "  }",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "  // 4. Create new session",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 50,
+              "text": "  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const session = await MyGlobal.prisma.private_todo_app_member_sessions.create(",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-q2e1015cal",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 50,
+        "estimatedImpact": 0.1,
+        "priority": 9,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 47,
+              "text": "    throw new HttpException(\"Account has been deleted\", 403);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "  }",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "  // 4. Create new session",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 51,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const session = await MyGlobal.prisma.private_todo_app_member_sessions.create(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "    {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-l8tegx6a1i",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 51,
+        "estimatedImpact": 0.1,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 48,
+              "text": "  }",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "  // 4. Create new session",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const session = await MyGlobal.prisma.private_todo_app_member_sessions.create(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "      data: {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-lxl6i7d9pv",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 52,
+        "estimatedImpact": 0.1,
+        "priority": 11,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 49,
+              "text": "  // 4. Create new session",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const session = await MyGlobal.prisma.private_todo_app_member_sessions.create(",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 53,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "      data: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "        id: v4(),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-wsy9lywqe4",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 53,
+        "estimatedImpact": 0.1,
+        "priority": 12,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 50,
+              "text": "  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const session = await MyGlobal.prisma.private_todo_app_member_sessions.create(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "    {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 54,
+              "text": "      data: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "        id: v4(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "        member_id: member.id,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-70ydlqraw7a",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 54,
+        "estimatedImpact": 0.1,
+        "priority": 13,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 51,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const session = await MyGlobal.prisma.private_todo_app_member_sessions.create(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "      data: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 55,
+              "text": "        id: v4(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "        member_id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "        ip: props.body.ip ?? props.ip,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-bjtapqtdenl",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 67,
+        "estimatedImpact": 0.1,
+        "priority": 14,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 64,
+              "text": "  );",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 65,
+              "text": "  // 5. Generate JWT tokens",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 66,
+              "text": "  const token = {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 67,
+              "text": "    access: jwt.sign(",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 68,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 69,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 70,
+              "text": "        id: member.id,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-3y7ydz6ekb3",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 68,
+        "estimatedImpact": 0.1,
+        "priority": 15,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 65,
+              "text": "  // 5. Generate JWT tokens",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 66,
+              "text": "  const token = {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 67,
+              "text": "    access: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 68,
+              "text": "      {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 69,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 70,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 71,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-kr9xacad9ls",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 69,
+        "estimatedImpact": 0.1,
+        "priority": 16,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 66,
+              "text": "  const token = {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 67,
+              "text": "    access: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 68,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 69,
+              "text": "        type: \"member\",",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 70,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 71,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 72,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-2toijutc3by",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 70,
+        "estimatedImpact": 0.1,
+        "priority": 17,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 67,
+              "text": "    access: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 68,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 69,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 70,
+              "text": "        id: member.id,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 71,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 72,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 73,
+              "text": "      },",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-af4mhviaeo5",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 71,
+        "estimatedImpact": 0.1,
+        "priority": 18,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 68,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 69,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 70,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 71,
+              "text": "        session_id: session.id,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 72,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 73,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 74,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-dzy0ofnbb16",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 72,
+        "estimatedImpact": 0.1,
+        "priority": 19,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 69,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 70,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 71,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 72,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 73,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 74,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 75,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-0osxowoygnoq",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 73,
+        "estimatedImpact": 0.1,
+        "priority": 20,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 70,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 71,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 72,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 73,
+              "text": "      },",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 74,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 75,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 76,
+              "text": "    ),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-c3r3zoqu5n7",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 74,
+        "estimatedImpact": 0.1,
+        "priority": 21,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 71,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 72,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 73,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 74,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 75,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 76,
+              "text": "    ),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 77,
+              "text": "    refresh: jwt.sign(",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-pja2indthkc",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 75,
+        "estimatedImpact": 0.1,
+        "priority": 22,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 72,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 73,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 74,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 75,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 76,
+              "text": "    ),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 77,
+              "text": "    refresh: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 78,
+              "text": "      {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-pj90ymya9mn",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 76,
+        "estimatedImpact": 0.1,
+        "priority": 23,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 73,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 74,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 75,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 76,
+              "text": "    ),",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 77,
+              "text": "    refresh: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 78,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 79,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-25bgmp0twjwj",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 24,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { PrivateTodoAppTodoAtSummaryTransformer } from \"../transformers/PrivateTodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-yn61oi3bxkg",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 25,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { PrivateTodoAppTodoAtSummaryTransformer } from \"../transformers/PrivateTodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-yaccvsfn5s7",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 13,
+        "estimatedImpact": 0.1,
+        "priority": 26,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 10,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { PrivateTodoAppTodoAtSummaryTransformer } from \"../transformers/PrivateTodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-etjgdjn8grl",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 14,
+        "estimatedImpact": 0.1,
+        "priority": 27,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { PrivateTodoAppTodoAtSummaryTransformer } from \"../transformers/PrivateTodoAppTodoAtSummaryTransformer\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-y60sn10up",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 15,
+        "estimatedImpact": 0.1,
+        "priority": 28,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 12,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { PrivateTodoAppTodoAtSummaryTransformer } from \"../transformers/PrivateTodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "export async function patchPrivateTodoAppMemberTrash(props: {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-75ntd37pg1d",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 52,
+        "estimatedImpact": 0.1,
+        "priority": 29,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 49,
+              "text": "    }",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "    return { created_at: sortOrder };",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "  })() satisfies Prisma.private_todo_app_todosOrderByWithRelationInput;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const data = await MyGlobal.prisma.private_todo_app_todos.findMany({",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 53,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "    skip,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    take: limit,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-hzsa8ioskni",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 53,
+        "estimatedImpact": 0.1,
+        "priority": 30,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 50,
+              "text": "    return { created_at: sortOrder };",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "  })() satisfies Prisma.private_todo_app_todosOrderByWithRelationInput;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const data = await MyGlobal.prisma.private_todo_app_todos.findMany({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "    where: whereInput,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 54,
+              "text": "    skip,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    take: limit,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "    orderBy: orderByInput,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-xz8yszpdlcp",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 54,
+        "estimatedImpact": 0.1,
+        "priority": 31,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 51,
+              "text": "  })() satisfies Prisma.private_todo_app_todosOrderByWithRelationInput;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const data = await MyGlobal.prisma.private_todo_app_todos.findMany({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "    skip,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 55,
+              "text": "    take: limit,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "    orderBy: orderByInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "    ...PrivateTodoAppTodoAtSummaryTransformer.select(),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-os6nkwm9my",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 55,
+        "estimatedImpact": 0.1,
+        "priority": 32,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 52,
+              "text": "  const data = await MyGlobal.prisma.private_todo_app_todos.findMany({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "    skip,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    take: limit,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 56,
+              "text": "    orderBy: orderByInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "    ...PrivateTodoAppTodoAtSummaryTransformer.select(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "  });",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-ut2zp5x0brj",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 56,
+        "estimatedImpact": 0.1,
+        "priority": 33,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 53,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "    skip,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    take: limit,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "    orderBy: orderByInput,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 57,
+              "text": "    ...PrivateTodoAppTodoAtSummaryTransformer.select(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "  const total = await MyGlobal.prisma.private_todo_app_todos.count({",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-t8g6q2n339",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 57,
+        "estimatedImpact": 0.1,
+        "priority": 34,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 54,
+              "text": "    skip,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    take: limit,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "    orderBy: orderByInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "    ...PrivateTodoAppTodoAtSummaryTransformer.select(),",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 58,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "  const total = await MyGlobal.prisma.private_todo_app_todos.count({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-xqo1plaltf",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 58,
+        "estimatedImpact": 0.1,
+        "priority": 35,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 55,
+              "text": "    take: limit,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "    orderBy: orderByInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "    ...PrivateTodoAppTodoAtSummaryTransformer.select(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "  });",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 59,
+              "text": "  const total = await MyGlobal.prisma.private_todo_app_todos.count({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "  });",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-5e5coc7ghae",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 59,
+        "estimatedImpact": 0.1,
+        "priority": 36,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 56,
+              "text": "    orderBy: orderByInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "    ...PrivateTodoAppTodoAtSummaryTransformer.select(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "  const total = await MyGlobal.prisma.private_todo_app_todos.count({",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 60,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "  return {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-psqtkzwjrl",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 60,
+        "estimatedImpact": 0.1,
+        "priority": 37,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 57,
+              "text": "    ...PrivateTodoAppTodoAtSummaryTransformer.select(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "  const total = await MyGlobal.prisma.private_todo_app_todos.count({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "    where: whereInput,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 61,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "  return {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "    data: await ArrayUtil.asyncMap(",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-glzy3bas8cd",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 61,
+        "estimatedImpact": 0.1,
+        "priority": 38,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 58,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "  const total = await MyGlobal.prisma.private_todo_app_todos.count({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "  });",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 62,
+              "text": "  return {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "    data: await ArrayUtil.asyncMap(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 64,
+              "text": "      data,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-r67rvwmz1z",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 62,
+        "estimatedImpact": 0.1,
+        "priority": 39,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 59,
+              "text": "  const total = await MyGlobal.prisma.private_todo_app_todos.count({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "  return {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 63,
+              "text": "    data: await ArrayUtil.asyncMap(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 64,
+              "text": "      data,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 65,
+              "text": "      PrivateTodoAppTodoAtSummaryTransformer.transform,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-648n94rp5dr",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 63,
+        "estimatedImpact": 0.1,
+        "priority": 40,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 60,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "  return {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "    data: await ArrayUtil.asyncMap(",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 64,
+              "text": "      data,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 65,
+              "text": "      PrivateTodoAppTodoAtSummaryTransformer.transform,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 66,
+              "text": "    ),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-a7tarqq5ja4",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+        "line": 64,
+        "estimatedImpact": 0.1,
+        "priority": 41,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 61,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "  return {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "    data: await ArrayUtil.asyncMap(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 64,
+              "text": "      data,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 65,
+              "text": "      PrivateTodoAppTodoAtSummaryTransformer.transform,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 66,
+              "text": "    ),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 67,
+              "text": "    pagination: {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775686097664-38fkonowfxo",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"PrivatetodoappAuthMemberController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 42,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { postPrivateTodoAppAuthMemberLogin } from \"../../../../providers/postPrivateTodoAppAuthMemberLogin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postPrivateTodoAppAuthMemberRefresh } from \"../../../../providers/postPrivateTodoAppAuthMemberRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/privateTodoApp/auth/member\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class PrivatetodoappAuthMemberController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Creates a new member account in the private todo application using email and password credentials.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775686097665-spjsvtidwm",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"PrivatetodoappAuthGuestController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/guest/PrivatetodoappAuthGuestController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 43,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { postPrivateTodoAppAuthGuestJoin } from \"../../../../providers/postPrivateTodoAppAuthGuestJoin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { postPrivateTodoAppAuthGuestRefresh } from \"../../../../providers/postPrivateTodoAppAuthGuestRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/privateTodoApp/auth/guest\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class PrivatetodoappAuthGuestController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Enables unauthenticated guests to sign up for a new member account in the private todo application.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775686097669-fodpihbra67",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"PrivatetodoappMemberTrashController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
+        "line": 13,
+        "estimatedImpact": 0.1,
+        "priority": 44,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 10,
+              "text": "import { patchPrivateTodoAppMemberTrash } from \"../../../../providers/patchPrivateTodoAppMemberTrash\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { postPrivateTodoAppMemberTrashTodoIdRestore } from \"../../../../providers/postPrivateTodoAppMemberTrashTodoIdRestore\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "@Controller(\"/privateTodoApp/member/trash\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 14,
+              "text": "export class PrivatetodoappMemberTrashController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "   * Retrieve a paginated list of deleted todos from the trash.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775686097669-2l78kmqfjti",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"PrivatetodoappMemberSessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/sessions/PrivatetodoappMemberSessionsController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 45,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getPrivateTodoAppMemberSessionsSessionId } from \"../../../../providers/getPrivateTodoAppMemberSessionsSessionId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchPrivateTodoAppMemberSessions } from \"../../../../providers/patchPrivateTodoAppMemberSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/privateTodoApp/member/sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class PrivatetodoappMemberSessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve a paginated list of the authenticated member's login sessions.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775686097672-7a7w4zsy4zp",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"PrivatetodoappMemberProfileController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/profile/PrivatetodoappMemberProfileController.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 46,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import { getPrivateTodoAppMemberProfile } from \"../../../../providers/getPrivateTodoAppMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { putPrivateTodoAppMemberProfile } from \"../../../../providers/putPrivateTodoAppMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "@Controller(\"/privateTodoApp/member/profile\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "export class PrivatetodoappMemberProfileController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "   * Retrieve the authenticated member's profile information.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775686097671-p7my52o0sz",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"PrivatetodoappMemberTodosController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
+        "line": 16,
+        "estimatedImpact": 0.1,
+        "priority": 47,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 13,
+              "text": "import { postPrivateTodoAppMemberTodosTodoIdToggle } from \"../../../../providers/postPrivateTodoAppMemberTodosTodoIdToggle\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { putPrivateTodoAppMemberTodosTodoId } from \"../../../../providers/putPrivateTodoAppMemberTodosTodoId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "@Controller(\"/privateTodoApp/member/todos\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 17,
+              "text": "export class PrivatetodoappMemberTodosController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "   * Create a new todo item for the authenticated member.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775686097669-q8wzrmeb1p",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"PrivatetodoappMemberTodosEdithistoriesController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/editHistories/PrivatetodoappMemberTodosEdithistoriesController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 48,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getPrivateTodoAppMemberTodosTodoIdEditHistoriesEditHistoryId } from \"../../../../../providers/getPrivateTodoAppMemberTodosTodoIdEditHistoriesEditHistoryId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchPrivateTodoAppMemberTodosTodoIdEditHistories } from \"../../../../../providers/patchPrivateTodoAppMemberTodosTodoIdEditHistories\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/privateTodoApp/member/todos/:todoId/editHistories\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class PrivatetodoappMemberTodosEdithistoriesController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve a paginated list of edit history entries for a specific todo item.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775686097674-luaysa1ihif",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"IPrivateTodoAppTodo\" not found — referenced by @x-autobe-database-schema-property todo",
+        "file": "src/api/structures/IPrivateTodoAppTodoEditHistory.ts",
+        "line": 61,
+        "estimatedImpact": 0.1,
+        "priority": 49,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 58,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "   * The parent todo item that this edit history entry belongs to.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "   * @x-autobe-database-schema-property todo",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 62,
+              "text": "   * @x-autobe-specification Belongs-to relation from private_todo_app_todo_edit_histories to private_todo_app_todos via private_todo_app_todo_id foreign key. JOIN fetches parent todo and returns as IPrivateTodoAppTodo.ISummary.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "   */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 64,
+              "text": "  todo: IPrivateTodoAppTodo.ISummary;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "totalPotentialGain": 5.8,
+    "topFixes": [
+      {
+        "issueId": "type-error-1775686097523-6dgfg9sbwxi",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.4,
+        "priority": 1,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775686097523-4hut5t6s4dv",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2307",
+        "message": "Cannot find module '../../providers/authorize/memberAuthorize' or its corresponding type declarations.",
+        "file": "src/decorators/MemberAuth.ts",
+        "line": 189,
+        "estimatedImpact": 0.4,
+        "priority": 2,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775686097523-aara1kmb7ip",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2322",
+        "message": "Type '({ id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; title: string & MinLength<1>; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; description: string | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; start_date: Date | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; due_date: Date | null; })[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '({ id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; title: string & MinLength<1>; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; description: string | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; start_date: Date | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; due_date: Date | null; })[]'.",
+        "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+        "line": 3658,
+        "estimatedImpact": 0.4,
+        "priority": 3,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "duplication-1775686097658-vchy6aczdx",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
+        "line": 46,
+        "estimatedImpact": 0.1,
+        "priority": 4,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 43,
+              "text": "   *    - Use created_at or id as cursor for stable pagination",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 44,
+              "text": "   *    - Return pagination metadata with next cursor",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "   * Database query should use the existing indexes on [user_id, deleted_at] for optimal performance.",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 47,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "   * Return only todos belonging to the authenticated member to enforce privacy.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "   * @nestia Generated by Nestia - https://github.com/samchon/nestia",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-w9uahdqqzp",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
+        "line": 47,
+        "estimatedImpact": 0.1,
+        "priority": 5,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 44,
+              "text": "   *    - Return pagination metadata with next cursor",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "   * Database query should use the existing indexes on [user_id, deleted_at] for optimal performance.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "   *",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 48,
+              "text": "   * Return only todos belonging to the authenticated member to enforce privacy.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "   * @nestia Generated by Nestia - https://github.com/samchon/nestia",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "   */",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-vb00y4hay5",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 6,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { PrivateTodoAppTodoTransformer } from \"../transformers/PrivateTodoAppTodoTransformer\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-n8uh5zm6cha",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 7,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { PrivateTodoAppTodoTransformer } from \"../transformers/PrivateTodoAppTodoTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-q7u2dr3tj7n",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 49,
+        "estimatedImpact": 0.1,
+        "priority": 8,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 46,
+              "text": "  if (deletedAtDate !== null) {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "    throw new HttpException(\"Account has been deleted\", 403);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "  }",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "  // 4. Create new session",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 50,
+              "text": "  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const session = await MyGlobal.prisma.private_todo_app_member_sessions.create(",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-q2e1015cal",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 50,
+        "estimatedImpact": 0.1,
+        "priority": 9,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 47,
+              "text": "    throw new HttpException(\"Account has been deleted\", 403);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "  }",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "  // 4. Create new session",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 51,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const session = await MyGlobal.prisma.private_todo_app_member_sessions.create(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "    {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775686097658-l8tegx6a1i",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+        "line": 51,
+        "estimatedImpact": 0.1,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 48,
+              "text": "  }",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "  // 4. Create new session",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "  const accessExpires = new Date(Date.now() + 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 52,
+              "text": "  const session = await MyGlobal.prisma.private_todo_app_member_sessions.create(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "      data: {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "penaltyRecovery": [
+      {
+        "type": "jsdoc",
+        "currentPenalty": 4,
+        "description": "Add JSDoc to 7 missing APIs (88%) to recover up to 4 points"
+      }
+    ]
   }
 }

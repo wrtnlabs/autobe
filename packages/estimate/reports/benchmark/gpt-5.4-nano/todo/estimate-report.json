@@ -1,14 +1,14 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo",
-  "totalScore": 78,
+  "totalScore": 73,
   "grade": "C",
   "phases": {
     "gate": {
       "phase": "gate",
       "passed": true,
-      "score": 99,
+      "score": 96,
       "maxScore": 100,
-      "weightedScore": 99,
+      "weightedScore": 96,
       "issues": [
         {
           "severity": "warning",
@@ -19,30 +19,66 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846350892-sixeksa8mgo",
+          "id": "type-error-1775678122233-yentmeco7iq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2488",
+          "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+            "line": 5201
+          },
+          "id": "type-error-1775678122233-zelk9ov764",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "type-error",
-          "code": "TS2305",
-          "message": "Module '\"@nestjs/common\"' has no exported member 'ParameterDecorator'.",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<number> | Promise<multi_user_todo_todos[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<multi_user_todo_todos[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
           "location": {
-            "file": "src/decorators/MemberAuth.ts",
-            "line": 104
+            "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+            "line": 5255
           },
-          "id": "type-error-1774846350892-ph52u9usafa",
+          "id": "type-error-1775678122233-4dnaulv713",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'multi_user_todo_todo_edit_history_entries' is not assignable to parameter of type 'multi_user_todo_todos'.\n  Type 'multi_user_todo_todo_edit_history_entries' is missing the following properties from type 'multi_user_todo_todos': title, description, start_date, due_date, and 4 more.",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdEditHistoryEntries.ts",
+            "line": 3108
+          },
+          "id": "type-error-1775678122233-d14thnefyo6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'multi_user_todo_todo_edit_history_entries[]' is not assignable to parameter of type 'readonly multi_user_todo_todos[]'.\n  Type 'multi_user_todo_todo_edit_history_entries' is missing the following properties from type 'multi_user_todo_todos': title, description, start_date, due_date, and 4 more.",
+          "location": {
+            "file": "src/transformers/MultiUserTodoTodoTransformer.ts",
+            "line": 2100
+          },
+          "id": "type-error-1775678122233-ucvjlr0bi6",
           "autoFixable": false
         }
       ],
-      "durationMs": 3952,
+      "durationMs": 2622,
       "metrics": {
-        "totalFiles": 134,
+        "totalFiles": 93,
         "filesWithErrors": 0,
         "errorRatio": 0,
-        "penalty": 1,
+        "penalty": 4,
         "typeCriticalCount": 0,
-        "typeWarningCount": 2,
+        "typeWarningCount": 4,
         "prismaCriticalCount": 0,
         "prismaWarningCount": 0,
         "softPass": true
@@ -51,18 +87,21 @@
     "documentQuality": {
       "phase": "documentQuality",
       "passed": true,
-      "score": 89,
+      "score": 93,
       "maxScore": 100,
-      "weightedScore": 6.23,
+      "weightedScore": 6.510000000000001,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 46,
       "metrics": {
         "hasDocsFolder": true,
         "hasReadme": true,
         "docFileCount": 6,
-        "totalDocLength": 165777,
-        "cached": true,
-        "originalDurationMs": 0
+        "totalDocLength": 175728
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "requirementsCoverage": {
@@ -72,63 +111,161 @@
       "maxScore": 100,
       "weightedScore": 18,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 1,
       "metrics": {
-        "controllerCount": 16,
-        "providerCount": 38,
-        "structureCount": 17,
+        "controllerCount": 11,
+        "providerCount": 26,
+        "structureCount": 10,
         "requirementsDocCount": 6,
         "hasRequirementsDocs": true,
-        "mappedControllers": 16,
+        "mappedControllers": 11,
         "unmappedControllers": 0,
-        "mappingRatio": 1,
-        "cached": true,
-        "originalDurationMs": 0
+        "mappingRatio": 1
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "testCoverage": {
       "phase": "testCoverage",
       "passed": true,
-      "score": 71,
+      "score": 73,
       "maxScore": 100,
-      "weightedScore": 16.330000000000002,
-      "issues": [],
-      "durationMs": 0,
+      "weightedScore": 16.79,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST003",
+          "message": "3/62 test files are stubs or lack assertions",
+          "id": "test-1775678122308-9wjfn6h04fj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/auth/guest\" has 2 untested route(s): POST /multiUserTodo/auth/guest/join, POST /multiUserTodo/auth/guest/refresh",
+          "id": "test-1775678122312-xe1sqlxbyvi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/auth/member\" has 3 untested route(s): POST /multiUserTodo/auth/member/join, POST /multiUserTodo/auth/member/login, POST /multiUserTodo/auth/member/refresh",
+          "id": "test-1775678122312-9cokbjkkk8m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member/todos\" has 1 untested route(s): PATCH /multiUserTodo/member/todos/search",
+          "id": "test-1775678122312-fziwfnrghc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member/todos/bulk-move-to-trash\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-move-to-trash",
+          "id": "test-1775678122312-pt2wkf6g31c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member/todos/bulk-permanent-delete\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-permanent-delete",
+          "id": "test-1775678122312-v9jognkv6r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member/todos/bulk-restore-from-trash\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-restore-from-trash",
+          "id": "test-1775678122312-ehrkw3vmuxi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member/todos/bulk-toggle-completion\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-toggle-completion",
+          "id": "test-1775678122312-vz2u196kose",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member/todos/:todoId/edit-history-entries\" has 2 untested route(s): PATCH /multiUserTodo/member/todos/:todoId/edit-history-entries, GET /multiUserTodo/member/todos/:todoId/edit-history-entries/:todoEditHistoryEntryId",
+          "id": "test-1775678122312-rfw7otva3u",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 10,
       "metrics": {
-        "testCount": 83,
-        "controllerCount": 16,
+        "testCount": 62,
+        "controllerCount": 11,
         "routeAnalysis": true,
-        "totalRoutes": 35,
-        "coveredRoutes": 20,
-        "routeCoveragePercent": 57,
-        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
-        "testedMethods": "POST,GET,PATCH,PUT,DELETE",
-        "controllersAnalyzed": 15,
-        "stubTests": 6,
-        "assertionTests": 77,
-        "runtimeVerified": false,
-        "cached": true,
-        "originalDurationMs": 0
+        "totalRoutes": 23,
+        "coveredRoutes": 11,
+        "routeCoveragePercent": 48,
+        "definedMethods": "POST,GET,PUT,PATCH,DELETE",
+        "testedMethods": "GET,PUT,PATCH,DELETE,POST",
+        "controllersAnalyzed": 11,
+        "stubTests": 3,
+        "assertionTests": 59,
+        "runtimeVerified": false
+      },
+      "explanation": {
+        "reasons": [
+          "8x Controller \"/multiUserTodo/auth/guest\" has 2 untested route(s): POST /multiUserTodo/auth/guest/join, POST /multiUserTodo/auth/guest/refresh",
+          "1x 3/62 test files are stubs or lack assertions"
+        ],
+        "issueSummaries": [
+          {
+            "code": "TEST005",
+            "count": 8,
+            "message": "Controller \"/multiUserTodo/auth/guest\" has 2 untested route(s): POST /multiUserTodo/auth/guest/join, POST /multiUserTodo/auth/guest/refresh",
+            "severity": "warning"
+          },
+          {
+            "code": "TEST003",
+            "count": 1,
+            "message": "3/62 test files are stubs or lack assertions",
+            "severity": "warning"
+          }
+        ],
+        "suggestions": []
       }
     },
     "logicCompleteness": {
       "phase": "logicCompleteness",
       "passed": true,
-      "score": 76,
+      "score": 100,
       "maxScore": 100,
-      "weightedScore": 22.8,
+      "weightedScore": 30,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 30,
       "metrics": {
-        "totalIncomplete": 3,
-        "criticalCount": 3,
+        "totalIncomplete": 0,
+        "criticalCount": 0,
         "warningCount": 0,
         "todoCount": 0,
         "fixmeCount": 0,
         "emptyMethods": 0,
-        "emptyCatch": 0,
-        "cached": true,
-        "originalDurationMs": 0
+        "emptyCatch": 0
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "apiCompleteness": {
@@ -138,44 +275,47 @@
       "maxScore": 100,
       "weightedScore": 7.000000000000001,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 32,
       "metrics": {
-        "totalEndpoints": 35,
+        "totalEndpoints": 23,
         "emptyEndpoints": 0,
         "stubEndpoints": 0,
-        "implementedEndpoints": 35,
+        "implementedEndpoints": 23,
         "noProviderEndpoints": 0,
         "passthroughEndpoints": 0,
         "completionRate": 100,
-        "implementationRate": 100,
-        "cached": true,
-        "originalDurationMs": 0
+        "implementationRate": 100
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     }
   },
   "reference": {
     "complexity": {
-      "totalFunctions": 349,
+      "totalFunctions": 225,
       "complexFunctions": 1,
-      "maxComplexity": 22,
+      "maxComplexity": 41,
       "issues": [
         {
           "severity": "critical",
           "category": "complexity",
           "code": "C001",
-          "message": "Function \"patchTodoAppMemberTodos\" has complexity 22 (max: 20)",
+          "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 41 (max: 20)",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodos.ts",
-            "line": 17
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
+            "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846350967-j5a27671wdp",
+          "id": "complexity-1775678122362-0brp1aoqlac",
           "autoFixable": false
         }
       ]
     },
     "duplication": {
-      "totalBlocks": 24,
+      "totalBlocks": 3,
       "issues": [
         {
           "severity": "warning",
@@ -183,10 +323,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
-            "line": 50
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "line": 31
           },
-          "id": "duplication-1774846351026-tj0rargb8ho",
+          "id": "duplication-1775678122401-samal65ssz",
           "autoFixable": false
         },
         {
@@ -195,10 +335,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
-            "line": 51
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "line": 32
           },
-          "id": "duplication-1774846351026-4bzrobrv5db",
+          "id": "duplication-1775678122401-gltdccgoat",
           "autoFixable": false
         },
         {
@@ -207,566 +347,362 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
-            "line": 52
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "line": 114
           },
-          "id": "duplication-1774846351026-nk091cse4s",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
-            "line": 105
-          },
-          "id": "duplication-1774846351026-fzjoulxtl5d",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
-            "line": 106
-          },
-          "id": "duplication-1774846351026-aaz1dx9g9la",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
-            "line": 107
-          },
-          "id": "duplication-1774846351026-x002wfmwhvr",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 8
-          },
-          "id": "duplication-1774846351026-qmut0dlfdqo",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 9
-          },
-          "id": "duplication-1774846351026-d62hd967o3l",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 10
-          },
-          "id": "duplication-1774846351026-gfqthi23b8w",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 11
-          },
-          "id": "duplication-1774846351026-wsle9b60igr",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 12
-          },
-          "id": "duplication-1774846351026-x7jlumds9qc",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 20
-          },
-          "id": "duplication-1774846351026-k0nv4ef3guo",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 21
-          },
-          "id": "duplication-1774846351026-bjoq24gk7m",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 22
-          },
-          "id": "duplication-1774846351026-vpkobhzd8v",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 23
-          },
-          "id": "duplication-1774846351026-jfzt8vzreih",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 24
-          },
-          "id": "duplication-1774846351026-enmvgmq6zlp",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 25
-          },
-          "id": "duplication-1774846351026-t4dfo7dpeb",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
-            "line": 10
-          },
-          "id": "duplication-1774846351026-kmkkh9cr9r",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
-            "line": 11
-          },
-          "id": "duplication-1774846351026-886of8qw7jm",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
-            "line": 43
-          },
-          "id": "duplication-1774846351026-3yuvrd17xzh",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
-            "line": 44
-          },
-          "id": "duplication-1774846351026-cx517ezhdd",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
-            "line": 45
-          },
-          "id": "duplication-1774846351026-sbmjbstf9fn",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
-            "line": 46
-          },
-          "id": "duplication-1774846351026-tds4n2pjm2b",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/getTodoAppMemberTodosTodoIdHistoryHistoryEntryId.ts",
-            "line": 9
-          },
-          "id": "duplication-1774846351026-qmt1ue6wu7",
+          "id": "duplication-1775678122401-z15db8w675o",
           "autoFixable": false
         }
       ]
     },
     "naming": {
-      "totalIssues": 3,
+      "totalIssues": 5,
       "issues": [
         {
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"TodoappMemberPassword_resetsController\" should be PascalCase",
+          "message": "Class \"MultiusertodoMemberTodosEdit_history_entriesController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/edit-history-entries/MultiusertodoMemberTodosEdit_history_entriesController.ts",
+            "line": 12
           },
-          "id": "naming-1774846351027-anq74vu4kjc",
+          "id": "naming-1775678122390-3fnnlvy3o6n",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"TodoappMemberEmail_verificationsController\" should be PascalCase",
+          "message": "Class \"MultiusertodoMemberTodosBulk_toggle_completionController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-toggle-completion/MultiusertodoMemberTodosBulk_toggle_completionController.ts",
+            "line": 10
           },
-          "id": "naming-1774846351028-x97j0k4831r",
+          "id": "naming-1775678122390-iit97vrxuuq",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"TodoappMemberTodosHistory_entriesController\" should be PascalCase",
+          "message": "Class \"MultiusertodoMemberTodosBulk_restore_from_trashController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-restore-from-trash/MultiusertodoMemberTodosBulk_restore_from_trashController.ts",
+            "line": 10
           },
-          "id": "naming-1774846351029-0kuolwd3h7il",
+          "id": "naming-1775678122390-x34ie0y71ek",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMemberTodosBulk_permanent_deleteController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-permanent-delete/MultiusertodoMemberTodosBulk_permanent_deleteController.ts",
+            "line": 10
+          },
+          "id": "naming-1775678122391-8yiqpembqrq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMemberTodosBulk_move_to_trashController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-move-to-trash/MultiusertodoMemberTodosBulk_move_to_trashController.ts",
+            "line": 10
+          },
+          "id": "naming-1775678122391-r52i0zgm29h",
           "autoFixable": false
         }
       ]
     },
     "jsdoc": {
-      "totalMissing": 16,
-      "totalApis": 17,
+      "totalMissing": 11,
+      "totalApis": 12,
       "issues": [
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappGuestsController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMemberProfilesController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/guests/TodoappGuestsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846351041-2oiv36fpikg",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846351042-f6guilvsg5t",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappGuestSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/guest/sessions/TodoappGuestSessionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846351041-v60kfv3drkr",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberProfilesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/profiles/TodoappMemberProfilesController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846351042-ynwrdq490i",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/profiles/MultiusertodoMemberProfilesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774846351042-wne9ow5iww",
+          "id": "jsdoc-1775678122406-7n280dfw0e",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberPassword_resetsController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846351042-4xpa785jp3e",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberEmail_verificationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846351043-b5pqiom93o6",
+          "id": "jsdoc-1775678122406-6fepb0ne3qy",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberMembersController\" missing JSDoc",
+          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/members/TodoappMemberMembersController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846351043-xx68joh8rkr",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774846351044-gflopxobrmu",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthGuestRefreshController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/auth/guest/refresh/TodoappAuthGuestRefreshController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774846351044-n3gbl2rcjwq",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthGuestJoinController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/auth/guest/join/TodoappAuthGuestJoinController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774846351045-1kuk9pamst8",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosHistory_entriesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846351045-j9lovz4yx4",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosRestoreController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/restore/TodoappMemberTodosRestoreController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846351045-7e5xeihon8p",
+          "id": "jsdoc-1775678122406-52wdxlttmtm",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberTodosSnapshotsController\" missing JSDoc",
+          "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/snapshots/TodoappMemberTodosSnapshotsController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+            "line": 9
           },
-          "id": "jsdoc-1774846351046-6ebue3m16nn",
+          "id": "jsdoc-1775678122407-z4vypkjhaj",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberTodosHistoryController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
-            "line": 15
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+            "line": 17
           },
-          "id": "jsdoc-1774846351047-v5ngawzhx3f",
+          "id": "jsdoc-1775678122407-x8spfpqjlnn",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberTodosHistoryOrderindexesController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMemberTodosEdit_history_entriesController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history/orderIndexes/TodoappMemberTodosHistoryOrderindexesController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/edit-history-entries/MultiusertodoMemberTodosEdit_history_entriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774846351047-95ijstv7hbu",
+          "id": "jsdoc-1775678122408-xf81u3i9bde",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosBulk_toggle_completionController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-toggle-completion/MultiusertodoMemberTodosBulk_toggle_completionController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775678122408-8q9be8309zh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosBulk_restore_from_trashController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-restore-from-trash/MultiusertodoMemberTodosBulk_restore_from_trashController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775678122408-g5h1vrxud1",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosBulk_permanent_deleteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-permanent-delete/MultiusertodoMemberTodosBulk_permanent_deleteController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775678122408-2o8szr66a6h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosBulk_move_to_trashController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-move-to-trash/MultiusertodoMemberTodosBulk_move_to_trashController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775678122409-yfgndzf15bf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberDashboardTodosSummaryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/dashboard/todos/summary/MultiusertodoMemberDashboardTodosSummaryController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775678122409-r1cchm5bd6",
           "autoFixable": false
         }
       ]
     },
     "schemaSync": {
-      "totalTypes": 43,
-      "emptyTypes": 2,
-      "mismatchedProperties": 2,
+      "totalTypes": 29,
+      "emptyTypes": 0,
+      "mismatchedProperties": 11,
       "issues": [
         {
           "severity": "warning",
           "category": "completeness",
           "code": "SYNC002",
-          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property token",
+          "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property id",
           "location": {
-            "file": "src/api/structures/ITodoAppMemberPasswordReset.ts",
-            "line": 80
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 100
           },
-          "id": "completeness-1774846351058-7f0wndzcz67",
+          "id": "completeness-1775678122418-qobr8rxo348",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "completeness",
           "code": "SYNC002",
-          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property token",
+          "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property title",
           "location": {
-            "file": "src/api/structures/ITodoAppMemberPasswordReset.ts",
-            "line": 88
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 110
           },
-          "id": "completeness-1774846351058-2ndlp3smk7i",
+          "id": "completeness-1775678122418-edl97ovlb7n",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "completeness",
-          "code": "SYNC001",
-          "message": "Empty type alias: IRefresh = {} — missing properties",
+          "code": "SYNC002",
+          "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property start_date",
           "location": {
-            "file": "src/api/structures/ITodoAppGuest.ts",
-            "line": 172
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 130
           },
-          "id": "completeness-1774846351058-mydaty3yhq",
+          "id": "completeness-1775678122418-enxsudic87m",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "completeness",
-          "code": "SYNC001",
-          "message": "Empty type alias: ISummary = {} — missing properties",
+          "code": "SYNC002",
+          "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property due_date",
           "location": {
-            "file": "src/api/structures/ITodoAppGuest.ts",
-            "line": 177
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 140
           },
-          "id": "completeness-1774846351058-yt7p42q0p8m",
+          "id": "completeness-1775678122418-8zc2gtd4yml",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property created_at",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 170
+          },
+          "id": "completeness-1775678122418-utbqudcsokd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property updated_at",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 180
+          },
+          "id": "completeness-1775678122418-0y7arsdmmnu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property deleted_at",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 190
+          },
+          "id": "completeness-1775678122418-6i9cewuhndr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IMultiUserTodoTodo\" not found — referenced by @x-autobe-database-schema-property title",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 565
+          },
+          "id": "completeness-1775678122418-tc630xtaace",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IMultiUserTodoTodo\" not found — referenced by @x-autobe-database-schema-property description",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 577
+          },
+          "id": "completeness-1775678122418-i4couzm1gah",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IMultiUserTodoTodo\" not found — referenced by @x-autobe-database-schema-property start_date",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 589
+          },
+          "id": "completeness-1775678122418-1r9wyojqkmu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IMultiUserTodoTodo\" not found — referenced by @x-autobe-database-schema-property due_date",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 601
+          },
+          "id": "completeness-1775678122418-4017g8jdy28",
           "autoFixable": false
         }
       ]
     }
   },
   "summary": {
-    "totalIssues": 2,
+    "totalIssues": 7,
     "criticalCount": 0,
-    "warningCount": 2,
-    "suggestionCount": 0
+    "warningCount": 6,
+    "suggestionCount": 1
   },
   "criticalIssues": [],
   "warnings": [
@@ -779,47 +715,2632 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846350892-sixeksa8mgo",
+      "id": "type-error-1775678122233-yentmeco7iq",
       "autoFixable": false
     },
     {
       "severity": "warning",
       "category": "type-error",
-      "code": "TS2305",
-      "message": "Module '\"@nestjs/common\"' has no exported member 'ParameterDecorator'.",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<number> | Promise<multi_user_todo_todos[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<multi_user_todo_todos[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
       "location": {
-        "file": "src/decorators/MemberAuth.ts",
-        "line": 104
+        "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+        "line": 5255
       },
-      "id": "type-error-1774846350892-ph52u9usafa",
+      "id": "type-error-1775678122233-4dnaulv713",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'multi_user_todo_todo_edit_history_entries' is not assignable to parameter of type 'multi_user_todo_todos'.\n  Type 'multi_user_todo_todo_edit_history_entries' is missing the following properties from type 'multi_user_todo_todos': title, description, start_date, due_date, and 4 more.",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdEditHistoryEntries.ts",
+        "line": 3108
+      },
+      "id": "type-error-1775678122233-d14thnefyo6",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'multi_user_todo_todo_edit_history_entries[]' is not assignable to parameter of type 'readonly multi_user_todo_todos[]'.\n  Type 'multi_user_todo_todo_edit_history_entries' is missing the following properties from type 'multi_user_todo_todos': title, description, start_date, due_date, and 4 more.",
+      "location": {
+        "file": "src/transformers/MultiUserTodoTodoTransformer.ts",
+        "line": 2100
+      },
+      "id": "type-error-1775678122233-ucvjlr0bi6",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "test",
+      "code": "TEST003",
+      "message": "3/62 test files are stubs or lack assertions",
+      "id": "test-1775678122308-9wjfn6h04fj",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "test",
+      "code": "TEST005",
+      "message": "Controller \"/multiUserTodo/auth/guest\" has 2 untested route(s): POST /multiUserTodo/auth/guest/join, POST /multiUserTodo/auth/guest/refresh",
+      "id": "test-1775678122312-xe1sqlxbyvi",
       "autoFixable": false
     }
   ],
-  "suggestions": [],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2488",
+      "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+        "line": 5201
+      },
+      "id": "type-error-1775678122233-zelk9ov764",
+      "autoFixable": false
+    }
+  ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:52:31.058Z",
-    "totalDurationMs": 4108,
-    "estimateVersion": "0.30.4",
-    "evaluatedFiles": 134
+    "evaluatedAt": "2026-04-08T19:55:22.419Z",
+    "totalDurationMs": 2770,
+    "estimateVersion": "0.30.5",
+    "evaluatedFiles": 93
   },
   "penalties": {
     "jsdoc": {
-      "amount": 5,
-      "missing": 16,
-      "ratio": "94%"
+      "amount": 4,
+      "missing": 11,
+      "ratio": "92%"
+    },
+    "schemaSync": {
+      "amount": 4,
+      "emptyTypes": 0,
+      "mismatchedProperties": 11
     }
   },
   "performanceMetrics": {
-    "totalSizeKB": 554,
-    "totalFiles": 134,
-    "totalLines": 12186,
-    "avgLinesPerFile": 91,
-    "largestFile": "src/api/functional/todoApp/member/todos/history/index.ts",
-    "largestFileSizeKB": 32,
-    "controllers": 16,
-    "providers": 38,
-    "structures": 17,
+    "totalSizeKB": 322,
+    "totalFiles": 93,
+    "totalLines": 8127,
+    "avgLinesPerFile": 87,
+    "largestFile": "src/api/structures/IMultiUserTodoTodo.ts",
+    "largestFileSizeKB": 28,
+    "controllers": 11,
+    "providers": 26,
+    "structures": 10,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postMultiUserTodoMemberTodos.ts",
+          "line": 34,
+          "description": "Ownership check uses `props.member.id` against the profile's `id` column instead of `multi_user_todo_user_id`. The JWT payload carries the user ID, but the query filters `where: { id: props.member.id }` — meaning it looks for a profile whose primary key equals the user ID, which will almost always return null and deny legitimate users, or in edge cases match the wrong record.",
+          "suggestion": "Change the where clause to `{ multi_user_todo_user_id: props.member.id, deleted_at: null }` to correctly scope the profile lookup to the authenticated user."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkPermanentDelete.ts",
+          "line": 38,
+          "description": "Ownership validation is performed by checking whether any edit history entry references the owner ID (`editHistoryEntriesByOwners: { some: { multi_user_todo_owner_id: ownerId } }`). A todo with no edit history entries will have no such relation, causing the ownership check to fail for todos that were never edited — legitimate todos could be permanently deleted by any authenticated member who guesses their IDs, or legitimate owners could be blocked from deleting their own unedited todos. The ownership field should be on the todo itself, not derived from history entries.",
+          "suggestion": "Add a direct owner column (e.g., `multi_user_todo_owner_id`) to the `multi_user_todo_todos` table and filter by it directly: `where: { id: { in: uniqueTodoIds }, multi_user_todo_owner_id: ownerId }`."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkMoveToTrash.ts",
+          "line": 28,
+          "description": "The provider explicitly throws a 500 error stating 'Ownership validation is not available for this operation', meaning the bulk move-to-trash endpoint is completely non-functional. However, the controller still accepts authenticated requests and routes them here. If this provider is ever patched to not throw (e.g., during refactoring), there is no ownership check in place, creating a critical access control gap.",
+          "suggestion": "Either implement proper ownership validation using a direct owner column on the todos table, or remove the endpoint entirely until the schema supports it. Do not leave a stub that throws 500 as a security control."
+        },
+        {
+          "severity": "critical",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 47,
+          "description": "The password hash result is computed (`await PasswordUtil.hash(password)`) but the return value is discarded — it is never stored in the database. The user record is created without any password, meaning authentication cannot verify credentials and the password field serves no security purpose.",
+          "suggestion": "Store the hashed password: `const hashedPassword = await PasswordUtil.hash(password);` and include it in the `multi_user_todo_user_profiles.create` data payload (or the appropriate users table)."
+        },
+        {
+          "severity": "critical",
+          "type": "auth-failures",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 47,
+          "description": "Because the password is never stored (see cryptographic-failures issue), the member login/refresh flow cannot validate credentials. Any user who knows a valid user ID or can obtain a refresh token can authenticate without knowing the password.",
+          "suggestion": "Persist the hashed password during registration and validate it during login before issuing tokens."
+        },
+        {
+          "severity": "critical",
+          "type": "auth-failures",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 42,
+          "description": "The refresh token is not validated to be of `tokenType: 'refresh'`. An access token (which does not include `tokenType: 'refresh'`) can be used as a refresh token to obtain new tokens, breaking the intended token separation and allowing indefinite session extension with a short-lived access token.",
+          "suggestion": "After verifying the JWT, check that `payload.tokenType === 'refresh'` and reject tokens that do not carry this claim."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 22,
+          "description": "The guest join endpoint ignores the password, href, and referrer fields (`void props.body.password`, etc.) and creates a profile with only a display name, then issues JWT tokens typed as 'guest'. There is no credential validation — any caller can obtain a valid JWT by providing any display name. If guest tokens grant access to member-level endpoints (depending on guard implementation), this is a privilege escalation risk.",
+          "suggestion": "Ensure guest tokens are strictly scoped and cannot be used to access member-only endpoints. Document that guest join is intentionally credential-free, and verify that `MemberAuth` guards reject guest-typed tokens."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 35,
+          "description": "Password validation only checks `password.length < 1`, accepting any single-character password. There is no minimum length, complexity, or entropy requirement.",
+          "suggestion": "Enforce a minimum password length (e.g., 8 characters) and consider basic complexity rules."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+          "line": 55,
+          "description": "All controllers use `console.log(error)` for error handling, which may expose stack traces and internal details to logs without structured context (user ID, request ID, endpoint). This is the standard AutoBE pattern but limits observability and auditability.",
+          "suggestion": "Consider adopting a structured logger (e.g., NestJS Logger or Winston) with request context to improve auditability and avoid accidental sensitive data exposure in logs."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+          "line": 1,
+          "description": "Authentication endpoints (join, refresh) have no rate limiting, making them susceptible to brute-force and credential stuffing attacks.",
+          "suggestion": "Apply rate limiting (e.g., via @nestjs/throttler) to authentication endpoints, especially join and refresh."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoId.ts",
+          "line": 24,
+          "description": "The todo lookup does not verify that the authenticated member owns the todo. Any authenticated member can retrieve any other member's todo by guessing or knowing the todoId UUID.",
+          "suggestion": "Add an ownership check to the where clause: include a condition that ties the todo to the authenticated member, e.g., `multi_user_todo_owner_id: props.member.id` (or the correct owner field name), and throw a 403 if the record does not belong to the requesting member."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoIdEditHistoryEntriesTodoEditHistoryEntryId.ts",
+          "line": 27,
+          "description": "The todo ownership check is missing when fetching the parent todo. The query fetches the todo by ID without verifying it belongs to `props.member.id`, allowing any authenticated member to access edit history entries of todos they do not own.",
+          "suggestion": "Add `multi_user_todo_owner_id: props.member.id` (or equivalent) to the todo lookup where clause to ensure the requesting member owns the todo before returning its edit history entry."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getMultiUserTodoMemberDashboardTodosSummary.ts",
+          "line": 27,
+          "description": "The query filters edit history entries by `multi_user_todo_owner_id: props.member.id`, but the field name may not exist on the `multi_user_todo_todo_edit_history_entries` table (it appears to be a todo-level field). If the field does not exist or is silently ignored by Prisma, this could return data belonging to other users.",
+          "suggestion": "Verify the correct ownership field name on the edit history entries table. If ownership is tracked via the parent todo, join through the todo relation and filter by the todo's owner field. Add integration tests to confirm the filter is applied correctly."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 52,
+          "description": "The ownership filter for todos uses a runtime typeof check on a string literal (`typeof ('multi_user_todo_owner_id' as any) === 'string'`), which always evaluates to true. This means both spread objects are always applied, potentially creating conflicting or incorrect Prisma where conditions. The actual member ownership filter may not work as intended.",
+          "suggestion": "Determine the correct owner field name from the Prisma schema and use it directly without the typeof guard pattern. For example: `where: { multi_user_todo_owner_id: props.member.id, ... }`. This ensures the ownership filter is always correctly applied."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkRestoreFromTrash.ts",
+          "line": 47,
+          "description": "Ownership is inferred indirectly by checking edit history entries for the member's ID rather than checking the todo's direct owner field. If a member has an edit history entry for a todo they don't own (e.g., collaborative editing), they could restore todos belonging to other users.",
+          "suggestion": "Verify ownership using the direct owner field on the `multi_user_todo_todos` table (e.g., `multi_user_todo_owner_id: props.member.id`) rather than inferring ownership from edit history entries."
+        },
+        {
+          "severity": "warning",
+          "type": "security-misconfiguration",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 35,
+          "description": "The refresh token flow does not validate that the refresh token has not been revoked or invalidated (e.g., no server-side session/token blacklist check). A stolen refresh token remains valid until expiry (7 days). Additionally, the new refresh token reuses the same `session_id` and payload as the old one without rotation tracking.",
+          "suggestion": "Implement refresh token rotation with server-side storage: store issued refresh tokens (or their hashes) in the database, invalidate the old token on use, and reject tokens not found in the store. This prevents replay attacks with stolen refresh tokens."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 18,
+          "description": "When a non-ForbiddenException and non-UnauthorizedException error is caught, the original error message is forwarded directly to the client via `throw new UnauthorizedException(message)`. This could leak internal error details from the JWT library (e.g., 'invalid signature', 'jwt expired') which may aid attackers.",
+          "suggestion": "Use a generic error message for all unexpected errors: `throw new UnauthorizedException('Invalid or missing token')` instead of forwarding the original error message."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 1,
+          "description": "Member login is not implemented and throws a 500 error. Authentication failures and login attempts are not logged, making it impossible to detect brute-force or credential stuffing attacks.",
+          "suggestion": "When login is implemented, add structured audit logging for both successful and failed login attempts including IP address, timestamp, and username (without password)."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 29,
+          "description": "The default page limit is 100 records with no enforced maximum. Large limit values could cause excessive database load.",
+          "suggestion": "Enforce a maximum limit (e.g., 100 or 200) and validate that the limit parameter does not exceed it: `const limit = Math.min(props.body.limit ?? 100, 200)`."
+        }
+      ],
+      "score": 45,
+      "summary": "[sampled 30/37 files] [2 chunks, 20→19 issues] The codebase has several critical security vulnerabilities: (1) the password hash is computed but never persisted during member registration, making password-based authentication impossible and all accounts effectively passwordless; (2) access tokens can be used as refresh tokens due to missing tokenType validation; (3) the bulk-move-to-trash provider intentionally throws 500 with no ownership check implemented; (4) the bulk permanent delete uses edit history entries for ownership validation, which fails for todos with no edit history; (5) the todo creation provider uses the wrong column for profile lookup. These issues collectively undermine authentication integrity and data isolation. Guest authentication is credential-free by design but needs strict scope enforcement. The overall security posture is poor due to the authentication and access control failures.",
+      "durationMs": 43548,
+      "tokensUsed": {
+        "input": 34524,
+        "output": 3881,
+        "inputCost": 0.103572,
+        "outputCost": 0.058214999999999996
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkToggleCompletion.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkRestoreFromTrash.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkPermanentDelete.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkMoveToTrash.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdEditHistoryEntries.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberTodosSearch.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberProfiles.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/patchMultiUserTodoMemberProfile.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoIdEditHistoryEntriesTodoEditHistoryEntryId.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoMemberProfilesProfileId.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoMemberProfile.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/getMultiUserTodoMemberDashboardTodosSummary.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 20,
+          "description": "The query uses 'editHistoryEntriesByOwners' relation to check ownership, but the where clause incorrectly uses 'some' with 'deleted_at: null' on the history entry. This would incorrectly filter todos that have at least one non-deleted history entry, not validate that the current member owns the todo. Ownership should be checked via a direct relation or by verifying the todo belongs to the member's user.",
+          "suggestion": "Review the Prisma schema to find the correct ownership relation (likely a foreign key from todo to user). Use a proper ownership check like 'multi_user_todo_owner_id: props.member.id' in the todo query."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkMoveToTrash.ts",
+          "line": 30,
+          "description": "Function throws a 500 error with a comment stating ownership validation is not available. This is an incomplete implementation that fails to perform the required operation.",
+          "suggestion": "Implement proper ownership validation using the Prisma schema's relations (likely through editHistoryEntriesByOwners or a direct owner field) and perform the bulk update to set deleted_at."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 20,
+          "description": "Function throws a 500 error stating 'Member login is not configured'. This is an incomplete implementation for a core authentication flow.",
+          "suggestion": "Implement proper email/password verification using the User/UserProfile models and password hashing. Return proper tokens upon successful login."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkToggleCompletion.ts",
+          "line": 30,
+          "description": "The function checks if resolved.length !== todoIds.length and throws a 403 error. However, it doesn't verify that the todos belong to the requesting member. This could allow toggling completion of other users' todos if IDs are known.",
+          "suggestion": "Add ownership validation in the where clause, e.g., by joining through editHistoryEntriesByOwners or checking a direct owner field."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkRestoreFromTrash.ts",
+          "line": 30,
+          "description": "Ownership check uses 'multi_user_todo_todo_edit_history_entries' to determine if a todo is owned. This is indirect and may not be the correct ownership relation. Also, if a todo has no edit history entries, it would be considered not owned.",
+          "suggestion": "Use the direct ownership relation (likely a foreign key from todo to user) to check ownership. Also ensure the todo is in trash (deleted_at not null) and owned by the member before restoring."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkPermanentDelete.ts",
+          "line": 30,
+          "description": "Ownership check uses 'editHistoryEntriesByOwners' relation. This may not be the correct ownership mechanism. Also, the function deletes history entries before todos, which is correct for referential integrity, but the ownership check should be more direct.",
+          "suggestion": "Verify the correct ownership field in the Prisma schema and update the where clause accordingly. Ensure cascading deletes are handled by the database or Prisma."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoMemberTodos.ts",
+          "line": 20,
+          "description": "The function checks for a user profile with 'id: props.member.id', but the member payload likely contains a user ID, not a profile ID. The profile lookup should use 'multi_user_todo_user_id: props.member.id'.",
+          "suggestion": "Change the where clause to 'multi_user_todo_user_id: props.member.id' to find the correct profile."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 30,
+          "description": "The function creates a user profile but does not create a corresponding User record (if required by the schema). It also hashes the password but doesn't store it anywhere (no password field in the profile creation).",
+          "suggestion": "Check the Prisma schema for User and UserProfile models. Create a User record with hashed password, then create the associated UserProfile. Store the hashed password in the appropriate model."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 30,
+          "description": "The function creates a user profile for a guest join, but guests should not create permanent accounts. This seems to conflate guest and member registration. According to requirements, guests can only do entry-point authentication that leads to account creation, but this function creates a profile directly.",
+          "suggestion": "Re-evaluate the requirement: guest join might be for creating a temporary session, not a permanent profile. Alternatively, this might be intended for member registration and should be renamed/refactored."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 30,
+          "description": "The where clause attempts to use 'multi_user_todo_owner_id' or 'multi_user_todo_owner' fields with type-guarded spreads, but these fields may not exist. The logic is convoluted and likely incorrect for ownership filtering.",
+          "suggestion": "Determine the correct ownership field from the Prisma schema and use it directly. Remove the type-guarded spread workaround."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 30,
+          "description": "The function uses a dynamic property access on MyGlobal.prisma with a hallucinated model name 'todoMemberTodosTodoId'. This is not a valid Prisma model. The function should use the actual Prisma model (likely 'multi_user_todo_todos') with an ownership check.",
+          "suggestion": "Use the correct Prisma model and implement soft delete (set deleted_at) or hard delete with ownership validation."
+        },
+        {
+          "sever": null,
+          "description": "No description",
+          "type": "unknown",
+          "severity": "warning"
+        }
+      ],
+      "score": 0,
+      "summary": "No summary provided",
+      "durationMs": 80905,
+      "tokensUsed": {
+        "input": 19868,
+        "output": 4096,
+        "inputCost": 0.0059604,
+        "outputCost": 0.0036044799999999998
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/multiUserTodo/member/profiles/MultiusertodoMemberProfilesController.ts",
+          "line": 1,
+          "description": "Controller defines routes '/multiUserTodo/member/profiles' and '/multiUserTodo/member/profiles/:profileId' but there is no OpenAPI specification provided to verify these endpoints. Without spec, these appear to be phantom endpoints.",
+          "suggestion": "Remove these endpoints unless they are defined in the OpenAPI spec."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/multiUserTodo/member/todos/bulk-toggle-completion/MultiusertodoMemberTodosBulk_toggle_completionController.ts",
+          "line": 1,
+          "description": "Controller defines bulk toggle completion endpoint but there is no OpenAPI specification provided to verify this endpoint. Without spec, this appears to be a phantom endpoint.",
+          "suggestion": "Remove this endpoint unless it is defined in the OpenAPI spec."
+        },
+        {
+          "severity": "warning",
+          "type": "fabricated-field",
+          "file": "src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+          "line": 1,
+          "description": "Controller references DTOs (IMultiUserTodo, IMultiUserTodoTodo, IPageIMultiUserTodoTodo) that may contain fields not defined in the Prisma schema. However, without the DTO definitions, this cannot be fully verified.",
+          "suggestion": "Ensure DTO fields map exactly to Prisma schema columns."
+        },
+        {
+          "severity": "warning",
+          "type": "wrong-relation",
+          "file": "src/controllers/multiUserTodo/member/todos/edit-history-entries/MultiusertodoMemberTodosEdit_history_entriesController.ts",
+          "line": 1,
+          "description": "Controller references edit history entries but the Prisma schema shows relations from edit_history_entries to todos via two relations ('multi_user_todo_todo_edit_history_entries_of_multi_use_2e58f97c' and 'multi_user_todo_todo_edit_history_entries_of_multi_use_1e49d0dd'). The implementation must correctly use these relations.",
+          "suggestion": "Verify the relation names used in Prisma queries match the schema."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 22,
+          "description": "The query uses a relation field 'editHistoryEntriesByOwners' that doesn't exist in the Prisma schema. The schema defines 'editHistoryEntries' and 'editHistoryEntriesByOwners' as relations from multi_user_todo_todos to multi_user_todo_todo_edit_history_entries, but the query incorrectly uses it as a filter for ownership validation. More critically, the query references 'multi_user_todo_owner_id' which is not a column in the multi_user_todo_todos model - ownership is tracked via the edit history relation, not a direct column.",
+          "suggestion": "Remove the ownership filter from the initial query or use the correct relation path through editHistoryEntriesByOwners to validate ownership via the multi_user_todo_owner_id in the edit history table."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkPermanentDelete.ts",
+          "line": 40,
+          "description": "The query filters todos using 'editHistoryEntriesByOwners.some.multi_user_todo_owner_id' to enforce ownership, but this assumes a direct ownership column in the todos table which doesn't exist. The schema shows ownership is tracked through the edit history relation, not a direct column in the todos table.",
+          "suggestion": "Re-evaluate ownership validation logic to correctly use the edit history relation or implement proper ownership tracking as defined in the schema."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkRestoreFromTrash.ts",
+          "line": 44,
+          "description": "The code queries 'multi_user_todo_todo_edit_history_entries' to check ownership via 'multi_user_todo_owner_id', but this assumes todos have a direct owner column which they don't. The schema shows ownership is tracked through the edit history relation, but the todos model itself doesn't have a multi_user_todo_owner_id column.",
+          "suggestion": "Fix ownership validation to use the correct relation path or add proper ownership tracking to the todos model if required by the business logic."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/controllers/multiUserTodo/member/dashboard/todos/summary/MultiusertodoMemberDashboardTodosSummaryController.ts",
+          "line": 57,
+          "description": "The controller method returns 'IMultiUserTodoTodoEditHistoryEntry' but based on the endpoint description and method name, it should return a todo summary DTO, not an edit history entry DTO. This is a wrong DTO mapping.",
+          "suggestion": "Change the return type to the appropriate todo summary DTO (likely IMultiUserTodoTodo.ISummary or similar based on the endpoint description)."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/postMultiUserTodoMemberTodosBulkMoveToTrash.ts",
+          "line": 31,
+          "description": "The provider throws a 500 error stating 'Ownership validation is not available for this operation' because it claims the schema doesn't include an owner-scoped column. However, this is defensive programming rather than hallucination - the code correctly identifies a schema limitation and fails safely.",
+          "suggestion": "This is actually correct behavior - the provider identifies a schema limitation and fails safely rather than implementing incorrect logic. No change needed."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 27,
+          "description": "The provider throws 'Member login is not configured' because the required authentication schema (user accounts, passwords) is missing. This is defensive programming, not hallucination.",
+          "suggestion": "This is correct behavior given the incomplete schema. No change needed."
+        },
+        {
+          "severity": "suggestion",
+          "type": "contextual-precision",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 58,
+          "description": "The code attempts to use 'multi_user_todo_owner_id' and 'multi_user_todo_owner' fields that don't exist in the multi_user_todo_todos model, using type assertions to work around TypeScript errors. This shows awareness of the schema limitation but uses incorrect field names.",
+          "suggestion": "Remove the incorrect ownership filter attempts and implement proper ownership validation through the edit history relations as defined in the schema."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchMultiUserTodoMemberProfiles.ts",
+          "line": 1,
+          "description": "Provider 'patchMultiUserTodoMemberProfiles' suggests a route for updating multiple profiles (plural), but the Prisma schema only supports one profile per user via a unique constraint on multi_user_todo_user_id. There's no plausible OpenAPI path for bulk profile updates.",
+          "suggestion": "Remove this provider unless there's a corresponding OpenAPI path for bulk profile updates (unlikely given the schema)."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/getMultiUserTodoMemberDashboardTodosSummary.ts",
+          "line": 1,
+          "description": "Provider 'getMultiUserTodoMemberDashboardTodosSummary' returns a single IMultiUserTodoTodoEditHistoryEntry, which is illogical for a 'summary' endpoint. The Prisma schema has no 'dashboard' concept, and returning a single history entry doesn't match any spec operation.",
+          "suggestion": "Remove this provider unless there's a corresponding OpenAPI path for a dashboard summary (unlikely given the schema)."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 30,
+          "description": "Code references a non-existent Prisma model 'todoMemberTodosTodoId' and fields 'member_id' and 'todo_id'. The Prisma schema has no such model or fields for todo-member relationships.",
+          "suggestion": "Use the correct Prisma model 'multi_user_todo_todos' and its fields (id, lifecycle_state, deleted_at) for soft deletion, or remove if no deletion endpoint is specified."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/patchMultiUserTodoMemberProfile.ts",
+          "line": 33,
+          "description": "Update sets 'updated_at: existing.updated_at', which doesn't update the timestamp. This contradicts typical update behavior where 'updated_at' should be set to the current time.",
+          "suggestion": "Set 'updated_at' to the current timestamp (e.g., using toISOStringSafe(new Date())) to reflect the update time."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/authorize/memberAuthorize.ts",
+          "line": 25,
+          "description": "Authorization checks if a user profile exists by 'id: payload.id', but payload.id likely refers to a user ID, not a profile ID. The Prisma schema's multi_user_todo_user_profiles uses 'multi_user_todo_user_id' to reference the user, not 'id'.",
+          "suggestion": "Change the query to use 'multi_user_todo_user_id: payload.id' to correctly find the user's profile."
+        }
+      ],
+      "score": 54,
+      "summary": "[3 chunks, 21→16 issues] Severe hallucination detected: all controllers appear to be phantom endpoints since no OpenAPI specification was provided for verification. The code implements extensive CRUD operations for profiles, todos, edit history, and authentication, but without ground truth spec, these cannot be validated. The Prisma schema is correctly referenced for models, but endpoint existence cannot be confirmed.",
+      "durationMs": 50061,
+      "tokensUsed": {
+        "input": 40213,
+        "output": 3250,
+        "inputCost": 0.012063899999999999,
+        "outputCost": 0.00286
+      },
+      "deepEvalScores": {
+        "faithfulness": 47,
+        "relevancy": 68,
+        "contextualPrecision": 58
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 84,
+    "phaseWeight": 0.85,
+    "phaseContribution": 71,
+    "agentScore": 30,
+    "agentWeight": 0.15,
+    "agentContribution": 5
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "test-1775678122308-9wjfn6h04fj",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST003",
+        "message": "3/62 test files are stubs or lack assertions",
+        "estimatedImpact": 0.5,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-xe1sqlxbyvi",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/auth/guest\" has 2 untested route(s): POST /multiUserTodo/auth/guest/join, POST /multiUserTodo/auth/guest/refresh",
+        "estimatedImpact": 0.5,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-9cokbjkkk8m",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/auth/member\" has 3 untested route(s): POST /multiUserTodo/auth/member/join, POST /multiUserTodo/auth/member/login, POST /multiUserTodo/auth/member/refresh",
+        "estimatedImpact": 0.5,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-fziwfnrghc",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos\" has 1 untested route(s): PATCH /multiUserTodo/member/todos/search",
+        "estimatedImpact": 0.5,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-pt2wkf6g31c",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/bulk-move-to-trash\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-move-to-trash",
+        "estimatedImpact": 0.5,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-v9jognkv6r",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/bulk-permanent-delete\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-permanent-delete",
+        "estimatedImpact": 0.5,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-ehrkw3vmuxi",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/bulk-restore-from-trash\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-restore-from-trash",
+        "estimatedImpact": 0.5,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-vz2u196kose",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/bulk-toggle-completion\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-toggle-completion",
+        "estimatedImpact": 0.5,
+        "priority": 8,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-rfw7otva3u",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/:todoId/edit-history-entries\" has 2 untested route(s): PATCH /multiUserTodo/member/todos/:todoId/edit-history-entries, GET /multiUserTodo/member/todos/:todoId/edit-history-entries/:todoEditHistoryEntryId",
+        "estimatedImpact": 0.5,
+        "priority": 9,
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775678122233-yentmeco7iq",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.2,
+        "priority": 10,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775678122233-4dnaulv713",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2345",
+        "message": "Argument of type '(Promise<number> | Promise<multi_user_todo_todos[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<multi_user_todo_todos[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+        "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+        "line": 5255,
+        "estimatedImpact": 0.2,
+        "priority": 11,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775678122233-d14thnefyo6",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2345",
+        "message": "Argument of type 'multi_user_todo_todo_edit_history_entries' is not assignable to parameter of type 'multi_user_todo_todos'.\n  Type 'multi_user_todo_todo_edit_history_entries' is missing the following properties from type 'multi_user_todo_todos': title, description, start_date, due_date, and 4 more.",
+        "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdEditHistoryEntries.ts",
+        "line": 3108,
+        "estimatedImpact": 0.2,
+        "priority": 12,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775678122233-ucvjlr0bi6",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2345",
+        "message": "Argument of type 'multi_user_todo_todo_edit_history_entries[]' is not assignable to parameter of type 'readonly multi_user_todo_todos[]'.\n  Type 'multi_user_todo_todo_edit_history_entries' is missing the following properties from type 'multi_user_todo_todos': title, description, start_date, due_date, and 4 more.",
+        "file": "src/transformers/MultiUserTodoTodoTransformer.ts",
+        "line": 2100,
+        "estimatedImpact": 0.2,
+        "priority": 13,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "completeness-1775678122418-qobr8rxo348",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property id",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 100,
+        "estimatedImpact": 0.2,
+        "priority": 14,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 97,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 98,
+              "text": "     * A UUID that uniquely identifies the specific todo item returned to the member.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 99,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 100,
+              "text": "     * @x-autobe-database-schema-property id",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 101,
+              "text": "     * @x-autobe-specification Direct mapping from multi_user_todos.id (UUID) to this.id.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 102,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 103,
+              "text": "    id: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-edl97ovlb7n",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property title",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 110,
+        "estimatedImpact": 0.2,
+        "priority": 15,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 107,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 108,
+              "text": "     * The required human-readable label for the todo, used as the primary text in lists and search results.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 109,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 110,
+              "text": "     * @x-autobe-database-schema-property title",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 111,
+              "text": "     * @x-autobe-specification Direct mapping from multi_user_todos.title to this.title.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 112,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 113,
+              "text": "    title: string;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-enxsudic87m",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property start_date",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 130,
+        "estimatedImpact": 0.2,
+        "priority": 16,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 127,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 128,
+              "text": "     * The datetime when the todo begins (if scheduled). Returns null when no start date is set.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 129,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 130,
+              "text": "     * @x-autobe-database-schema-property start_date",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 131,
+              "text": "     * @x-autobe-specification Map multi_user_todos.start_date to this.start_date; if the DB value is null, set this.start_date to null; otherwise serialize as an RFC3339 date-time string.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 132,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 133,
+              "text": "    start_date: (string & tags.Format<\"date-time\">) | null;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-8zc2gtd4yml",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property due_date",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 140,
+        "estimatedImpact": 0.2,
+        "priority": 17,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 137,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 138,
+              "text": "     * The datetime deadline for the todo (if any). Returns null when no due date is set.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 139,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 140,
+              "text": "     * @x-autobe-database-schema-property due_date",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 141,
+              "text": "     * @x-autobe-specification Map multi_user_todos.due_date to this.due_date; if the DB value is null, set this.due_date to null; otherwise serialize as an RFC3339 date-time string.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 142,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 143,
+              "text": "    due_date: (string & tags.Format<\"date-time\">) | null;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-utbqudcsokd",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property created_at",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 170,
+        "estimatedImpact": 0.2,
+        "priority": 18,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 167,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 168,
+              "text": "     * Datetime when the todo record was created.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 169,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 170,
+              "text": "     * @x-autobe-database-schema-property created_at",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 171,
+              "text": "     * @x-autobe-specification Map multi_user_todos.created_at to this.created_at and serialize as an RFC3339 date-time string.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 172,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 173,
+              "text": "    created_at: string & tags.Format<\"date-time\">;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-0y7arsdmmnu",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property updated_at",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 180,
+        "estimatedImpact": 0.2,
+        "priority": 19,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 177,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 178,
+              "text": "     * Datetime when the todo record was last modified.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 179,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 180,
+              "text": "     * @x-autobe-database-schema-property updated_at",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 181,
+              "text": "     * @x-autobe-specification Map multi_user_todos.updated_at to this.updated_at and serialize as an RFC3339 date-time string.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 182,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 183,
+              "text": "    updated_at: string & tags.Format<\"date-time\">;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-6i9cewuhndr",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"multi_user_todos\" not found — referenced by @x-autobe-database-schema-property deleted_at",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 190,
+        "estimatedImpact": 0.2,
+        "priority": 20,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 187,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 188,
+              "text": "     * When the todo is deleted (moved into the deleted/trash lifecycle), this contains the datetime it was marked deleted. Returns null when the todo is not deleted.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 189,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 190,
+              "text": "     * @x-autobe-database-schema-property deleted_at",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 191,
+              "text": "     * @x-autobe-specification Map multi_user_todos.deleted_at to this.deleted_at; if the DB value is null, set this.deleted_at to null; otherwise serialize as an RFC3339 date-time string.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 192,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 193,
+              "text": "    deleted_at: (string & tags.Format<\"date-time\">) | null;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-tc630xtaace",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"IMultiUserTodoTodo\" not found — referenced by @x-autobe-database-schema-property title",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 565,
+        "estimatedImpact": 0.2,
+        "priority": 21,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 562,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 563,
+              "text": "     * Provide a short label that represents the task. The server rejects create requests when this title is missing or empty.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 564,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 565,
+              "text": "     * @x-autobe-database-schema-property title",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 566,
+              "text": "     * @x-autobe-specification Map IMultiUserTodoTodo.ICreate.title directly to multi_user_todo_todos.title.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 567,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 568,
+              "text": "     * Validation expectation: treat missing/empty title as invalid at the service layer (endpoint rejects the request).",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-i4couzm1gah",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"IMultiUserTodoTodo\" not found — referenced by @x-autobe-database-schema-property description",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 577,
+        "estimatedImpact": 0.2,
+        "priority": 22,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 574,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 575,
+              "text": "     * This value may be omitted or set to null. When provided, it stores additional context beyond the title.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 576,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 577,
+              "text": "     * @x-autobe-database-schema-property description",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 578,
+              "text": "     * @x-autobe-specification Map IMultiUserTodoTodo.ICreate.description to multi_user_todo_todos.description.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 579,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 580,
+              "text": "     * If the client omits the field or explicitly sets it to null, persist null to match the nullable column.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-1r9wyojqkmu",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"IMultiUserTodoTodo\" not found — referenced by @x-autobe-database-schema-property start_date",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 589,
+        "estimatedImpact": 0.2,
+        "priority": 23,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 586,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 587,
+              "text": "     * Use null (or omit the field) when the task has no planned start time. When set, the server stores the provided datetime as start_date.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 588,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 589,
+              "text": "     * @x-autobe-database-schema-property start_date",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 590,
+              "text": "     * @x-autobe-specification Map IMultiUserTodoTodo.ICreate.startDate to multi_user_todo_todos.start_date.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 591,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 592,
+              "text": "     * If the client omits the field or explicitly sets it to null, persist null to represent “start time not set”.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775678122418-4017g8jdy28",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"IMultiUserTodoTodo\" not found — referenced by @x-autobe-database-schema-property due_date",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 601,
+        "estimatedImpact": 0.2,
+        "priority": 24,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 598,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 599,
+              "text": "     * Use null (or omit the field) when there is no due date. When set, the server stores the provided datetime as due_date.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 600,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 601,
+              "text": "     * @x-autobe-database-schema-property due_date",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 602,
+              "text": "     * @x-autobe-specification Map IMultiUserTodoTodo.ICreate.dueDate to multi_user_todo_todos.due_date.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 603,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 604,
+              "text": "     * If the client omits the field or explicitly sets it to null, persist null to represent “no deadline”.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "type-error-1775678122233-zelk9ov764",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2488",
+        "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+        "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+        "line": 5201,
+        "estimatedImpact": 0.1,
+        "priority": 25,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "complexity-1775678122362-0brp1aoqlac",
+        "phase": "quality",
+        "severity": "critical",
+        "code": "C001",
+        "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 41 (max: 20)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
+        "line": 20,
+        "estimatedImpact": 0.1,
+        "priority": 26,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 17,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "export async function patchMultiUserTodoMemberTodos(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 21,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 22,
+              "text": "  body: IMultiUserTodoTodo.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 23,
+              "text": "}): Promise<IPageIMultiUserTodoTodo.ISummary> {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775678122401-samal65ssz",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+        "line": 31,
+        "estimatedImpact": 0.1,
+        "priority": 27,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 28,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 29,
+              "text": "   * - Accept request body matching IMultiUserTodoMember.IJoin.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 30,
+              "text": "   * - Validate payload according to the DTO constraints.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 31,
+              "text": "   * - Create the member account and persist password securely (hashing per service conventions).",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 32,
+              "text": "   * - Mint JWT access/refresh tokens and return them in IMultiUserTodoMember.IAuthorized.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 33,
+              "text": "   * - Error handling: return 4xx for validation/uniqueness violations; return 5xx for unexpected failures. Avoid exposing sensitive details.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 34,
+              "text": "   * @nestia Generated by Nestia - https://github.com/samchon/nestia",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775678122401-gltdccgoat",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+        "line": 32,
+        "estimatedImpact": 0.1,
+        "priority": 28,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 29,
+              "text": "   * - Accept request body matching IMultiUserTodoMember.IJoin.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 30,
+              "text": "   * - Validate payload according to the DTO constraints.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 31,
+              "text": "   * - Create the member account and persist password securely (hashing per service conventions).",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 32,
+              "text": "   * - Mint JWT access/refresh tokens and return them in IMultiUserTodoMember.IAuthorized.",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 33,
+              "text": "   * - Error handling: return 4xx for validation/uniqueness violations; return 5xx for unexpected failures. Avoid exposing sensitive details.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 34,
+              "text": "   * @nestia Generated by Nestia - https://github.com/samchon/nestia",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 35,
+              "text": "   */",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775678122401-z15db8w675o",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+        "line": 114,
+        "estimatedImpact": 0.1,
+        "priority": 29,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 111,
+              "text": "   * @x-autobe-specification Implement member refresh endpoint.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 112,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 113,
+              "text": "   * - Accept request body matching IMultiUserTodoMember.IRefresh.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 114,
+              "text": "   * - Validate DTO payload.",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 115,
+              "text": "   * - Verify refresh token validity (signature, expiry, and any rotation/revocation rules encoded by the service).",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 116,
+              "text": "   * - Mint new JWT access/refresh tokens and return them in IMultiUserTodoMember.IAuthorized.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 117,
+              "text": "   * - Error handling: return 400 for malformed requests; return 401 for invalid/expired refresh tokens; return 5xx for unexpected failures.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775678122390-3fnnlvy3o6n",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"MultiusertodoMemberTodosEdit_history_entriesController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/edit-history-entries/MultiusertodoMemberTodosEdit_history_entriesController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 30,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getMultiUserTodoMemberTodosTodoIdEditHistoryEntriesTodoEditHistoryEntryId } from \"../../../../../providers/getMultiUserTodoMemberTodosTodoIdEditHistoryEntriesTodoEditHistoryEntryId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchMultiUserTodoMemberTodosTodoIdEditHistoryEntries } from \"../../../../../providers/patchMultiUserTodoMemberTodosTodoIdEditHistoryEntries\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/multiUserTodo/member/todos/:todoId/edit-history-entries\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class MultiusertodoMemberTodosEdit_history_entriesController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve an authenticated owner’s edit history entries for a specific todo.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775678122390-iit97vrxuuq",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"MultiusertodoMemberTodosBulk_toggle_completionController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-toggle-completion/MultiusertodoMemberTodosBulk_toggle_completionController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 31,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoMemberTodosBulkToggleCompletion } from \"../../../../../providers/postMultiUserTodoMemberTodosBulkToggleCompletion\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/todos/bulk-toggle-completion\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberTodosBulk_toggle_completionController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Toggle completion status (complete ⇄ incomplete) for multiple owned todos in a single request.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775678122390-x34ie0y71ek",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"MultiusertodoMemberTodosBulk_restore_from_trashController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-restore-from-trash/MultiusertodoMemberTodosBulk_restore_from_trashController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 32,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoMemberTodosBulkRestoreFromTrash } from \"../../../../../providers/postMultiUserTodoMemberTodosBulkRestoreFromTrash\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/todos/bulk-restore-from-trash\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberTodosBulk_restore_from_trashController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Restore multiple trashed todos back to the normal todo list for the authenticated member in a single request.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775678122391-8yiqpembqrq",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"MultiusertodoMemberTodosBulk_permanent_deleteController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-permanent-delete/MultiusertodoMemberTodosBulk_permanent_deleteController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 33,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoMemberTodosBulkPermanentDelete } from \"../../../../../providers/postMultiUserTodoMemberTodosBulkPermanentDelete\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/todos/bulk-permanent-delete\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberTodosBulk_permanent_deleteController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Permanently deletes multiple of the authenticated member’s todos, including todos currently in trash.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775678122391-r52i0zgm29h",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"MultiusertodoMemberTodosBulk_move_to_trashController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-move-to-trash/MultiusertodoMemberTodosBulk_move_to_trashController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 34,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoMemberTodosBulkMoveToTrash } from \"../../../../../providers/postMultiUserTodoMemberTodosBulkMoveToTrash\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/todos/bulk-move-to-trash\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberTodosBulk_move_to_trashController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Move multiple authenticated-member todos into the user's trash in one request.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122406-7n280dfw0e",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberProfilesController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/profiles/MultiusertodoMemberProfilesController.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 35,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import { getMultiUserTodoMemberProfilesProfileId } from \"../../../../providers/getMultiUserTodoMemberProfilesProfileId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { patchMultiUserTodoMemberProfiles } from \"../../../../providers/patchMultiUserTodoMemberProfiles\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "@Controller(\"/multiUserTodo/member/profiles\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "export class MultiusertodoMemberProfilesController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "   * Update the authenticated member’s profile display name for this private todo app.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122406-6fepb0ne3qy",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 36,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { patchMultiUserTodoMemberProfile } from \"../../../../providers/patchMultiUserTodoMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { putMultiUserTodoMemberProfile } from \"../../../../providers/putMultiUserTodoMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/multiUserTodo/member/profile\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class MultiusertodoMemberProfileController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve the authenticated member’s own profile information.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122406-52wdxlttmtm",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 37,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthMemberLogin } from \"../../../../providers/postMultiUserTodoAuthMemberLogin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoAuthMemberRefresh } from \"../../../../providers/postMultiUserTodoAuthMemberRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/auth/member\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoAuthMemberController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Register a new member account and return JWT authorization tokens.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122407-z4vypkjhaj",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 38,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { postMultiUserTodoAuthGuestJoin } from \"../../../../providers/postMultiUserTodoAuthGuestJoin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthGuestRefresh } from \"../../../../providers/postMultiUserTodoAuthGuestRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/multiUserTodo/auth/guest\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class MultiusertodoAuthGuestController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Register/initialize a guest authentication context and issue tokens.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122407-x8spfpqjlnn",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+        "line": 17,
+        "estimatedImpact": 0.1,
+        "priority": 39,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 14,
+              "text": "import { postMultiUserTodoMemberTodos } from \"../../../../providers/postMultiUserTodoMemberTodos\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { putMultiUserTodoMemberTodosTodoId } from \"../../../../providers/putMultiUserTodoMemberTodosTodoId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "@Controller(\"/multiUserTodo/member/todos\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 18,
+              "text": "export class MultiusertodoMemberTodosController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "   * Retrieve a single todo for the authenticated member by its identifier.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122408-xf81u3i9bde",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosEdit_history_entriesController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/edit-history-entries/MultiusertodoMemberTodosEdit_history_entriesController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 40,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getMultiUserTodoMemberTodosTodoIdEditHistoryEntriesTodoEditHistoryEntryId } from \"../../../../../providers/getMultiUserTodoMemberTodosTodoIdEditHistoryEntriesTodoEditHistoryEntryId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchMultiUserTodoMemberTodosTodoIdEditHistoryEntries } from \"../../../../../providers/patchMultiUserTodoMemberTodosTodoIdEditHistoryEntries\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/multiUserTodo/member/todos/:todoId/edit-history-entries\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class MultiusertodoMemberTodosEdit_history_entriesController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve an authenticated owner’s edit history entries for a specific todo.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122408-8q9be8309zh",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosBulk_toggle_completionController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-toggle-completion/MultiusertodoMemberTodosBulk_toggle_completionController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 41,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoMemberTodosBulkToggleCompletion } from \"../../../../../providers/postMultiUserTodoMemberTodosBulkToggleCompletion\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/todos/bulk-toggle-completion\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberTodosBulk_toggle_completionController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Toggle completion status (complete ⇄ incomplete) for multiple owned todos in a single request.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122408-g5h1vrxud1",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosBulk_restore_from_trashController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-restore-from-trash/MultiusertodoMemberTodosBulk_restore_from_trashController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 42,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoMemberTodosBulkRestoreFromTrash } from \"../../../../../providers/postMultiUserTodoMemberTodosBulkRestoreFromTrash\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/todos/bulk-restore-from-trash\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberTodosBulk_restore_from_trashController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Restore multiple trashed todos back to the normal todo list for the authenticated member in a single request.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122408-2o8szr66a6h",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosBulk_permanent_deleteController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-permanent-delete/MultiusertodoMemberTodosBulk_permanent_deleteController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 43,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoMemberTodosBulkPermanentDelete } from \"../../../../../providers/postMultiUserTodoMemberTodosBulkPermanentDelete\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/todos/bulk-permanent-delete\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberTodosBulk_permanent_deleteController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Permanently deletes multiple of the authenticated member’s todos, including todos currently in trash.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122409-yfgndzf15bf",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosBulk_move_to_trashController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/todos/bulk-move-to-trash/MultiusertodoMemberTodosBulk_move_to_trashController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 44,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoMemberTodosBulkMoveToTrash } from \"../../../../../providers/postMultiUserTodoMemberTodosBulkMoveToTrash\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/todos/bulk-move-to-trash\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberTodosBulk_move_to_trashController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Move multiple authenticated-member todos into the user's trash in one request.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775678122409-r1cchm5bd6",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberDashboardTodosSummaryController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/multiUserTodo/member/dashboard/todos/summary/MultiusertodoMemberDashboardTodosSummaryController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 45,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { getMultiUserTodoMemberDashboardTodosSummary } from \"../../../../../../providers/getMultiUserTodoMemberDashboardTodosSummary\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/dashboard/todos/summary\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberDashboardTodosSummaryController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Return an authenticated member’s todo dashboard summary (normal vs trash).",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "totalPotentialGain": 9.6,
+    "topFixes": [
+      {
+        "issueId": "test-1775678122308-9wjfn6h04fj",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST003",
+        "message": "3/62 test files are stubs or lack assertions",
+        "estimatedImpact": 0.5,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-xe1sqlxbyvi",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/auth/guest\" has 2 untested route(s): POST /multiUserTodo/auth/guest/join, POST /multiUserTodo/auth/guest/refresh",
+        "estimatedImpact": 0.5,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-9cokbjkkk8m",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/auth/member\" has 3 untested route(s): POST /multiUserTodo/auth/member/join, POST /multiUserTodo/auth/member/login, POST /multiUserTodo/auth/member/refresh",
+        "estimatedImpact": 0.5,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-fziwfnrghc",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos\" has 1 untested route(s): PATCH /multiUserTodo/member/todos/search",
+        "estimatedImpact": 0.5,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-pt2wkf6g31c",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/bulk-move-to-trash\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-move-to-trash",
+        "estimatedImpact": 0.5,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-v9jognkv6r",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/bulk-permanent-delete\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-permanent-delete",
+        "estimatedImpact": 0.5,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-ehrkw3vmuxi",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/bulk-restore-from-trash\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-restore-from-trash",
+        "estimatedImpact": 0.5,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-vz2u196kose",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/bulk-toggle-completion\" has 1 untested route(s): POST /multiUserTodo/member/todos/bulk-toggle-completion",
+        "estimatedImpact": 0.5,
+        "priority": 8,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775678122312-rfw7otva3u",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos/:todoId/edit-history-entries\" has 2 untested route(s): PATCH /multiUserTodo/member/todos/:todoId/edit-history-entries, GET /multiUserTodo/member/todos/:todoId/edit-history-entries/:todoEditHistoryEntryId",
+        "estimatedImpact": 0.5,
+        "priority": 9,
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775678122233-yentmeco7iq",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.2,
+        "priority": 10,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      }
+    ],
+    "penaltyRecovery": [
+      {
+        "type": "jsdoc",
+        "currentPenalty": 4,
+        "description": "Add JSDoc to 11 missing APIs (92%) to recover up to 4 points"
+      },
+      {
+        "type": "schemaSync",
+        "currentPenalty": 4,
+        "description": "Fix 0 empty types and 11 mismatched properties to recover up to 4 points"
+      }
+    ]
+  }
 }

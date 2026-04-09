@@ -1,850 +1,592 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo",
-  "totalScore": 86,
-  "grade": "B",
+  "totalScore": 0,
+  "grade": "F",
   "phases": {
     "gate": {
       "phase": "gate",
-      "passed": true,
-      "score": 92,
+      "passed": false,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 92,
+      "weightedScore": 0,
       "issues": [
         {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2554",
-          "message": "Expected 0 arguments, but got 1.",
-          "location": {
-            "file": "src/MyGlobal.ts",
-            "line": 903
-          },
-          "id": "type-error-1774846386472-8848fjgx694",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2305",
-          "message": "Module '\"../../../../providers/postTodoAppAuthMemberRefresh\"' has no exported member 'postTodoAppAuthMemberRefresh'.",
-          "location": {
-            "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-            "line": 418
-          },
-          "id": "type-error-1774846386472-1jft1jmogbv",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2345",
-          "message": "Argument of type '{ member: MemberPayload; todoId: string; }' is not assignable to parameter of type '{ member: MemberPayload; todoId: string & Format<\"uuid\">; body: { page?: number | undefined; limit?: number | undefined; }; }'.\n  Property 'body' is missing in type '{ member: MemberPayload; todoId: string; }' but required in type '{ member: MemberPayload; todoId: string & Format<\"uuid\">; body: { page?: number | undefined; limit?: number | undefined; }; }'.",
-          "location": {
-            "file": "src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
-            "line": 2910
-          },
-          "id": "type-error-1774846386472-age3a09lv6p",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2322",
-          "message": "Type 'ITodoAppEditHistoryEntry | null' is not assignable to type 'ITodoAppEditHistoryEntry'.\n  Type 'null' is not assignable to type 'ITodoAppEditHistoryEntry'.",
-          "location": {
-            "file": "src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
-            "line": 1935
-          },
-          "id": "type-error-1774846386472-z2trnl1co4i",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2307",
-          "message": "Cannot find module './MyGlobal' or its corresponding type declarations.",
-          "location": {
-            "file": "src/providers/authorize/guestAuthorize.ts",
-            "line": 101
-          },
-          "id": "type-error-1774846386472-aerxtcwzhw8",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2339",
-          "message": "Property '$executeRaw' does not exist on type 'TransactionClient'.",
-          "location": {
-            "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
-            "line": 1237
-          },
-          "id": "type-error-1774846386472-5zdl56432v5",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2339",
-          "message": "Property 'join' does not exist on type 'typeof Prisma'.",
-          "location": {
-            "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
-            "line": 1413
-          },
-          "id": "type-error-1774846386472-m2cwbzvqcmh",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2353",
-          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-            "line": 2440
-          },
-          "id": "type-error-1774846386472-7m5nfygecy6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2353",
-          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-            "line": 3247
-          },
-          "id": "type-error-1774846386472-bpa4le1cbd9",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2353",
-          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-            "line": 4004
-          },
-          "id": "type-error-1774846386472-1h2d1yqmsqk",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2339",
-          "message": "Property 'created_at' does not exist on type '{}'.",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-            "line": 4859
-          },
-          "id": "type-error-1774846386472-foyj25bygsk",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2339",
-          "message": "Property 'created_at' does not exist on type '{}'.",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-            "line": 5244
-          },
-          "id": "type-error-1774846386472-2593lt8dwds",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "type-error",
-          "code": "TS2339",
-          "message": "Property 'edited_at' does not exist on type '{}'.",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-            "line": 5628
-          },
-          "id": "type-error-1774846386472-bj64i7edvoe",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2749",
-          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberTrash.ts",
-            "line": 1522
-          },
-          "id": "type-error-1774846386472-9yka56e3cja",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2749",
-          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberTrash.ts",
-            "line": 1639
-          },
-          "id": "type-error-1774846386472-zt3n3k7jmoj",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2749",
-          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberTrash.ts",
-            "line": 1756
-          },
-          "id": "type-error-1774846386472-3apk9b5xqxg",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "type-error",
-          "code": "TS2749",
-          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
-          "location": {
-            "file": "src/providers/patchTodoAppMemberTrash.ts",
-            "line": 1811
-          },
-          "id": "type-error-1774846386472-6x5fyl9542t",
+          "code": "GATE001",
+          "severity": "critical",
+          "category": "syntax",
+          "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+          "id": "syntax-1775680213240-p8h15hffj7j",
           "autoFixable": false
         }
       ],
-      "durationMs": 3638,
+      "durationMs": 0,
       "metrics": {
-        "totalFiles": 113,
-        "filesWithErrors": 0,
-        "errorRatio": 0,
-        "penalty": 8,
-        "typeCriticalCount": 0,
-        "typeWarningCount": 9,
-        "prismaCriticalCount": 0,
-        "prismaWarningCount": 0,
-        "softPass": true
+        "failedAt": "no-source",
+        "reason": "No TypeScript files found"
       }
     },
     "documentQuality": {
       "phase": "documentQuality",
       "passed": true,
-      "score": 93,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 6.510000000000001,
-      "issues": [],
-      "durationMs": 0,
+      "weightedScore": 0,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "documentation",
+          "code": "DOC001",
+          "message": "No documentation found (missing docs/analysis/ and README.md)",
+          "id": "documentation-1775680213241-f99vsyy979p",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 1,
       "metrics": {
-        "hasDocsFolder": true,
-        "hasReadme": true,
-        "docFileCount": 6,
-        "totalDocLength": 198288,
-        "cached": true,
-        "originalDurationMs": 0
+        "hasDocsFolder": false,
+        "hasReadme": false,
+        "docFileCount": 0,
+        "totalDocLength": 0
+      },
+      "explanation": {
+        "reasons": [
+          "1 critical issue(s) found",
+          "1x No documentation found (missing docs/analysis/ and README.md)"
+        ],
+        "issueSummaries": [
+          {
+            "code": "DOC001",
+            "count": 1,
+            "message": "No documentation found (missing docs/analysis/ and README.md)",
+            "severity": "critical"
+          }
+        ],
+        "suggestions": [
+          "Fix all critical issues first"
+        ]
       }
     },
     "requirementsCoverage": {
       "phase": "requirementsCoverage",
       "passed": true,
-      "score": 100,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 18,
-      "issues": [],
+      "weightedScore": 0,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "requirements",
+          "code": "REQ001",
+          "message": "No controllers found - API endpoints not implemented",
+          "id": "requirements-1775680213240-76gqbre5sax",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "requirements",
+          "code": "REQ002",
+          "message": "No providers found - business logic not implemented",
+          "id": "requirements-1775680213240-h78oebn1te9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "requirements",
+          "code": "REQ003",
+          "message": "No structures/DTOs found",
+          "id": "requirements-1775680213240-hdv5vvixsud",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "requirements",
+          "code": "REQ004",
+          "message": "No requirements documents found in docs/analysis/",
+          "id": "requirements-1775680213240-6vrf75forkg",
+          "autoFixable": false
+        }
+      ],
       "durationMs": 0,
       "metrics": {
-        "controllerCount": 13,
-        "providerCount": 31,
-        "structureCount": 16,
-        "requirementsDocCount": 6,
-        "hasRequirementsDocs": true,
-        "mappedControllers": 13,
+        "controllerCount": 0,
+        "providerCount": 0,
+        "structureCount": 0,
+        "requirementsDocCount": 0,
+        "hasRequirementsDocs": false,
+        "mappedControllers": 0,
         "unmappedControllers": 0,
-        "mappingRatio": 1,
-        "cached": true,
-        "originalDurationMs": 0
+        "mappingRatio": 0
+      },
+      "explanation": {
+        "reasons": [
+          "2 critical issue(s) found",
+          "1x No controllers found - API endpoints not implemented",
+          "1x No providers found - business logic not implemented",
+          "1x No structures/DTOs found"
+        ],
+        "issueSummaries": [
+          {
+            "code": "REQ001",
+            "count": 1,
+            "message": "No controllers found - API endpoints not implemented",
+            "severity": "critical"
+          },
+          {
+            "code": "REQ002",
+            "count": 1,
+            "message": "No providers found - business logic not implemented",
+            "severity": "critical"
+          },
+          {
+            "code": "REQ003",
+            "count": 1,
+            "message": "No structures/DTOs found",
+            "severity": "warning"
+          },
+          {
+            "code": "REQ004",
+            "count": 1,
+            "message": "No requirements documents found in docs/analysis/",
+            "severity": "warning"
+          }
+        ],
+        "suggestions": [
+          "Fix all critical issues first"
+        ]
       }
     },
     "testCoverage": {
       "phase": "testCoverage",
       "passed": true,
-      "score": 81,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 18.630000000000003,
-      "issues": [],
+      "weightedScore": 0,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "test",
+          "code": "TEST001",
+          "message": "No test files found",
+          "id": "test-1775680213240-h3ds9uhtfad",
+          "autoFixable": false
+        }
+      ],
       "durationMs": 0,
       "metrics": {
-        "testCount": 56,
-        "controllerCount": 13,
-        "routeAnalysis": true,
-        "totalRoutes": 27,
-        "coveredRoutes": 20,
-        "routeCoveragePercent": 74,
-        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
-        "testedMethods": "POST,GET,PUT,PATCH,DELETE",
-        "controllersAnalyzed": 13,
-        "stubTests": 7,
-        "assertionTests": 49,
-        "runtimeVerified": false,
-        "cached": true,
-        "originalDurationMs": 0
+        "testCount": 0,
+        "controllerCount": 0,
+        "routeAnalysis": false,
+        "runtimeVerified": false
+      },
+      "explanation": {
+        "reasons": [
+          "1 critical issue(s) found",
+          "1x No test files found"
+        ],
+        "issueSummaries": [
+          {
+            "code": "TEST001",
+            "count": 1,
+            "message": "No test files found",
+            "severity": "critical"
+          }
+        ],
+        "suggestions": [
+          "Fix all critical issues first"
+        ]
       }
     },
     "logicCompleteness": {
       "phase": "logicCompleteness",
       "passed": true,
-      "score": 92,
+      "score": 100,
       "maxScore": 100,
-      "weightedScore": 27.599999999999998,
+      "weightedScore": 30,
       "issues": [],
       "durationMs": 0,
       "metrics": {
-        "totalIncomplete": 1,
-        "criticalCount": 1,
+        "totalIncomplete": 0,
+        "criticalCount": 0,
         "warningCount": 0,
         "todoCount": 0,
         "fixmeCount": 0,
         "emptyMethods": 0,
-        "emptyCatch": 0,
-        "cached": true,
-        "originalDurationMs": 0
+        "emptyCatch": 0
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "apiCompleteness": {
       "phase": "apiCompleteness",
       "passed": true,
-      "score": 100,
+      "score": 0,
       "maxScore": 100,
-      "weightedScore": 7.000000000000001,
-      "issues": [],
+      "weightedScore": 0,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "api",
+          "code": "API002",
+          "message": "No API endpoints found",
+          "id": "api-1775680213240-ph0ovyzgdup",
+          "autoFixable": false
+        }
+      ],
       "durationMs": 0,
       "metrics": {
-        "totalEndpoints": 27,
+        "totalEndpoints": 0,
         "emptyEndpoints": 0,
         "stubEndpoints": 0,
-        "implementedEndpoints": 27,
+        "implementedEndpoints": 0,
         "noProviderEndpoints": 0,
         "passthroughEndpoints": 0,
-        "completionRate": 100,
-        "implementationRate": 100,
-        "cached": true,
-        "originalDurationMs": 0
+        "completionRate": 0,
+        "implementationRate": 0
+      },
+      "explanation": {
+        "reasons": [
+          "1 critical issue(s) found",
+          "1x No API endpoints found"
+        ],
+        "issueSummaries": [
+          {
+            "code": "API002",
+            "count": 1,
+            "message": "No API endpoints found",
+            "severity": "critical"
+          }
+        ],
+        "suggestions": [
+          "Fix all critical issues first"
+        ]
       }
     }
   },
   "reference": {
     "complexity": {
-      "totalFunctions": 254,
-      "complexFunctions": 1,
-      "maxComplexity": 45,
-      "issues": [
-        {
-          "severity": "critical",
-          "category": "complexity",
-          "code": "C001",
-          "message": "Function \"patchTodoAppMemberAnalyticsActivities\" has complexity 45 (max: 20)",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-            "line": 17
-          },
-          "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774846386576-dd7rhivrkjs",
-          "autoFixable": false
-        }
-      ]
+      "totalFunctions": 0,
+      "complexFunctions": 0,
+      "maxComplexity": 0,
+      "issues": []
     },
     "duplication": {
-      "totalBlocks": 2,
-      "issues": [
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/providers/postTodoAppMemberTrashTodoIdRestore.ts",
-            "line": 10
-          },
-          "id": "duplication-1774846386614-l4d095fca4",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/providers/patchTodoAppMemberTrash.ts",
-            "line": 11
-          },
-          "id": "duplication-1774846386614-kg835uimq1d",
-          "autoFixable": false
-        }
-      ]
+      "totalBlocks": 0,
+      "issues": []
     },
     "naming": {
-      "totalIssues": 2,
-      "issues": [
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"TodoappMemberTodosToggle_completeController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/toggle-complete/TodoappMemberTodosToggle_completeController.ts",
-            "line": 10
-          },
-          "id": "naming-1774846386602-m2b1ppjp8ia",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"TodoappMemberTodosEdit_historyController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
-            "line": 10
-          },
-          "id": "naming-1774846386603-0pyfp2yup1cp",
-          "autoFixable": false
-        }
-      ]
+      "totalIssues": 0,
+      "issues": []
     },
     "jsdoc": {
-      "totalMissing": 13,
-      "totalApis": 14,
-      "issues": [
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTrashController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/trash/TodoappMemberTrashController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774846386617-fahxd268lcd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846386618-7npcyphweyw",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774846386618-k42r0m7ddpj",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberDashboardController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/dashboard/TodoappMemberDashboardController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846386618-o439i22kox",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846386619-gvwahxoj4k7",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774846386619-b48pj1hd3x",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthAdminController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/admin/TodoappAuthAdminController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846386621-ukx9tc4hng",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberAnalyticsActivitiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/analytics/activities/TodoappMemberAnalyticsActivitiesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846386619-qvhr3bybujl",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberUsersMeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/users/me/TodoappMemberUsersMeController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846386619-mrpnh1s0w6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberProfileMeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/profile/me/TodoappMemberProfileMeController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846386619-rp3i36qwbj",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosToggle_completeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/toggle-complete/TodoappMemberTodosToggle_completeController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846386620-5riyeufhpva",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosHistoryController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846386620-ez5nltucq6c",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosEdit_historyController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774846386620-e17334lf5ws",
-          "autoFixable": false
-        }
-      ]
+      "totalMissing": 0,
+      "totalApis": 0,
+      "issues": []
     },
     "schemaSync": {
-      "totalTypes": 37,
+      "totalTypes": 0,
       "emptyTypes": 0,
-      "mismatchedProperties": 2,
-      "issues": [
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Column \"member\" not found in Prisma model \"todo_app_members\"",
-          "location": {
-            "file": "src/api/structures/ITodoAppMemberSession.ts",
-            "line": 13
-          },
-          "id": "completeness-1774846386627-3uhachmn4l6",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "completeness",
-          "code": "SYNC002",
-          "message": "Prisma model \"members\" not found — referenced by @x-autobe-database-schema-property email",
-          "location": {
-            "file": "src/api/structures/ITodoAppMemberSession.ts",
-            "line": 62
-          },
-          "id": "completeness-1774846386627-yfv7e35a018",
-          "autoFixable": false
-        }
-      ]
+      "mismatchedProperties": 0,
+      "issues": []
     }
   },
   "summary": {
-    "totalIssues": 17,
-    "criticalCount": 0,
-    "warningCount": 10,
-    "suggestionCount": 7
+    "totalIssues": 8,
+    "criticalCount": 6,
+    "warningCount": 2,
+    "suggestionCount": 0
   },
-  "criticalIssues": [],
+  "criticalIssues": [
+    {
+      "code": "GATE001",
+      "severity": "critical",
+      "category": "syntax",
+      "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+      "id": "syntax-1775680213240-p8h15hffj7j",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "documentation",
+      "code": "DOC001",
+      "message": "No documentation found (missing docs/analysis/ and README.md)",
+      "id": "documentation-1775680213241-f99vsyy979p",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "requirements",
+      "code": "REQ001",
+      "message": "No controllers found - API endpoints not implemented",
+      "id": "requirements-1775680213240-76gqbre5sax",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "requirements",
+      "code": "REQ002",
+      "message": "No providers found - business logic not implemented",
+      "id": "requirements-1775680213240-h78oebn1te9",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "test",
+      "code": "TEST001",
+      "message": "No test files found",
+      "id": "test-1775680213240-h3ds9uhtfad",
+      "autoFixable": false
+    },
+    {
+      "severity": "critical",
+      "category": "api",
+      "code": "API002",
+      "message": "No API endpoints found",
+      "id": "api-1775680213240-ph0ovyzgdup",
+      "autoFixable": false
+    }
+  ],
   "warnings": [
     {
       "severity": "warning",
-      "category": "type-error",
-      "code": "TS2554",
-      "message": "Expected 0 arguments, but got 1.",
-      "location": {
-        "file": "src/MyGlobal.ts",
-        "line": 903
-      },
-      "id": "type-error-1774846386472-8848fjgx694",
+      "category": "requirements",
+      "code": "REQ003",
+      "message": "No structures/DTOs found",
+      "id": "requirements-1775680213240-hdv5vvixsud",
       "autoFixable": false
     },
     {
       "severity": "warning",
-      "category": "type-error",
-      "code": "TS2305",
-      "message": "Module '\"../../../../providers/postTodoAppAuthMemberRefresh\"' has no exported member 'postTodoAppAuthMemberRefresh'.",
-      "location": {
-        "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
-        "line": 418
-      },
-      "id": "type-error-1774846386472-1jft1jmogbv",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2345",
-      "message": "Argument of type '{ member: MemberPayload; todoId: string; }' is not assignable to parameter of type '{ member: MemberPayload; todoId: string & Format<\"uuid\">; body: { page?: number | undefined; limit?: number | undefined; }; }'.\n  Property 'body' is missing in type '{ member: MemberPayload; todoId: string; }' but required in type '{ member: MemberPayload; todoId: string & Format<\"uuid\">; body: { page?: number | undefined; limit?: number | undefined; }; }'.",
-      "location": {
-        "file": "src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
-        "line": 2910
-      },
-      "id": "type-error-1774846386472-age3a09lv6p",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2322",
-      "message": "Type 'ITodoAppEditHistoryEntry | null' is not assignable to type 'ITodoAppEditHistoryEntry'.\n  Type 'null' is not assignable to type 'ITodoAppEditHistoryEntry'.",
-      "location": {
-        "file": "src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
-        "line": 1935
-      },
-      "id": "type-error-1774846386472-z2trnl1co4i",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2307",
-      "message": "Cannot find module './MyGlobal' or its corresponding type declarations.",
-      "location": {
-        "file": "src/providers/authorize/guestAuthorize.ts",
-        "line": 101
-      },
-      "id": "type-error-1774846386472-aerxtcwzhw8",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2339",
-      "message": "Property '$executeRaw' does not exist on type 'TransactionClient'.",
-      "location": {
-        "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
-        "line": 1237
-      },
-      "id": "type-error-1774846386472-5zdl56432v5",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2339",
-      "message": "Property 'join' does not exist on type 'typeof Prisma'.",
-      "location": {
-        "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
-        "line": 1413
-      },
-      "id": "type-error-1774846386472-m2cwbzvqcmh",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2339",
-      "message": "Property 'created_at' does not exist on type '{}'.",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-        "line": 4859
-      },
-      "id": "type-error-1774846386472-foyj25bygsk",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2339",
-      "message": "Property 'created_at' does not exist on type '{}'.",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-        "line": 5244
-      },
-      "id": "type-error-1774846386472-2593lt8dwds",
-      "autoFixable": false
-    },
-    {
-      "severity": "warning",
-      "category": "type-error",
-      "code": "TS2339",
-      "message": "Property 'edited_at' does not exist on type '{}'.",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-        "line": 5628
-      },
-      "id": "type-error-1774846386472-bj64i7edvoe",
+      "category": "requirements",
+      "code": "REQ004",
+      "message": "No requirements documents found in docs/analysis/",
+      "id": "requirements-1775680213240-6vrf75forkg",
       "autoFixable": false
     }
   ],
-  "suggestions": [
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2353",
-      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-        "line": 2440
-      },
-      "id": "type-error-1774846386472-7m5nfygecy6",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2353",
-      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-        "line": 3247
-      },
-      "id": "type-error-1774846386472-bpa4le1cbd9",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2353",
-      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
-        "line": 4004
-      },
-      "id": "type-error-1774846386472-1h2d1yqmsqk",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2749",
-      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberTrash.ts",
-        "line": 1522
-      },
-      "id": "type-error-1774846386472-9yka56e3cja",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2749",
-      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberTrash.ts",
-        "line": 1639
-      },
-      "id": "type-error-1774846386472-zt3n3k7jmoj",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2749",
-      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberTrash.ts",
-        "line": 1756
-      },
-      "id": "type-error-1774846386472-3apk9b5xqxg",
-      "autoFixable": false
-    },
-    {
-      "severity": "suggestion",
-      "category": "type-error",
-      "code": "TS2749",
-      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
-      "location": {
-        "file": "src/providers/patchTodoAppMemberTrash.ts",
-        "line": 1811
-      },
-      "id": "type-error-1774846386472-6x5fyl9542t",
-      "autoFixable": false
-    }
-  ],
+  "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:53:06.628Z",
-    "totalDurationMs": 4211,
-    "estimateVersion": "0.30.4",
-    "evaluatedFiles": 113
-  },
-  "penalties": {
-    "jsdoc": {
-      "amount": 4,
-      "missing": 13,
-      "ratio": "93%"
-    }
+    "evaluatedAt": "2026-04-08T20:30:13.242Z",
+    "totalDurationMs": 5,
+    "estimateVersion": "0.30.5",
+    "evaluatedFiles": 0
   },
   "performanceMetrics": {
-    "totalSizeKB": 302,
-    "totalFiles": 113,
-    "totalLines": 8291,
-    "avgLinesPerFile": 73,
-    "largestFile": "src/api/functional/todoApp/auth/admin/index.ts",
-    "largestFileSizeKB": 13,
-    "controllers": 13,
-    "providers": 31,
-    "structures": 16,
+    "totalSizeKB": 0,
+    "totalFiles": 0,
+    "totalLines": 0,
+    "avgLinesPerFile": 0,
+    "largestFile": "N/A",
+    "largestFileSizeKB": 0,
+    "controllers": 0,
+    "providers": 0,
+    "structures": 0,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [],
+      "score": -1,
+      "summary": "No files to evaluate — excluded from scoring",
+      "durationMs": 0
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 0,
+    "phaseWeight": 1,
+    "phaseContribution": 0,
+    "agentScore": null,
+    "agentWeight": 0,
+    "agentContribution": 0
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "test-1775680213240-h3ds9uhtfad",
+        "phase": "testCoverage",
+        "severity": "critical",
+        "code": "TEST001",
+        "message": "No test files found",
+        "estimatedImpact": 27.1,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "documentation-1775680213241-f99vsyy979p",
+        "phase": "documentQuality",
+        "severity": "critical",
+        "code": "DOC001",
+        "message": "No documentation found (missing docs/analysis/ and README.md)",
+        "estimatedImpact": 8.2,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "api-1775680213240-ph0ovyzgdup",
+        "phase": "apiCompleteness",
+        "severity": "critical",
+        "code": "API002",
+        "message": "No API endpoints found",
+        "estimatedImpact": 8.2,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680213240-76gqbre5sax",
+        "phase": "requirementsCoverage",
+        "severity": "critical",
+        "code": "REQ001",
+        "message": "No controllers found - API endpoints not implemented",
+        "estimatedImpact": 5.3,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680213240-h78oebn1te9",
+        "phase": "requirementsCoverage",
+        "severity": "critical",
+        "code": "REQ002",
+        "message": "No providers found - business logic not implemented",
+        "estimatedImpact": 5.3,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680213240-hdv5vvixsud",
+        "phase": "requirementsCoverage",
+        "severity": "warning",
+        "code": "REQ003",
+        "message": "No structures/DTOs found",
+        "estimatedImpact": 3.2,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680213240-6vrf75forkg",
+        "phase": "requirementsCoverage",
+        "severity": "warning",
+        "code": "REQ004",
+        "message": "No requirements documents found in docs/analysis/",
+        "estimatedImpact": 3.2,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "syntax-1775680213240-p8h15hffj7j",
+        "phase": "gate",
+        "severity": "critical",
+        "code": "GATE001",
+        "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+        "estimatedImpact": 2,
+        "priority": 8,
+        "source": "phase"
+      }
+    ],
+    "totalPotentialGain": 62.5,
+    "topFixes": [
+      {
+        "issueId": "test-1775680213240-h3ds9uhtfad",
+        "phase": "testCoverage",
+        "severity": "critical",
+        "code": "TEST001",
+        "message": "No test files found",
+        "estimatedImpact": 27.1,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "documentation-1775680213241-f99vsyy979p",
+        "phase": "documentQuality",
+        "severity": "critical",
+        "code": "DOC001",
+        "message": "No documentation found (missing docs/analysis/ and README.md)",
+        "estimatedImpact": 8.2,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "api-1775680213240-ph0ovyzgdup",
+        "phase": "apiCompleteness",
+        "severity": "critical",
+        "code": "API002",
+        "message": "No API endpoints found",
+        "estimatedImpact": 8.2,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680213240-76gqbre5sax",
+        "phase": "requirementsCoverage",
+        "severity": "critical",
+        "code": "REQ001",
+        "message": "No controllers found - API endpoints not implemented",
+        "estimatedImpact": 5.3,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680213240-h78oebn1te9",
+        "phase": "requirementsCoverage",
+        "severity": "critical",
+        "code": "REQ002",
+        "message": "No providers found - business logic not implemented",
+        "estimatedImpact": 5.3,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680213240-hdv5vvixsud",
+        "phase": "requirementsCoverage",
+        "severity": "warning",
+        "code": "REQ003",
+        "message": "No structures/DTOs found",
+        "estimatedImpact": 3.2,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "requirements-1775680213240-6vrf75forkg",
+        "phase": "requirementsCoverage",
+        "severity": "warning",
+        "code": "REQ004",
+        "message": "No requirements documents found in docs/analysis/",
+        "estimatedImpact": 3.2,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "syntax-1775680213240-p8h15hffj7j",
+        "phase": "gate",
+        "severity": "critical",
+        "code": "GATE001",
+        "message": "No TypeScript files found in src/ — pipeline may not have generated code",
+        "estimatedImpact": 2,
+        "priority": 8,
+        "source": "phase"
+      }
+    ]
+  }
 }

@@ -1,14 +1,14 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo",
-  "totalScore": 88,
+  "totalScore": 85,
   "grade": "B",
   "phases": {
     "gate": {
       "phase": "gate",
       "passed": true,
-      "score": 98,
+      "score": 99,
       "maxScore": 100,
-      "weightedScore": 98,
+      "weightedScore": 99,
       "issues": [
         {
           "severity": "warning",
@@ -19,30 +19,42 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846462226-pkzhailbv8c",
+          "id": "type-error-1775682706933-p6ssmlnd9sq",
           "autoFixable": false
         },
         {
-          "severity": "warning",
+          "severity": "suggestion",
           "category": "type-error",
-          "code": "TS2322",
-          "message": "Type '{ id: string & Format<\"uuid\">; multi_user_todo_todos_id: string & Format<\"uuid\">; edit_timestamp: Date; field_name: string; old_value: string; new_value: string; created_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string & Format<\"uuid\">; multi_user_todo_todos_id: string & Format<\"uuid\">; edit_timestamp: Date; field_name: string; old_value: string; new_value: string; created_at: Date; }[]'.",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
           "location": {
-            "file": "src/providers/patchMultiUserTodoMemberTodosTodoId.ts",
-            "line": 4187
+            "file": "src/providers/patchTodoAppMembers.ts",
+            "line": 1895
           },
-          "id": "type-error-1774846462226-fjeme5toz08",
+          "id": "type-error-1775682706933-qrtkbfp6pn8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchTodoAppMembers.ts",
+            "line": 2480
+          },
+          "id": "type-error-1775682706933-a5dbixjm0mi",
           "autoFixable": false
         }
       ],
-      "durationMs": 2196,
+      "durationMs": 2598,
       "metrics": {
-        "totalFiles": 81,
+        "totalFiles": 96,
         "filesWithErrors": 0,
         "errorRatio": 0,
-        "penalty": 2,
+        "penalty": 1,
         "typeCriticalCount": 0,
-        "typeWarningCount": 2,
+        "typeWarningCount": 1,
         "prismaCriticalCount": 0,
         "prismaWarningCount": 0,
         "softPass": true
@@ -51,18 +63,21 @@
     "documentQuality": {
       "phase": "documentQuality",
       "passed": true,
-      "score": 94,
+      "score": 88,
       "maxScore": 100,
-      "weightedScore": 6.580000000000001,
+      "weightedScore": 6.16,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 29,
       "metrics": {
         "hasDocsFolder": true,
         "hasReadme": true,
         "docFileCount": 6,
-        "totalDocLength": 238531,
-        "cached": true,
-        "originalDurationMs": 0
+        "totalDocLength": 97423
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "requirementsCoverage": {
@@ -72,43 +87,130 @@
       "maxScore": 100,
       "weightedScore": 18,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 1,
       "metrics": {
-        "controllerCount": 7,
-        "providerCount": 21,
-        "structureCount": 11,
+        "controllerCount": 9,
+        "providerCount": 25,
+        "structureCount": 14,
         "requirementsDocCount": 6,
         "hasRequirementsDocs": true,
-        "mappedControllers": 7,
+        "mappedControllers": 9,
         "unmappedControllers": 0,
-        "mappingRatio": 1,
-        "cached": true,
-        "originalDurationMs": 0
+        "mappingRatio": 1
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "testCoverage": {
       "phase": "testCoverage",
       "passed": true,
-      "score": 78,
+      "score": 73,
       "maxScore": 100,
-      "weightedScore": 17.94,
-      "issues": [],
-      "durationMs": 0,
+      "weightedScore": 16.79,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST003",
+          "message": "6/55 test files are stubs or lack assertions",
+          "id": "test-1775682707022-k6mji4wn15s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/todoApp/auth/guest\" has 2 untested route(s): POST /todoApp/auth/guest/join, POST /todoApp/auth/guest/refresh",
+          "id": "test-1775682707026-lx38r0i7yig",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/todoApp/auth/member\" has 1 untested route(s): POST /todoApp/auth/member/login",
+          "id": "test-1775682707026-t78bziujjtd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/todoApp/member/member/password-resets\" has 2 untested route(s): PATCH /todoApp/member/member/password-resets, GET /todoApp/member/member/password-resets/:resetId",
+          "id": "test-1775682707026-mezacek5vd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/todoApp/member/member/sessions\" has 1 untested route(s): PATCH /todoApp/member/member/sessions",
+          "id": "test-1775682707026-2gis8v1u1fs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/todoApp/member/todos/:todoId/edit-histories\" has 2 untested route(s): PATCH /todoApp/member/todos/:todoId/edit-histories, GET /todoApp/member/todos/:todoId/edit-histories/:historyId",
+          "id": "test-1775682707026-5qd9zh7ul3y",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/todoApp/member/trash\" has 2 untested route(s): PATCH /todoApp/member/trash, PUT /todoApp/member/trash/:todoId/restore",
+          "id": "test-1775682707026-8ex4ses00n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/todoApp/members\" has 1 untested route(s): PATCH /todoApp/members",
+          "id": "test-1775682707026-85vllnoe8hs",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 8,
       "metrics": {
-        "testCount": 49,
-        "controllerCount": 7,
+        "testCount": 55,
+        "controllerCount": 9,
         "routeAnalysis": true,
-        "totalRoutes": 18,
-        "coveredRoutes": 12,
-        "routeCoveragePercent": 67,
-        "definedMethods": "POST,GET,PUT,PATCH,DELETE",
-        "testedMethods": "POST,GET,PUT,PATCH,DELETE",
-        "controllersAnalyzed": 7,
-        "stubTests": 2,
-        "assertionTests": 47,
-        "runtimeVerified": false,
-        "cached": true,
-        "originalDurationMs": 0
+        "totalRoutes": 22,
+        "coveredRoutes": 11,
+        "routeCoveragePercent": 50,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "POST,PUT,GET,PATCH,DELETE",
+        "controllersAnalyzed": 9,
+        "stubTests": 6,
+        "assertionTests": 49,
+        "runtimeVerified": false
+      },
+      "explanation": {
+        "reasons": [
+          "7x Controller \"/todoApp/auth/guest\" has 2 untested route(s): POST /todoApp/auth/guest/join, POST /todoApp/auth/guest/refresh",
+          "1x 6/55 test files are stubs or lack assertions"
+        ],
+        "issueSummaries": [
+          {
+            "code": "TEST005",
+            "count": 7,
+            "message": "Controller \"/todoApp/auth/guest\" has 2 untested route(s): POST /todoApp/auth/guest/join, POST /todoApp/auth/guest/refresh",
+            "severity": "warning"
+          },
+          {
+            "code": "TEST003",
+            "count": 1,
+            "message": "6/55 test files are stubs or lack assertions",
+            "severity": "warning"
+          }
+        ],
+        "suggestions": []
       }
     },
     "logicCompleteness": {
@@ -118,7 +220,7 @@
       "maxScore": 100,
       "weightedScore": 30,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 15,
       "metrics": {
         "totalIncomplete": 0,
         "criticalCount": 0,
@@ -126,9 +228,12 @@
         "todoCount": 0,
         "fixmeCount": 0,
         "emptyMethods": 0,
-        "emptyCatch": 0,
-        "cached": true,
-        "originalDurationMs": 0
+        "emptyCatch": 0
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "apiCompleteness": {
@@ -138,70 +243,60 @@
       "maxScore": 100,
       "weightedScore": 7.000000000000001,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 18,
       "metrics": {
-        "totalEndpoints": 18,
+        "totalEndpoints": 22,
         "emptyEndpoints": 0,
         "stubEndpoints": 0,
-        "implementedEndpoints": 18,
+        "implementedEndpoints": 22,
         "noProviderEndpoints": 0,
         "passthroughEndpoints": 0,
         "completionRate": 100,
-        "implementationRate": 100,
-        "cached": true,
-        "originalDurationMs": 0
+        "implementationRate": 100
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     }
   },
   "reference": {
     "complexity": {
-      "totalFunctions": 183,
+      "totalFunctions": 220,
       "complexFunctions": 0,
-      "maxComplexity": 20,
+      "maxComplexity": 19,
       "issues": [
         {
           "severity": "warning",
           "category": "complexity",
           "code": "C002",
-          "message": "Function \"patchMultiUserTodoMemberTodosTodoId\" has complexity 20 (recommended: 15)",
+          "message": "Function \"patchTodoAppMembers\" has complexity 19 (recommended: 15)",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTodosTodoId.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMembers.ts",
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846462275-gwszyyzls5",
+          "id": "complexity-1775682707059-cg0rn7ihup",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "complexity",
           "code": "C002",
-          "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 17 (recommended: 15)",
+          "message": "Function \"patchTodoAppMemberMemberSessions\" has complexity 16 (recommended: 15)",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
-            "line": 19
-          },
-          "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846462276-dmvt064zbxv",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "complexity",
-          "code": "C002",
-          "message": "Function \"patchMultiUserTodoMemberSessions\" has complexity 16 (recommended: 15)",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberSessions.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberMemberSessions.ts",
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846462276-aq7e71bu07n",
+          "id": "complexity-1775682707062-w4xvk3l1uu",
           "autoFixable": false
         }
       ]
     },
     "duplication": {
-      "totalBlocks": 35,
+      "totalBlocks": 21,
       "issues": [
         {
           "severity": "warning",
@@ -209,202 +304,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
-            "line": 38
-          },
-          "id": "duplication-1774846462300-rwgbf60ueqg",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
-            "line": 39
-          },
-          "id": "duplication-1774846462300-1hmx4x3v1af",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/putMultiUserTodoMemberTrashTodoIdRestore.ts",
-            "line": 11
-          },
-          "id": "duplication-1774846462300-l5mdcr8r1cd",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/putMultiUserTodoMemberTrashTodoIdRestore.ts",
-            "line": 12
-          },
-          "id": "duplication-1774846462300-t0lvli8a2og",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/putMultiUserTodoMemberTrashTodoIdRestore.ts",
-            "line": 13
-          },
-          "id": "duplication-1774846462300-3fhc5a704mw",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 48
-          },
-          "id": "duplication-1774846462300-lbno5ot5ne",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 49
-          },
-          "id": "duplication-1774846462300-0cmxkz2o7c4b",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 50
-          },
-          "id": "duplication-1774846462300-69l135hv7wn",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 51
-          },
-          "id": "duplication-1774846462300-ih6o208yx",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 52
-          },
-          "id": "duplication-1774846462300-o7m6vaqfhz",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 53
-          },
-          "id": "duplication-1774846462300-iaizq250p6e",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 54
-          },
-          "id": "duplication-1774846462300-v6vkbxlpign",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 55
-          },
-          "id": "duplication-1774846462300-fix917ax3k",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 56
-          },
-          "id": "duplication-1774846462300-2y59acjmucd",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 57
-          },
-          "id": "duplication-1774846462300-hbtcee0aoxe",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 58
-          },
-          "id": "duplication-1774846462300-sm8rs8i6hf7",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 59
           },
-          "id": "duplication-1774846462300-65lsg4vwecr",
+          "id": "duplication-1775682707100-e180l3k1zae",
           "autoFixable": false
         },
         {
@@ -413,10 +316,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 60
           },
-          "id": "duplication-1774846462300-km1kct1jxu",
+          "id": "duplication-1775682707100-h4p2f0784hu",
           "autoFixable": false
         },
         {
@@ -425,10 +328,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 61
           },
-          "id": "duplication-1774846462300-exd1n5dfzv",
+          "id": "duplication-1775682707100-m8qa5ihedxp",
           "autoFixable": false
         },
         {
@@ -437,10 +340,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 62
           },
-          "id": "duplication-1774846462300-1pdk3usr1ho",
+          "id": "duplication-1775682707100-crhr79xiuj",
           "autoFixable": false
         },
         {
@@ -449,10 +352,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 63
           },
-          "id": "duplication-1774846462300-0i1wo1pjnc0r",
+          "id": "duplication-1775682707100-simdnicx2ha",
           "autoFixable": false
         },
         {
@@ -461,10 +364,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 64
           },
-          "id": "duplication-1774846462300-0844h031n51u",
+          "id": "duplication-1775682707100-liet6p88igd",
           "autoFixable": false
         },
         {
@@ -473,10 +376,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 65
           },
-          "id": "duplication-1774846462300-g6tgerq8e1n",
+          "id": "duplication-1775682707100-z14zrxphww",
           "autoFixable": false
         },
         {
@@ -485,10 +388,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 66
           },
-          "id": "duplication-1774846462300-16rqtchzrsy",
+          "id": "duplication-1775682707100-engkm0fx7c4",
           "autoFixable": false
         },
         {
@@ -497,10 +400,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 67
           },
-          "id": "duplication-1774846462300-v2j2puavw6j",
+          "id": "duplication-1775682707100-nwttjkbn8er",
           "autoFixable": false
         },
         {
@@ -509,10 +412,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
             "line": 68
           },
-          "id": "duplication-1774846462300-7ra50f98eh7",
+          "id": "duplication-1775682707100-pzbyhwzn8vl",
           "autoFixable": false
         },
         {
@@ -521,22 +424,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
-            "line": 69
-          },
-          "id": "duplication-1774846462300-tnsoh1iyzp",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
             "line": 12
           },
-          "id": "duplication-1774846462300-9u4graspc3",
+          "id": "duplication-1775682707100-hhemi9l673",
           "autoFixable": false
         },
         {
@@ -545,10 +436,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
-            "line": 68
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+            "line": 13
           },
-          "id": "duplication-1774846462300-7jx7049ljat",
+          "id": "duplication-1775682707100-g9b0wgpnw67",
           "autoFixable": false
         },
         {
@@ -557,10 +448,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
-            "line": 69
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+            "line": 14
           },
-          "id": "duplication-1774846462300-mozndq40z9",
+          "id": "duplication-1775682707100-dqq4uaatwjp",
           "autoFixable": false
         },
         {
@@ -569,10 +460,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
-            "line": 70
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+            "line": 15
           },
-          "id": "duplication-1774846462300-ve38cdcafe9",
+          "id": "duplication-1775682707100-m6zvtu2h7x",
           "autoFixable": false
         },
         {
@@ -581,10 +472,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
-            "line": 71
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+            "line": 16
           },
-          "id": "duplication-1774846462300-0xbqlw1xt5zc",
+          "id": "duplication-1775682707100-ugl14xqemin",
           "autoFixable": false
         },
         {
@@ -593,10 +484,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
-            "line": 72
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+            "line": 53
           },
-          "id": "duplication-1774846462300-c0kt7zdupn",
+          "id": "duplication-1775682707100-d4mjo4f4mn",
           "autoFixable": false
         },
         {
@@ -605,135 +496,207 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/deleteMultiUserTodoMemberTrashTodoId.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+            "line": 54
+          },
+          "id": "duplication-1775682707100-n8nne281uyc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+            "line": 55
+          },
+          "id": "duplication-1775682707100-0wrpp6booavc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTodos.ts",
+            "line": 60
+          },
+          "id": "duplication-1775682707100-qz6htoo7cu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/deleteTodoAppMemberTrashTodoId.ts",
+            "line": 7
+          },
+          "id": "duplication-1775682707100-qovl588i28k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/deleteTodoAppMemberTrashTodoId.ts",
             "line": 8
           },
-          "id": "duplication-1774846462300-5v3svhj79lq",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/deleteMultiUserTodoMemberTrashTodoId.ts",
-            "line": 9
-          },
-          "id": "duplication-1774846462300-b04n9tqo83",
+          "id": "duplication-1775682707100-i06yzg65bp",
           "autoFixable": false
         }
       ]
     },
     "naming": {
-      "totalIssues": 1,
+      "totalIssues": 2,
       "issues": [
         {
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"MultiusertodoMemberTodosEdit_historiesController\" should be PascalCase",
+          "message": "Class \"TodoappMemberTodosEdit_historiesController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/todos/edit-histories/MultiusertodoMemberTodosEdit_historiesController.ts",
-            "line": 10
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/todos/edit-histories/TodoappMemberTodosEdit_historiesController.ts",
+            "line": 12
           },
-          "id": "naming-1774846462301-gaeeruwrujb",
+          "id": "naming-1775682707090-u6ixhlhm7tm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"TodoappMemberMemberPassword_resetsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/member/password-resets/TodoappMemberMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "naming-1775682707093-rpd7vfdbhgi",
           "autoFixable": false
         }
       ]
     },
     "jsdoc": {
-      "totalMissing": 7,
-      "totalApis": 8,
+      "totalMissing": 9,
+      "totalApis": 10,
       "issues": [
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+          "message": "Class \"TodoappMembersController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/members/TodoappMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846462306-891e71jg12b",
+          "id": "jsdoc-1775682707109-ggde96u55fu",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoMemberTrashController\" missing JSDoc",
+          "message": "Class \"TodoappMemberTrashController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/trash/TodoappMemberTrashController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774846462306-agk01ixy1i",
+          "id": "jsdoc-1775682707110-4kgmvp5k3bk",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774846462306-f0rd2lm1l4e",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774846462307-j4uhkf87vof",
+          "id": "jsdoc-1775682707109-4t46h1wvilw",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoMemberSessionsController\" missing JSDoc",
+          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846462307-b3jhb1nmt8",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774846462307-jo7d44qz3ms",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberTodosEdit_historiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/todos/edit-histories/MultiusertodoMemberTodosEdit_historiesController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846462308-5ms01gey43k",
+          "id": "jsdoc-1775682707110-307t4kxqpqn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1775682707110-d4zsbalyujg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosEdit_historiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/todos/edit-histories/TodoappMemberTodosEdit_historiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775682707109-ucoi3piek2j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/member/sessions/TodoappMemberMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775682707111-1w1vclwz0fs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/member/profile/TodoappMemberMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775682707110-b4wl94xs46t",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/member/password-resets/TodoappMemberMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775682707111-h9h09ne0fdk",
           "autoFixable": false
         }
       ]
     },
     "schemaSync": {
-      "totalTypes": 25,
+      "totalTypes": 33,
       "emptyTypes": 0,
       "mismatchedProperties": 2,
       "issues": [
@@ -741,34 +704,34 @@
           "severity": "warning",
           "category": "completeness",
           "code": "SYNC002",
-          "message": "Column \"member\" not found in Prisma model \"multi_user_todo_members\"",
+          "message": "Prisma model \"ITodoAppMember\" not found — referenced by @x-autobe-database-schema-property member",
           "location": {
-            "file": "src/api/structures/IMultiUserTodoTodo.ts",
-            "line": 69
+            "file": "src/api/structures/ITodoAppTodo.ts",
+            "line": 109
           },
-          "id": "completeness-1774846462311-zri1umzlly",
+          "id": "completeness-1775682707115-g7t164p7ji5",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "completeness",
           "code": "SYNC002",
-          "message": "Column \"member\" not found in Prisma model \"multi_user_todo_members\"",
+          "message": "Prisma model \"ITodoAppMember\" not found — referenced by @x-autobe-database-schema-property member",
           "location": {
-            "file": "src/api/structures/IMultiUserTodoTodo.ts",
-            "line": 210
+            "file": "src/api/structures/ITodoAppTodo.ts",
+            "line": 301
           },
-          "id": "completeness-1774846462311-nboookrg0h",
+          "id": "completeness-1775682707115-atmz76lmdx8",
           "autoFixable": false
         }
       ]
     }
   },
   "summary": {
-    "totalIssues": 2,
+    "totalIssues": 5,
     "criticalCount": 0,
-    "warningCount": 2,
-    "suggestionCount": 0
+    "warningCount": 3,
+    "suggestionCount": 2
   },
   "criticalIssues": [],
   "warnings": [
@@ -781,34 +744,63 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846462226-pkzhailbv8c",
+      "id": "type-error-1775682706933-p6ssmlnd9sq",
       "autoFixable": false
     },
     {
       "severity": "warning",
-      "category": "type-error",
-      "code": "TS2322",
-      "message": "Type '{ id: string & Format<\"uuid\">; multi_user_todo_todos_id: string & Format<\"uuid\">; edit_timestamp: Date; field_name: string; old_value: string; new_value: string; created_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string & Format<\"uuid\">; multi_user_todo_todos_id: string & Format<\"uuid\">; edit_timestamp: Date; field_name: string; old_value: string; new_value: string; created_at: Date; }[]'.",
-      "location": {
-        "file": "src/providers/patchMultiUserTodoMemberTodosTodoId.ts",
-        "line": 4187
-      },
-      "id": "type-error-1774846462226-fjeme5toz08",
+      "category": "test",
+      "code": "TEST003",
+      "message": "6/55 test files are stubs or lack assertions",
+      "id": "test-1775682707022-k6mji4wn15s",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "test",
+      "code": "TEST005",
+      "message": "Controller \"/todoApp/auth/guest\" has 2 untested route(s): POST /todoApp/auth/guest/join, POST /todoApp/auth/guest/refresh",
+      "id": "test-1775682707026-lx38r0i7yig",
       "autoFixable": false
     }
   ],
-  "suggestions": [],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchTodoAppMembers.ts",
+        "line": 1895
+      },
+      "id": "type-error-1775682706933-qrtkbfp6pn8",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchTodoAppMembers.ts",
+        "line": 2480
+      },
+      "id": "type-error-1775682706933-a5dbixjm0mi",
+      "autoFixable": false
+    }
+  ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:54:22.315Z",
-    "totalDurationMs": 2553,
-    "estimateVersion": "0.30.4",
-    "evaluatedFiles": 81
+    "evaluatedAt": "2026-04-08T21:11:47.116Z",
+    "totalDurationMs": 2728,
+    "estimateVersion": "0.30.5",
+    "evaluatedFiles": 96
   },
   "penalties": {
     "jsdoc": {
       "amount": 4,
-      "missing": 7,
-      "ratio": "88%"
+      "missing": 9,
+      "ratio": "90%"
     },
     "schemaSync": {
       "amount": 1,
@@ -817,16 +809,2541 @@
     }
   },
   "performanceMetrics": {
-    "totalSizeKB": 260,
-    "totalFiles": 81,
-    "totalLines": 6351,
-    "avgLinesPerFile": 78,
-    "largestFile": "src/api/functional/multiUserTodo/member/todos/index.ts",
-    "largestFileSizeKB": 22,
-    "controllers": 7,
-    "providers": 21,
-    "structures": 11,
+    "totalSizeKB": 301,
+    "totalFiles": 96,
+    "totalLines": 7632,
+    "avgLinesPerFile": 80,
+    "largestFile": "src/api/structures/ITodoAppMember.ts",
+    "largestFileSizeKB": 26,
+    "controllers": 9,
+    "providers": 25,
+    "structures": 14,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/todoApp/members/TodoappMembersController.ts",
+          "line": 60,
+          "description": "The GET /todoApp/members/:memberId and PATCH /todoApp/members endpoints have no authentication guard (@MemberAuth() decorator is absent). The controller spec says 'only authenticated members can access this endpoint' and 'members can only access their own profile', but neither endpoint enforces authentication at the controller level. The provider getTodoAppMembersMemberId also performs no ownership check — it returns any member's profile by ID without verifying the caller's identity.",
+          "suggestion": "Add @MemberAuth() decorator to both the index() and at() methods, pass the member payload to the provider, and add an ownership check (if memberId !== member.id throw 403) in getTodoAppMembersMemberId."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postTodoAppAuthMemberRefresh.ts",
+          "line": 38,
+          "description": "The member session validation does not check whether the session has expired. The query only checks that the session exists (matching session_id and member_id) but does NOT filter by expired_at > now(). A revoked or expired session can still be used to obtain new tokens indefinitely.",
+          "suggestion": "Add expired_at: { gt: new Date() } to the findFirst where clause when looking up the session, consistent with how guestAuthorize and postTodoAppAuthGuestRefresh handle session expiry."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 27,
+          "description": "The soft-delete check (member.deleted_at !== null) is performed AFTER the password is verified and AFTER a new session is already created in the database. A deleted member's session record is written before the deletion check rejects the request, leaking session rows and potentially allowing timing-based enumeration.",
+          "suggestion": "Move the deleted_at check to immediately after the member lookup (before password verification and before session creation). Also add deleted_at: null to the findFirst where clause to avoid fetching deleted accounts at all."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 18,
+          "description": "The guest authorization does not validate that the guest's session is still active/unexpired. Unlike memberAuthorize which checks memberSessions with expired_at > now(), guestAuthorize only checks that the guest record exists and is not soft-deleted. A guest with an expired session token (but valid JWT) can still authenticate.",
+          "suggestion": "Add a session validity check: query todo_app_guest_sessions where id = payload.session_id AND todo_app_guest_id = payload.id AND expired_at > now(), similar to how memberAuthorize validates sessions."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
+          "line": 30,
+          "description": "Same issue as member refresh: the guest refresh endpoint does not validate the tokenType claim. An access token can be used as a refresh token.",
+          "suggestion": "Add: if (!decoded.tokenType || decoded.tokenType !== 'refresh') throw new HttpException('Invalid token type', 403);"
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 44,
+          "description": "The login endpoint accepts a client-supplied IP address (props.body.ip) and uses it preferentially over the actual server-detected IP (props.ip). This allows any client to spoof their IP address in session records, undermining IP-based security tracking and audit trails.",
+          "suggestion": "Remove the ip field from ITodoAppMember.ILogin body and always use the server-detected props.ip for session recording. Client-supplied IPs should never be trusted for security-relevant fields."
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 55,
+          "description": "Both access tokens and refresh tokens are signed with the same JWT_SECRET_KEY and the same issuer ('autobe'). There is no audience claim or token-type enforcement at the jwt.verify() level. This means tokens issued for different purposes (access vs refresh, member vs guest) share the same signing key with only payload claims distinguishing them — a compromised token of one type could potentially be misused.",
+          "suggestion": "Consider using separate secrets for access and refresh tokens, or add an 'audience' claim (e.g., aud: 'access' vs aud: 'refresh') and verify it in jwt.verify() options. At minimum, enforce tokenType validation on the refresh endpoint."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/todoApp/member/member/password-resets/TodoappMemberMemberPassword_resetsController.ts",
+          "line": 87,
+          "description": "The GET /todoApp/member/member/password-resets/:resetId endpoint retrieves a password reset token record including the token value. The provider spec says it returns 'token' field. If the raw token value is returned in the response, this exposes sensitive credential material to the authenticated user. Password reset tokens should be treated as one-time secrets.",
+          "suggestion": "Ensure the token field is excluded from the API response, or if it must be returned, verify it is only returned immediately after creation and not on subsequent reads."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "All controllers use console.log(error) for error handling. This is the standard AutoBE pattern but does not provide structured logging with request context, severity levels, or correlation IDs. Additionally, login failures are not explicitly audit-logged.",
+          "suggestion": "Consider integrating a structured logger (e.g., NestJS Logger or Winston) and adding explicit audit log entries for authentication events (login success/failure, token refresh, registration)."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). This allows brute-force attacks against passwords and token enumeration.",
+          "suggestion": "Apply rate limiting middleware (e.g., @nestjs/throttler) to authentication endpoints, especially login and token refresh."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+          "line": 1,
+          "description": "Password complexity validation is not enforced beyond type checking. The ITodoAppMember.IJoin body accepts any non-empty string as a password.",
+          "suggestion": "Add password complexity requirements (minimum length, character classes) using typia validation tags or a custom validation pipe."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getTodoAppMemberMemberPasswordResetsResetId.ts",
+          "line": 24,
+          "description": "Password reset record is fetched by resetId only, without verifying that it belongs to the authenticated member. Any authenticated member can retrieve any other member's password reset record by guessing or knowing the UUID.",
+          "suggestion": "Add `todo_app_member_id: props.member.id` to the where clause to enforce ownership: `where: { id: props.resetId, todo_app_member_id: props.member.id, deleted_at: null }`"
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 57,
+          "description": "The session IP is taken from `props.body.ip ?? props.ip`, allowing the client to supply an arbitrary IP address in the request body. This can be used to spoof IP-based audit trails or bypass IP-based controls.",
+          "suggestion": "Always use the server-derived `props.ip` for the session record. Do not trust client-supplied IP values: `ip: props.ip`"
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 72,
+          "description": "Both access and refresh tokens are signed with the same `JWT_SECRET_KEY`. If a refresh token is compromised, it can be used to forge access tokens and vice versa. Additionally, there is no `algorithm` option specified, defaulting to HS256 which is acceptable, but the shared secret increases blast radius.",
+          "suggestion": "Use separate secrets for access and refresh tokens (e.g., `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET`), or use asymmetric keys. Also explicitly set `algorithm: 'HS256'` to prevent algorithm confusion attacks."
+        },
+        {
+          "severity": "warning",
+          "type": "cryptographic-failures",
+          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
+          "line": 68,
+          "description": "Same issue as member join: access and refresh tokens share the same secret key, and no algorithm is explicitly specified. Additionally, guest authentication is based solely on a client-supplied device fingerprint with no cryptographic verification, making it trivially spoofable.",
+          "suggestion": "Use separate secrets for access and refresh tokens. Treat device fingerprints as non-secret identifiers only, not as authentication credentials."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 30,
+          "description": "The JWT verification does not validate the `type` claim (member vs guest) or check that the session is still valid in the database. A guest token could potentially be used to access member-only endpoints if the downstream code only checks the decoded payload without verifying the type.",
+          "suggestion": "After verifying the JWT signature, validate the `type` claim matches the expected role for the endpoint, and optionally verify the session_id exists and is not expired in the database."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 1,
+          "description": "No rate limiting on the registration endpoint. This allows automated account creation (account enumeration via 409 responses, spam registrations).",
+          "suggestion": "Apply rate limiting at the infrastructure level (e.g., API gateway, NestJS ThrottlerModule) on auth endpoints."
+        },
+        {
+          "severity": "suggestion",
+          "type": "auth-failures",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 35,
+          "description": "No password complexity validation beyond what typia type checking provides. Weak passwords (e.g., '1') may be accepted.",
+          "suggestion": "Add password complexity requirements: minimum length, character variety. This can be enforced via typia tags or a validation pipe."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/postTodoAppAuthMemberJoin.ts",
+          "line": 1,
+          "description": "No audit logging for registration events (success or failure). Security-relevant events like new account creation should be logged.",
+          "suggestion": "Add structured audit logging for registration attempts, including IP address and timestamp."
+        }
+      ],
+      "score": 60,
+      "summary": "[sampled 30/34 files] [2 chunks, 20→19 issues] The codebase has several significant security issues. Most critically: (1) the /todoApp/members endpoints lack authentication guards entirely, exposing member profile data publicly; (2) the member token refresh endpoint does not validate session expiry, allowing indefinitely reusable sessions; (3) the login flow creates a session record before checking if the account is deleted; (4) both refresh endpoints accept access tokens in place of refresh tokens due to missing tokenType validation; (5) the guest authorization does not validate session expiry. The JWT implementation uses a single shared secret for all token types without audience separation. The login endpoint also trusts client-supplied IP addresses for session recording. The core authentication infrastructure (BCrypt password hashing, JWT signing, ownership checks in todo operations) is implemented correctly, which prevents a lower score.",
+      "durationMs": 45354,
+      "tokensUsed": {
+        "input": 31575,
+        "output": 3579,
+        "inputCost": 0.094725,
+        "outputCost": 0.053685000000000004
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putTodoAppMemberTodosTodoId.ts",
+          "line": 64,
+          "description": "Column names in todo_app_todo_edit_histories.create() do not match Prisma model naming convention. Using names like 'title_changed_to', 'description_changed_to' appears hallucinated. Actual Prisma model likely has different column names.",
+          "suggestion": "Check actual Prisma schema for correct column names. Likely should be something like 'title', 'description', etc."
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putTodoAppMemberTodosTodoId.ts",
+          "line": 64,
+          "description": "Using Prisma namespace '@prisma/sdk' instead of '@prisma/client'. '@prisma/sdk' does not exist.",
+          "suggestion": "Replace '@prisma/sdk' import with '@prisma/client' or remove unused import."
+        },
+        {
+          "severity": "critical",
+          "type": "incomplete",
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 24,
+          "description": "Function returns 'verified' jwt verify result without validating its type/structure. No validation that payload contains required fields (id, type, session_id).",
+          "suggestion": "Add type validation after jwt.verify to ensure payload matches expected structure."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/putTodoAppMemberTodosTodoId.ts",
+          "line": 4,
+          "description": "Multiple unused imports across files: IEntity, ITodoAppMember, ITodoAppGuest, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe appear in many files but aren't used.",
+          "suggestion": "Remove unused imports in each file to clean up code."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postTodoAppAuthGuestJoin.ts",
+          "line": 17,
+          "description": "Guest join creates/updates guest record based on device fingerprint, but doesn't check if guest is deleted. The check 'deleted_at: null' should be applied to existing guest lookup.",
+          "suggestion": "Update existing guest lookup to include deleted_at: null condition to avoid resurrecting deleted guests."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postTodoAppAuthMemberRefresh.ts",
+          "line": 49,
+          "description": "Session expiration update sets expired_at to refreshExpires (7 days), but access token expires in 1 hour. This mismatches session expiration with token expiration.",
+          "suggestion": "Consider setting session expired_at to match refresh token expiration (7 days) or implement separate expiration logic."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postTodoAppAuthGuestRefresh.ts",
+          "line": 33,
+          "description": "Session lookup includes 'expired_at: { gt: new Date() }' but guest sessions don't have expiration logic defined in requirements. This might be incorrect.",
+          "suggestion": "Review session expiration logic for guest sessions according to requirements."
+        },
+        {
+          "severity": "suggestion",
+          "type": "incomplete",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 47,
+          "description": "Missing IP handling: uses 'props.body.ip ?? props.ip' but 'props.ip' is not guaranteed to exist if body.ip missing. Could lead to undefined IP.",
+          "suggestion": "Add fallback default IP or ensure props.ip is always provided."
+        },
+        {
+          "severity": "warning",
+          "type": "placeholder",
+          "file": "src/providers/patchTodoAppMemberTrash.ts",
+          "line": 31,
+          "description": "Hardcoded default sort field 'deleted_at' as fallback when sort_field not provided. Might not match user expectations.",
+          "suggestion": "Define clearer default sorting behavior according to business rules."
+        }
+      ],
+      "score": 80,
+      "summary": "Code follows AutoBE conventions well but has critical hallucinated column names, incomplete authorization validation, and some logic errors. Most functionality appears implemented correctly.",
+      "durationMs": 16234,
+      "tokensUsed": {
+        "input": 18809,
+        "output": 1015,
+        "inputCost": 0.0056427,
+        "outputCost": 0.0008932
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/todoApp/members/TodoappMembersController.ts",
+          "line": 1,
+          "description": "Controller defines endpoints at '/todoApp/members' (PATCH / and GET /:memberId) that have no corresponding operations in the provided OpenAPI specification. The spec only defines member-related operations under '/todoApp/member/*' paths (for the authenticated member's own data), not a general '/members' endpoint for listing all members or accessing arbitrary member profiles.",
+          "suggestion": "Remove this controller entirely or ensure it corresponds to spec-defined endpoints. The spec likely only allows members to access their own data via '/todoApp/member/*' paths, not arbitrary member IDs."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/todoApp/member/member/sessions/TodoappMemberMemberSessionsController.ts",
+          "line": 1,
+          "description": "Controller defines endpoints at '/todoApp/member/member/sessions' (PATCH / and GET /:sessionId) that have no corresponding operations in the provided OpenAPI specification. The spec does not define any endpoints for viewing member session history or details.",
+          "suggestion": "Remove this controller entirely unless the OpenAPI spec defines session listing/retrieval endpoints."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/todoApp/members/TodoappMembersController.ts",
+          "line": 40,
+          "description": "The PATCH /todoApp/members endpoint is documented as retrieving a paginated list of member accounts, but PATCH is typically used for partial updates, not for listing/searching. The spec likely expects a GET or POST for search operations. Additionally, the endpoint lacks authentication decorators (@MemberAuth) but claims to require authentication in documentation.",
+          "suggestion": "Verify the HTTP method matches the spec. If listing/searching, use GET or POST. Add proper authentication if required."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+          "line": 70,
+          "description": "The PATCH /todoApp/member/todos endpoint is used for listing/searching todos with filtering. PATCH is non-standard for read operations; typically GET or POST would be used. This may indicate a mismatch with the expected HTTP method in the spec.",
+          "suggestion": "Verify the HTTP method matches the spec. If listing/searching, use GET or POST."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/putTodoAppMemberTrashTodoIdRestore.ts",
+          "line": 1,
+          "description": "The provider imports several unused modules (IEntity, ITodoAppMember, ArrayUtil, Prisma, jwt, PasswordUtil, toISOStringSafe, v4) that are not referenced in the function. This adds unnecessary dependencies and could indicate code generation artifacts.",
+          "suggestion": "Remove unused imports to clean up the code."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchTodoAppMembers.ts",
+          "line": 1,
+          "description": "The endpoint 'patchTodoAppMembers' appears to be a phantom endpoint. There is no corresponding OpenAPI path for a PATCH operation on '/members' that would allow listing/searching members. This looks like an admin endpoint that was fabricated without spec basis.",
+          "suggestion": "Remove this endpoint unless there is a corresponding OpenAPI path for member listing/searching."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putTodoAppMemberTodosTodoId.ts",
+          "line": 45,
+          "description": "The edit history creation always includes all fields (title, description, start_date, due_date) even if they weren't changed. The spec implies edit history should only record changed fields (nullable fields should be null if not modified).",
+          "suggestion": "Compare current vs new values and only set changed fields in edit history, leaving others as null."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postTodoAppAuthMemberLogin.ts",
+          "line": 50,
+          "description": "Session creation sets expired_at to accessExpires (1 hour), but refresh token logic expects session.expired_at to match refresh expiration (7 days). This creates inconsistency between session expiration and refresh token validity.",
+          "suggestion": "Set session.expired_at to refreshExpires (7 days) to match refresh token lifetime."
+        },
+        {
+          "severity": "suggestion",
+          "type": "invented-logic",
+          "file": "src/providers/putTodoAppMemberMemberProfile.ts",
+          "line": 20,
+          "description": "Added validation that display_name cannot be empty string, but the spec doesn't specify this constraint. The Prisma schema allows nullable display_name, but empty string validation is invented logic.",
+          "suggestion": "Remove the empty string validation unless explicitly required by spec."
+        }
+      ],
+      "score": 81,
+      "summary": "[2 chunks, 13→9 issues] Moderate hallucination level detected. The implementation includes several phantom endpoints (general member listing, session history, password reset history) that are not supported by the spec, which appears to focus on the authenticated member's own data only. There are also consistent HTTP method mismatches (using PATCH for read operations). However, core todo and authentication functionality appears faithful to the Prisma schema and likely spec intent.",
+      "durationMs": 84577,
+      "tokensUsed": {
+        "input": 38114,
+        "output": 1992,
+        "inputCost": 0.0114342,
+        "outputCost": 0.00175296
+      },
+      "deepEvalScores": {
+        "faithfulness": 83,
+        "relevancy": 83,
+        "contextualPrecision": 78
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 87,
+    "phaseWeight": 0.85,
+    "phaseContribution": 74,
+    "agentScore": 75,
+    "agentWeight": 0.15,
+    "agentContribution": 11
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "test-1775682707022-k6mji4wn15s",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST003",
+        "message": "6/55 test files are stubs or lack assertions",
+        "estimatedImpact": 0.5,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-lx38r0i7yig",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/auth/guest\" has 2 untested route(s): POST /todoApp/auth/guest/join, POST /todoApp/auth/guest/refresh",
+        "estimatedImpact": 0.5,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-t78bziujjtd",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/auth/member\" has 1 untested route(s): POST /todoApp/auth/member/login",
+        "estimatedImpact": 0.5,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-mezacek5vd",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/member/member/password-resets\" has 2 untested route(s): PATCH /todoApp/member/member/password-resets, GET /todoApp/member/member/password-resets/:resetId",
+        "estimatedImpact": 0.5,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-2gis8v1u1fs",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/member/member/sessions\" has 1 untested route(s): PATCH /todoApp/member/member/sessions",
+        "estimatedImpact": 0.5,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-5qd9zh7ul3y",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/member/todos/:todoId/edit-histories\" has 2 untested route(s): PATCH /todoApp/member/todos/:todoId/edit-histories, GET /todoApp/member/todos/:todoId/edit-histories/:historyId",
+        "estimatedImpact": 0.5,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-8ex4ses00n",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/member/trash\" has 2 untested route(s): PATCH /todoApp/member/trash, PUT /todoApp/member/trash/:todoId/restore",
+        "estimatedImpact": 0.5,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-85vllnoe8hs",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/members\" has 1 untested route(s): PATCH /todoApp/members",
+        "estimatedImpact": 0.5,
+        "priority": 8,
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775682706933-p6ssmlnd9sq",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.4,
+        "priority": 9,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "completeness-1775682707115-g7t164p7ji5",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"ITodoAppMember\" not found — referenced by @x-autobe-database-schema-property member",
+        "file": "src/api/structures/ITodoAppTodo.ts",
+        "line": 109,
+        "estimatedImpact": 0.3,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 106,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 107,
+              "text": "   * This relation shows the authenticated member account that owns the todo. All todos are private to their owning member with no cross-user visibility. The member object includes essential profile information.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 108,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 109,
+              "text": "   * @x-autobe-database-schema-property member",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 110,
+              "text": "   * @x-autobe-specification Relation mapping via JOIN on todo_app_member_id to todo_app_members table. Returns ITodoAppMember.ISummary with id, email, display_name, and timestamps. The FK column todo_app_member_id is excluded from DTO.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 111,
+              "text": "   */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 112,
+              "text": "  member: ITodoAppMember.ISummary;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775682707115-atmz76lmdx8",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"ITodoAppMember\" not found — referenced by @x-autobe-database-schema-property member",
+        "file": "src/api/structures/ITodoAppTodo.ts",
+        "line": 301,
+        "estimatedImpact": 0.3,
+        "priority": 11,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 298,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 299,
+              "text": "     * This field shows the todo owner as a summary object containing their email, display name, and account timestamps. All todos are private to their owning member with no cross-user visibility.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 300,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 301,
+              "text": "     * @x-autobe-database-schema-property member",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 302,
+              "text": "     * @x-autobe-specification Relation mapping via JOIN on todo_app_member_id to todo_app_members table. Returns ITodoAppMember.ISummary object with member's id, email, display_name, and timestamps.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 303,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 304,
+              "text": "    member: ITodoAppMember.ISummary;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "type-error-1775682706933-qrtkbfp6pn8",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2694",
+        "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+        "file": "src/providers/patchTodoAppMembers.ts",
+        "line": 1895,
+        "estimatedImpact": 0.1,
+        "priority": 12,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775682706933-a5dbixjm0mi",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2694",
+        "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+        "file": "src/providers/patchTodoAppMembers.ts",
+        "line": 2480,
+        "estimatedImpact": 0.1,
+        "priority": 13,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "complexity-1775682707059-cg0rn7ihup",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"patchTodoAppMembers\" has complexity 19 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMembers.ts",
+        "line": 17,
+        "estimatedImpact": 0.1,
+        "priority": 14,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 14,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "export async function patchTodoAppMembers(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 18,
+              "text": "  body: ITodoAppMember.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "}): Promise<IPageITodoAppMember.ISummary> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  const page = props.body.page ?? 1;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775682707062-w4xvk3l1uu",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"patchTodoAppMemberMemberSessions\" has complexity 16 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberMemberSessions.ts",
+        "line": 18,
+        "estimatedImpact": 0.1,
+        "priority": 15,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "export async function patchTodoAppMemberMemberSessions(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 19,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  body: ITodoAppMemberSession.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "}): Promise<IPageITodoAppMemberSession.ISummary> {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-e180l3k1zae",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 59,
+        "estimatedImpact": 0.1,
+        "priority": 16,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 56,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "  // 5. Generate JWT tokens",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "  const token = {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "    access: jwt.sign(",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 60,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "        id: member.id,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-h4p2f0784hu",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 60,
+        "estimatedImpact": 0.1,
+        "priority": 17,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 57,
+              "text": "  // 5. Generate JWT tokens",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "  const token = {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "    access: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "      {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 61,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-m8qa5ihedxp",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 61,
+        "estimatedImpact": 0.1,
+        "priority": 18,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 58,
+              "text": "  const token = {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "    access: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "        type: \"member\",",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 62,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 64,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-crhr79xiuj",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 62,
+        "estimatedImpact": 0.1,
+        "priority": 19,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 59,
+              "text": "    access: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "        id: member.id,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 63,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 64,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 65,
+              "text": "      },",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-simdnicx2ha",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 63,
+        "estimatedImpact": 0.1,
+        "priority": 20,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 60,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 61,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "        session_id: session.id,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 64,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 65,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 66,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-liet6p88igd",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 64,
+        "estimatedImpact": 0.1,
+        "priority": 21,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 61,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 64,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 65,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 66,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 67,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-z14zrxphww",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 65,
+        "estimatedImpact": 0.1,
+        "priority": 22,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 62,
+              "text": "        id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 64,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 65,
+              "text": "      },",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 66,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 67,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 68,
+              "text": "    ),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-engkm0fx7c4",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 66,
+        "estimatedImpact": 0.1,
+        "priority": 23,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 63,
+              "text": "        session_id: session.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 64,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 65,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 66,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 67,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 68,
+              "text": "    ),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 69,
+              "text": "    refresh: jwt.sign(",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-nwttjkbn8er",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 67,
+        "estimatedImpact": 0.1,
+        "priority": 24,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 64,
+              "text": "        created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 65,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 66,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 67,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 68,
+              "text": "    ),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 69,
+              "text": "    refresh: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 70,
+              "text": "      {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-pzbyhwzn8vl",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postTodoAppAuthMemberLogin.ts",
+        "line": 68,
+        "estimatedImpact": 0.1,
+        "priority": 25,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 65,
+              "text": "      },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 66,
+              "text": "      MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 67,
+              "text": "      { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 68,
+              "text": "    ),",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 69,
+              "text": "    refresh: jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 70,
+              "text": "      {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 71,
+              "text": "        type: \"member\",",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-hhemi9l673",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 26,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-g9b0wgpnw67",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+        "line": 13,
+        "estimatedImpact": 0.1,
+        "priority": 27,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 10,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-dqq4uaatwjp",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+        "line": 14,
+        "estimatedImpact": 0.1,
+        "priority": 28,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 11,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-m6zvtu2h7x",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+        "line": 15,
+        "estimatedImpact": 0.1,
+        "priority": 29,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 12,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-ugl14xqemin",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+        "line": 16,
+        "estimatedImpact": 0.1,
+        "priority": 30,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 13,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { TodoAppTodoAtSummaryTransformer } from \"../transformers/TodoAppTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 17,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "export async function patchTodoAppMemberTrash(props: {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-d4mjo4f4mn",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+        "line": 53,
+        "estimatedImpact": 0.1,
+        "priority": 31,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 50,
+              "text": "  const total = await MyGlobal.prisma.todo_app_todos.count({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "  return {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 54,
+              "text": "    pagination: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "      current: page,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "      limit: limit,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-n8nne281uyc",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+        "line": 54,
+        "estimatedImpact": 0.1,
+        "priority": 32,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 51,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "  return {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "    pagination: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 55,
+              "text": "      current: page,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "      limit: limit,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "      records: total,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-0wrpp6booavc",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTrash.ts",
+        "line": 55,
+        "estimatedImpact": 0.1,
+        "priority": 33,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 52,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "  return {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "    pagination: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "      current: page,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 56,
+              "text": "      limit: limit,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "      records: total,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "      pages: Math.ceil(total / limit),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-qz6htoo7cu",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchTodoAppMemberTodos.ts",
+        "line": 60,
+        "estimatedImpact": 0.1,
+        "priority": 34,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 57,
+              "text": "      ...TodoAppTodoAtSummaryTransformer.select(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "    }),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "    MyGlobal.prisma.todo_app_todos.count({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "      where: whereInput,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 61,
+              "text": "    }),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 62,
+              "text": "  ]);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 63,
+              "text": "  return {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-qovl588i28k",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/deleteTodoAppMemberTrashTodoId.ts",
+        "line": 7,
+        "estimatedImpact": 0.1,
+        "priority": 35,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 4,
+              "text": "import { Prisma } from \"@prisma/sdk\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 5,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 6,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775682707100-i06yzg65bp",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/deleteTodoAppMemberTrashTodoId.ts",
+        "line": 8,
+        "estimatedImpact": 0.1,
+        "priority": 36,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 5,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 6,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775682707090-u6ixhlhm7tm",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"TodoappMemberTodosEdit_historiesController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/todos/edit-histories/TodoappMemberTodosEdit_historiesController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 37,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getTodoAppMemberTodosTodoIdEditHistoriesHistoryId } from \"../../../../../providers/getTodoAppMemberTodosTodoIdEditHistoriesHistoryId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchTodoAppMemberTodosTodoIdEditHistories } from \"../../../../../providers/patchTodoAppMemberTodosTodoIdEditHistories\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/todoApp/member/todos/:todoId/edit-histories\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class TodoappMemberTodosEdit_historiesController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve paginated list of edit history entries for a specific todo item.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775682707093-rpd7vfdbhgi",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"TodoappMemberMemberPassword_resetsController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/member/password-resets/TodoappMemberMemberPassword_resetsController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 38,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getTodoAppMemberMemberPasswordResetsResetId } from \"../../../../../providers/getTodoAppMemberMemberPasswordResetsResetId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchTodoAppMemberMemberPasswordResets } from \"../../../../../providers/patchTodoAppMemberMemberPasswordResets\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/todoApp/member/member/password-resets\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class TodoappMemberMemberPassword_resetsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve a paginated list of password reset tokens for the authenticated member's account.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775682707109-ggde96u55fu",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMembersController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/members/TodoappMembersController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 39,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { getTodoAppMembersMemberId } from \"../../../providers/getTodoAppMembersMemberId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { patchTodoAppMembers } from \"../../../providers/patchTodoAppMembers\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/todoApp/members\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class TodoappMembersController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Retrieve a paginated list of member accounts with search and filtering capabilities.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775682707110-4kgmvp5k3bk",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberTrashController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/trash/TodoappMemberTrashController.ts",
+        "line": 13,
+        "estimatedImpact": 0.1,
+        "priority": 40,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 10,
+              "text": "import { patchTodoAppMemberTrash } from \"../../../../providers/patchTodoAppMemberTrash\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { putTodoAppMemberTrashTodoIdRestore } from \"../../../../providers/putTodoAppMemberTrashTodoIdRestore\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "@Controller(\"/todoApp/member/trash\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 14,
+              "text": "export class TodoappMemberTrashController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "   * Retrieve a paginated list of deleted todos in the user's trash.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775682707109-4t46h1wvilw",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+        "line": 15,
+        "estimatedImpact": 0.1,
+        "priority": 41,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 12,
+              "text": "import { postTodoAppMemberTodos } from \"../../../../providers/postTodoAppMemberTodos\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { putTodoAppMemberTodosTodoId } from \"../../../../providers/putTodoAppMemberTodosTodoId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "@Controller(\"/todoApp/member/todos\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 16,
+              "text": "export class TodoappMemberTodosController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "   * Create a new todo item for the authenticated member.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775682707110-307t4kxqpqn",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 42,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { postTodoAppAuthMemberLogin } from \"../../../../providers/postTodoAppAuthMemberLogin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postTodoAppAuthMemberRefresh } from \"../../../../providers/postTodoAppAuthMemberRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/todoApp/auth/member\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class TodoappAuthMemberController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Register a new member account with email and password credentials.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775682707110-d4zsbalyujg",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 43,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { postTodoAppAuthGuestJoin } from \"../../../../providers/postTodoAppAuthGuestJoin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { postTodoAppAuthGuestRefresh } from \"../../../../providers/postTodoAppAuthGuestRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/todoApp/auth/guest\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class TodoappAuthGuestController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Register a new guest user or activate an existing guest session using device fingerprint.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775682707109-ucoi3piek2j",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberTodosEdit_historiesController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/todos/edit-histories/TodoappMemberTodosEdit_historiesController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 44,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getTodoAppMemberTodosTodoIdEditHistoriesHistoryId } from \"../../../../../providers/getTodoAppMemberTodosTodoIdEditHistoriesHistoryId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchTodoAppMemberTodosTodoIdEditHistories } from \"../../../../../providers/patchTodoAppMemberTodosTodoIdEditHistories\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/todoApp/member/todos/:todoId/edit-histories\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class TodoappMemberTodosEdit_historiesController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve paginated list of edit history entries for a specific todo item.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775682707111-1w1vclwz0fs",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberMemberSessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/member/sessions/TodoappMemberMemberSessionsController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 45,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getTodoAppMemberMemberSessionsSessionId } from \"../../../../../providers/getTodoAppMemberMemberSessionsSessionId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchTodoAppMemberMemberSessions } from \"../../../../../providers/patchTodoAppMemberMemberSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/todoApp/member/member/sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class TodoappMemberMemberSessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve a paginated list of session records for the authenticated member with optional filtering and sorting.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775682707110-b4wl94xs46t",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberMemberProfileController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/member/profile/TodoappMemberMemberProfileController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 46,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { putTodoAppMemberMemberProfile } from \"../../../../../providers/putTodoAppMemberMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/todoApp/member/member/profile\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class TodoappMemberMemberProfileController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Update the current authenticated member's profile information, specifically the display name.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775682707111-h9h09ne0fdk",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"TodoappMemberMemberPassword_resetsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/todoApp/member/member/password-resets/TodoappMemberMemberPassword_resetsController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 47,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getTodoAppMemberMemberPasswordResetsResetId } from \"../../../../../providers/getTodoAppMemberMemberPasswordResetsResetId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchTodoAppMemberMemberPasswordResets } from \"../../../../../providers/patchTodoAppMemberMemberPasswordResets\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/todoApp/member/member/password-resets\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class TodoappMemberMemberPassword_resetsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve a paginated list of password reset tokens for the authenticated member's account.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "totalPotentialGain": 8.6,
+    "topFixes": [
+      {
+        "issueId": "test-1775682707022-k6mji4wn15s",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST003",
+        "message": "6/55 test files are stubs or lack assertions",
+        "estimatedImpact": 0.5,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-lx38r0i7yig",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/auth/guest\" has 2 untested route(s): POST /todoApp/auth/guest/join, POST /todoApp/auth/guest/refresh",
+        "estimatedImpact": 0.5,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-t78bziujjtd",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/auth/member\" has 1 untested route(s): POST /todoApp/auth/member/login",
+        "estimatedImpact": 0.5,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-mezacek5vd",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/member/member/password-resets\" has 2 untested route(s): PATCH /todoApp/member/member/password-resets, GET /todoApp/member/member/password-resets/:resetId",
+        "estimatedImpact": 0.5,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-2gis8v1u1fs",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/member/member/sessions\" has 1 untested route(s): PATCH /todoApp/member/member/sessions",
+        "estimatedImpact": 0.5,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-5qd9zh7ul3y",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/member/todos/:todoId/edit-histories\" has 2 untested route(s): PATCH /todoApp/member/todos/:todoId/edit-histories, GET /todoApp/member/todos/:todoId/edit-histories/:historyId",
+        "estimatedImpact": 0.5,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-8ex4ses00n",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/member/trash\" has 2 untested route(s): PATCH /todoApp/member/trash, PUT /todoApp/member/trash/:todoId/restore",
+        "estimatedImpact": 0.5,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775682707026-85vllnoe8hs",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/todoApp/members\" has 1 untested route(s): PATCH /todoApp/members",
+        "estimatedImpact": 0.5,
+        "priority": 8,
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775682706933-p6ssmlnd9sq",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.4,
+        "priority": 9,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "completeness-1775682707115-g7t164p7ji5",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"ITodoAppMember\" not found — referenced by @x-autobe-database-schema-property member",
+        "file": "src/api/structures/ITodoAppTodo.ts",
+        "line": 109,
+        "estimatedImpact": 0.3,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 106,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 107,
+              "text": "   * This relation shows the authenticated member account that owns the todo. All todos are private to their owning member with no cross-user visibility. The member object includes essential profile information.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 108,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 109,
+              "text": "   * @x-autobe-database-schema-property member",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 110,
+              "text": "   * @x-autobe-specification Relation mapping via JOIN on todo_app_member_id to todo_app_members table. Returns ITodoAppMember.ISummary with id, email, display_name, and timestamps. The FK column todo_app_member_id is excluded from DTO.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 111,
+              "text": "   */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 112,
+              "text": "  member: ITodoAppMember.ISummary;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "penaltyRecovery": [
+      {
+        "type": "jsdoc",
+        "currentPenalty": 4,
+        "description": "Add JSDoc to 9 missing APIs (90%) to recover up to 4 points"
+      },
+      {
+        "type": "schemaSync",
+        "currentPenalty": 1,
+        "description": "Fix 0 empty types and 2 mismatched properties to recover up to 1 points"
+      }
+    ]
+  }
 }

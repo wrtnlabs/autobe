@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1775119222453-hthxefdvdfd",
+          "id": "type-error-1775674204190-7kjrs05rskp",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
             "line": 3555
           },
-          "id": "type-error-1775119222453-do8n371ujjd",
+          "id": "type-error-1775674204190-k3vudpucenf",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
             "line": 2880
           },
-          "id": "type-error-1775119222453-0zp2likctij",
+          "id": "type-error-1775674204190-yuy6gdykq68",
           "autoFixable": false
         },
         {
@@ -55,11 +55,11 @@
             "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
             "line": 5071
           },
-          "id": "type-error-1775119222453-8wwlcgrgjmy",
+          "id": "type-error-1775674204190-om8jlsss5k9",
           "autoFixable": false
         }
       ],
-      "durationMs": 2285,
+      "durationMs": 2388,
       "metrics": {
         "totalFiles": 75,
         "filesWithErrors": 0,
@@ -193,7 +193,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1775119222546-o8bry0chias",
+          "id": "complexity-1775674204286-ivrmlf7ggtp",
           "autoFixable": false
         },
         {
@@ -206,7 +206,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1775119222552-f9qhhz5isws",
+          "id": "complexity-1775674204292-e9fwu8znonh",
           "autoFixable": false
         },
         {
@@ -219,7 +219,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1775119222552-wpxpnkley8k",
+          "id": "complexity-1775674204293-097k1fgx81yf",
           "autoFixable": false
         }
       ]
@@ -236,7 +236,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
             "line": 22
           },
-          "id": "duplication-1775119222578-7q13qtjlhpu",
+          "id": "duplication-1775674204321-11olcz76np1",
           "autoFixable": false
         },
         {
@@ -248,7 +248,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
             "line": 23
           },
-          "id": "duplication-1775119222578-veu0678aki",
+          "id": "duplication-1775674204321-xvxezv2wmzd",
           "autoFixable": false
         },
         {
@@ -260,7 +260,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
             "line": 24
           },
-          "id": "duplication-1775119222578-9e5f7uzwxtl",
+          "id": "duplication-1775674204321-hj83l6be1je",
           "autoFixable": false
         },
         {
@@ -272,7 +272,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberRefresh.ts",
             "line": 23
           },
-          "id": "duplication-1775119222578-vom1yoklyr9",
+          "id": "duplication-1775674204321-kf2vws1xszo",
           "autoFixable": false
         },
         {
@@ -284,7 +284,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 44
           },
-          "id": "duplication-1775119222578-sgp441m98jf",
+          "id": "duplication-1775674204321-5jjb85qdsfb",
           "autoFixable": false
         },
         {
@@ -296,7 +296,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 45
           },
-          "id": "duplication-1775119222578-k03yj8b1n5",
+          "id": "duplication-1775674204321-u7dvqk9jxu9",
           "autoFixable": false
         },
         {
@@ -308,7 +308,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 46
           },
-          "id": "duplication-1775119222578-qtsvc3bkokd",
+          "id": "duplication-1775674204321-xnvogolc7wl",
           "autoFixable": false
         },
         {
@@ -320,7 +320,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 47
           },
-          "id": "duplication-1775119222578-otngkr1k86",
+          "id": "duplication-1775674204321-2i1j8z8uqwp",
           "autoFixable": false
         },
         {
@@ -332,7 +332,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 48
           },
-          "id": "duplication-1775119222578-fx2mz69wzzd",
+          "id": "duplication-1775674204321-bxjl7k79r49",
           "autoFixable": false
         },
         {
@@ -344,7 +344,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 49
           },
-          "id": "duplication-1775119222578-zf4dbrfjav",
+          "id": "duplication-1775674204321-xmgaa9yeqa",
           "autoFixable": false
         },
         {
@@ -356,7 +356,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 50
           },
-          "id": "duplication-1775119222578-iyrg0t88hgb",
+          "id": "duplication-1775674204321-r3clska2pa",
           "autoFixable": false
         },
         {
@@ -368,7 +368,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 51
           },
-          "id": "duplication-1775119222578-xafkany8c4",
+          "id": "duplication-1775674204321-4hqgnez63ve",
           "autoFixable": false
         },
         {
@@ -380,7 +380,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 52
           },
-          "id": "duplication-1775119222578-955tku9xk48",
+          "id": "duplication-1775674204321-wn4e5hjakgn",
           "autoFixable": false
         },
         {
@@ -392,7 +392,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 53
           },
-          "id": "duplication-1775119222578-pwd6vssua2",
+          "id": "duplication-1775674204321-pbvacw0zpm",
           "autoFixable": false
         },
         {
@@ -404,7 +404,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 54
           },
-          "id": "duplication-1775119222578-yj5357p3ppm",
+          "id": "duplication-1775674204321-bgz92nzjc3w",
           "autoFixable": false
         },
         {
@@ -416,7 +416,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 55
           },
-          "id": "duplication-1775119222578-wyr7g1l9pkk",
+          "id": "duplication-1775674204321-8sz4wjjrji",
           "autoFixable": false
         },
         {
@@ -428,7 +428,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 56
           },
-          "id": "duplication-1775119222578-r3hc2ac0ntr",
+          "id": "duplication-1775674204321-q26l4wh6ku",
           "autoFixable": false
         },
         {
@@ -440,7 +440,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 57
           },
-          "id": "duplication-1775119222578-wjyogapkn6i",
+          "id": "duplication-1775674204321-0cab9hzdzm3",
           "autoFixable": false
         },
         {
@@ -452,7 +452,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
             "line": 47
           },
-          "id": "duplication-1775119222578-pk13ck76zz",
+          "id": "duplication-1775674204321-hnymk41vvyl",
           "autoFixable": false
         },
         {
@@ -464,7 +464,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
             "line": 48
           },
-          "id": "duplication-1775119222578-o8lmi5d0lam",
+          "id": "duplication-1775674204321-xjfkg9p3q09",
           "autoFixable": false
         },
         {
@@ -476,7 +476,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
             "line": 49
           },
-          "id": "duplication-1775119222578-fpa36ffhuh",
+          "id": "duplication-1775674204321-72lvajr7psj",
           "autoFixable": false
         },
         {
@@ -488,7 +488,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 8
           },
-          "id": "duplication-1775119222578-9bqugxkyson",
+          "id": "duplication-1775674204321-iz7a4k4vfae",
           "autoFixable": false
         },
         {
@@ -500,7 +500,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 9
           },
-          "id": "duplication-1775119222578-33932bl0w4r",
+          "id": "duplication-1775674204321-oom5ja5a9h",
           "autoFixable": false
         },
         {
@@ -512,7 +512,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 10
           },
-          "id": "duplication-1775119222578-rwuyy309dko",
+          "id": "duplication-1775674204321-15rx396qa55",
           "autoFixable": false
         },
         {
@@ -524,7 +524,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 11
           },
-          "id": "duplication-1775119222578-6kd6wg5aivb",
+          "id": "duplication-1775674204321-52y8q7geum",
           "autoFixable": false
         },
         {
@@ -536,7 +536,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 12
           },
-          "id": "duplication-1775119222578-lfplx4u8oa",
+          "id": "duplication-1775674204321-15vzuwaxhkw",
           "autoFixable": false
         },
         {
@@ -548,7 +548,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 13
           },
-          "id": "duplication-1775119222578-dlybjnltpmr",
+          "id": "duplication-1775674204321-0fqk8p1x9u4h",
           "autoFixable": false
         },
         {
@@ -560,7 +560,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 14
           },
-          "id": "duplication-1775119222578-3vilpo4qo79",
+          "id": "duplication-1775674204321-j5fxoi1yrc",
           "autoFixable": false
         },
         {
@@ -572,7 +572,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 15
           },
-          "id": "duplication-1775119222578-01kwlu9t29gx",
+          "id": "duplication-1775674204321-irgh5acdef",
           "autoFixable": false
         },
         {
@@ -584,7 +584,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 16
           },
-          "id": "duplication-1775119222578-e7pia0ag78o",
+          "id": "duplication-1775674204321-3y27gv9xy5x",
           "autoFixable": false
         }
       ]
@@ -601,24 +601,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1775119222584-1nqkhbitrfw",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
           "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
           "location": {
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1775119222585-my6zooszfw",
+          "id": "jsdoc-1775674204328-i386qk3naeq",
           "autoFixable": false
         },
         {
@@ -630,7 +618,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
             "line": 17
           },
-          "id": "jsdoc-1775119222586-v576n5hb4o",
+          "id": "jsdoc-1775674204329-h48enqe2178",
           "autoFixable": false
         },
         {
@@ -642,7 +630,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1775119222584-8m58tflil5o",
+          "id": "jsdoc-1775674204328-j3ua23k4pq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775674204328-3b5ml5ao3jy",
           "autoFixable": false
         },
         {
@@ -654,7 +654,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
             "line": 11
           },
-          "id": "jsdoc-1775119222584-ze7m2uko8u9",
+          "id": "jsdoc-1775674204329-mfv2w09y68h",
           "autoFixable": false
         },
         {
@@ -666,7 +666,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/history/MultiusertodoMemberTodosHistoryController.ts",
             "line": 12
           },
-          "id": "jsdoc-1775119222585-q9anf9rwds",
+          "id": "jsdoc-1775674204329-kfznfrft8mj",
           "autoFixable": false
         }
       ]
@@ -685,7 +685,7 @@
             "file": "src/api/structures/IMultiUserTodoTodoEditHistory.ts",
             "line": 93
           },
-          "id": "completeness-1775119222588-oawftyoz8l9",
+          "id": "completeness-1775674204335-iv9ne44zzm",
           "autoFixable": false
         },
         {
@@ -697,7 +697,7 @@
             "file": "src/api/structures/IMultiUserTodoTodo.ts",
             "line": 154
           },
-          "id": "completeness-1775119222589-k5k0kc88p8g",
+          "id": "completeness-1775674204336-h1iswozbycq",
           "autoFixable": false
         }
       ]
@@ -720,7 +720,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1775119222453-hthxefdvdfd",
+      "id": "type-error-1775674204190-7kjrs05rskp",
       "autoFixable": false
     },
     {
@@ -732,7 +732,7 @@
         "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
         "line": 3555
       },
-      "id": "type-error-1775119222453-do8n371ujjd",
+      "id": "type-error-1775674204190-k3vudpucenf",
       "autoFixable": false
     },
     {
@@ -744,7 +744,7 @@
         "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
         "line": 5071
       },
-      "id": "type-error-1775119222453-8wwlcgrgjmy",
+      "id": "type-error-1775674204190-om8jlsss5k9",
       "autoFixable": false
     }
   ],
@@ -758,13 +758,13 @@
         "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
         "line": 2880
       },
-      "id": "type-error-1775119222453-0zp2likctij",
+      "id": "type-error-1775674204190-yuy6gdykq68",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-04-02T08:40:22.589Z",
-    "totalDurationMs": 2361,
+    "evaluatedAt": "2026-04-08T18:50:04.336Z",
+    "totalDurationMs": 2474,
     "estimateVersion": "0.30.5",
     "evaluatedFiles": 75
   },
@@ -803,138 +803,122 @@
           "type": "insecure-design",
           "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
           "line": 52,
-          "description": "Client-supplied IP address override: `props.body.ip ?? props.ip` allows the client to spoof their IP address in the session record. The body's `ip` field takes precedence over the server-detected IP, undermining session metadata integrity and audit trails.",
-          "suggestion": "Always use the server-detected IP (`props.ip`) for session metadata. Remove the `ip` field from the request body schema or ignore it entirely when recording session data."
+          "description": "Client-supplied IP address (props.body.ip) takes precedence over the server-extracted IP (props.ip) when storing session metadata. An attacker can spoof their IP address by including it in the request body, undermining IP-based audit trails and security monitoring.",
+          "suggestion": "Always use the server-extracted IP address (props.ip from @Ip() decorator) for session storage. Remove the client-supplied IP field from the request body schema, or at minimum never prefer it over the server-side value: use `ip: props.ip` instead of `ip: props.body.ip ?? props.ip`."
         },
         {
           "severity": "warning",
           "type": "insecure-design",
           "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
-          "line": 62,
-          "description": "Same client-supplied IP override issue as in login: `props.body.ip ?? props.ip` allows clients to inject a fake IP into the session record during registration.",
-          "suggestion": "Always use the server-detected IP (`props.ip`) for session metadata. Do not accept IP from the request body."
+          "line": 60,
+          "description": "Same IP spoofing issue as in login: client-supplied IP (props.body.ip) overrides the server-extracted IP when creating the session record.",
+          "suggestion": "Use only the server-extracted IP: `ip: props.ip`. Do not accept IP address as a client-supplied field."
         },
         {
           "severity": "warning",
           "type": "auth-failures",
           "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
           "line": 44,
-          "description": "The refresh token rotation does not validate that the incoming refresh token matches the one stored in the session (`session.refresh_token`). An attacker who obtains an old (already-rotated) refresh token could still use it if the JWT signature is valid and the session record has not expired, because only session existence and expiry are checked — not token binding.",
-          "suggestion": "After fetching the session, compare `props.body.refresh_token === session.refresh_token` (or a hash thereof). Reject the request if they do not match to enforce strict token rotation."
+          "description": "The refresh token validation does not verify that the stored refresh_token in the session matches the presented token. An attacker who obtains a session ID (e.g., via database read) could forge a valid JWT with that session_id and bypass the session check, since only session existence and expiry are verified — not token binding.",
+          "suggestion": "After fetching the session, compare `session.refresh_token === props.body.refresh_token` to ensure the presented token matches the stored one. This prevents token substitution attacks."
         },
         {
           "severity": "warning",
           "type": "auth-failures",
           "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
           "line": 44,
-          "description": "Same refresh token binding issue as in member refresh: the stored `session.refresh_token` is never compared against the presented token. Only JWT signature validity and session expiry are checked, so a previously rotated token remains usable.",
-          "suggestion": "Compare the presented refresh token against the stored token in the session record before issuing new tokens."
-        },
-        {
-          "severity": "warning",
-          "type": "broken-access-control",
-          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdToggle.ts",
-          "line": 34,
-          "description": "The todo is fetched with `findUniqueOrThrow` before ownership is verified. If the todo does not exist, a 500/P2025 Prisma error is thrown instead of a controlled 404, potentially leaking internal error details. More critically, the ownership check happens after the existence check, which means a timing difference could be used to enumerate valid todo IDs.",
-          "suggestion": "Use `findUnique` (not `findUniqueOrThrow`) and return a generic 404 for both not-found and ownership-mismatch cases to prevent enumeration. Alternatively, include `multi_user_todo_member_id` in the `where` clause of the initial query."
-        },
-        {
-          "severity": "warning",
-          "type": "broken-access-control",
-          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
-          "line": 34,
-          "description": "Ownership check occurs after existence and trash-state checks. This ordering reveals to an attacker whether a todo ID exists and is in trash before confirming they own it, enabling enumeration of other users' deleted todo IDs.",
-          "suggestion": "Reorder checks: first verify ownership (include `multi_user_todo_member_id` in the query `where` clause), then check trash state. Return a generic 404 for any failure to prevent enumeration."
+          "description": "Same refresh token binding issue: the session lookup does not verify that the stored refresh_token matches the presented token, only that the session exists and is not expired.",
+          "suggestion": "Add a check: `session.refresh_token === props.body.refresh_token` after fetching the session record to bind the token to the stored value."
         },
         {
           "severity": "suggestion",
           "type": "logging-failures",
           "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
-          "line": 52,
-          "description": "All controllers use `console.log(error)` for error handling, which may log sensitive data (stack traces, user inputs) to stdout without structured formatting or log level control. This is the standard AutoBE pattern but worth noting.",
-          "suggestion": "Consider adopting a structured logger (e.g., NestJS Logger or Winston) with appropriate log levels and redaction of sensitive fields."
+          "line": 1,
+          "description": "All controllers use `console.log(error)` for error handling, which may leak stack traces or sensitive data to logs without structured context. Login failures are not specifically logged for security monitoring.",
+          "suggestion": "Use a structured logger (e.g., NestJS Logger) and add specific audit log entries for authentication failures (wrong password, unknown email) to support intrusion detection."
         },
         {
           "severity": "suggestion",
           "type": "insecure-design",
           "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
           "line": 1,
-          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). This allows unlimited brute-force or credential-stuffing attempts.",
-          "suggestion": "Apply rate limiting at the infrastructure level (API gateway, reverse proxy) or use a NestJS throttling guard (e.g., @nestjs/throttler) on authentication endpoints."
+          "description": "No rate limiting is applied to authentication endpoints (join, login, refresh). This allows brute-force attacks against passwords and token enumeration.",
+          "suggestion": "Apply rate limiting middleware (e.g., @nestjs/throttler) to authentication endpoints, especially login and join."
         },
         {
           "severity": "suggestion",
           "type": "auth-failures",
           "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
-          "line": 1,
-          "description": "No password complexity validation is enforced beyond type checking. Any non-empty string is accepted as a password.",
-          "suggestion": "Enforce minimum password length and complexity requirements (e.g., minimum 8 characters, mix of character types) using a validation pipe or typia constraints."
+          "line": 18,
+          "description": "No password complexity requirements are enforced beyond what typia type validation provides. Weak passwords (e.g., single characters) are accepted.",
+          "suggestion": "Add password complexity validation: minimum length (e.g., 8 characters), require mixed case, numbers, or special characters."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 21,
+          "description": "Guest registration uses device_id as the sole identifier with no validation or rate limiting. Any client can register as a guest by providing an arbitrary device_id string, and a soft-deleted guest account is automatically restored without any additional verification. This could allow account enumeration or session hijacking if device_ids are predictable.",
+          "suggestion": "Validate device_id format/length. Consider adding a HMAC or signed token to device_id to prevent forgery. Do not automatically restore soft-deleted accounts without re-verification."
         },
         {
           "severity": "warning",
           "type": "broken-access-control",
           "file": "src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
           "line": 22,
-          "description": "Ownership check occurs AFTER the existence/trash check. If the todo exists but belongs to another user, the error message 'Todo is not in trash' (404) leaks information about the todo's state before the ownership check is performed. The ownership check should come before state-specific checks.",
-          "suggestion": "Reorder checks: first verify ownership (403 if mismatch), then verify trash status. This prevents information leakage about other users' todos."
+          "description": "Ownership check occurs AFTER the existence/trash check. If the todo exists in trash but belongs to another user, a 404 is returned (correct), but the order of checks leaks information: an attacker can distinguish 'not in trash' (404) from 'in trash but not yours' (403) by probing IDs. More critically, `findUniqueOrThrow` throws a generic Prisma error (not HttpException) if the record doesn't exist, which may expose internal error details.",
+          "suggestion": "Reorder checks: verify ownership before revealing trash status. Replace `findUniqueOrThrow` with `findUnique` and handle null explicitly with a controlled HttpException."
         },
         {
           "severity": "warning",
           "type": "broken-access-control",
           "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
-          "line": 28,
-          "description": "Same ordering issue: the 'already in trash' check (404) occurs before the ownership check (403). An attacker can determine whether a specific todo ID exists and is in trash before being told they don't own it.",
-          "suggestion": "Check ownership before checking deleted_at status to avoid leaking information about other users' resource states."
+          "line": 18,
+          "description": "Same pattern as deleteMultiUserTodoMemberTodosTrashTodoId: `findUniqueOrThrow` throws an uncontrolled Prisma error on missing records, and ownership is checked after existence/status checks, enabling information leakage about other users' todo states.",
+          "suggestion": "Use `findUnique` with explicit null handling. Check ownership before revealing soft-delete status."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistory.ts",
+          "line": 51,
+          "description": "The `limit` parameter from the request body is used without an upper bound cap (unlike patchMultiUserTodoMemberTodosTrash.ts which correctly applies `Math.min(..., 100)`). A client could request an arbitrarily large number of history records in a single query, causing excessive database load.",
+          "suggestion": "Apply an upper bound: `const limit = Math.min(props.body.limit ?? 20, 100);`"
         },
         {
           "severity": "warning",
           "type": "auth-failures",
-          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
-          "line": 21,
-          "description": "Guest registration is based solely on a client-supplied device_id with no validation of its format, uniqueness constraints, or authenticity. Any client can supply an arbitrary device_id (including another user's) to obtain a valid JWT session for that guest account, enabling account takeover.",
-          "suggestion": "Validate device_id format server-side. Consider adding additional entropy or a server-generated challenge to prevent device_id spoofing. At minimum, document that device_id is not a security boundary."
-        },
-        {
-          "severity": "warning",
-          "type": "insecure-design",
-          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
-          "line": 88,
-          "description": "The client-supplied ip field (props.body.ip) takes precedence over the actual request IP (props.ip) via `props.body.ip ?? props.ip`. This allows clients to spoof their IP address in session records, undermining any IP-based audit trail or abuse detection.",
-          "suggestion": "Use only the server-determined IP (props.ip) for session recording. Do not trust client-supplied IP values."
-        },
-        {
-          "severity": "warning",
-          "type": "cryptographic-failures",
-          "file": "src/providers/authorize/jwtAuthorize.ts",
-          "line": 30,
-          "description": "jwt.verify() is called without specifying the expected algorithm(s). This can allow algorithm confusion attacks (e.g., 'none' algorithm or RS256/HS256 confusion) if the JWT_SECRET_KEY is ever a public key or if the library defaults change.",
-          "suggestion": "Pass explicit algorithm options: `jwt.verify(token, MyGlobal.env.JWT_SECRET_KEY, { algorithms: ['HS256'] })` to prevent algorithm substitution attacks."
-        },
-        {
-          "severity": "suggestion",
-          "type": "insecure-design",
-          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistory.ts",
-          "line": 51,
-          "description": "The pagination limit from the request body is not capped. A client can request an arbitrarily large number of history records in a single query, potentially causing excessive database load.",
-          "suggestion": "Apply a maximum limit: `const limit = Math.min(props.body.limit ?? 20, 100);` consistent with other providers in the codebase."
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 8,
+          "description": "The guest authorization does not validate the session_id from the JWT against the guest session table with an expiry check tied to the specific session. While a session lookup is performed, the guest account check and session check are separate queries — a revoked guest whose session record was deleted but guest record remains active could still pass the first check. Additionally, there is no check that the session belongs to the correct guest_id in combination.",
+          "suggestion": "Combine the guest and session validation into a single query joining both tables, ensuring the session is both unexpired and linked to the correct guest. The current code does check `multi_user_todo_guest_id: payload.id` in the session query, which is good, but consider a single joined query for atomicity."
         },
         {
           "severity": "suggestion",
           "type": "logging-failures",
           "file": "src/providers/authorize/jwtAuthorize.ts",
-          "line": 38,
-          "description": "JWT verification failures are silently caught and re-thrown as UnauthorizedException with no logging. Failed authentication attempts are not recorded, making it impossible to detect brute-force or token-scanning attacks.",
-          "suggestion": "Log authentication failures (without exposing the token value) to enable monitoring and alerting on suspicious activity."
+          "line": 30,
+          "description": "JWT verification failures are silently caught and converted to UnauthorizedException with no logging. Failed authentication attempts are not recorded, making it impossible to detect brute-force or token-stuffing attacks.",
+          "suggestion": "Log authentication failures with relevant context (IP, token prefix) to an audit log or monitoring system."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 47,
+          "description": "Date filter inputs (startDateFrom, startDateTo, dueDateFrom, dueDateTo) are passed directly to `new Date()` without validation. Invalid date strings will produce `Invalid Date` objects that Prisma may handle unpredictably.",
+          "suggestion": "Validate date string inputs before constructing Date objects. Use typia or a date validation library to ensure inputs are valid ISO 8601 strings."
         }
       ],
       "score": 73,
-      "summary": "[2 chunks, 17→16 issues] The codebase demonstrates solid foundational security practices: bcrypt password hashing, JWT-based authentication with issuer validation, ownership checks on all todo operations, and consistent use of MemberAuth guards on protected endpoints. However, several notable issues exist: client-supplied IP spoofing in session creation (both join and login), missing refresh token binding validation (rotated tokens remain usable), and ordering of ownership vs. existence checks in toggle/restore providers that enables todo ID enumeration. These are warning-level issues that should be addressed before production deployment. No critical vulnerabilities such as SQL injection, plaintext secrets, or missing authentication on sensitive endpoints were found.",
-      "durationMs": 33084,
+      "summary": "[2 chunks, 17→14 issues] The codebase demonstrates solid security fundamentals: ownership checks are consistently applied across todo operations, JWT tokens use proper signing with issuer validation, bcrypt is used for password hashing, and authentication guards (MemberAuth) are applied to all protected endpoints. The main concerns are: (1) client-supplied IP addresses can override server-extracted IPs in session records, enabling audit trail spoofing; (2) refresh token validation does not bind the presented token to the stored session token, allowing potential token substitution; (3) soft-deleted member accounts are not excluded from the refresh token flow. These are medium-severity issues that should be addressed. No critical injection, IDOR, or plaintext credential issues were found.",
+      "durationMs": 62239,
       "tokensUsed": {
         "input": 33438,
-        "output": 2973,
+        "output": 3049,
         "inputCost": 0.100314,
-        "outputCost": 0.044594999999999996
+        "outputCost": 0.045735
       }
     },
     {
@@ -947,186 +931,354 @@
           "type": "hallucination",
           "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'. Prisma client is typically imported from '@prisma/client'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoMemberTodosTodoIdToggle.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoMemberTodos.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/patchMultiUserTodoMemberTodosTrash.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistory.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/getMultiUserTodoMemberTodosTodoIdHistoryHistoryId.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/getMultiUserTodoMemberTodosTodoId.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
           "line": 1,
-          "description": "Importing from non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk' to import { Prisma } from '@prisma/client'"
+          "description": "Importing from non-existent package '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, IMultiUserTodoTodoEditHistory, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe). This suggests copy-paste boilerplate.",
+          "suggestion": "Remove unused imports to clean up code and improve maintainability."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdToggle.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, IMultiUserTodoMember, IMultiUserTodoTodoEditHistory, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, IMultiUserTodoMember, IMultiUserTodoTodoEditHistory, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, IMultiUserTodoMember, IMultiUserTodoTodoEditHistory, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, ArrayUtil, jwt, typia, v4, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, ArrayUtil, jwt, typia, v4, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTrash.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, IMultiUserTodoMember, IMultiUserTodoTodo, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistory.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, IMultiUserTodoMember, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoIdHistoryHistoryId.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, IMultiUserTodoMember, IMultiUserTodoTodo, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, IMultiUserTodoMember, IMultiUserTodoTodoEditHistory, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "unrealistic-assumptions",
+          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
+          "line": 1,
+          "description": "Multiple files import unused dependencies (IEntity, ArrayUtil, jwt, typia, v4, PasswordUtil, toISOStringSafe).",
+          "suggestion": "Remove unused imports."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 77,
+          "description": "Inconsistent date comparison for edit history: uses string comparison (oldStartDateStr !== props.body.start_date) after converting existing date to ISO string. This may fail due to timezone/format differences.",
+          "suggestion": "Compare Date objects directly or use a consistent ISO string format for both sides."
         },
         {
           "severity": "warning",
           "type": "logic-error",
           "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
-          "line": 50,
-          "description": "The refresh token verification includes 'tokenType' property in the payload, but the verification step doesn't check for it. The token is signed with 'tokenType' property but verified without requiring it.",
-          "suggestion": "Add validation for tokenType property in refresh token verification or ensure consistency between signing and verification payloads"
+          "line": 59,
+          "description": "Refresh token payload includes extra field 'tokenType' that wasn't in the original token verification (line 17). This inconsistency could cause validation issues.",
+          "suggestion": "Ensure refresh token payload structure is consistent between creation and verification."
         },
         {
           "severity": "warning",
           "type": "logic-error",
           "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
-          "line": 50,
-          "description": "The refresh token is signed with 'tokenType' property but the access token is not. This inconsistency could cause issues if token validation expects consistent structure.",
-          "suggestion": "Either add tokenType to access token payload or remove it from refresh token payload for consistency"
+          "line": 55,
+          "description": "Refresh token payload includes 'tokenType' field but access token doesn't. This inconsistency may not be problematic but is inconsistent.",
+          "suggestion": "Consider standardizing token payload structure or documenting the difference."
+        },
+        {
+          "severity": "warning",
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 38,
+          "description": "Session creation uses 'accessExpires' for 'expired_at' field, but refresh token lasts 7 days. Should use 'refreshExpires' for session expiration.",
+          "suggestion": "Change session.expired_at to refreshExpires to match refresh token lifetime."
         },
         {
           "severity": "warning",
           "type": "logic-error",
           "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
-          "line": 80,
-          "description": "The guest session creation doesn't include access_token and refresh_token fields in the session record, but guest refresh endpoint expects them. This will cause guest refresh to fail.",
-          "suggestion": "Add access_token and refresh_token fields to the guest session creation data"
+          "line": 79,
+          "description": "Response includes duplicate token fields: 'access', 'refresh', 'expired_at' at root level AND nested inside 'token' object. This is redundant.",
+          "suggestion": "Remove duplicate root-level fields or restructure response to be consistent with member auth responses."
         },
         {
           "severity": "warning",
-          "type": "incomplete",
+          "type": "logic-error",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
+          "line": 44,
+          "description": "OrderBy clause uses 'as any' cast for NULLS LAST handling. This is a type safety issue and may not work as intended.",
+          "suggestion": "Implement proper Prisma orderBy with nulls handling or use raw query if needed."
+        },
+        {
+          "severity": "warning",
+          "type": "edge-case",
           "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Multiple unused imports across files: IEntity, IMultiUserTodoTodoEditHistory, ArrayUtil, jwt, typia, PasswordUtil, toISOStringSafe are imported but not used in many files.",
-          "suggestion": "Remove unused imports to clean up code and improve maintainability"
+          "line": 30,
+          "description": "Date validation doesn't handle case where only one date is updated (e.g., only due_date provided). Could result in comparing new date with null.",
+          "suggestion": "Add null checks: only validate if both newStartDate and newDueDate are not null."
         },
         {
           "severity": "warning",
-          "type": "inconsistent-naming",
-          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
-          "line": 80,
-          "description": "Inconsistent property naming: guest session creation uses 'multi_user_todo_guest_id' but refresh endpoint queries with 'multi_user_todo_guest_id'. This appears consistent but should be verified against Prisma schema.",
-          "suggestion": "Verify that all property names match the Prisma schema exactly"
+          "type": "edge-case",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 30,
+          "description": "Session validation checks 'expired_at > new Date()' but doesn't update session expiration after refresh. Old session expiration remains.",
+          "suggestion": "Update session.expired_at to new refreshExpires date when refreshing tokens."
         },
         {
           "severity": "suggestion",
-          "type": "dead-code",
-          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Unused imports detected across multiple files: IEntity, IMultiUserTodoTodoEditHistory, ArrayUtil, jwt, typia, PasswordUtil, toISOStringSafe are imported but not used in their respective files.",
-          "suggestion": "Remove all unused imports to improve code clarity"
+          "type": "inconsistent-naming",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 13,
+          "description": "Parameter name 'displayName' in IJoin interface (props.body.displayName) doesn't match database field 'display_name'. Code uses 'displayName' but Prisma expects 'display_name'.",
+          "suggestion": "Ensure consistent naming between API interface and database schema."
         }
       ],
       "score": 70,
-      "summary": "The code shows a generally well-structured NestJS + Prisma implementation with proper authentication flows and business logic. However, there are critical hallucinations with '@prisma/sdk' imports across all provider files, which would cause runtime failures. The logic errors in token handling and missing session fields could lead to authentication issues. The code follows AutoBE conventions correctly with prefixed table names and proper type usage.",
-      "durationMs": 216846,
+      "summary": "Code shows functional implementation with proper authentication, authorization, and CRUD operations. However, there are critical hallucinations (wrong Prisma import) across all files and numerous unused imports suggesting copy-paste boilerplate. Logic errors exist in token handling and date comparisons. Overall structure is good but needs cleanup and bug fixes.",
+      "durationMs": 153747,
       "tokensUsed": {
         "input": 18522,
-        "output": 2623,
+        "output": 4197,
         "inputCost": 0.0055566,
-        "outputCost": 0.00230824
+        "outputCost": 0.00369336
       }
     },
     {
@@ -1136,58 +1288,66 @@
       "issues": [
         {
           "severity": "critical",
-          "type": "phantom-endpoint",
-          "file": "src/providers/postMultiUserTodoMemberTodosTodoIdToggle.ts",
-          "line": 1,
-          "description": "Endpoint POST /member/todos/{todoId}/toggle has no corresponding operation in the provided OpenAPI specification. The spec does not define a toggle operation for todo completion.",
-          "suggestion": "Remove this endpoint unless it's defined in the OpenAPI spec. Todo completion should be updated via PATCH /member/todos/{todoId} with a completed field."
+          "type": "spec-mismatch",
+          "file": "src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+          "line": 88,
+          "description": "Controller uses PATCH method for listing todos (index route) which is unconventional for read operations. Typically GET is used for listing resources. This could be a spec mismatch if the OpenAPI spec defines GET for listing.",
+          "suggestion": "Change to @TypedRoute.Get() if the spec defines GET for listing todos, or verify the spec defines PATCH for listing."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 89,
+          "description": "The provider creates multiple edit history entries (one per changed field) instead of a single history entry per edit. The Prisma schema suggests each edit creates one history entry with all changed fields. The current implementation creates separate entries for each field change.",
+          "suggestion": "Create a single edit history entry with all changed fields (old/new values) rather than multiple entries per field."
         },
         {
           "severity": "critical",
           "type": "phantom-endpoint",
           "file": "src/providers/patchMultiUserTodoMemberTodosTrash.ts",
           "line": 1,
-          "description": "Endpoint PATCH /member/todos/trash has no corresponding operation in the provided OpenAPI specification. The spec does not define a separate endpoint for listing trashed todos.",
-          "suggestion": "Remove this endpoint unless it's defined in the OpenAPI spec. Trash listing should be part of the main todo list endpoint with a deleted_at filter parameter."
+          "description": "PATCH /multi-user-todo/member/todos/trash is a phantom endpoint - no corresponding OpenAPI path exists for this operation. The spec defines trash operations as separate endpoints (restore, permanent delete) but not a PATCH to list trash items.",
+          "suggestion": "Remove this endpoint or verify if it should exist in the OpenAPI spec."
         },
         {
           "severity": "critical",
           "type": "phantom-endpoint",
-          "file": "src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistory.ts",
           "line": 1,
-          "description": "Endpoint DELETE /member/todos/trash/{todoId} has no corresponding operation in the provided OpenAPI specification. The spec does not define a separate endpoint for permanent deletion from trash.",
-          "suggestion": "Remove this endpoint unless it's defined in the OpenAPI spec. Permanent deletion should be handled via DELETE /member/todos/{todoId} with appropriate trash state validation."
+          "description": "PATCH /multi-user-todo/member/todos/{todoId}/history is a phantom endpoint - no corresponding OpenAPI path exists for this operation. History retrieval should be a GET request, not PATCH.",
+          "suggestion": "Change to GET method or remove if not in spec."
         },
         {
           "severity": "warning",
           "type": "spec-mismatch",
-          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
-          "line": 1,
-          "description": "The refresh endpoint returns IMultiUserTodoMember.IAuthorized but the spec might define a different response structure for token refresh operations.",
-          "suggestion": "Verify the OpenAPI spec for the exact response structure of the refresh endpoint."
-        },
-        {
-          "severity": "suggestion",
-          "type": "invented-logic",
           "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
           "line": 1,
-          "description": "The guest join endpoint implements complex logic for handling existing guests (restoring soft-deleted guests) that may not be specified in the OpenAPI spec.",
-          "suggestion": "Simplify to just create new guest records unless the spec explicitly defines restoration behavior."
+          "description": "POST /multi-user-todo/auth/guest/join returns IMultiUserTodoGuest.IAuthorized but the response structure includes duplicate token fields (access, refresh, expired_at at root AND nested in token object). This creates an inconsistent API response pattern.",
+          "suggestion": "Standardize response format to match other auth endpoints (member login/join) which only return token object, not duplicate fields."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 1,
+          "description": "POST /multi-user-todo/auth/guest/refresh returns IMultiUserTodoGuest.IAuthorized with the same duplicate token field issue as guest join endpoint.",
+          "suggestion": "Fix response format to be consistent with member refresh endpoint structure."
         }
       ],
-      "score": 88,
-      "summary": "[2 chunks, 8→5 issues] No hallucinations detected. All controller endpoints correspond to OpenAPI operations (join/login/refresh for auth; create, index, at, update, erase, toggle, restore for todos; profile update; trash index and erase; history index and at). No fabricated fields or wrong relations observed. The code faithfully implements the Prisma schema and expected behavior.",
-      "durationMs": 26954,
+      "score": 90,
+      "summary": "[2 chunks, 9→6 issues] Minimal hallucinations detected. The implementation is highly faithful to the Prisma schema with correct field usage and relations. The main issues are unconventional HTTP methods (PATCH for listing) which may be spec mismatches, and a minor logic issue with edit history creation. No phantom endpoints or fabricated fields found.",
+      "durationMs": 50741,
       "tokensUsed": {
-        "input": 34972,
-        "output": 1184,
-        "inputCost": 0.0104916,
-        "outputCost": 0.00104192
+        "input": 34964,
+        "output": 1377,
+        "inputCost": 0.0104892,
+        "outputCost": 0.00121176
       },
       "deepEvalScores": {
-        "faithfulness": 85,
-        "relevancy": 93,
-        "contextualPrecision": 90
+        "faithfulness": 93,
+        "relevancy": 88,
+        "contextualPrecision": 88
       }
     }
   ],
@@ -1195,8 +1355,2599 @@
     "phaseScore": 90,
     "phaseWeight": 0.85,
     "phaseContribution": 77,
-    "agentScore": 77,
+    "agentScore": 78,
     "agentWeight": 0.15,
     "agentContribution": 12
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "type-error-1775674204190-7kjrs05rskp",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.3,
+        "priority": 1,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775674204190-k3vudpucenf",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2345",
+        "message": "Argument of type '{ member: MemberPayload; }' is not assignable to parameter of type '{ member: MemberPayload; query: { page?: number | undefined; limit?: number | undefined; sortBy?: \"created_at\" | \"start_date\" | \"due_date\" | undefined; sortOrder?: \"asc\" | \"desc\" | undefined; }; }'.\n  Property 'query' is missing in type '{ member: MemberPayload; }' but required in type '{ member: MemberPayload; query: { page?: number | undefined; limit?: number | undefined; sortBy?: \"created_at\" | \"start_date\" | \"due_date\" | undefined; sortOrder?: \"asc\" | \"desc\" | undefined; }; }'.",
+        "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
+        "line": 3555,
+        "estimatedImpact": 0.3,
+        "priority": 2,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775674204190-om8jlsss5k9",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2345",
+        "message": "Argument of type 'PrismaPromise<unknown>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'PrismaPromise<unknown>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+        "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 5071,
+        "estimatedImpact": 0.3,
+        "priority": 3,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "completeness-1775674204335-iv9ne44zzm",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Column \"todo\" not found in Prisma model \"multi_user_todo_todos\"",
+        "file": "src/api/structures/IMultiUserTodoTodoEditHistory.ts",
+        "line": 93,
+        "estimatedImpact": 0.3,
+        "priority": 4,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 90,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 91,
+              "text": "   * Summary of the parent todo this edit history entry belongs to.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 92,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 93,
+              "text": "   * @x-autobe-database-schema-property todo",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 94,
+              "text": "   * @x-autobe-specification Join via multi_user_todo_todo_id FK to multi_user_todo_todos.id. Returns ISummary per response DTO convention.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 95,
+              "text": "   */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 96,
+              "text": "  todo: IMultiUserTodoTodo.ISummary;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775674204336-h1iswozbycq",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"IMultiUserTodoMember\" not found — referenced by @x-autobe-database-schema-property member",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 154,
+        "estimatedImpact": 0.3,
+        "priority": 5,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 151,
+              "text": "    /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 152,
+              "text": "     * The member who owns this todo item.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 153,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 154,
+              "text": "     * @x-autobe-database-schema-property member",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 155,
+              "text": "     * @x-autobe-specification Belongs-to relation via multi_user_todo_member_id FK. Returns IMultiUserTodoMember.ISummary. Join from multi_user_todo_todos to multi_user_todo_members.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 156,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 157,
+              "text": "    member: IMultiUserTodoMember.ISummary;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "type-error-1775674204190-yuy6gdykq68",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2724",
+        "message": "'\"src/prisma/client\".Prisma' has no exported member named 'multi_user_todo_todo_edit_historiesCreateWithoutTodoInput'. Did you mean 'multi_user_todo_todo_edit_historiesCreateInput'?",
+        "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 2880,
+        "estimatedImpact": 0.1,
+        "priority": 6,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "complexity-1775674204286-ivrmlf7ggtp",
+        "phase": "quality",
+        "severity": "critical",
+        "code": "C001",
+        "message": "Function \"putMultiUserTodoMemberTodosTodoId\" has complexity 28 (max: 20)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 18,
+        "estimatedImpact": 0.1,
+        "priority": 7,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "export async function putMultiUserTodoMemberTodosTodoId(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 19,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "  body: IMultiUserTodoTodo.IUpdate;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775674204292-e9fwu8znonh",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 16 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
+        "line": 19,
+        "estimatedImpact": 0.1,
+        "priority": 8,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 16,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "export async function patchMultiUserTodoMemberTodos(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 20,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "  body: IMultiUserTodoTodo.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 22,
+              "text": "}): Promise<IPageIMultiUserTodoTodo.ISummary> {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775674204293-097k1fgx81yf",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"getMultiUserTodoMemberTodosTodoIdHistoryHistoryId\" has complexity 16 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/getMultiUserTodoMemberTodosTodoIdHistoryHistoryId.ts",
+        "line": 17,
+        "estimatedImpact": 0.1,
+        "priority": 9,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 14,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "export async function getMultiUserTodoMemberTodosTodoIdHistoryHistoryId(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 18,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  historyId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-11olcz76np1",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+        "line": 22,
+        "estimatedImpact": 0.1,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 19,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "}): Promise<IMultiUserTodoTodo> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 22,
+              "text": "  // Find the todo that is in trash (deleted_at is NOT null)",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 23,
+              "text": "  const todo = await MyGlobal.prisma.multi_user_todo_todos.findUnique({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 24,
+              "text": "    where: { id: props.todoId },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 25,
+              "text": "    select: {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-xvxezv2wmzd",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+        "line": 23,
+        "estimatedImpact": 0.1,
+        "priority": 11,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 20,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "}): Promise<IMultiUserTodoTodo> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 22,
+              "text": "  // Find the todo that is in trash (deleted_at is NOT null)",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 23,
+              "text": "  const todo = await MyGlobal.prisma.multi_user_todo_todos.findUnique({",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 24,
+              "text": "    where: { id: props.todoId },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 25,
+              "text": "    select: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 26,
+              "text": "      id: true,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-hj83l6be1je",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+        "line": 24,
+        "estimatedImpact": 0.1,
+        "priority": 12,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 21,
+              "text": "}): Promise<IMultiUserTodoTodo> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 22,
+              "text": "  // Find the todo that is in trash (deleted_at is NOT null)",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 23,
+              "text": "  const todo = await MyGlobal.prisma.multi_user_todo_todos.findUnique({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 24,
+              "text": "    where: { id: props.todoId },",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 25,
+              "text": "    select: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 26,
+              "text": "      id: true,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 27,
+              "text": "      multi_user_todo_member_id: true,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-kf2vws1xszo",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+        "line": 23,
+        "estimatedImpact": 0.1,
+        "priority": 13,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 20,
+              "text": "    type: string;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "    id: string;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 22,
+              "text": "    session_id: string;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 23,
+              "text": "    created_at: string;",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 24,
+              "text": "  };",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 25,
+              "text": "  try {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 26,
+              "text": "    decoded = jwt.verify(",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-5jjb85qdsfb",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 44,
+        "estimatedImpact": 0.1,
+        "priority": 14,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 41,
+              "text": "  const refreshExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 42,
+              "text": "  const sessionId: string & tags.Format<\"uuid\"> = v4();",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 43,
+              "text": "  const memberId: string & tags.Format<\"uuid\"> = member.id;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 44,
+              "text": "  const accessToken = jwt.sign(",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 45,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "      type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "      id: member.id,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-u7dvqk9jxu9",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 45,
+        "estimatedImpact": 0.1,
+        "priority": 15,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 42,
+              "text": "  const sessionId: string & tags.Format<\"uuid\"> = v4();",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 43,
+              "text": "  const memberId: string & tags.Format<\"uuid\"> = member.id;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 44,
+              "text": "  const accessToken = jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "    {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 46,
+              "text": "      type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "      id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "      session_id: sessionId,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-xnvogolc7wl",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 46,
+        "estimatedImpact": 0.1,
+        "priority": 16,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 43,
+              "text": "  const memberId: string & tags.Format<\"uuid\"> = member.id;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 44,
+              "text": "  const accessToken = jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "      type: \"member\",",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 47,
+              "text": "      id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "      session_id: sessionId,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "      created_at: new Date().toISOString(),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-2i1j8z8uqwp",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 47,
+        "estimatedImpact": 0.1,
+        "priority": 17,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 44,
+              "text": "  const accessToken = jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "      type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "      id: member.id,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 48,
+              "text": "      session_id: sessionId,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "      created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "    },",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-bxjl7k79r49",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 48,
+        "estimatedImpact": 0.1,
+        "priority": 18,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 45,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "      type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "      id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "      session_id: sessionId,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 49,
+              "text": "      created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "    },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "    MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-xmgaa9yeqa",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 49,
+        "estimatedImpact": 0.1,
+        "priority": 19,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 46,
+              "text": "      type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "      id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "      session_id: sessionId,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "      created_at: new Date().toISOString(),",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 50,
+              "text": "    },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "    MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "    { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-r3clska2pa",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 50,
+        "estimatedImpact": 0.1,
+        "priority": 20,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 47,
+              "text": "      id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "      session_id: sessionId,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "      created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "    },",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 51,
+              "text": "    MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "    { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "  );",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-4hqgnez63ve",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 51,
+        "estimatedImpact": 0.1,
+        "priority": 21,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 48,
+              "text": "      session_id: sessionId,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "      created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "    },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "    MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 52,
+              "text": "    { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "  );",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "  const refreshToken = jwt.sign(",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-wn4e5hjakgn",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 52,
+        "estimatedImpact": 0.1,
+        "priority": 22,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 49,
+              "text": "      created_at: new Date().toISOString(),",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "    },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "    MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "    { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 53,
+              "text": "  );",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "  const refreshToken = jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-pbvacw0zpm",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 53,
+        "estimatedImpact": 0.1,
+        "priority": 23,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 50,
+              "text": "    },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "    MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "    { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "  );",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 54,
+              "text": "  const refreshToken = jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "      type: \"member\",",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-bgz92nzjc3w",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 54,
+        "estimatedImpact": 0.1,
+        "priority": 24,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 51,
+              "text": "    MyGlobal.env.JWT_SECRET_KEY,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "    { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "  );",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "  const refreshToken = jwt.sign(",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 55,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "      type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "      id: member.id,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-8sz4wjjrji",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 55,
+        "estimatedImpact": 0.1,
+        "priority": 25,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 52,
+              "text": "    { expiresIn: \"1h\", issuer: \"autobe\" },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 53,
+              "text": "  );",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "  const refreshToken = jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 56,
+              "text": "      type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "      id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "      session_id: sessionId,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-q26l4wh6ku",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 56,
+        "estimatedImpact": 0.1,
+        "priority": 26,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 53,
+              "text": "  );",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 54,
+              "text": "  const refreshToken = jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "      type: \"member\",",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 57,
+              "text": "      id: member.id,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 58,
+              "text": "      session_id: sessionId,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "      tokenType: \"refresh\",",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-0cab9hzdzm3",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+        "line": 57,
+        "estimatedImpact": 0.1,
+        "priority": 27,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 54,
+              "text": "  const refreshToken = jwt.sign(",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 55,
+              "text": "    {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 56,
+              "text": "      type: \"member\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 57,
+              "text": "      id: member.id,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 58,
+              "text": "      session_id: sessionId,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 59,
+              "text": "      tokenType: \"refresh\",",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 60,
+              "text": "      created_at: new Date().toISOString(),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-hnymk41vvyl",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
+        "line": 47,
+        "estimatedImpact": 0.1,
+        "priority": 28,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 44,
+              "text": "  const total = await MyGlobal.prisma.multi_user_todo_todos.count({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "  return {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 48,
+              "text": "    pagination: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "      current: page,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "      limit: limit,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-xjfkg9p3q09",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
+        "line": 48,
+        "estimatedImpact": 0.1,
+        "priority": 29,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 45,
+              "text": "    where: whereInput,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "  return {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "    pagination: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 49,
+              "text": "      current: page,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 50,
+              "text": "      limit: limit,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "      records: total,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-72lvajr7psj",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
+        "line": 49,
+        "estimatedImpact": 0.1,
+        "priority": 30,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 46,
+              "text": "  });",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 47,
+              "text": "  return {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 48,
+              "text": "    pagination: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 49,
+              "text": "      current: page,",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 50,
+              "text": "      limit: limit,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 51,
+              "text": "      records: total,",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 52,
+              "text": "      pages: Math.ceil(total / limit),",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-iz7a4k4vfae",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+        "line": 8,
+        "estimatedImpact": 0.1,
+        "priority": 31,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 5,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 6,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-oom5ja5a9h",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 32,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-15rx396qa55",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 33,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-52y8q7geum",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 34,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "export async function deleteMultiUserTodoMemberTodosTrashTodoId(props: {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-15vzuwaxhkw",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 35,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "export async function deleteMultiUserTodoMemberTodosTrashTodoId(props: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-0fqk8p1x9u4h",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+        "line": 13,
+        "estimatedImpact": 0.1,
+        "priority": 36,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 10,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 14,
+              "text": "export async function deleteMultiUserTodoMemberTodosTrashTodoId(props: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-j5fxoi1yrc",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+        "line": 14,
+        "estimatedImpact": 0.1,
+        "priority": 37,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 11,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "export async function deleteMultiUserTodoMemberTodosTrashTodoId(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 15,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "}): Promise<void> {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-irgh5acdef",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+        "line": 15,
+        "estimatedImpact": 0.1,
+        "priority": 38,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 12,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "export async function deleteMultiUserTodoMemberTodosTrashTodoId(props: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "  member: MemberPayload;",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 16,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "}): Promise<void> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "  // Find the todo and verify it exists in trash (deleted_at NOT NULL)",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-3y27gv9xy5x",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
+        "line": 16,
+        "estimatedImpact": 0.1,
+        "priority": 39,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 13,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "export async function deleteMultiUserTodoMemberTodosTrashTodoId(props: {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 17,
+              "text": "}): Promise<void> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "  // Find the todo and verify it exists in trash (deleted_at NOT NULL)",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  const todo = await MyGlobal.prisma.multi_user_todo_todos.findUniqueOrThrow({",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775674204328-i386qk3naeq",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 40,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { postMultiUserTodoAuthGuestJoin } from \"../../../../providers/postMultiUserTodoAuthGuestJoin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthGuestRefresh } from \"../../../../providers/postMultiUserTodoAuthGuestRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/multiUserTodo/auth/guest\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class MultiusertodoAuthGuestController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Guest user registration endpoint that creates a new guest account or restores an existing one based on device identifier.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775674204329-h48enqe2178",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+        "line": 17,
+        "estimatedImpact": 0.1,
+        "priority": 41,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 14,
+              "text": "import { postMultiUserTodoMemberTodosTodoIdToggle } from \"../../../../providers/postMultiUserTodoMemberTodosTodoIdToggle\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { putMultiUserTodoMemberTodosTodoId } from \"../../../../providers/putMultiUserTodoMemberTodosTodoId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "@Controller(\"/multiUserTodo/member/todos\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 18,
+              "text": "export class MultiusertodoMemberTodosController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "   * Create a new todo item for the authenticated member.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775674204328-j3ua23k4pq",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 42,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { putMultiUserTodoMemberProfile } from \"../../../../providers/putMultiUserTodoMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/profile\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberProfileController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Update the authenticated member's profile with a new display name.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775674204328-3b5ml5ao3jy",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 43,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthMemberLogin } from \"../../../../providers/postMultiUserTodoAuthMemberLogin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoAuthMemberRefresh } from \"../../../../providers/postMultiUserTodoAuthMemberRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/auth/member\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoAuthMemberController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Creates a new member account for user registration.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775674204329-mfv2w09y68h",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosTrashController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
+        "line": 11,
+        "estimatedImpact": 0.1,
+        "priority": 44,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 8,
+              "text": "import { deleteMultiUserTodoMemberTodosTrashTodoId } from \"../../../../../providers/deleteMultiUserTodoMemberTodosTrashTodoId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "import { patchMultiUserTodoMemberTodosTrash } from \"../../../../../providers/patchMultiUserTodoMemberTodosTrash\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "@Controller(\"/multiUserTodo/member/todos/trash\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 12,
+              "text": "export class MultiusertodoMemberTodosTrashController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "   * Retrieve a paginated list of soft-deleted todos for the authenticated member.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775674204329-kfznfrft8mj",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosHistoryController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/history/MultiusertodoMemberTodosHistoryController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 45,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getMultiUserTodoMemberTodosTodoIdHistoryHistoryId } from \"../../../../../providers/getMultiUserTodoMemberTodosTodoIdHistoryHistoryId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchMultiUserTodoMemberTodosTodoIdHistory } from \"../../../../../providers/patchMultiUserTodoMemberTodosTodoIdHistory\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/multiUserTodo/member/todos/:todoId/history\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class MultiusertodoMemberTodosHistoryController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve the edit history of a specific todo with pagination and optional filtering.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "totalPotentialGain": 5.5,
+    "topFixes": [
+      {
+        "issueId": "type-error-1775674204190-7kjrs05rskp",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.3,
+        "priority": 1,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775674204190-k3vudpucenf",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2345",
+        "message": "Argument of type '{ member: MemberPayload; }' is not assignable to parameter of type '{ member: MemberPayload; query: { page?: number | undefined; limit?: number | undefined; sortBy?: \"created_at\" | \"start_date\" | \"due_date\" | undefined; sortOrder?: \"asc\" | \"desc\" | undefined; }; }'.\n  Property 'query' is missing in type '{ member: MemberPayload; }' but required in type '{ member: MemberPayload; query: { page?: number | undefined; limit?: number | undefined; sortBy?: \"created_at\" | \"start_date\" | \"due_date\" | undefined; sortOrder?: \"asc\" | \"desc\" | undefined; }; }'.",
+        "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
+        "line": 3555,
+        "estimatedImpact": 0.3,
+        "priority": 2,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775674204190-om8jlsss5k9",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2345",
+        "message": "Argument of type 'PrismaPromise<unknown>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'PrismaPromise<unknown>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+        "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 5071,
+        "estimatedImpact": 0.3,
+        "priority": 3,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "completeness-1775674204335-iv9ne44zzm",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Column \"todo\" not found in Prisma model \"multi_user_todo_todos\"",
+        "file": "src/api/structures/IMultiUserTodoTodoEditHistory.ts",
+        "line": 93,
+        "estimatedImpact": 0.3,
+        "priority": 4,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 90,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 91,
+              "text": "   * Summary of the parent todo this edit history entry belongs to.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 92,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 93,
+              "text": "   * @x-autobe-database-schema-property todo",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 94,
+              "text": "   * @x-autobe-specification Join via multi_user_todo_todo_id FK to multi_user_todo_todos.id. Returns ISummary per response DTO convention.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 95,
+              "text": "   */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 96,
+              "text": "  todo: IMultiUserTodoTodo.ISummary;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775674204336-h1iswozbycq",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC002",
+        "message": "Prisma model \"IMultiUserTodoMember\" not found — referenced by @x-autobe-database-schema-property member",
+        "file": "src/api/structures/IMultiUserTodoTodo.ts",
+        "line": 154,
+        "estimatedImpact": 0.3,
+        "priority": 5,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 151,
+              "text": "    /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 152,
+              "text": "     * The member who owns this todo item.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 153,
+              "text": "     *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 154,
+              "text": "     * @x-autobe-database-schema-property member",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 155,
+              "text": "     * @x-autobe-specification Belongs-to relation via multi_user_todo_member_id FK. Returns IMultiUserTodoMember.ISummary. Join from multi_user_todo_todos to multi_user_todo_members.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 156,
+              "text": "     */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 157,
+              "text": "    member: IMultiUserTodoMember.ISummary;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "type-error-1775674204190-yuy6gdykq68",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2724",
+        "message": "'\"src/prisma/client\".Prisma' has no exported member named 'multi_user_todo_todo_edit_historiesCreateWithoutTodoInput'. Did you mean 'multi_user_todo_todo_edit_historiesCreateInput'?",
+        "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 2880,
+        "estimatedImpact": 0.1,
+        "priority": 6,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "complexity-1775674204286-ivrmlf7ggtp",
+        "phase": "quality",
+        "severity": "critical",
+        "code": "C001",
+        "message": "Function \"putMultiUserTodoMemberTodosTodoId\" has complexity 28 (max: 20)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 18,
+        "estimatedImpact": 0.1,
+        "priority": 7,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "export async function putMultiUserTodoMemberTodosTodoId(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 19,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "  body: IMultiUserTodoTodo.IUpdate;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775674204292-e9fwu8znonh",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 16 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
+        "line": 19,
+        "estimatedImpact": 0.1,
+        "priority": 8,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 16,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "export async function patchMultiUserTodoMemberTodos(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 20,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "  body: IMultiUserTodoTodo.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 22,
+              "text": "}): Promise<IPageIMultiUserTodoTodo.ISummary> {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775674204293-097k1fgx81yf",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"getMultiUserTodoMemberTodosTodoIdHistoryHistoryId\" has complexity 16 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/getMultiUserTodoMemberTodosTodoIdHistoryHistoryId.ts",
+        "line": 17,
+        "estimatedImpact": 0.1,
+        "priority": 9,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 14,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "export async function getMultiUserTodoMemberTodosTodoIdHistoryHistoryId(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 18,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  historyId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775674204321-11olcz76np1",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
+        "line": 22,
+        "estimatedImpact": 0.1,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 19,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "}): Promise<IMultiUserTodoTodo> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 22,
+              "text": "  // Find the todo that is in trash (deleted_at is NOT null)",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 23,
+              "text": "  const todo = await MyGlobal.prisma.multi_user_todo_todos.findUnique({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 24,
+              "text": "    where: { id: props.todoId },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 25,
+              "text": "    select: {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "penaltyRecovery": [
+      {
+        "type": "jsdoc",
+        "currentPenalty": 4,
+        "description": "Add JSDoc to 6 missing APIs (86%) to recover up to 4 points"
+      },
+      {
+        "type": "schemaSync",
+        "currentPenalty": 1,
+        "description": "Fix 0 empty types and 2 mismatched properties to recover up to 1 points"
+      }
+    ]
   }
 }

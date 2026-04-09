@@ -1,14 +1,14 @@
 {
   "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo",
-  "totalScore": 89,
+  "totalScore": 82,
   "grade": "B",
   "phases": {
     "gate": {
       "phase": "gate",
       "passed": true,
-      "score": 97,
+      "score": 99,
       "maxScore": 100,
-      "weightedScore": 97,
+      "weightedScore": 99,
       "issues": [
         {
           "severity": "warning",
@@ -19,30 +19,90 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774846498374-vycdxxby6fd",
+          "id": "type-error-1775684128455-hyv8oc27vpv",
           "autoFixable": false
         },
         {
-          "severity": "warning",
+          "severity": "suggestion",
           "category": "type-error",
-          "code": "TS2345",
-          "message": "Argument of type '(Promise<{ count: number; }> | Promise<multi_user_todo_app_todos>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<multi_user_todo_app_todos>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
           "location": {
-            "file": "src/providers/deleteMultiUserTodoAppMemberTodosTrashTodoId.ts",
-            "line": 1109
+            "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+            "line": 1717
           },
-          "id": "type-error-1774846498374-83339i5v2em",
+          "id": "type-error-1775684128455-j2ci827lqum",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMemberSessions.ts",
+            "line": 2323
+          },
+          "id": "type-error-1775684128455-zngthgjz9e",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMembers.ts",
+            "line": 1913
+          },
+          "id": "type-error-1775684128455-5wb5lrzbuth",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMembers.ts",
+            "line": 2037
+          },
+          "id": "type-error-1775684128455-d7j9es3dhlq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMembers.ts",
+            "line": 2082
+          },
+          "id": "type-error-1775684128455-42ktqmy0i4w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMembers.ts",
+            "line": 2316
+          },
+          "id": "type-error-1775684128455-5fs6v229y7l",
           "autoFixable": false
         }
       ],
-      "durationMs": 2300,
+      "durationMs": 2801,
       "metrics": {
-        "totalFiles": 80,
+        "totalFiles": 109,
         "filesWithErrors": 0,
         "errorRatio": 0,
-        "penalty": 3,
+        "penalty": 1,
         "typeCriticalCount": 0,
-        "typeWarningCount": 2,
+        "typeWarningCount": 1,
         "prismaCriticalCount": 0,
         "prismaWarningCount": 0,
         "softPass": true
@@ -55,14 +115,17 @@
       "maxScore": 100,
       "weightedScore": 6.090000000000001,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 39,
       "metrics": {
         "hasDocsFolder": true,
         "hasReadme": true,
         "docFileCount": 6,
-        "totalDocLength": 111450,
-        "cached": true,
-        "originalDurationMs": 0
+        "totalDocLength": 123209
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "requirementsCoverage": {
@@ -72,43 +135,157 @@
       "maxScore": 100,
       "weightedScore": 18,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 1,
       "metrics": {
-        "controllerCount": 7,
-        "providerCount": 21,
-        "structureCount": 11,
+        "controllerCount": 11,
+        "providerCount": 30,
+        "structureCount": 15,
         "requirementsDocCount": 6,
         "hasRequirementsDocs": true,
-        "mappedControllers": 7,
+        "mappedControllers": 11,
         "unmappedControllers": 0,
-        "mappingRatio": 1,
-        "cached": true,
-        "originalDurationMs": 0
+        "mappingRatio": 1
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "testCoverage": {
       "phase": "testCoverage",
       "passed": true,
-      "score": 80,
+      "score": 70,
       "maxScore": 100,
-      "weightedScore": 18.400000000000002,
-      "issues": [],
-      "durationMs": 0,
+      "weightedScore": 16.1,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST003",
+          "message": "9/74 test files are stubs or lack assertions",
+          "id": "test-1775684128551-xpwgg0ppgtr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/auth/guest\" has 1 untested route(s): POST /multiUserTodo/auth/guest/join",
+          "id": "test-1775684128555-onr72lakrsf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/auth/member\" has 3 untested route(s): POST /multiUserTodo/auth/member/join, POST /multiUserTodo/auth/member/login, POST /multiUserTodo/auth/member/refresh",
+          "id": "test-1775684128555-jxojez6z069",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/guest/sessions\" has 1 untested route(s): PATCH /multiUserTodo/guest/sessions",
+          "id": "test-1775684128555-veeeqifyxkp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/guests\" has 1 untested route(s): PATCH /multiUserTodo/guests",
+          "id": "test-1775684128555-vw8jcjqgq3j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member/todos\" has 1 untested route(s): GET /multiUserTodo/member/todos/:todoId/history",
+          "id": "test-1775684128555-n7nlmcev4tc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member/trash\" has 2 untested route(s): PATCH /multiUserTodo/member/trash, PUT /multiUserTodo/member/trash/:todoId/restore",
+          "id": "test-1775684128555-hadkldqlxrr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member-email-verifications\" has 2 untested route(s): PATCH /multiUserTodo/member-email-verifications, GET /multiUserTodo/member-email-verifications/:verificationId",
+          "id": "test-1775684128555-q8k4d8r6ddi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member-password-resets\" has 2 untested route(s): PATCH /multiUserTodo/member-password-resets, GET /multiUserTodo/member-password-resets/:resetId",
+          "id": "test-1775684128555-4bnm3mnpmwn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/member-sessions\" has 2 untested route(s): PATCH /multiUserTodo/member-sessions, GET /multiUserTodo/member-sessions/:sessionId",
+          "id": "test-1775684128555-4h3d0s0ud3p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "test",
+          "code": "TEST005",
+          "message": "Controller \"/multiUserTodo/members\" has 1 untested route(s): PATCH /multiUserTodo/members",
+          "id": "test-1775684128555-odzmbe5rs6n",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 11,
       "metrics": {
-        "testCount": 50,
-        "controllerCount": 7,
+        "testCount": 74,
+        "controllerCount": 11,
         "routeAnalysis": true,
-        "totalRoutes": 18,
-        "coveredRoutes": 12,
-        "routeCoveragePercent": 67,
-        "definedMethods": "POST,PUT,PATCH,GET,DELETE",
-        "testedMethods": "POST,PUT,GET,PATCH,DELETE",
-        "controllersAnalyzed": 7,
-        "stubTests": 1,
-        "assertionTests": 49,
-        "runtimeVerified": false,
-        "cached": true,
-        "originalDurationMs": 0
+        "totalRoutes": 27,
+        "coveredRoutes": 11,
+        "routeCoveragePercent": 41,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "POST,GET,PUT,PATCH,DELETE",
+        "controllersAnalyzed": 11,
+        "stubTests": 9,
+        "assertionTests": 65,
+        "runtimeVerified": false
+      },
+      "explanation": {
+        "reasons": [
+          "11 warnings detected",
+          "10x Controller \"/multiUserTodo/auth/guest\" has 1 untested route(s): POST /multiUserTodo/auth/guest/join",
+          "1x 9/74 test files are stubs or lack assertions"
+        ],
+        "issueSummaries": [
+          {
+            "code": "TEST005",
+            "count": 10,
+            "message": "Controller \"/multiUserTodo/auth/guest\" has 1 untested route(s): POST /multiUserTodo/auth/guest/join",
+            "severity": "warning"
+          },
+          {
+            "code": "TEST003",
+            "count": 1,
+            "message": "9/74 test files are stubs or lack assertions",
+            "severity": "warning"
+          }
+        ],
+        "suggestions": [
+          "Address warnings to improve quality"
+        ]
       }
     },
     "logicCompleteness": {
@@ -118,7 +295,7 @@
       "maxScore": 100,
       "weightedScore": 30,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 22,
       "metrics": {
         "totalIncomplete": 0,
         "criticalCount": 0,
@@ -126,9 +303,12 @@
         "todoCount": 0,
         "fixmeCount": 0,
         "emptyMethods": 0,
-        "emptyCatch": 0,
-        "cached": true,
-        "originalDurationMs": 0
+        "emptyCatch": 0
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     },
     "apiCompleteness": {
@@ -138,44 +318,99 @@
       "maxScore": 100,
       "weightedScore": 7.000000000000001,
       "issues": [],
-      "durationMs": 0,
+      "durationMs": 24,
       "metrics": {
-        "totalEndpoints": 18,
+        "totalEndpoints": 27,
         "emptyEndpoints": 0,
         "stubEndpoints": 0,
-        "implementedEndpoints": 18,
+        "implementedEndpoints": 27,
         "noProviderEndpoints": 0,
         "passthroughEndpoints": 0,
         "completionRate": 100,
-        "implementationRate": 100,
-        "cached": true,
-        "originalDurationMs": 0
+        "implementationRate": 100
+      },
+      "explanation": {
+        "reasons": [],
+        "issueSummaries": [],
+        "suggestions": []
       }
     }
   },
   "reference": {
     "complexity": {
-      "totalFunctions": 181,
-      "complexFunctions": 0,
-      "maxComplexity": 16,
+      "totalFunctions": 263,
+      "complexFunctions": 1,
+      "maxComplexity": 21,
       "issues": [
         {
           "severity": "warning",
           "category": "complexity",
           "code": "C002",
-          "message": "Function \"patchMultiUserTodoAppMemberTodos\" has complexity 16 (recommended: 15)",
+          "message": "Function \"putMultiUserTodoMemberTodosTodoId\" has complexity 16 (recommended: 15)",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoAppMemberTodos.ts",
-            "line": 17
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+            "line": 16
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774846498435-j2kp9hanrk",
+          "id": "complexity-1775684128592-msagg5eq1li",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchMultiUserTodoMemberSessions\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoMemberSessions.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1775684128598-04nxgx9ns4x4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchMultiUserTodoMemberEmailVerifications\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoMemberEmailVerifications.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1775684128599-9p3996rfdpp",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchMultiUserTodoGuests\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoGuests.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1775684128601-gf6jj04na2d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchMultiUserTodoGuestSessions\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoGuestSessions.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1775684128600-uaiyroxh4vl",
           "autoFixable": false
         }
       ]
     },
     "duplication": {
-      "totalBlocks": 10,
+      "totalBlocks": 5,
       "issues": [
         {
           "severity": "warning",
@@ -183,10 +418,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/MultiusertodoappMemberTodosController.ts",
-            "line": 118
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+            "line": 42
           },
-          "id": "duplication-1774846498467-1vs97q0970q",
+          "id": "duplication-1775684128644-5f4rc190b2",
           "autoFixable": false
         },
         {
@@ -195,22 +430,34 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/MultiusertodoappMemberTodosController.ts",
-            "line": 119
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+            "line": 43
           },
-          "id": "duplication-1774846498467-0gk33zmrhtuh",
+          "id": "duplication-1775684128644-hq652ectbz",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "duplication",
           "code": "D001",
-          "message": "Duplicate code block found in 3 locations",
+          "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+            "line": 88
+          },
+          "id": "duplication-1775684128644-rsdlsxfz0c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
             "line": 12
           },
-          "id": "duplication-1774846498467-55mmrsgdaxn",
+          "id": "duplication-1775684128644-5f55rp0yl8n",
           "autoFixable": false
         },
         {
@@ -219,182 +466,195 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
             "line": 13
           },
-          "id": "duplication-1774846498467-p13fo9iq3kn",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 14
-          },
-          "id": "duplication-1774846498467-uj17y5giydi",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 15
-          },
-          "id": "duplication-1774846498467-adlxxw8ph3",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
-            "line": 16
-          },
-          "id": "duplication-1774846498467-f6b05a73jb",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoId.ts",
-            "line": 29
-          },
-          "id": "duplication-1774846498467-z26v5ga0anj",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoAppMemberTodosTrash.ts",
-            "line": 11
-          },
-          "id": "duplication-1774846498467-38a29t27cq6",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoAppMemberTodosTrash.ts",
-            "line": 12
-          },
-          "id": "duplication-1774846498467-4j0ongmnlt",
+          "id": "duplication-1775684128644-12bneat1v1hh",
           "autoFixable": false
         }
       ]
     },
     "naming": {
-      "totalIssues": 0,
-      "issues": []
+      "totalIssues": 3,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMember_password_resetsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-password-resets/MultiusertodoMember_password_resetsController.ts",
+            "line": 10
+          },
+          "id": "naming-1775684128645-1u1b5tk0m72",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMember_email_verificationsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-email-verifications/MultiusertodoMember_email_verificationsController.ts",
+            "line": 10
+          },
+          "id": "naming-1775684128645-kf2rlr7cga",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMember_sessionsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-sessions/MultiusertodoMember_sessionsController.ts",
+            "line": 10
+          },
+          "id": "naming-1775684128645-i93bppbcps9",
+          "autoFixable": false
+        }
+      ]
     },
     "jsdoc": {
-      "totalMissing": 7,
-      "totalApis": 8,
+      "totalMissing": 11,
+      "totalApis": 12,
       "issues": [
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoappAuthMemberController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMember_password_resetsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/auth/member/MultiusertodoappAuthMemberController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-password-resets/MultiusertodoMember_password_resetsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846498473-kiho7bxb5ql",
+          "id": "jsdoc-1775684128652-esp2coo8oor",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoappAuthGuestController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMember_email_verificationsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/auth/guest/MultiusertodoappAuthGuestController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-email-verifications/MultiusertodoMember_email_verificationsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775684128656-9klw36t9r7e",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoGuestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/guests/MultiusertodoGuestsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775684128655-zrefg4q4539",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMember_sessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-sessions/MultiusertodoMember_sessionsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775684128656-s1ytlfwnyac",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/members/MultiusertodoMembersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775684128656-1b03ev9fars",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1775684128657-q7zzynb3uh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774846498474-4b60incu0pb",
+          "id": "jsdoc-1775684128657-otkh5ogp28c",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoappMemberSessionsController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMemberTrashController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/sessions/MultiusertodoappMemberSessionsController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+            "line": 13
           },
-          "id": "jsdoc-1774846498474-sm1jm639r1",
+          "id": "jsdoc-1775684128657-gw7cpw1b2nb",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoappMemberProfileController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/profile/MultiusertodoappMemberProfileController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1775684128657-drcslva5pbs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846498473-195qcs6ekge",
+          "id": "jsdoc-1775684128658-z5bwqtjyuuj",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoappMemberTodosController\" missing JSDoc",
+          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/MultiusertodoappMemberTodosController.ts",
-            "line": 17
-          },
-          "id": "jsdoc-1774846498475-ga3oklxdrlc",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoappMemberTodosTrashController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/trash/MultiusertodoappMemberTodosTrashController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774846498474-6erqbfqsoot",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoappMemberTodosHistoryController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/history/MultiusertodoappMemberTodosHistoryController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774846498474-4a5qhxmhi9",
+          "id": "jsdoc-1775684128658-lixbbxjeqn",
           "autoFixable": false
         }
       ]
     },
     "schemaSync": {
-      "totalTypes": 24,
+      "totalTypes": 38,
       "emptyTypes": 1,
       "mismatchedProperties": 0,
       "issues": [
@@ -404,20 +664,20 @@
           "code": "SYNC001",
           "message": "Empty type alias: IUpdate = {} — missing properties",
           "location": {
-            "file": "src/api/structures/IMultiUserTodoAppMember.ts",
-            "line": 164
+            "file": "src/api/structures/IMultiUserTodoMember.ts",
+            "line": 129
           },
-          "id": "completeness-1774846498478-i6vq8dv8zv",
+          "id": "completeness-1775684128663-ognr1n3fty",
           "autoFixable": false
         }
       ]
     }
   },
   "summary": {
-    "totalIssues": 2,
+    "totalIssues": 9,
     "criticalCount": 0,
-    "warningCount": 2,
-    "suggestionCount": 0
+    "warningCount": 3,
+    "suggestionCount": 6
   },
   "criticalIssues": [],
   "warnings": [
@@ -430,47 +690,2174 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774846498374-vycdxxby6fd",
+      "id": "type-error-1775684128455-hyv8oc27vpv",
       "autoFixable": false
     },
     {
       "severity": "warning",
-      "category": "type-error",
-      "code": "TS2345",
-      "message": "Argument of type '(Promise<{ count: number; }> | Promise<multi_user_todo_app_todos>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<{ count: number; }> | Promise<multi_user_todo_app_todos>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
-      "location": {
-        "file": "src/providers/deleteMultiUserTodoAppMemberTodosTrashTodoId.ts",
-        "line": 1109
-      },
-      "id": "type-error-1774846498374-83339i5v2em",
+      "category": "test",
+      "code": "TEST003",
+      "message": "9/74 test files are stubs or lack assertions",
+      "id": "test-1775684128551-xpwgg0ppgtr",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "test",
+      "code": "TEST005",
+      "message": "Controller \"/multiUserTodo/auth/guest\" has 1 untested route(s): POST /multiUserTodo/auth/guest/join",
+      "id": "test-1775684128555-onr72lakrsf",
       "autoFixable": false
     }
   ],
-  "suggestions": [],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+        "line": 1717
+      },
+      "id": "type-error-1775684128455-j2ci827lqum",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMemberSessions.ts",
+        "line": 2323
+      },
+      "id": "type-error-1775684128455-zngthgjz9e",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMembers.ts",
+        "line": 1913
+      },
+      "id": "type-error-1775684128455-5wb5lrzbuth",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMembers.ts",
+        "line": 2037
+      },
+      "id": "type-error-1775684128455-d7j9es3dhlq",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMembers.ts",
+        "line": 2082
+      },
+      "id": "type-error-1775684128455-42ktqmy0i4w",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMembers.ts",
+        "line": 2316
+      },
+      "id": "type-error-1775684128455-5fs6v229y7l",
+      "autoFixable": false
+    }
+  ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:54:58.478Z",
-    "totalDurationMs": 2394,
-    "estimateVersion": "0.30.4",
-    "evaluatedFiles": 80
+    "evaluatedAt": "2026-04-08T21:35:28.664Z",
+    "totalDurationMs": 2955,
+    "estimateVersion": "0.30.5",
+    "evaluatedFiles": 109
   },
   "penalties": {
     "jsdoc": {
       "amount": 4,
-      "missing": 7,
-      "ratio": "88%"
+      "missing": 11,
+      "ratio": "92%"
     }
   },
   "performanceMetrics": {
-    "totalSizeKB": 235,
-    "totalFiles": 80,
-    "totalLines": 6026,
-    "avgLinesPerFile": 75,
-    "largestFile": "src/api/functional/multiUserTodoApp/member/todos/index.ts",
-    "largestFileSizeKB": 30,
-    "controllers": 7,
-    "providers": 21,
-    "structures": 11,
+    "totalSizeKB": 381,
+    "totalFiles": 109,
+    "totalLines": 9635,
+    "avgLinesPerFile": 88,
+    "largestFile": "src/api/structures/IMultiUserTodoTodo.ts",
+    "largestFileSizeKB": 24,
+    "controllers": 11,
+    "providers": 30,
+    "structures": 15,
     "tests": 0
   },
-  "agentEvaluations": []
+  "agentEvaluations": [
+    {
+      "agent": "SecurityAgent",
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4-6",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/multiUserTodo/member-sessions/MultiusertodoMember_sessionsController.ts",
+          "line": 47,
+          "description": "Both endpoints (PATCH / and GET /:sessionId) have no authentication guard. The specification comments say 'x-autobe-authorization-type: null' but the description explicitly states 'Requires valid authentication' and 'Users can only view their own sessions'. Without a guard, any unauthenticated caller can list or retrieve session records including IP addresses, referrers, and session metadata.",
+          "suggestion": "Apply a MemberAuth or equivalent guard decorator to both endpoints. The index endpoint also accepts an optional member_id filter but has no enforcement that the caller can only filter their own sessions — add server-side ownership enforcement in the provider."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/multiUserTodo/member-email-verifications/MultiusertodoMember_email_verificationsController.ts",
+          "line": 44,
+          "description": "Both endpoints expose email verification tokens (including the raw token value, email addresses, and member associations) with no authentication guard. The specification states 'only authenticated admin users can access this endpoint' and 'Authentication is required', but no guard is applied. Any unauthenticated caller can enumerate verification tokens and email addresses.",
+          "suggestion": "Apply an admin-level authentication guard to both endpoints. This data is particularly sensitive as it exposes email addresses and verification tokens that could be used to hijack account verification flows."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/controllers/multiUserTodo/guests/MultiusertodoGuestsController.ts",
+          "line": 55,
+          "description": "GET /:guestId returns complete guest data including fingerprint_hash, user_agent, and ip_address with no authentication guard. The specification explicitly states 'Requires valid authentication token with admin privileges' and '403 Forbidden if caller does not have admin privileges', but no guard is implemented. PATCH / (index) also has no guard and exposes guest session data.",
+          "suggestion": "Apply an admin-level authentication guard to both endpoints. The GET endpoint in particular exposes PII (IP address, user agent) without any access control."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 47,
+          "description": "The refresh token validation does not check whether the session has expired (expired_at <= now). It only checks that the session exists and the guest is not deleted. An expired session's refresh token can still be used to generate new valid tokens indefinitely.",
+          "suggestion": "Add an expiration check: include `expired_at: { gt: new Date() }` in the session findFirst query, similar to how guestAuthorize.ts validates sessions."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 28,
+          "description": "The profile update provider ignores the display_name field from the request body entirely. The UPDATE statement only sets updated_at but does not apply the new display_name value. This is a logic bug that also has a security implication: the endpoint accepts and validates input but silently discards it, potentially masking injection attempts while not performing the intended operation.",
+          "suggestion": "Include `display_name: props.body.display_name` in the Prisma update data object."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 10,
+          "description": "The error message in the ForbiddenException reveals the actual token type: `You're not ${payload.type}`. This leaks information about the token's internal structure (e.g., 'You're not member') to callers, which aids in token type enumeration attacks.",
+          "suggestion": "Use a generic error message such as 'Insufficient permissions' or 'Access denied' without revealing the token type."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
+          "line": 30,
+          "description": "The password reset token search allows filtering by partial token value (`contains: props.body.search`). This enables enumeration of password reset tokens by substring matching. Combined with the missing authentication guard on the corresponding controller endpoint, this is a significant risk.",
+          "suggestion": "Remove the token search/filter capability entirely, or restrict it to exact-match only for admin use cases. Password reset tokens should never be searchable."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+          "line": 50,
+          "description": "Controllers use console.log(error) for error handling. This is the standard AutoBE pattern but does not provide structured logging with request context, user identifiers, or severity levels.",
+          "suggestion": "Consider integrating a structured logging library (e.g., Winston, Pino) with request correlation IDs for production deployments."
+        },
+        {
+          "severity": "suggestion",
+          "type": "insecure-design",
+          "file": "src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+          "line": 1,
+          "description": "No rate limiting is applied to authentication endpoints (join, refresh). These endpoints are susceptible to brute-force and credential stuffing attacks.",
+          "suggestion": "Apply rate limiting at the infrastructure level (API gateway, reverse proxy) or use a NestJS throttling guard (e.g., @nestjs/throttler) on authentication endpoints."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getMultiUserTodoMemberPasswordResetsResetId.ts",
+          "line": 19,
+          "description": "This endpoint retrieves a password reset record by ID without any authentication or authorization check. Any caller can access any user's password reset record by guessing or enumerating UUIDs. Password reset data is sensitive and should be restricted to admins or the owning user.",
+          "suggestion": "Add an admin authorization check (e.g., adminAuthorize) before fetching the record, or validate that the requesting user owns the reset record."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/patchMultiUserTodoMemberSessions.ts",
+          "line": 30,
+          "description": "This endpoint lists member sessions with no authentication or authorization guard. It accepts an optional member_id filter but does not enforce that the caller can only view their own sessions. An unauthenticated caller can enumerate all sessions across all members, exposing session metadata (IPs, expiry times, etc.).",
+          "suggestion": "Require admin authorization for this endpoint, or if it is a member-facing endpoint, enforce that the queried member_id matches the authenticated member's ID."
+        },
+        {
+          "severity": "critical",
+          "type": "security-misconfiguration",
+          "file": "src/providers/patchMultiUserTodoMemberSessions.ts",
+          "line": 75,
+          "description": "The session query includes deeply nested sensitive relations: `member.sessions`, `member.passwordReset`, `member.emailVerifications`, and `member.todos`. This over-fetches sensitive data (all sessions, all password resets, all email verifications) that is likely not needed for a session summary response and may be inadvertently serialized and returned to the caller.",
+          "suggestion": "Replace the broad `include` with a targeted `select` using the `MultiUserTodoMemberSessionAtSummaryTransformer.select()` pattern (as done in `patchMultiUserTodoGuestSessions.ts`) to avoid over-fetching sensitive member data."
+        },
+        {
+          "severity": "critical",
+          "type": "broken-access-control",
+          "file": "src/providers/getMultiUserTodoGuestsGuestId.ts",
+          "line": 19,
+          "description": "This endpoint retrieves a guest record by ID with no authentication or authorization check. Any unauthenticated caller can fetch any guest's data by providing a UUID.",
+          "suggestion": "Add an appropriate authorization check (admin or ownership validation) before returning guest data."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/providers/patchMultiUserTodoGuests.ts",
+          "line": 22,
+          "description": "This endpoint lists all guest records with filtering but has no authentication or authorization guard. Guest listing should be restricted to admins or authorized roles.",
+          "suggestion": "Add an admin authorization check before executing the query."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/patchMultiUserTodoGuests.ts",
+          "line": 44,
+          "description": "The date range search logic parses user-supplied strings (e.g., `searchValue + 'T23:59:59Z'`) and passes them directly as Prisma date filter values without validation. Malformed date strings could cause unexpected query behavior or errors.",
+          "suggestion": "Validate that the parsed date strings are valid ISO 8601 dates before using them in queries. Use `new Date(str)` and check `isNaN(date.getTime())` before passing to Prisma."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 30,
+          "description": "The duplicate email check and member creation are not performed within a database transaction. A race condition (TOCTOU) exists where two concurrent requests with the same email could both pass the uniqueness check and create duplicate accounts.",
+          "suggestion": "Use a unique constraint on the email column in the database schema and handle the unique constraint violation error (Prisma P2002) instead of relying on a pre-check query."
+        },
+        {
+          "severity": "warning",
+          "type": "auth-failures",
+          "file": "src/providers/memberAuthorize.ts",
+          "line": 14,
+          "description": "The error message in the ForbiddenException reveals the actual token type (`payload.type`) to the caller: `You're not ${payload.type}`. This leaks internal token type information to potentially malicious callers.",
+          "suggestion": "Use a generic error message such as 'Forbidden' or 'Insufficient permissions' without revealing internal payload details."
+        },
+        {
+          "severity": "warning",
+          "type": "insecure-design",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 55,
+          "description": "The IP filter uses a `contains` (substring match) query: `whereInput.ip = { contains: props.body.ip }`. This allows partial IP matching (e.g., searching '192.168' matches all IPs in that subnet), which may not be the intended behavior and could expose session data for unintended IP ranges.",
+          "suggestion": "Use an exact match (`equals`) for IP filtering unless partial matching is explicitly required by the business logic."
+        },
+        {
+          "severity": "suggestion",
+          "type": "logging-failures",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 1,
+          "description": "Registration events (successful and failed) are not logged. Audit logging for account creation is important for security monitoring.",
+          "suggestion": "Add structured audit logging for registration attempts, including timestamp, IP address, and outcome."
+        }
+      ],
+      "score": 42,
+      "summary": "[sampled 30/41 files] [2 chunks, 20→19 issues] The codebase has several critical access control failures: session management endpoints, email verification endpoints, and guest management endpoints all lack authentication guards despite their specifications explicitly requiring authentication and admin-level access. This exposes PII (IP addresses, email addresses, user agents) and sensitive security data (verification tokens, session records) to unauthenticated callers. Additionally, the guest token refresh flow does not validate session expiration, allowing indefinitely renewable tokens from expired sessions. The profile update provider silently discards the display_name field. The password reset token search allows substring enumeration of sensitive tokens. The JWT authorization logic and ownership enforcement in guarded endpoints (todos, trash, guest sessions) appear correctly implemented. Overall security posture is poor due to the missing guards on sensitive administrative endpoints.",
+      "durationMs": 36088,
+      "tokensUsed": {
+        "input": 32522,
+        "output": 3483,
+        "inputCost": 0.097566,
+        "outputCost": 0.052245
+      }
+    },
+    {
+      "agent": "LLMQualityAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "hallucination",
+          "file": "src/providers/putMultiUserTodoMemberTrashTodoIdRestore.ts",
+          "line": 1,
+          "description": "Importing from non-existent package '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
+          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/putMultiUserTodoMemberTrashTodoIdRestore.ts",
+          "line": 12,
+          "description": "The query uses 'findUniqueOrThrow' with a compound where clause that includes 'is_deleted: true'. If the todo is not deleted, this will throw a Prisma 'NotFoundError' (P2025) instead of returning a proper 404 error. The error handling is inconsistent with other endpoints.",
+          "suggestion": "Use 'findFirst' to check existence and deletion status, then throw appropriate HttpException with 404 if not found or 400 if not deleted."
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+          "line": 56,
+          "description": "The 'editData' object includes fields like 'old_title', 'new_title', etc., but the Prisma model 'multi_user_todo_todos_edits' likely expects different column names (e.g., 'old_title' vs 'old_title_column'). This is a schema mismatch that will cause a database error.",
+          "suggestion": "Check the actual Prisma schema for the 'multi_user_todo_todos_edits' model and use the correct field names as defined with @map() annotations."
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 20,
+          "description": "The update query only updates 'updated_at' field but doesn't apply any changes from the request body (IMultiUserTodoMember.IUpdate). The function is supposed to update member profile but ignores the input data.",
+          "suggestion": "Include the fields from props.body (like display_name) in the update data object."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
+          "line": 30,
+          "description": "The session creation sets 'expired_at' to 'accessExpiresAt' (string), but the Prisma field likely expects a Date object. Also, the refresh token expiration logic is inconsistent - session expiration should match refresh token expiration (7 days), not access token expiration (1 hour).",
+          "suggestion": "Use Date objects for 'expired_at' and set it to refreshExpiresAt (7 days) to match refresh token lifetime."
+        },
+        {
+          "severity": "warning",
+          "type": "incomplete",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 12,
+          "description": "The fingerprint hash generation uses 'require(\"crypto\")' which is CommonJS syntax, but the file uses ES modules. Also, the hash is cast to 'string & tags.Format<\"uuid\">' but SHA256 hex digest is not a UUID format.",
+          "suggestion": "Use 'import * as crypto from \"crypto\"' and remove the incorrect UUID type assertion for the fingerprint hash."
+        },
+        {
+          "severity": "warning",
+          "type": "copy-paste",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 1,
+          "description": "The function 'patchMultiUserTodoGuestSessions' incorrectly uses 'IMultiUserTodoMemberSession' interfaces and 'multi_user_todo_member_sessions' table instead of guest sessions. This appears to be a copy-paste error from member sessions handler.",
+          "suggestion": "Replace all references to member sessions with guest sessions: use IMultiUserTodoGuestSession interfaces and 'multi_user_todo_guest_sessions' table."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/putMultiUserTodoMemberTrashTodoIdRestore.ts",
+          "line": 1,
+          "description": "Multiple unused imports across all files: IEntity, ArrayUtil, HttpException (already imported), jwt, typia, v4, PasswordUtil, toISOStringSafe. These imports are not used in the function bodies.",
+          "suggestion": "Remove unused imports to clean up the code. This pattern appears in almost all provider files."
+        },
+        {
+          "severity": "suggestion",
+          "type": "naming",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoIdHistory.ts",
+          "line": 30,
+          "description": "Function returns 'IMultiUserTodoTodo.IEditEntry' but fetches multiple records and returns only the first one (records[0]). The function name suggests getting history (plural) but returns a single entry.",
+          "suggestion": "Either change function to return array of edit entries or rename function to indicate it returns the latest/most recent edit entry."
+        },
+        {
+          "severity": "critical",
+          "type": "logic-error",
+          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
+          "line": 20,
+          "description": "Function name 'getMultiUserTodoGuestSessionsSessionId' suggests fetching a guest session, but the query uses 'multi_user_todo_member_sessions' table and returns 'IMultiUserTodoMemberSession'. This is a logic/domain mismatch.",
+          "suggestion": "Either rename the function to reflect it fetches a member session for a guest, or change the query to use the correct guest session table (if it exists)."
+        },
+        {
+          "severity": "warning",
+          "type": "dead-code",
+          "file": "src/providers/getMultiUserTodoMemberPasswordResetsResetId.ts",
+          "line": 1,
+          "description": "Multiple unused imports across files: IEntity, ArrayUtil, HttpException, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe. This indicates copy-paste boilerplate.",
+          "suggestion": "Remove all unused imports to clean up the code."
+        },
+        {
+          "severity": "suggestion",
+          "type": "inconsistent-naming",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 15,
+          "description": "The variable name 'guestSession' uses camelCase, but the Prisma model/table name 'multi_user_todo_guest_sessions' suggests snake_case convention. This is a minor inconsistency.",
+          "suggestion": "Consider aligning variable naming with project conventions, though this is not critical."
+        }
+      ],
+      "score": 68,
+      "summary": "[2 chunks, 42→12 issues] Code has critical hallucination issues with Prisma imports across all files, several logic errors in core functionality, and copy-paste errors. The basic structure follows AutoBE conventions correctly with proper table/model naming, but implementation flaws make the code non-functional as-is.",
+      "durationMs": 258208,
+      "tokensUsed": {
+        "input": 27781,
+        "output": 5055,
+        "inputCost": 0.0083343,
+        "outputCost": 0.0044484
+      }
+    },
+    {
+      "agent": "HallucinationAgent",
+      "provider": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "issues": [
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/multiUserTodo/member-password-resets/MultiusertodoMember_password_resetsController.ts",
+          "line": 1,
+          "description": "Controller has PATCH /multiUserTodo/member-password-resets and GET /multiUserTodo/member-password-resets/:resetId endpoints, but there is no OpenAPI specification provided to verify these operations. Without spec, these appear to be phantom endpoints.",
+          "suggestion": "Remove these endpoints unless they are defined in the OpenAPI specification."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+          "line": 1,
+          "description": "Controller is for guest sessions but uses IMultiUserTodoMemberSession DTOs and references multi_user_todo_member_sessions table. This is a spec mismatch - guest sessions should use guest session models, not member sessions.",
+          "suggestion": "Use IMultiUserTodoGuestSession DTOs and query multi_user_todo_guest_sessions table instead."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+          "line": 1,
+          "description": "The join endpoint creates a guest account with email and password, but the Prisma schema for multi_user_todo_guests has no email or password fields. It only has fingerprint_hash, user_agent, ip_address, status, and timestamps.",
+          "suggestion": "Remove email/password logic for guest creation or update the schema to include these fields."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 30,
+          "description": "The provider updates the member's profile but references a 'display_name' field in the specification comment that does not exist in the Prisma schema. The Prisma schema for multi_user_todo_members has no 'display_name' column.",
+          "suggestion": "Remove the display_name update logic or add the field to the Prisma schema if required."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 12,
+          "description": "The provider uses 'props.body.email' to generate a fingerprint hash, but the IMultiUserTodoGuest.IJoin interface (implied) likely does not include an 'email' field because guests are unauthenticated and identified by device fingerprint. The Prisma schema for multi_user_todo_guests has no email column.",
+          "suggestion": "Remove the email from fingerprint generation; use only device fingerprint data (user_agent, ip, href, referrer)."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 20,
+          "description": "The provider updates only 'updated_at' without any actual profile fields (like display_name). This contradicts the specification comment that describes updating a display_name field.",
+          "suggestion": "Either implement a real profile update (if display_name exists) or remove the endpoint if no profile fields are defined."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 20,
+          "description": "The provider attempts to reactivate a deleted guest if found by fingerprint hash. This business logic (reactivation) is not specified in the Prisma schema or OpenAPI spec.",
+          "suggestion": "Simplify: if guest exists (even deleted), return conflict; do not reactivate."
+        },
+        {
+          "severity": "suggestion",
+          "type": "fabricated-field",
+          "file": "src/providers/patchMultiUserTodoMemberSessions.ts",
+          "line": 70,
+          "description": "The provider includes relations 'passwordReset', 'emailVerifications', 'todos' in the member include, but these are not required for session summary and may be irrelevant.",
+          "suggestion": "Simplify the include to only necessary fields for session summary."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 1,
+          "description": "The function 'patchMultiUserTodoGuestSessions' implements a PATCH endpoint for guest sessions, but the Prisma schema shows no 'multi_user_todo_member_sessions' model belongs to guests. Guest sessions are in 'multi_user_todo_guest_sessions' model. This endpoint fabricates a relationship between guests and member sessions.",
+          "suggestion": "Remove this endpoint or correct it to use the proper 'multi_user_todo_guest_sessions' model if a guest session update operation is intended."
+        },
+        {
+          "severity": "critical",
+          "type": "fabricated-field",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 30,
+          "description": "The function filters 'multi_user_todo_member_sessions' by 'multi_user_todo_member_id: props.guest.id', but guests have their own 'id' field in 'multi_user_todo_guests', not a 'multi_user_todo_member_id'. This field does not exist in the guest context.",
+          "suggestion": "If implementing guest session operations, use the correct model 'multi_user_todo_guest_sessions' and filter by 'multi_user_todo_guest_id'."
+        },
+        {
+          "severity": "critical",
+          "type": "spec-mismatch",
+          "file": "src/providers/getMultiUserTodoMemberSessionsSessionId.ts",
+          "line": 1,
+          "description": "The function 'getMultiUserTodoMemberSessionsSessionId' is accessible without member authentication (no MemberPayload parameter), but the Prisma schema indicates member sessions belong to members and should be accessed only by the owner. This contradicts the expected authorization pattern.",
+          "suggestion": "Add member authentication (MemberPayload) to ensure the session belongs to the requesting member, or implement proper authorization checks."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 40,
+          "description": "The function implements complex filtering (date ranges, IP contains, status based on expired_at) and pagination for guest sessions, but the spec does not define such query capabilities for guest sessions. This appears to be invented business logic.",
+          "suggestion": "Simplify to match spec-defined operations, or ensure such filtering is specified in the OpenAPI."
+        },
+        {
+          "severity": "warning",
+          "type": "invented-logic",
+          "file": "src/providers/getMultiUserTodoMemberTodosTodoIdHistory.ts",
+          "line": 1,
+          "description": "The function 'getMultiUserTodoMemberTodosTodoIdHistory' returns a single 'IEditEntry', but the name suggests a history (plural). The implementation fetches many records but returns only the first. This logic is inconsistent and not clearly specified.",
+          "suggestion": "Clarify if the endpoint should return a list of edit history entries or just the latest. Adjust to match spec."
+        }
+      ],
+      "score": 53,
+      "summary": "[3 chunks, 21→13 issues] All controller endpoints appear to be phantom endpoints since no OpenAPI specification was provided to verify them. Additionally, there are spec mismatches where guest session controllers incorrectly use member session DTOs and tables, and guest auth endpoints reference non-existent email/password fields in the schema.",
+      "durationMs": 33101,
+      "tokensUsed": {
+        "input": 52200,
+        "output": 3139,
+        "inputCost": 0.015659999999999997,
+        "outputCost": 0.00276232
+      },
+      "deepEvalScores": {
+        "faithfulness": 53,
+        "relevancy": 57,
+        "contextualPrecision": 51
+      }
+    }
+  ],
+  "scoreBreakdown": {
+    "phaseScore": 87,
+    "phaseWeight": 0.85,
+    "phaseContribution": 74,
+    "agentScore": 56,
+    "agentWeight": 0.15,
+    "agentContribution": 8
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "test-1775684128551-xpwgg0ppgtr",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST003",
+        "message": "9/74 test files are stubs or lack assertions",
+        "estimatedImpact": 0.4,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-onr72lakrsf",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/auth/guest\" has 1 untested route(s): POST /multiUserTodo/auth/guest/join",
+        "estimatedImpact": 0.4,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-jxojez6z069",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/auth/member\" has 3 untested route(s): POST /multiUserTodo/auth/member/join, POST /multiUserTodo/auth/member/login, POST /multiUserTodo/auth/member/refresh",
+        "estimatedImpact": 0.4,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-veeeqifyxkp",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/guest/sessions\" has 1 untested route(s): PATCH /multiUserTodo/guest/sessions",
+        "estimatedImpact": 0.4,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-vw8jcjqgq3j",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/guests\" has 1 untested route(s): PATCH /multiUserTodo/guests",
+        "estimatedImpact": 0.4,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-n7nlmcev4tc",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos\" has 1 untested route(s): GET /multiUserTodo/member/todos/:todoId/history",
+        "estimatedImpact": 0.4,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-hadkldqlxrr",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/trash\" has 2 untested route(s): PATCH /multiUserTodo/member/trash, PUT /multiUserTodo/member/trash/:todoId/restore",
+        "estimatedImpact": 0.4,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-q8k4d8r6ddi",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member-email-verifications\" has 2 untested route(s): PATCH /multiUserTodo/member-email-verifications, GET /multiUserTodo/member-email-verifications/:verificationId",
+        "estimatedImpact": 0.4,
+        "priority": 8,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-4bnm3mnpmwn",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member-password-resets\" has 2 untested route(s): PATCH /multiUserTodo/member-password-resets, GET /multiUserTodo/member-password-resets/:resetId",
+        "estimatedImpact": 0.4,
+        "priority": 9,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-4h3d0s0ud3p",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member-sessions\" has 2 untested route(s): PATCH /multiUserTodo/member-sessions, GET /multiUserTodo/member-sessions/:sessionId",
+        "estimatedImpact": 0.4,
+        "priority": 10,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-odzmbe5rs6n",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/members\" has 1 untested route(s): PATCH /multiUserTodo/members",
+        "estimatedImpact": 0.4,
+        "priority": 11,
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775684128455-hyv8oc27vpv",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 0.2,
+        "priority": 12,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775684128455-j2ci827lqum",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2694",
+        "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+        "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+        "line": 1717,
+        "estimatedImpact": 0.1,
+        "priority": 13,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775684128455-zngthgjz9e",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2749",
+        "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+        "file": "src/providers/patchMultiUserTodoMemberSessions.ts",
+        "line": 2323,
+        "estimatedImpact": 0.1,
+        "priority": 14,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775684128455-5wb5lrzbuth",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2749",
+        "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+        "file": "src/providers/patchMultiUserTodoMembers.ts",
+        "line": 1913,
+        "estimatedImpact": 0.1,
+        "priority": 15,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775684128455-d7j9es3dhlq",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2749",
+        "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+        "file": "src/providers/patchMultiUserTodoMembers.ts",
+        "line": 2037,
+        "estimatedImpact": 0.1,
+        "priority": 16,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775684128455-42ktqmy0i4w",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2749",
+        "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+        "file": "src/providers/patchMultiUserTodoMembers.ts",
+        "line": 2082,
+        "estimatedImpact": 0.1,
+        "priority": 17,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "type-error-1775684128455-5fs6v229y7l",
+        "phase": "gate",
+        "severity": "suggestion",
+        "code": "TS2749",
+        "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+        "file": "src/providers/patchMultiUserTodoMembers.ts",
+        "line": 2316,
+        "estimatedImpact": 0.1,
+        "priority": 18,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "complexity-1775684128592-msagg5eq1li",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"putMultiUserTodoMemberTodosTodoId\" has complexity 16 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 16,
+        "estimatedImpact": 0.1,
+        "priority": 19,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 13,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "export async function putMultiUserTodoMemberTodosTodoId(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 17,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  body: IMultiUserTodoTodo.IUpdate;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775684128598-04nxgx9ns4x4",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"patchMultiUserTodoMemberSessions\" has complexity 16 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoMemberSessions.ts",
+        "line": 18,
+        "estimatedImpact": 0.1,
+        "priority": 20,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "export async function patchMultiUserTodoMemberSessions(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 19,
+              "text": "  body: IMultiUserTodoMemberSession.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "}): Promise<IPageIMultiUserTodoMemberSession.ISummary> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "  const page = props.body.page ?? 1;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775684128599-9p3996rfdpp",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"patchMultiUserTodoMemberEmailVerifications\" has complexity 19 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoMemberEmailVerifications.ts",
+        "line": 18,
+        "estimatedImpact": 0.1,
+        "priority": 21,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "export async function patchMultiUserTodoMemberEmailVerifications(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 19,
+              "text": "  body: IMultiUserTodoMemberEmailVerification.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "}): Promise<IPageIMultiUserTodoMemberEmailVerification.ISummary> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "  const page = props.body.page ?? props.body.pagination?.page ?? 1;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775684128601-gf6jj04na2d",
+        "phase": "quality",
+        "severity": "critical",
+        "code": "C001",
+        "message": "Function \"patchMultiUserTodoGuests\" has complexity 21 (max: 20)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoGuests.ts",
+        "line": 17,
+        "estimatedImpact": 0.1,
+        "priority": 22,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 14,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "export async function patchMultiUserTodoGuests(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 18,
+              "text": "  body: IMultiUserTodoGuest.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "}): Promise<IPageIMultiUserTodoGuest.ISummary> {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  const page = props.body.page ?? 1;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775684128600-uaiyroxh4vl",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"patchMultiUserTodoGuestSessions\" has complexity 17 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoGuestSessions.ts",
+        "line": 19,
+        "estimatedImpact": 0.1,
+        "priority": 23,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 16,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "export async function patchMultiUserTodoGuestSessions(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 20,
+              "text": "  guest: GuestPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "  body: IMultiUserTodoMemberSession.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 22,
+              "text": "}): Promise<IPageIMultiUserTodoMemberSession.ISummary> {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775684128644-5f4rc190b2",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+        "line": 42,
+        "estimatedImpact": 0.1,
+        "priority": 24,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 39,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 40,
+              "text": "   * Include pagination metadata: total_count, page, limit, total_pages.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 41,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 42,
+              "text": "   * Validate that the authenticated user has permission (always true since filtering by user ID).",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 43,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 44,
+              "text": "   * Return 200 OK with paginated results and metadata. Handle empty trash gracefully with empty array and zero counts.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "   * @nestia Generated by Nestia - https://github.com/samchon/nestia",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775684128644-hq652ectbz",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+        "line": 43,
+        "estimatedImpact": 0.1,
+        "priority": 25,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 40,
+              "text": "   * Include pagination metadata: total_count, page, limit, total_pages.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 41,
+              "text": "   *",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 42,
+              "text": "   * Validate that the authenticated user has permission (always true since filtering by user ID).",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 43,
+              "text": "   *",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 44,
+              "text": "   * Return 200 OK with paginated results and metadata. Handle empty trash gracefully with empty array and zero counts.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 45,
+              "text": "   * @nestia Generated by Nestia - https://github.com/samchon/nestia",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 46,
+              "text": "   */",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775684128644-rsdlsxfz0c",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+        "line": 88,
+        "estimatedImpact": 0.1,
+        "priority": 26,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 85,
+              "text": "  const sessionsCount: number & tags.Type<\"int32\"> =",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 86,
+              "text": "    await MyGlobal.prisma.multi_user_todo_guest_sessions.count({",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 87,
+              "text": "      where: { multi_user_todo_guest_id: guestId },",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 88,
+              "text": "    });",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 89,
+              "text": "  // 8. Construct response",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 90,
+              "text": "  return {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 91,
+              "text": "    id: guest.id,",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775684128644-5f55rp0yl8n",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 27,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import jwt from \"jsonwebtoken\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { MultiUserTodoTodoAtSummaryTransformer } from \"../transformers/MultiUserTodoTodoAtSummaryTransformer\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "duplication-1775684128644-12bneat1v1hh",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "D001",
+        "message": "Duplicate code block found in 2 locations",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
+        "line": 13,
+        "estimatedImpact": 0.1,
+        "priority": 28,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 10,
+              "text": "import typia, { tags } from \"typia\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { v4 } from \"uuid\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { MyGlobal } from \"../MyGlobal\";",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { MemberPayload } from \"../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "import { MultiUserTodoTodoAtSummaryTransformer } from \"../transformers/MultiUserTodoTodoAtSummaryTransformer\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775684128645-1u1b5tk0m72",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"MultiusertodoMember_password_resetsController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-password-resets/MultiusertodoMember_password_resetsController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 29,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { getMultiUserTodoMemberPasswordResetsResetId } from \"../../../providers/getMultiUserTodoMemberPasswordResetsResetId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { patchMultiUserTodoMemberPasswordResets } from \"../../../providers/patchMultiUserTodoMemberPasswordResets\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member-password-resets\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMember_password_resetsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * List and search password reset requests with pagination, filtering, and sorting.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775684128645-kf2rlr7cga",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"MultiusertodoMember_email_verificationsController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-email-verifications/MultiusertodoMember_email_verificationsController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 30,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { getMultiUserTodoMemberEmailVerificationsVerificationId } from \"../../../providers/getMultiUserTodoMemberEmailVerificationsVerificationId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { patchMultiUserTodoMemberEmailVerifications } from \"../../../providers/patchMultiUserTodoMemberEmailVerifications\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member-email-verifications\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMember_email_verificationsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Search and list email verification tokens with filtering and pagination.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "naming-1775684128645-i93bppbcps9",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "N001",
+        "message": "Class \"MultiusertodoMember_sessionsController\" should be PascalCase",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-sessions/MultiusertodoMember_sessionsController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 31,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { getMultiUserTodoMemberSessionsSessionId } from \"../../../providers/getMultiUserTodoMemberSessionsSessionId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { patchMultiUserTodoMemberSessions } from \"../../../providers/patchMultiUserTodoMemberSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member-sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMember_sessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * List all authentication sessions with pagination, filtering, and sorting options.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128652-esp2coo8oor",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMember_password_resetsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-password-resets/MultiusertodoMember_password_resetsController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 32,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { getMultiUserTodoMemberPasswordResetsResetId } from \"../../../providers/getMultiUserTodoMemberPasswordResetsResetId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { patchMultiUserTodoMemberPasswordResets } from \"../../../providers/patchMultiUserTodoMemberPasswordResets\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member-password-resets\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMember_password_resetsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * List and search password reset requests with pagination, filtering, and sorting.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128656-9klw36t9r7e",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMember_email_verificationsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-email-verifications/MultiusertodoMember_email_verificationsController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 33,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { getMultiUserTodoMemberEmailVerificationsVerificationId } from \"../../../providers/getMultiUserTodoMemberEmailVerificationsVerificationId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { patchMultiUserTodoMemberEmailVerifications } from \"../../../providers/patchMultiUserTodoMemberEmailVerifications\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member-email-verifications\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMember_email_verificationsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Search and list email verification tokens with filtering and pagination.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128655-zrefg4q4539",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoGuestsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/guests/MultiusertodoGuestsController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 34,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { getMultiUserTodoGuestsGuestId } from \"../../../providers/getMultiUserTodoGuestsGuestId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { patchMultiUserTodoGuests } from \"../../../providers/patchMultiUserTodoGuests\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/guests\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoGuestsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * List guest sessions with optional filtering and pagination for system monitoring.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128656-s1ytlfwnyac",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMember_sessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member-sessions/MultiusertodoMember_sessionsController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 35,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { getMultiUserTodoMemberSessionsSessionId } from \"../../../providers/getMultiUserTodoMemberSessionsSessionId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { patchMultiUserTodoMemberSessions } from \"../../../providers/patchMultiUserTodoMemberSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member-sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMember_sessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * List all authentication sessions with pagination, filtering, and sorting options.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128656-1b03ev9fars",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMembersController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/members/MultiusertodoMembersController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 36,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { getMultiUserTodoMembersMemberId } from \"../../../providers/getMultiUserTodoMembersMemberId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { patchMultiUserTodoMembers } from \"../../../providers/patchMultiUserTodoMembers\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/members\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMembersController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * List member account records with pagination and filtering support.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128657-q7zzynb3uh",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoGuestSessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 37,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getMultiUserTodoGuestSessionsSessionId } from \"../../../../providers/getMultiUserTodoGuestSessionsSessionId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchMultiUserTodoGuestSessions } from \"../../../../providers/patchMultiUserTodoGuestSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/multiUserTodo/guest/sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class MultiusertodoGuestSessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * List all sessions associated with the authenticated user with pagination and filtering options.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128657-otkh5ogp28c",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 38,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { postMultiUserTodoAuthGuestJoin } from \"../../../../providers/postMultiUserTodoAuthGuestJoin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthGuestRefresh } from \"../../../../providers/postMultiUserTodoAuthGuestRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/multiUserTodo/auth/guest\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class MultiusertodoAuthGuestController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Create a new guest account with email and password.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128657-gw7cpw1b2nb",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTrashController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+        "line": 13,
+        "estimatedImpact": 0.1,
+        "priority": 39,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 10,
+              "text": "import { patchMultiUserTodoMemberTrash } from \"../../../../providers/patchMultiUserTodoMemberTrash\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "import { putMultiUserTodoMemberTrashTodoIdRestore } from \"../../../../providers/putMultiUserTodoMemberTrashTodoIdRestore\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "@Controller(\"/multiUserTodo/member/trash\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 14,
+              "text": "export class MultiusertodoMemberTrashController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "   * List user's deleted todos in trash with pagination, filtering, and sorting options.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128657-drcslva5pbs",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+        "line": 16,
+        "estimatedImpact": 0.1,
+        "priority": 40,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 13,
+              "text": "import { postMultiUserTodoMemberTodos } from \"../../../../providers/postMultiUserTodoMemberTodos\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { putMultiUserTodoMemberTodosTodoId } from \"../../../../providers/putMultiUserTodoMemberTodosTodoId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "@Controller(\"/multiUserTodo/member/todos\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 17,
+              "text": "export class MultiusertodoMemberTodosController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "   * Create a new todo item in the user's todo list.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128658-z5bwqtjyuuj",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 41,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { putMultiUserTodoMemberProfile } from \"../../../../providers/putMultiUserTodoMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/profile\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberProfileController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Update the authenticated user's display name.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775684128658-lixbbxjeqn",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 42,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthMemberLogin } from \"../../../../providers/postMultiUserTodoAuthMemberLogin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoAuthMemberRefresh } from \"../../../../providers/postMultiUserTodoAuthMemberRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/auth/member\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoAuthMemberController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Register a new member account with email and password.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775684128663-ognr1n3fty",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC001",
+        "message": "Empty type alias: IUpdate = {} — missing properties",
+        "file": "src/api/structures/IMultiUserTodoMember.ts",
+        "line": 129,
+        "estimatedImpact": 0.1,
+        "priority": 43,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 126,
+              "text": "   * - Minimum length: 1 character (non-empty)",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 127,
+              "text": "   * - Maximum length: 100 characters",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 128,
+              "text": "   */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 129,
+              "text": "  export type IUpdate = {};",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 130,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 131,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 132,
+              "text": "   * Login request containing email and password credentials for member authentication.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "totalPotentialGain": 7.7,
+    "topFixes": [
+      {
+        "issueId": "test-1775684128551-xpwgg0ppgtr",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST003",
+        "message": "9/74 test files are stubs or lack assertions",
+        "estimatedImpact": 0.4,
+        "priority": 1,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-onr72lakrsf",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/auth/guest\" has 1 untested route(s): POST /multiUserTodo/auth/guest/join",
+        "estimatedImpact": 0.4,
+        "priority": 2,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-jxojez6z069",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/auth/member\" has 3 untested route(s): POST /multiUserTodo/auth/member/join, POST /multiUserTodo/auth/member/login, POST /multiUserTodo/auth/member/refresh",
+        "estimatedImpact": 0.4,
+        "priority": 3,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-veeeqifyxkp",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/guest/sessions\" has 1 untested route(s): PATCH /multiUserTodo/guest/sessions",
+        "estimatedImpact": 0.4,
+        "priority": 4,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-vw8jcjqgq3j",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/guests\" has 1 untested route(s): PATCH /multiUserTodo/guests",
+        "estimatedImpact": 0.4,
+        "priority": 5,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-n7nlmcev4tc",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/todos\" has 1 untested route(s): GET /multiUserTodo/member/todos/:todoId/history",
+        "estimatedImpact": 0.4,
+        "priority": 6,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-hadkldqlxrr",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member/trash\" has 2 untested route(s): PATCH /multiUserTodo/member/trash, PUT /multiUserTodo/member/trash/:todoId/restore",
+        "estimatedImpact": 0.4,
+        "priority": 7,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-q8k4d8r6ddi",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member-email-verifications\" has 2 untested route(s): PATCH /multiUserTodo/member-email-verifications, GET /multiUserTodo/member-email-verifications/:verificationId",
+        "estimatedImpact": 0.4,
+        "priority": 8,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-4bnm3mnpmwn",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member-password-resets\" has 2 untested route(s): PATCH /multiUserTodo/member-password-resets, GET /multiUserTodo/member-password-resets/:resetId",
+        "estimatedImpact": 0.4,
+        "priority": 9,
+        "source": "phase"
+      },
+      {
+        "issueId": "test-1775684128555-4h3d0s0ud3p",
+        "phase": "testCoverage",
+        "severity": "warning",
+        "code": "TEST005",
+        "message": "Controller \"/multiUserTodo/member-sessions\" has 2 untested route(s): PATCH /multiUserTodo/member-sessions, GET /multiUserTodo/member-sessions/:sessionId",
+        "estimatedImpact": 0.4,
+        "priority": 10,
+        "source": "phase"
+      }
+    ],
+    "penaltyRecovery": [
+      {
+        "type": "jsdoc",
+        "currentPenalty": 4,
+        "description": "Add JSDoc to 11 missing APIs (92%) to recover up to 4 points"
+      }
+    ]
+  }
 }

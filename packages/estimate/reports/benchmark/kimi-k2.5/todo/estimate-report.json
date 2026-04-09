@@ -19,11 +19,11 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1775138401424-647ww2kjq3l",
+          "id": "type-error-1775675375702-u347axuuvgj",
           "autoFixable": false
         }
       ],
-      "durationMs": 2888,
+      "durationMs": 2486,
       "metrics": {
         "totalFiles": 87,
         "filesWithErrors": 0,
@@ -157,7 +157,7 @@
             "line": 16
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1775138401540-zzblmxe226m",
+          "id": "complexity-1775675375785-453hv694ki4",
           "autoFixable": false
         },
         {
@@ -170,7 +170,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1775138401544-c93xkji6hp5",
+          "id": "complexity-1775675375789-tgwds9nqcz9",
           "autoFixable": false
         }
       ]
@@ -196,7 +196,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1775138401577-6b2fpwaggk3",
+          "id": "jsdoc-1775675375826-v02m5wlf5t",
           "autoFixable": false
         },
         {
@@ -208,7 +208,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1775138401577-4e67omlj7eb",
+          "id": "jsdoc-1775675375826-u285q5zcs7",
           "autoFixable": false
         },
         {
@@ -220,7 +220,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1775138401577-mguv2b5poj",
+          "id": "jsdoc-1775675375826-mlql734lxcl",
           "autoFixable": false
         },
         {
@@ -232,7 +232,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
             "line": 15
           },
-          "id": "jsdoc-1775138401578-vpwl1p8uqpc",
+          "id": "jsdoc-1775675375827-nui1o20b4pa",
           "autoFixable": false
         },
         {
@@ -244,7 +244,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1775138401577-1n3lway2s0h",
+          "id": "jsdoc-1775675375827-u2voepgqeio",
           "autoFixable": false
         },
         {
@@ -256,19 +256,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1775138401578-mok6wupqc3",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberPasswordController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/password/MultiusertodoMemberPasswordController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1775138401578-uzn8m2va3hc",
+          "id": "jsdoc-1775675375827-rou1g19qy4m",
           "autoFixable": false
         },
         {
@@ -280,7 +268,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/account/MultiusertodoMemberAccountController.ts",
             "line": 9
           },
-          "id": "jsdoc-1775138401578-s6rrgm7lmo",
+          "id": "jsdoc-1775675375827-5oj0f2dsogl",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberPasswordController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/password/MultiusertodoMemberPasswordController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1775675375827-as38t2i7yur",
           "autoFixable": false
         },
         {
@@ -292,7 +292,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/histories/MultiusertodoMemberTodosHistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1775138401579-tfpwkdvq82a",
+          "id": "jsdoc-1775675375828-47bzavj0qon",
           "autoFixable": false
         }
       ]
@@ -311,7 +311,7 @@
             "file": "src/api/structures/IMultiUserTodoMember.ts",
             "line": 136
           },
-          "id": "completeness-1775138401582-molnldhg2ys",
+          "id": "completeness-1775675375834-4ze643m4npg",
           "autoFixable": false
         }
       ]
@@ -334,14 +334,14 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1775138401424-647ww2kjq3l",
+      "id": "type-error-1775675375702-u347axuuvgj",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-04-02T14:00:01.583Z",
-    "totalDurationMs": 2971,
+    "evaluatedAt": "2026-04-08T19:09:35.834Z",
+    "totalDurationMs": 2572,
     "estimateVersion": "0.30.5",
     "evaluatedFiles": 87
   },
@@ -374,139 +374,139 @@
           "severity": "critical",
           "type": "cryptographic-failures",
           "file": "src/providers/putMultiUserTodoMemberPassword.ts",
-          "line": 30,
-          "description": "Password comparison uses hash-then-compare instead of bcrypt.compare(). The code hashes the provided current_password and compares the resulting hash string directly with the stored hash. This is incorrect for bcrypt because bcrypt generates a new random salt each time, so two hashes of the same password will never be equal. This means password verification will always fail, effectively locking users out of password changes. Additionally, if a non-bcrypt deterministic hash is used, this approach is vulnerable to timing attacks.",
-          "suggestion": "Use PasswordUtil.verify(props.body.current_password, member.password_hash) which should internally call bcrypt.compare() for constant-time comparison. Replace the hash-then-compare pattern with a proper verify call."
+          "line": 32,
+          "description": "Password comparison uses hashing instead of bcrypt.compare(). The code hashes the provided current_password and compares the hash strings directly (`currentPasswordHash !== member.password_hash`). This is incorrect for bcrypt because bcrypt generates different salts each time, so two hashes of the same password will never be equal. This means password verification will always fail, effectively locking users out of password changes. Additionally, if PasswordUtil.hash() uses a deterministic algorithm (non-bcrypt), it would be a cryptographic weakness.",
+          "suggestion": "Use PasswordUtil.verify(props.body.current_password, member.password_hash) instead of hashing and comparing. The verify function should use bcrypt.compare() internally, which handles salt comparison correctly."
         },
         {
           "severity": "critical",
-          "type": "integrity-failures",
-          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
-          "line": 67,
-          "description": "The guest refresh token rotation is incomplete. While a new refresh token is generated, the session record in multi_user_todo_guest_sessions is only updated with the new expired_at but NOT with the new refresh token value. The old refresh token remains valid in the JWT (until its own expiry), and the session lookup uses session_id from the decoded token rather than the refresh token string itself. This means the old refresh token can be reused for replay attacks as long as it hasn't expired.",
-          "suggestion": "Store the new refresh token in the session record and validate incoming refresh tokens against the stored value. Update the session with both the new refresh_token and expired_at fields to enforce single-use token rotation."
-        },
-        {
-          "severity": "warning",
-          "type": "broken-access-control",
+          "type": "injection",
           "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
           "line": 22,
-          "description": "The todoId parameter in the controller (MultiusertodoMemberTodosController.ts, update method, line ~170) is typed as plain `string` without the `tags.Format<'uuid'>` constraint, unlike the `at` and `erase` methods which also use plain string. The provider function signature does declare `tags.Format<'uuid'>` but the controller passes an unvalidated string. This inconsistency could allow malformed IDs to reach the database layer.",
-          "suggestion": "Ensure the `todoId` parameter in the `update` and `erase` controller methods uses `string & tags.Format<'uuid'>` type annotation, consistent with the `at` method, to enforce UUID validation at the framework level."
+          "description": "The todoId path parameter in the controller (MultiusertodoMemberTodosController.ts, update method, line ~175) is typed as `string` without the `tags.Format<'uuid'>` constraint, unlike the `at` and `erase` methods which also use plain `string`. The provider function signature declares `todoId: string & tags.Format<'uuid'>` but the controller passes an unvalidated string. This type mismatch means the UUID format validation at the provider level is a TypeScript compile-time check only and may not be enforced at runtime, potentially allowing malformed IDs to reach the database query.",
+          "suggestion": "Change the `@TypedParam('todoId') todoId: string` in the `update` and `erase` methods of MultiusertodoMemberTodosController to `todoId: string & tags.Format<'uuid'>` to ensure runtime UUID validation via nestia/typia."
         },
         {
           "severity": "warning",
           "type": "auth-failures",
           "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
           "line": 20,
-          "description": "The member refresh token lookup queries the database by the raw refresh_token string value without first verifying the JWT signature. An attacker who can forge or guess a refresh token string could potentially find a matching session. The JWT should be verified first to ensure it was issued by this server before using its claims to look up the session.",
-          "suggestion": "Verify the JWT signature of the refresh token before querying the database (similar to how postMultiUserTodoAuthGuestRefresh.ts does it). Extract the session_id from verified claims and look up the session by ID, then cross-check the stored refresh_token matches."
+          "description": "The member refresh token endpoint looks up sessions by the raw refresh_token string value from the database without first verifying the JWT signature. While the token is a JWT, the code skips jwt.verify() and directly queries the database using the token as a lookup key. This means a forged or tampered token string could potentially match a database record if an attacker can predict or enumerate token values. The guest refresh (postMultiUserTodoAuthGuestRefresh.ts) correctly verifies the JWT signature first.",
+          "suggestion": "Before querying the database, verify the JWT signature using jwt.verify(props.body.refreshToken, MyGlobal.env.JWT_SECRET_KEY) and extract the session_id from the decoded payload. Then query the database by session_id rather than by the raw token string, similar to the guest refresh implementation."
         },
         {
           "severity": "warning",
           "type": "insecure-design",
           "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
-          "line": 55,
-          "description": "The client-supplied `props.body.ip` takes precedence over the server-detected IP address (`props.ip`) when creating the session record: `ip: props.body.ip ?? props.ip`. This allows clients to spoof their IP address in session records, undermining IP-based security auditing and monitoring.",
-          "suggestion": "Always use the server-detected IP address (`props.ip`) for session records. Remove the ability for clients to supply their own IP address, or at minimum reverse the precedence to use server IP as primary."
+          "line": 62,
+          "description": "The join endpoint accepts an `ip` field in the request body (`props.body.ip ?? props.ip`) allowing clients to override the server-detected IP address. This undermines IP-based security auditing and session tracking, as malicious users can spoof any IP address in their session record.",
+          "suggestion": "Remove the `ip` field from the IJoin request body interface and always use the server-detected IP (`props.ip` from NestJS `@Ip()` decorator). Client-supplied IP values should never be trusted for security-sensitive fields."
+        },
+        {
+          "severity": "warning",
+          "type": "integrity-failures",
+          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
+          "line": 67,
+          "description": "The guest refresh token rotation is incomplete. While a new refresh token is generated, the session record in the database is only updated with the new `expired_at` value but the new refresh token is NOT stored in the session record. The old refresh token remains valid in the database, allowing replay attacks where a stolen old refresh token can still be used to generate new access tokens.",
+          "suggestion": "Update the session record to store the new refresh token: add `refresh_token: refreshToken` (and optionally `access_token: accessToken`) to the data object in the `multi_user_todo_guest_sessions.update()` call."
+        },
+        {
+          "severity": "warning",
+          "type": "broken-access-control",
+          "file": "src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+          "line": 68,
+          "description": "The GET /:sessionId endpoint returns full session details including accessToken and refreshToken according to the specification comment ('Return all session fields including id, memberId, accessToken, refreshToken'). Exposing active tokens via an API endpoint creates a significant risk — if an attacker gains read access to session data (e.g., via IDOR or logging), they can hijack active sessions.",
+          "suggestion": "Never return full access_token or refresh_token values in API responses. Return only masked/truncated token prefixes for identification purposes. The specification comment itself notes 'Do NOT return full access_token or refresh_token values' for the index endpoint — apply the same rule to the detail endpoint."
         },
         {
           "severity": "suggestion",
           "type": "logging-failures",
           "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
           "line": 1,
-          "description": "All controllers use console.log(error) for error handling without structured logging. Failed authentication attempts (login, refresh) are not specifically logged for security monitoring. This is the standard AutoBE pattern but limits security incident detection.",
-          "suggestion": "Consider implementing structured logging with severity levels and audit trails for authentication events (login success/failure, token refresh, password changes). Use a logging library like Winston or Pino."
+          "description": "Authentication failures (invalid credentials, expired tokens) are not logged with sufficient context. The controllers use console.log(error) for generic error handling, but failed login attempts, token refresh failures, and password change attempts should be logged with IP address and timestamp for security monitoring and intrusion detection.",
+          "suggestion": "Implement structured security event logging for authentication failures, including IP address, timestamp, and failure reason. Consider integrating with a centralized logging system."
         },
         {
           "severity": "suggestion",
           "type": "insecure-design",
           "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
           "line": 1,
-          "description": "No rate limiting is implemented on authentication endpoints (login, join, refresh). The login endpoint comment mentions 'Rate limit 5 attempts per IP per minute' but this is not implemented in code.",
-          "suggestion": "Implement rate limiting using @nestjs/throttler or a similar library, especially for login and token refresh endpoints to prevent brute force attacks."
+          "description": "No rate limiting is implemented on authentication endpoints (login, join, refresh). This allows brute-force attacks against passwords and token enumeration. The specification comment mentions 'Rate limit 5 attempts per IP per minute' but this is not implemented in the code.",
+          "suggestion": "Implement rate limiting using a NestJS guard or middleware (e.g., @nestjs/throttler) on the login, join, and refresh endpoints. Apply stricter limits to login (e.g., 5 attempts/minute/IP) than to other endpoints."
         },
         {
           "severity": "suggestion",
           "type": "auth-failures",
           "file": "src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
           "line": 1,
-          "description": "Password complexity validation beyond minimum length is not enforced. The specification mentions minimum 8 characters but no complexity requirements (uppercase, numbers, special characters) are validated.",
-          "suggestion": "Add password complexity validation using typia constraints or a dedicated password validation library to enforce stronger password policies."
+          "description": "Password complexity validation beyond minimum length is not enforced. The specification mentions 'minimum 8 characters' but no complexity requirements (uppercase, numbers, special characters) are validated.",
+          "suggestion": "Add password complexity validation in the IJoin and IUpdatePassword type definitions using typia tags, or implement validation in the provider layer using a password strength library."
         },
         {
           "severity": "warning",
           "type": "broken-access-control",
           "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
           "line": 30,
-          "description": "The session query filters by `multi_user_todo_member_id: props.guest.id`, but the table appears to be `multi_user_todo_member_sessions` while the authenticated entity is a guest. This may allow a guest to query member sessions if the ID space overlaps, or conversely may always return empty results. The field name mismatch (`member_id` vs guest context) suggests a potential authorization logic error.",
-          "suggestion": "Verify that the correct foreign key field is used for guest session filtering. If guests have their own session table (`multi_user_todo_guest_sessions`), use that table and the appropriate foreign key (`multi_user_todo_guest_id`)."
+          "description": "The session query filters by `multi_user_todo_member_id: props.guest.id`, but the field name suggests this is a member session table being queried with a guest ID. If the table stores member sessions, a guest should not be able to access member session data. This may be a semantic mismatch that allows cross-role data access.",
+          "suggestion": "Verify that `multi_user_todo_member_sessions` is the correct table for guest session queries. If guests have their own session table (`multi_user_todo_guest_sessions`), use that instead. Ensure the ownership filter correctly scopes data to the authenticated guest."
         },
         {
           "severity": "warning",
           "type": "broken-access-control",
           "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
           "line": 28,
-          "description": "The session is fetched by `findUniqueOrThrow` without any ownership filter in the query itself. Ownership is checked post-fetch via `session.member.id !== props.guest.id`. This means the database always fetches the record regardless of ownership, and the authorization relies solely on the in-memory check. While functionally correct, a timing or logic error in the transformer could expose data. Additionally, `session.member` implies this is a member session, not a guest session — a guest checking member sessions is a potential access control confusion.",
-          "suggestion": "Include the ownership filter directly in the Prisma query (`where: { id: props.sessionId, multi_user_todo_guest_id: props.guest.id }`) to enforce authorization at the database level and eliminate the post-fetch check."
+          "description": "The session is fetched by `findUniqueOrThrow` without an ownership filter in the query itself. The ownership check is done post-fetch by comparing `session.member.id !== props.guest.id`. This means the DB always fetches the record regardless of ownership, and the check relies on the `member` relation being correctly populated. If the transformer or select omits the member relation, the check could silently fail or throw a runtime error instead of a 403.",
+          "suggestion": "Move the ownership filter into the Prisma query itself: `where: { id: props.sessionId, multi_user_todo_guest_id: props.guest.id }` to enforce authorization at the database level and avoid post-fetch ownership checks."
         },
         {
           "severity": "warning",
           "type": "auth-failures",
-          "file": "src/providers/authorize/memberAuthorize.ts",
-          "line": 13,
-          "description": "The error message in ForbiddenException reveals the actual token type: `You're not ${payload.type}`. This leaks internal token type information to the client, which could aid attackers in crafting valid tokens of the correct type.",
-          "suggestion": "Use a generic error message such as 'Insufficient permissions' or 'Access denied' instead of revealing the token type."
+          "file": "src/providers/authorize/jwtAuthorize.ts",
+          "line": 20,
+          "description": "The JWT verification does not explicitly specify the `algorithms` option. Without restricting the allowed algorithms, the `none` algorithm attack or algorithm confusion (e.g., RS256 vs HS256) could be exploited depending on the jsonwebtoken version and configuration.",
+          "suggestion": "Pass `{ algorithms: ['HS256'] }` (or whichever algorithm is used for signing) as the third argument to `jwt.verify()` to explicitly restrict accepted algorithms: `jwt.verify(token, MyGlobal.env.JWT_SECRET_KEY, { algorithms: ['HS256'] })`."
         },
         {
           "severity": "warning",
           "type": "insecure-design",
-          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
-          "line": 95,
-          "description": "The `limit` parameter from user input is passed directly to Prisma's `take` without an upper bound. A client could request an extremely large page size (e.g., `limit: 1000000`), causing excessive database load and potential denial of service.",
-          "suggestion": "Enforce a maximum limit, e.g., `const limit = Math.min(props.body.limit ?? 20, 100)` to cap the number of records returned per request."
-        },
-        {
-          "severity": "warning",
-          "type": "insecure-design",
-          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
-          "line": 27,
-          "description": "The default `limit` is set to 100 and there is no maximum cap enforced. Combined with user-controlled `limit` input, this could allow excessive data retrieval or denial of service.",
-          "suggestion": "Enforce a maximum limit, e.g., `const limit = Math.min(props.body.limit ?? 20, 100)`."
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 49,
+          "description": "The guest join endpoint accepts a client-supplied `ip` field (`props.body.ip ?? props.ip`) and stores it in the session. A client can spoof their IP address by providing a fake value in the request body, undermining any IP-based session tracking or security controls.",
+          "suggestion": "Always use the server-determined IP (`props.ip`) for session storage. Do not trust client-supplied IP values. Remove `props.body.ip` from the session creation data."
         },
         {
           "severity": "suggestion",
           "type": "logging-failures",
           "file": "src/providers/authorize/jwtAuthorize.ts",
           "line": 30,
-          "description": "The catch block silently swallows the JWT verification error and throws a generic UnauthorizedException. Failed authentication attempts are not logged, making it difficult to detect brute-force or token-stuffing attacks.",
-          "suggestion": "Log failed JWT verification attempts (without exposing the token value) to enable security monitoring and alerting."
+          "description": "JWT verification failures are silently swallowed in the catch block with no logging. Failed authentication attempts are not recorded, making it impossible to detect brute-force or token-stuffing attacks.",
+          "suggestion": "Add structured logging for authentication failures, including the timestamp and (non-sensitive) request metadata, to support security monitoring and incident response."
         },
         {
           "severity": "suggestion",
           "type": "insecure-design",
-          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
           "line": 1,
-          "description": "The guest join endpoint creates a new guest account on every call with no rate limiting. This could be abused to create unlimited guest accounts.",
-          "suggestion": "Apply rate limiting at the infrastructure or middleware level for this endpoint."
+          "description": "The `limit` parameter for pagination is user-controlled with a default of 20 but no maximum cap enforced in this provider. A client could request an arbitrarily large number of records, causing excessive database load.",
+          "suggestion": "Enforce a maximum limit (e.g., `const limit = Math.min(props.body.limit ?? 20, 100)`) to prevent resource exhaustion from large page size requests."
         },
         {
           "severity": "suggestion",
-          "type": "cryptographic-failures",
-          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
-          "line": 57,
-          "description": "Both access and refresh tokens are signed with the same `JWT_SECRET_KEY`. If the secret is compromised, both token types are affected. Additionally, there is no algorithm explicitly specified in the `jwt.sign` options, defaulting to HS256.",
-          "suggestion": "Consider using separate secrets for access and refresh tokens, and explicitly specify the algorithm (e.g., `algorithm: 'HS256'`) in jwt.sign options for clarity and to prevent algorithm confusion attacks."
+          "type": "insecure-design",
+          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
+          "line": 27,
+          "description": "The default `limit` is set to 100, which is unusually high and user-controlled with no enforced maximum. This could lead to large data dumps in a single request.",
+          "suggestion": "Apply a reasonable maximum cap on the limit parameter, e.g., `const limit = Math.min(props.body.limit ?? 20, 100)`."
         }
       ],
-      "score": 70,
-      "summary": "[2 chunks, 18→16 issues] The codebase implements a multi-user todo application with JWT-based authentication for both members and guests. Two critical issues were found: (1) incorrect password verification using hash-then-compare instead of bcrypt.compare(), which would break password change functionality and potentially allow authentication bypass depending on the hash algorithm; (2) incomplete refresh token rotation for guest sessions where the old token remains usable. A notable warning involves client-supplied IP spoofing in session records and inconsistent UUID validation on path parameters. The member refresh flow also lacks JWT signature verification before database lookup. The overall architecture shows good security intent with ownership checks, soft-delete handling, and token rotation concepts, but the implementation has significant gaps in cryptographic operations.",
-      "durationMs": 37577,
+      "score": 67,
+      "summary": "[2 chunks, 17→16 issues] The codebase implements a multi-user todo application with reasonable access control patterns (MemberAuth/GuestAuth decorators, ownership verification in queries). However, there are critical issues: (1) Password verification in the password change flow is fundamentally broken due to incorrect use of hash comparison instead of bcrypt.compare, effectively preventing password changes; (2) UUID validation is missing on todoId path parameters for update/delete operations; (3) Member refresh tokens are not verified cryptographically before database lookup, unlike the more secure guest refresh implementation; (4) Guest refresh token rotation is incomplete — new tokens are generated but not persisted, allowing replay attacks. Additionally, client-supplied IP override in the join endpoint undermines audit integrity, and session detail endpoints may expose full token values. The authentication architecture is generally sound with JWT-based sessions and token rotation concepts, but the implementation has several security gaps that need addressing.",
+      "durationMs": 42788,
       "tokensUsed": {
         "input": 31864,
-        "output": 3470,
+        "output": 3642,
         "inputCost": 0.09559199999999998,
-        "outputCost": 0.05205
+        "outputCost": 0.05463
       }
     },
     {
@@ -519,354 +519,250 @@
           "type": "hallucination",
           "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'. Prisma client is typically imported from '@prisma/client', not '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/putMultiUserTodoMemberProfile.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/putMultiUserTodoMemberPassword.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoMemberTodos.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistories.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/getMultiUserTodoMemberTodosTodoIdHistoriesHistoryId.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/getMultiUserTodoMemberTodosTodoId.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/deleteMultiUserTodoMemberSessions.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "hallucination",
           "file": "src/providers/deleteMultiUserTodoMemberAccount.ts",
           "line": 1,
-          "description": "Importing non-existent module '@prisma/sdk'. The correct Prisma client import should be '@prisma/client'.",
-          "suggestion": "Change import { Prisma } from '@prisma/sdk'; to import { Prisma } from '@prisma/client';"
+          "description": "Importing non-existent module '@prisma/sdk'.",
+          "suggestion": "Change import to: import { Prisma } from '@prisma/client';"
         },
         {
           "severity": "critical",
           "type": "logic-error",
           "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
           "line": 50,
-          "description": "Logic error: The code incorrectly fetches completed_at from database when todo is already complete, but should preserve the existing completed_at value. The current logic fetches it again unnecessarily.",
-          "suggestion": "Simplify the completed_at logic: finalCompletedAt = finalIsComplete ? (currentTodo.is_complete ? currentTodo.completed_at : new Date()) : null"
+          "description": "Logic error: When todo is marked as complete, the code fetches existing completed_at from database, but this query doesn't include completed_at in the initial select. The code tries to access completed_at from a query that only selected id, title, description, start_date, due_date, is_complete, deleted_at.",
+          "suggestion": "Add 'completed_at: true' to the initial select clause, or calculate completed_at based on current state without additional query."
         },
         {
           "severity": "critical",
           "type": "logic-error",
-          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
-          "line": 1,
-          "description": "Incomplete implementation: The profile update function only updates updated_at timestamp but doesn't actually update any profile fields (like display name) from the request body.",
-          "suggestion": "Add logic to update actual profile fields from props.body (e.g., display_name) according to requirements"
-        },
-        {
-          "severity": "critical",
-          "type": "logic-error",
-          "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
-          "line": 30,
-          "description": "Logic error: Setting deleted_at to a string instead of Date object. The database expects DateTime type.",
-          "suggestion": "Change deleted_at: new Date().toISOString() to deleted_at: new Date()"
-        },
-        {
-          "severity": "warning",
-          "type": "unrealistic-assumptions",
-          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
-          "line": 1,
-          "description": "Unrealistic assumption: The function accepts 'ip', 'href', and 'referrer' in the request body, but these should typically come from request headers/metadata, not user input.",
-          "suggestion": "Remove ip, href, referrer from IMultiUserTodoMember.IJoin interface and extract them from request metadata instead"
-        },
-        {
-          "severity": "warning",
-          "type": "unrealistic-assumptions",
-          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
-          "line": 1,
-          "description": "Unrealistic assumption: The function accepts 'ip', 'href', and 'referrer' in the request body, but these should typically come from request headers/metadata, not user input.",
-          "suggestion": "Remove ip, href, referrer from IMultiUserTodoGuest.IJoin interface and extract them from request metadata instead"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
-          "line": 1,
-          "description": "Copy-paste error: Function name is patchMultiUserTodoGuestSessions but it queries multi_user_todo_member_sessions table and uses member authorization logic. This appears to be a copy-paste from member sessions endpoint.",
-          "suggestion": "Either rename function to patchMultiUserTodoMemberSessions or change implementation to query multi_user_todo_guest_sessions table"
-        },
-        {
-          "severity": "warning",
-          "type": "copy-paste",
-          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
-          "line": 1,
-          "description": "Copy-paste error: Function name is getMultiUserTodoGuestSessionsSessionId but it queries multi_user_todo_member_sessions table and checks member.id. This appears to be a copy-paste from member sessions endpoint.",
-          "suggestion": "Either rename function to getMultiUserTodoMemberSessionsSessionId or change implementation to query multi_user_todo_guest_sessions table"
-        },
-        {
-          "severity": "warning",
-          "type": "dead-code",
           "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, jwt, typia, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
+          "line": 56,
+          "description": "Logic error: The additional query to fetch completed_at uses findUnique with only completed_at selected, but this will return null if the todo doesn't exist (though it should). More importantly, the logic is flawed - if todo is already complete, it should preserve existing completed_at, not fetch it again.",
+          "suggestion": "Include completed_at in the initial select and use that value directly instead of making a second query."
         },
         {
           "severity": "warning",
-          "type": "dead-code",
+          "type": "incomplete",
           "file": "src/providers/putMultiUserTodoMemberProfile.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, IMultiUserTodoMember, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
+          "line": 20,
+          "description": "Incomplete implementation: The profile update function only updates 'updated_at' timestamp but doesn't actually update any profile fields (like display name mentioned in requirements).",
+          "suggestion": "Add logic to update actual profile fields from props.body (e.g., display name)."
         },
         {
           "severity": "warning",
-          "type": "dead-code",
+          "type": "logic-error",
           "file": "src/providers/putMultiUserTodoMemberPassword.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
+          "line": 20,
+          "description": "Logic error: Password verification compares hashed current password with stored hash, but should compare plaintext current password with stored hash using PasswordUtil.verify.",
+          "suggestion": "Change to: const isValid = await PasswordUtil.verify(props.body.current_password, member.password_hash); if (!isValid) throw..."
         },
         {
           "severity": "warning",
-          "type": "dead-code",
-          "file": "src/providers/postMultiUserTodoMemberTodos.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, HttpException, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
-        },
-        {
-          "severity": "warning",
-          "type": "dead-code",
+          "type": "logic-error",
           "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, IMultiUserTodoMember, ArrayUtil, Prisma, typia, v4, PasswordUtil are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
+          "line": 30,
+          "description": "Logic error: Session expiration check compares ISO strings instead of Date objects, which may fail due to string formatting differences.",
+          "suggestion": "Compare Date objects directly: if (session.expired_at <= new Date())"
         },
         {
           "severity": "warning",
-          "type": "dead-code",
-          "file": "src/providers/postMultiUserTodoAuthMemberLogin.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, Prisma, typia, v4 are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoAuthMemberRefresh.ts",
+          "line": 50,
+          "description": "Logic error: Sets expired_at to refreshExpires (7 days) but access token expires in 15 minutes. Should store access token expiration separately or use refresh token expiration for session.",
+          "suggestion": "Consider storing both access and refresh expiration times, or clarify session expiration policy."
         },
         {
           "severity": "warning",
-          "type": "dead-code",
-          "file": "src/providers/postMultiUserTodoAuthGuestRefresh.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, Prisma, typia, v4, PasswordUtil are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
+          "type": "logic-error",
+          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
+          "line": 30,
+          "description": "Logic error: Uses toISOStringSafe to create Date objects (new Date(createdAt)), but toISOStringSafe returns string. Creating Date from ISO string is redundant.",
+          "suggestion": "Use Date objects directly: created_at: new Date(), updated_at: new Date()"
         },
         {
           "severity": "warning",
-          "type": "dead-code",
+          "type": "logic-error",
           "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, HttpException, Prisma, jwt, typia, PasswordUtil are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
+          "line": 20,
+          "description": "Logic error: Type assertion 'createdAt satisfies string as string' is incorrect syntax and unnecessary.",
+          "suggestion": "Remove the type assertion or fix syntax: created_at: new Date(createdAt),"
         },
         {
-          "severity": "warning",
-          "type": "dead-code",
-          "file": "src/providers/patchMultiUserTodoMemberTodosTodoIdHistories.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, IMultiUserTodoHistory, IMultiUserTodoTodo, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
-        },
-        {
-          "severity": "warning",
-          "type": "dead-code",
-          "file": "src/providers/patchMultiUserTodoMemberTodos.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, IMultiUserTodoTodo, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
-        },
-        {
-          "severity": "warning",
-          "type": "dead-code",
+          "severity": "critical",
+          "type": "requirements-mismatch",
           "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
           "line": 1,
-          "description": "Unused imports: IEntity, IMultiUserTodoMemberSession, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
+          "description": "Requirements mismatch: Function name suggests it operates on guest sessions, but it queries member_sessions table and uses member ID filter. Guest should not have access to member sessions.",
+          "suggestion": "Either rename function to handle member sessions, or change implementation to query guest_sessions table."
         },
         {
           "severity": "warning",
-          "type": "dead-code",
-          "file": "src/providers/getMultiUserTodoMemberTodosTodoIdHistoriesHistoryId.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, IMultiUserTodoTodo, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
-        },
-        {
-          "severity": "warning",
-          "type": "dead-code",
-          "file": "src/providers/getMultiUserTodoMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
-        },
-        {
-          "severity": "warning",
-          "type": "dead-code",
-          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, IMultiUserTodoMember, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
-        },
-        {
-          "severity": "warning",
-          "type": "dead-code",
+          "type": "logic-error",
           "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
+          "line": 20,
+          "description": "Logic error: Sets deleted_at to ISO string but database column expects DateTime. Should use new Date() instead of new Date().toISOString().",
+          "suggestion": "Change to: deleted_at: new Date()"
         },
         {
           "severity": "warning",
           "type": "dead-code",
-          "file": "src/providers/deleteMultiUserTodoMemberSessions.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
-        },
-        {
-          "severity": "warning",
-          "type": "dead-code",
-          "file": "src/providers/deleteMultiUserTodoMemberAccount.ts",
-          "line": 1,
-          "description": "Unused imports: IEntity, ArrayUtil, Prisma, jwt, typia, v4, PasswordUtil, toISOStringSafe are imported but never used in the function.",
-          "suggestion": "Remove unused imports to clean up the code"
-        },
-        {
-          "severity": "suggestion",
-          "type": "inconsistent-naming",
           "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
           "line": 1,
-          "description": "Inconsistent naming: The function name uses 'put' prefix but it's performing a PATCH-like operation (partial update). According to REST conventions, PUT should replace entire resource.",
-          "suggestion": "Consider renaming to patchMultiUserTodoMemberTodosTodoId if implementing partial updates, or implement full resource replacement"
+          "description": "Unused imports across multiple files: IEntity, ArrayUtil, jwt, typia, tags, v4, PasswordUtil, toISOStringSafe are imported but not used in many provider files.",
+          "suggestion": "Remove unused imports from each file to clean up code."
+        },
+        {
+          "severity": "warning",
+          "type": "naming",
+          "file": "src/providers/authorize/guestAuthorize.ts",
+          "line": 15,
+          "description": "Inconsistent naming: Function parameter 'request' but calls jwtAuthorize with object { request: request }.",
+          "suggestion": "Align parameter naming or call directly: jwtAuthorize({ request })"
         }
       ],
-      "score": 70,
-      "summary": "The code has critical issues with hallucinated imports (@prisma/sdk instead of @prisma/client) across all files, several logic errors, and copy-paste mistakes. However, it follows AutoBE conventions correctly with prefixed table names and models. The core functionality appears to be implemented but needs significant fixes for imports and logic.",
-      "durationMs": 303435,
+      "score": 65,
+      "summary": "Code has critical hallucination issues with '@prisma/sdk' imports across all provider files. Several logic errors in todo completion, password verification, and date handling. Profile update is incomplete. Some requirements mismatches with guest/member session access. Overall structure follows AutoBE conventions but needs significant fixes.",
+      "durationMs": 203046,
       "tokensUsed": {
         "input": 16894,
-        "output": 4775,
+        "output": 2968,
         "inputCost": 0.005068199999999999,
-        "outputCost": 0.004202
+        "outputCost": 0.0026118400000000003
       }
     },
     {
@@ -879,95 +775,87 @@
           "type": "phantom-endpoint",
           "file": "src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
           "line": 1,
-          "description": "Controller implements guest session endpoints that query member sessions (multi_user_todo_member_sessions) instead of guest sessions (multi_user_todo_guest_sessions). The spec defines guest sessions in model multi_user_todo_guest_sessions, but the controller references IMultiUserTodoMemberSession and queries member sessions.",
-          "suggestion": "Replace with proper guest session endpoints that query multi_user_todo_guest_sessions table and use IMultiUserTodoGuestSession DTOs."
+          "description": "Controller implements guest session endpoints that have no basis in the Prisma schema. The schema defines guest sessions (multi_user_todo_guest_sessions) but there is no OpenAPI specification provided for guest session operations. The controller implements PATCH /multiUserTodo/guest/sessions and GET /multiUserTodo/guest/sessions/:sessionId which are completely fabricated routes with no spec mapping.",
+          "suggestion": "Remove this controller entirely unless there is an OpenAPI specification defining guest session operations."
         },
         {
           "severity": "critical",
           "type": "spec-mismatch",
           "file": "src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
-          "line": 40,
-          "description": "Endpoint GET /multiUserTodo/guest/sessions/:sessionId claims to retrieve guest sessions but uses IMultiUserTodoMemberSession type and queries member sessions. The spec defines separate models for guest_sessions and member_sessions.",
-          "suggestion": "Create proper guest session retrieval endpoint using multi_user_todo_guest_sessions model and appropriate DTOs."
+          "line": 50,
+          "description": "Controller uses wrong DTO types (IMultiUserTodoMemberSession) for guest session operations. Guest sessions should use guest-specific DTOs, not member session DTOs. This creates a type mismatch between the actor type (guest) and the data structure (member session).",
+          "suggestion": "Use appropriate guest session DTOs if they exist, or create proper guest session structures."
+        },
+        {
+          "severity": "critical",
+          "type": "phantom-endpoint",
+          "file": "src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
+          "line": 1,
+          "description": "Controller implements DELETE /multiUserTodo/member/sessions endpoint that has no basis in the provided specification. No OpenAPI spec is provided for member session management operations.",
+          "suggestion": "Remove this controller unless there is an OpenAPI specification defining member session termination."
+        },
+        {
+          "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/controllers/multiUserTodo/member/todos/histories/MultiusertodoMemberTodosHistoriesController.ts",
+          "line": 1,
+          "description": "Controller implements history endpoints but the spec comment mentions rejecting access if todo.deleted_at is not null, which contradicts the business requirement that history should be accessible for todos in trash. The Prisma schema shows cascade delete only on permanent deletion, not soft deletion.",
+          "suggestion": "Remove the restriction on accessing history for soft-deleted todos, as history should be preserved and accessible even when todos are in trash."
         },
         {
           "severity": "warning",
           "type": "invented-logic",
-          "file": "src/controllers/multiUserTodo/member/todos/histories/MultiusertodoMemberTodosHistoriesController.ts",
-          "line": 44,
-          "description": "The spec comment says 'Return error if todo is soft-deleted (deleted_at is not null)' but the Prisma schema shows history entries should be accessible for todos in all states including trash. This contradicts the schema documentation.",
-          "suggestion": "Remove the restriction on accessing history for soft-deleted todos, as history should be preserved and accessible even when todo is in trash."
-        },
-        {
-          "severity": "suggestion",
-          "type": "invented-logic",
           "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
           "line": 1,
-          "description": "The provider imports unused dependencies (ArrayUtil, jwt, PasswordUtil) that are not needed for the update todo operation.",
+          "description": "Provider imports unnecessary dependencies (jwt, PasswordUtil, ArrayUtil) that are not used in the implementation. This adds irrelevant code that has no basis in the specification.",
           "suggestion": "Remove unused imports to clean up the code."
         },
         {
           "severity": "critical",
-          "type": "phantom-endpoint",
+          "type": "spec-mismatch",
           "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
           "line": 1,
-          "description": "The provider 'patchMultiUserTodoGuestSessions' implements a route for guest sessions, but the Prisma schema only defines 'multi_user_todo_guest_sessions' model. There is no corresponding OpenAPI endpoint for guest session listing/pagination in the provided spec. This appears to be a completely fabricated endpoint.",
-          "suggestion": "Remove this provider unless there is a corresponding OpenAPI operation for listing guest sessions."
-        },
-        {
-          "severity": "critical",
-          "type": "phantom-endpoint",
-          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
-          "line": 1,
-          "description": "The provider 'getMultiUserTodoGuestSessionsSessionId' implements a GET endpoint for retrieving a specific guest session, but there is no corresponding OpenAPI operation for retrieving guest sessions by ID in the provided spec. This appears to be a fabricated endpoint.",
-          "suggestion": "Remove this provider unless there is a corresponding OpenAPI operation for retrieving guest sessions."
-        },
-        {
-          "severity": "critical",
-          "type": "fabricated-field",
-          "file": "src/providers/patchMultiUserTodoGuestSessions.ts",
-          "line": 30,
-          "description": "The provider queries 'multi_user_todo_member_sessions' table using 'multi_user_todo_member_id: props.guest.id', but the guest payload has 'id' referring to 'multi_user_todo_guests.id', not member sessions. This uses a non-existent relation between guests and member sessions.",
-          "suggestion": "The query should target 'multi_user_todo_guest_sessions' table with 'multi_user_todo_guest_id' field instead."
-        },
-        {
-          "severity": "critical",
-          "type": "fabricated-field",
-          "file": "src/providers/getMultiUserTodoGuestSessionsSessionId.ts",
-          "line": 30,
-          "description": "The provider queries 'multi_user_todo_member_sessions' table and checks 'session.member.id !== props.guest.id', but guests don't have relations to member sessions. This uses a non-existent field/relation.",
-          "suggestion": "The query should target 'multi_user_todo_guest_sessions' table with 'multi_user_todo_guest_id' field instead."
+          "description": "Provider name 'patchMultiUserTodoGuestSessions' suggests guest sessions, but implementation queries 'multi_user_todo_member_sessions' table (member sessions). This is a fundamental mismatch between the intended entity type and the actual database model being accessed.",
+          "suggestion": "Either rename the provider to match member sessions (e.g., 'patchMultiUserTodoMemberSessions') or change the implementation to query 'multi_user_todo_guest_sessions' table if guest sessions are intended."
         },
         {
           "severity": "warning",
           "type": "spec-mismatch",
           "file": "src/providers/deleteMultiUserTodoMemberTodosTodoId.ts",
-          "line": 30,
-          "description": "The provider sets 'deleted_at' to a string (new Date().toISOString()), but the Prisma schema defines 'deleted_at' as DateTime. This may cause type mismatch.",
-          "suggestion": "Use 'new Date()' instead of 'new Date().toISOString()' for DateTime field."
+          "line": 32,
+          "description": "Setting 'deleted_at' to a string value (new Date().toISOString()) instead of a Date object. Prisma schema defines 'deleted_at' as DateTime? which expects Date objects, not strings.",
+          "suggestion": "Change to 'new Date()' instead of 'new Date().toISOString()'."
         },
         {
           "severity": "warning",
+          "type": "spec-mismatch",
+          "file": "src/providers/postMultiUserTodoAuthGuestJoin.ts",
+          "line": 33,
+          "description": "Setting 'created_at' and 'updated_at' fields with string values (createdAt) instead of Date objects. Prisma schema defines these as DateTime fields which expect Date objects.",
+          "suggestion": "Pass Date objects instead of strings: 'created_at: new Date(createdAt)' and 'updated_at: new Date(createdAt)'."
+        },
+        {
+          "severity": "suggestion",
           "type": "invented-logic",
-          "file": "src/providers/postMultiUserTodoAuthMemberJoin.ts",
-          "line": 30,
-          "description": "The provider accepts 'ip', 'href', and 'referrer' from the request body, but these are typically derived from request metadata, not user input. This could allow clients to spoof these audit fields.",
-          "suggestion": "Use the 'ip' parameter from function arguments (which should come from request metadata) and consider not allowing body overrides for these security audit fields."
+          "file": "src/providers/putMultiUserTodoMemberProfile.ts",
+          "line": 19,
+          "description": "Implementation updates 'updated_at' timestamp but doesn't actually update any member profile fields from the request body. The function accepts 'IMultiUserTodoMember.IUpdate' but doesn't use it to modify member data.",
+          "suggestion": "Either implement actual profile field updates using the request body, or rename/refactor the function to match its actual behavior."
         }
       ],
       "score": 75,
-      "summary": "[2 chunks, 11→10 issues] Significant hallucinations detected: guest session controller incorrectly implements member session endpoints instead of guest session endpoints. Other issues include minor invented logic and unused imports. The core todo functionality appears faithful to spec, but the guest session implementation is fundamentally wrong.",
-      "durationMs": 34591,
+      "summary": "[2 chunks, 14→9 issues] Significant hallucinations detected: 7 phantom endpoints without spec basis, 2 spec mismatches, and 1 invented logic issue. The core todo CRUD operations are well-implemented, but many auxiliary endpoints (sessions, profile, account, password) appear fabricated. Guest session controller uses wrong DTO types. Overall, the implementation shows good faithfulness for core features but poor relevancy due to many unsupported endpoints.",
+      "durationMs": 37904,
       "tokensUsed": {
         "input": 33814,
-        "output": 1670,
+        "output": 2056,
         "inputCost": 0.010144199999999999,
-        "outputCost": 0.0014696
+        "outputCost": 0.00180928
       },
       "deepEvalScores": {
-        "faithfulness": 75,
-        "relevancy": 80,
-        "contextualPrecision": 75
+        "faithfulness": 80,
+        "relevancy": 73,
+        "contextualPrecision": 70
       }
     }
   ],
@@ -975,8 +863,1146 @@
     "phaseScore": 89,
     "phaseWeight": 0.85,
     "phaseContribution": 76,
-    "agentScore": 72,
+    "agentScore": 69,
     "agentWeight": 0.15,
-    "agentContribution": 11
+    "agentContribution": 10
+  },
+  "fixAdvisory": {
+    "items": [
+      {
+        "issueId": "type-error-1775675375702-u347axuuvgj",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 1.2,
+        "priority": 1,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "complexity-1775675375785-453hv694ki4",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"putMultiUserTodoMemberTodosTodoId\" has complexity 16 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 16,
+        "estimatedImpact": 0.1,
+        "priority": 2,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 13,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "export async function putMultiUserTodoMemberTodosTodoId(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 17,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  body: IMultiUserTodoTodo.IUpdate;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775675375789-tgwds9nqcz9",
+        "phase": "quality",
+        "severity": "critical",
+        "code": "C001",
+        "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 24 (max: 20)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
+        "line": 18,
+        "estimatedImpact": 0.1,
+        "priority": 3,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "export async function patchMultiUserTodoMemberTodos(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 19,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  body: IMultiUserTodoTodo.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "}): Promise<IPageIMultiUserTodoTodo.ISummary> {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375826-v02m5wlf5t",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoGuestSessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 4,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getMultiUserTodoGuestSessionsSessionId } from \"../../../../providers/getMultiUserTodoGuestSessionsSessionId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchMultiUserTodoGuestSessions } from \"../../../../providers/patchMultiUserTodoGuestSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/multiUserTodo/guest/sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class MultiusertodoGuestSessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Query and filter active member sessions.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375826-u285q5zcs7",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 5,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthMemberLogin } from \"../../../../providers/postMultiUserTodoAuthMemberLogin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoAuthMemberRefresh } from \"../../../../providers/postMultiUserTodoAuthMemberRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/auth/member\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoAuthMemberController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Register a new member account with email and password credentials.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375826-mlql734lxcl",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 6,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { postMultiUserTodoAuthGuestJoin } from \"../../../../providers/postMultiUserTodoAuthGuestJoin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthGuestRefresh } from \"../../../../providers/postMultiUserTodoAuthGuestRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/multiUserTodo/auth/guest\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class MultiusertodoAuthGuestController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Creates a new temporary guest identity for unauthenticated visitors.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375827-nui1o20b4pa",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+        "line": 15,
+        "estimatedImpact": 0.1,
+        "priority": 7,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 12,
+              "text": "import { postMultiUserTodoMemberTodos } from \"../../../../providers/postMultiUserTodoMemberTodos\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { putMultiUserTodoMemberTodosTodoId } from \"../../../../providers/putMultiUserTodoMemberTodosTodoId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "@Controller(\"/multiUserTodo/member/todos\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 16,
+              "text": "export class MultiusertodoMemberTodosController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "   * Create a new todo task for the authenticated member.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375827-u2voepgqeio",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberSessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 8,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { deleteMultiUserTodoMemberSessions } from \"../../../../providers/deleteMultiUserTodoMemberSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/multiUserTodo/member/sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class MultiusertodoMemberSessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Terminate the current authenticated session (logout).",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375827-rou1g19qy4m",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 9,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { putMultiUserTodoMemberProfile } from \"../../../../providers/putMultiUserTodoMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/profile\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberProfileController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Update the authenticated member's profile information.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375827-5oj0f2dsogl",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberAccountController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/account/MultiusertodoMemberAccountController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { deleteMultiUserTodoMemberAccount } from \"../../../../providers/deleteMultiUserTodoMemberAccount\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/multiUserTodo/member/account\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class MultiusertodoMemberAccountController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Permanently delete the authenticated member's account and all associated data.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375827-as38t2i7yur",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberPasswordController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/password/MultiusertodoMemberPasswordController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 11,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { putMultiUserTodoMemberPassword } from \"../../../../providers/putMultiUserTodoMemberPassword\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/password\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberPasswordController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Change the authenticated member's password.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375828-47bzavj0qon",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosHistoriesController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/histories/MultiusertodoMemberTodosHistoriesController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 12,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getMultiUserTodoMemberTodosTodoIdHistoriesHistoryId } from \"../../../../../providers/getMultiUserTodoMemberTodosTodoIdHistoriesHistoryId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchMultiUserTodoMemberTodosTodoIdHistories } from \"../../../../../providers/patchMultiUserTodoMemberTodosTodoIdHistories\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/multiUserTodo/member/todos/:todoId/histories\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class MultiusertodoMemberTodosHistoriesController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Retrieve a paginated list of edit history entries for a specific todo.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "completeness-1775675375834-4ze643m4npg",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "SYNC001",
+        "message": "Empty type alias: IUpdate = {} — missing properties",
+        "file": "src/api/structures/IMultiUserTodoMember.ts",
+        "line": 136,
+        "estimatedImpact": 0.1,
+        "priority": 13,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 133,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 134,
+              "text": "   * Request body for updating member profile. Note: Currently no editable fields available as the database schema only contains authentication-required fields.",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 135,
+              "text": "   */",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 136,
+              "text": "  export type IUpdate = {};",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 137,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 138,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 139,
+              "text": "   * Request body for refreshing member authentication tokens.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "totalPotentialGain": 2.4,
+    "topFixes": [
+      {
+        "issueId": "type-error-1775675375702-u347axuuvgj",
+        "phase": "gate",
+        "severity": "warning",
+        "code": "TS2554",
+        "message": "Expected 0 arguments, but got 1.",
+        "file": "src/MyGlobal.ts",
+        "line": 903,
+        "estimatedImpact": 1.2,
+        "priority": 1,
+        "snippet": {
+          "lines": [],
+          "language": "typescript"
+        },
+        "source": "phase"
+      },
+      {
+        "issueId": "complexity-1775675375785-453hv694ki4",
+        "phase": "quality",
+        "severity": "warning",
+        "code": "C002",
+        "message": "Function \"putMultiUserTodoMemberTodosTodoId\" has complexity 16 (recommended: 15)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/providers/putMultiUserTodoMemberTodosTodoId.ts",
+        "line": 16,
+        "estimatedImpact": 0.1,
+        "priority": 2,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 13,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "export async function putMultiUserTodoMemberTodosTodoId(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 17,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "  todoId: string & tags.Format<\"uuid\">;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 19,
+              "text": "  body: IMultiUserTodoTodo.IUpdate;",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "complexity-1775675375789-tgwds9nqcz9",
+        "phase": "quality",
+        "severity": "critical",
+        "code": "C001",
+        "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 24 (max: 20)",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
+        "line": 18,
+        "estimatedImpact": 0.1,
+        "priority": 3,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 15,
+              "text": "import { PasswordUtil } from \"../utils/PasswordUtil\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 16,
+              "text": "import { toISOStringSafe } from \"../utils/toISOStringSafe\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "export async function patchMultiUserTodoMemberTodos(props: {",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 19,
+              "text": "  member: MemberPayload;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 20,
+              "text": "  body: IMultiUserTodoTodo.IRequest;",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 21,
+              "text": "}): Promise<IPageIMultiUserTodoTodo.ISummary> {",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375826-v02m5wlf5t",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoGuestSessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+        "line": 12,
+        "estimatedImpact": 0.1,
+        "priority": 4,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 9,
+              "text": "import { getMultiUserTodoGuestSessionsSessionId } from \"../../../../providers/getMultiUserTodoGuestSessionsSessionId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "import { patchMultiUserTodoGuestSessions } from \"../../../../providers/patchMultiUserTodoGuestSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "@Controller(\"/multiUserTodo/guest/sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 13,
+              "text": "export class MultiusertodoGuestSessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "   * Query and filter active member sessions.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375826-u285q5zcs7",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 5,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthMemberLogin } from \"../../../../providers/postMultiUserTodoAuthMemberLogin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { postMultiUserTodoAuthMemberRefresh } from \"../../../../providers/postMultiUserTodoAuthMemberRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/auth/member\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoAuthMemberController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Register a new member account with email and password credentials.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375826-mlql734lxcl",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 6,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { postMultiUserTodoAuthGuestJoin } from \"../../../../providers/postMultiUserTodoAuthGuestJoin\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { postMultiUserTodoAuthGuestRefresh } from \"../../../../providers/postMultiUserTodoAuthGuestRefresh\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/multiUserTodo/auth/guest\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class MultiusertodoAuthGuestController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Creates a new temporary guest identity for unauthenticated visitors.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375827-nui1o20b4pa",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+        "line": 15,
+        "estimatedImpact": 0.1,
+        "priority": 7,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 12,
+              "text": "import { postMultiUserTodoMemberTodos } from \"../../../../providers/postMultiUserTodoMemberTodos\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "import { putMultiUserTodoMemberTodosTodoId } from \"../../../../providers/putMultiUserTodoMemberTodosTodoId\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 14,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 15,
+              "text": "@Controller(\"/multiUserTodo/member/todos\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 16,
+              "text": "export class MultiusertodoMemberTodosController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 17,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 18,
+              "text": "   * Create a new todo task for the authenticated member.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375827-u2voepgqeio",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberSessionsController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 8,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { deleteMultiUserTodoMemberSessions } from \"../../../../providers/deleteMultiUserTodoMemberSessions\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/multiUserTodo/member/sessions\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class MultiusertodoMemberSessionsController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Terminate the current authenticated session (logout).",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375827-rou1g19qy4m",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+        "line": 10,
+        "estimatedImpact": 0.1,
+        "priority": 9,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 7,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "import { putMultiUserTodoMemberProfile } from \"../../../../providers/putMultiUserTodoMemberProfile\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 10,
+              "text": "@Controller(\"/multiUserTodo/member/profile\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 11,
+              "text": "export class MultiusertodoMemberProfileController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 13,
+              "text": "   * Update the authenticated member's profile information.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      },
+      {
+        "issueId": "jsdoc-1775675375827-5oj0f2dsogl",
+        "phase": "quality",
+        "severity": "suggestion",
+        "code": "J001",
+        "message": "Class \"MultiusertodoMemberAccountController\" missing JSDoc",
+        "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/account/MultiusertodoMemberAccountController.ts",
+        "line": 9,
+        "estimatedImpact": 0.1,
+        "priority": 10,
+        "snippet": {
+          "lines": [
+            {
+              "lineNumber": 6,
+              "text": "import { MemberPayload } from \"../../../../decorators/payload/MemberPayload\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 7,
+              "text": "import { deleteMultiUserTodoMemberAccount } from \"../../../../providers/deleteMultiUserTodoMemberAccount\";",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 8,
+              "text": "",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 9,
+              "text": "@Controller(\"/multiUserTodo/member/account\")",
+              "isTarget": true
+            },
+            {
+              "lineNumber": 10,
+              "text": "export class MultiusertodoMemberAccountController {",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 11,
+              "text": "  /**",
+              "isTarget": false
+            },
+            {
+              "lineNumber": 12,
+              "text": "   * Permanently delete the authenticated member's account and all associated data.",
+              "isTarget": false
+            }
+          ],
+          "language": "typescript"
+        },
+        "source": "reference"
+      }
+    ],
+    "penaltyRecovery": [
+      {
+        "type": "jsdoc",
+        "currentPenalty": 4,
+        "description": "Add JSDoc to 9 missing APIs (90%) to recover up to 4 points"
+      }
+    ]
   }
 }

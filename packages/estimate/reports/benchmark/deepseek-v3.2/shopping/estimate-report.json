@@ -1,5 +1,5 @@
 {
-  "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/shopping",
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/deepseek/deepseek-v3.2/shopping",
   "totalScore": 0,
   "grade": "F",
   "phases": {
@@ -15,7 +15,7 @@
           "severity": "critical",
           "category": "syntax",
           "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-          "id": "syntax-1775680208257-gi0u0v0rljo",
+          "id": "syntax-1775672321844-t4inyal2aig",
           "autoFixable": false
         }
       ],
@@ -37,7 +37,7 @@
           "category": "documentation",
           "code": "DOC001",
           "message": "No documentation found (missing docs/analysis/ and README.md)",
-          "id": "documentation-1775680208258-4iloiaxhqtf",
+          "id": "documentation-1775672321845-5m5hja45t8s",
           "autoFixable": false
         }
       ],
@@ -78,7 +78,7 @@
           "category": "requirements",
           "code": "REQ001",
           "message": "No controllers found - API endpoints not implemented",
-          "id": "requirements-1775680208257-ieyn8vv2hq",
+          "id": "requirements-1775672321844-8jkf1pv1lzr",
           "autoFixable": false
         },
         {
@@ -86,7 +86,7 @@
           "category": "requirements",
           "code": "REQ002",
           "message": "No providers found - business logic not implemented",
-          "id": "requirements-1775680208257-qs0cf7ty29g",
+          "id": "requirements-1775672321844-eyg1bs4y36",
           "autoFixable": false
         },
         {
@@ -94,7 +94,7 @@
           "category": "requirements",
           "code": "REQ003",
           "message": "No structures/DTOs found",
-          "id": "requirements-1775680208257-tarxkwtlk6",
+          "id": "requirements-1775672321844-7varkyrn2ae",
           "autoFixable": false
         },
         {
@@ -102,7 +102,7 @@
           "category": "requirements",
           "code": "REQ004",
           "message": "No requirements documents found in docs/analysis/",
-          "id": "requirements-1775680208257-rn211a1ignr",
+          "id": "requirements-1775672321844-0u41vvi7pjy9",
           "autoFixable": false
         }
       ],
@@ -167,7 +167,7 @@
           "category": "test",
           "code": "TEST001",
           "message": "No test files found",
-          "id": "test-1775680208257-cznea8d8fcc",
+          "id": "test-1775672321844-ii3rp6qi5m",
           "autoFixable": false
         }
       ],
@@ -231,7 +231,7 @@
           "category": "api",
           "code": "API002",
           "message": "No API endpoints found",
-          "id": "api-1775680208258-mbc1jim552",
+          "id": "api-1775672321845-1rnpjn9f43gi",
           "autoFixable": false
         }
       ],
@@ -304,7 +304,7 @@
       "severity": "critical",
       "category": "syntax",
       "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-      "id": "syntax-1775680208257-gi0u0v0rljo",
+      "id": "syntax-1775672321844-t4inyal2aig",
       "autoFixable": false
     },
     {
@@ -312,7 +312,7 @@
       "category": "documentation",
       "code": "DOC001",
       "message": "No documentation found (missing docs/analysis/ and README.md)",
-      "id": "documentation-1775680208258-4iloiaxhqtf",
+      "id": "documentation-1775672321845-5m5hja45t8s",
       "autoFixable": false
     },
     {
@@ -320,7 +320,7 @@
       "category": "requirements",
       "code": "REQ001",
       "message": "No controllers found - API endpoints not implemented",
-      "id": "requirements-1775680208257-ieyn8vv2hq",
+      "id": "requirements-1775672321844-8jkf1pv1lzr",
       "autoFixable": false
     },
     {
@@ -328,7 +328,7 @@
       "category": "requirements",
       "code": "REQ002",
       "message": "No providers found - business logic not implemented",
-      "id": "requirements-1775680208257-qs0cf7ty29g",
+      "id": "requirements-1775672321844-eyg1bs4y36",
       "autoFixable": false
     },
     {
@@ -336,7 +336,7 @@
       "category": "test",
       "code": "TEST001",
       "message": "No test files found",
-      "id": "test-1775680208257-cznea8d8fcc",
+      "id": "test-1775672321844-ii3rp6qi5m",
       "autoFixable": false
     },
     {
@@ -344,7 +344,7 @@
       "category": "api",
       "code": "API002",
       "message": "No API endpoints found",
-      "id": "api-1775680208258-mbc1jim552",
+      "id": "api-1775672321845-1rnpjn9f43gi",
       "autoFixable": false
     }
   ],
@@ -354,7 +354,7 @@
       "category": "requirements",
       "code": "REQ003",
       "message": "No structures/DTOs found",
-      "id": "requirements-1775680208257-tarxkwtlk6",
+      "id": "requirements-1775672321844-7varkyrn2ae",
       "autoFixable": false
     },
     {
@@ -362,14 +362,14 @@
       "category": "requirements",
       "code": "REQ004",
       "message": "No requirements documents found in docs/analysis/",
-      "id": "requirements-1775680208257-rn211a1ignr",
+      "id": "requirements-1775672321844-0u41vvi7pjy9",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-04-08T20:30:08.259Z",
-    "totalDurationMs": 6,
+    "evaluatedAt": "2026-04-08T18:18:41.846Z",
+    "totalDurationMs": 5,
     "estimateVersion": "0.30.5",
     "evaluatedFiles": 0
   },
@@ -425,7 +425,7 @@
   "fixAdvisory": {
     "items": [
       {
-        "issueId": "test-1775680208257-cznea8d8fcc",
+        "issueId": "test-1775672321844-ii3rp6qi5m",
         "phase": "testCoverage",
         "severity": "critical",
         "code": "TEST001",
@@ -435,7 +435,7 @@
         "source": "phase"
       },
       {
-        "issueId": "documentation-1775680208258-4iloiaxhqtf",
+        "issueId": "documentation-1775672321845-5m5hja45t8s",
         "phase": "documentQuality",
         "severity": "critical",
         "code": "DOC001",
@@ -445,7 +445,7 @@
         "source": "phase"
       },
       {
-        "issueId": "api-1775680208258-mbc1jim552",
+        "issueId": "api-1775672321845-1rnpjn9f43gi",
         "phase": "apiCompleteness",
         "severity": "critical",
         "code": "API002",
@@ -455,7 +455,7 @@
         "source": "phase"
       },
       {
-        "issueId": "requirements-1775680208257-ieyn8vv2hq",
+        "issueId": "requirements-1775672321844-8jkf1pv1lzr",
         "phase": "requirementsCoverage",
         "severity": "critical",
         "code": "REQ001",
@@ -465,7 +465,7 @@
         "source": "phase"
       },
       {
-        "issueId": "requirements-1775680208257-qs0cf7ty29g",
+        "issueId": "requirements-1775672321844-eyg1bs4y36",
         "phase": "requirementsCoverage",
         "severity": "critical",
         "code": "REQ002",
@@ -475,7 +475,7 @@
         "source": "phase"
       },
       {
-        "issueId": "requirements-1775680208257-tarxkwtlk6",
+        "issueId": "requirements-1775672321844-7varkyrn2ae",
         "phase": "requirementsCoverage",
         "severity": "warning",
         "code": "REQ003",
@@ -485,7 +485,7 @@
         "source": "phase"
       },
       {
-        "issueId": "requirements-1775680208257-rn211a1ignr",
+        "issueId": "requirements-1775672321844-0u41vvi7pjy9",
         "phase": "requirementsCoverage",
         "severity": "warning",
         "code": "REQ004",
@@ -495,7 +495,7 @@
         "source": "phase"
       },
       {
-        "issueId": "syntax-1775680208257-gi0u0v0rljo",
+        "issueId": "syntax-1775672321844-t4inyal2aig",
         "phase": "gate",
         "severity": "critical",
         "code": "GATE001",
@@ -508,7 +508,7 @@
     "totalPotentialGain": 62.5,
     "topFixes": [
       {
-        "issueId": "test-1775680208257-cznea8d8fcc",
+        "issueId": "test-1775672321844-ii3rp6qi5m",
         "phase": "testCoverage",
         "severity": "critical",
         "code": "TEST001",
@@ -518,7 +518,7 @@
         "source": "phase"
       },
       {
-        "issueId": "documentation-1775680208258-4iloiaxhqtf",
+        "issueId": "documentation-1775672321845-5m5hja45t8s",
         "phase": "documentQuality",
         "severity": "critical",
         "code": "DOC001",
@@ -528,7 +528,7 @@
         "source": "phase"
       },
       {
-        "issueId": "api-1775680208258-mbc1jim552",
+        "issueId": "api-1775672321845-1rnpjn9f43gi",
         "phase": "apiCompleteness",
         "severity": "critical",
         "code": "API002",
@@ -538,7 +538,7 @@
         "source": "phase"
       },
       {
-        "issueId": "requirements-1775680208257-ieyn8vv2hq",
+        "issueId": "requirements-1775672321844-8jkf1pv1lzr",
         "phase": "requirementsCoverage",
         "severity": "critical",
         "code": "REQ001",
@@ -548,7 +548,7 @@
         "source": "phase"
       },
       {
-        "issueId": "requirements-1775680208257-qs0cf7ty29g",
+        "issueId": "requirements-1775672321844-eyg1bs4y36",
         "phase": "requirementsCoverage",
         "severity": "critical",
         "code": "REQ002",
@@ -558,7 +558,7 @@
         "source": "phase"
       },
       {
-        "issueId": "requirements-1775680208257-tarxkwtlk6",
+        "issueId": "requirements-1775672321844-7varkyrn2ae",
         "phase": "requirementsCoverage",
         "severity": "warning",
         "code": "REQ003",
@@ -568,7 +568,7 @@
         "source": "phase"
       },
       {
-        "issueId": "requirements-1775680208257-rn211a1ignr",
+        "issueId": "requirements-1775672321844-0u41vvi7pjy9",
         "phase": "requirementsCoverage",
         "severity": "warning",
         "code": "REQ004",
@@ -578,7 +578,7 @@
         "source": "phase"
       },
       {
-        "issueId": "syntax-1775680208257-gi0u0v0rljo",
+        "issueId": "syntax-1775672321844-t4inyal2aig",
         "phase": "gate",
         "severity": "critical",
         "code": "GATE001",
