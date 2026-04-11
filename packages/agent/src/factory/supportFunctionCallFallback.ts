@@ -46,10 +46,15 @@ export const supportFunctionCallFallback = (
     // Enforce function calling: require the model to call one of the tools.
     // The body object from MicroAgentica may be frozen/sealed, so we spread
     // into a new object rather than mutating directly.
+    // NOTE: Apply to both streaming and non-streaming requests — Ollama and
+    // compatible local model servers support tool_choice on streaming calls too.
     const effectiveBody: ICreateBody =
-      body.tools?.length && !body.stream
+      body.tools?.length
         ? { ...body, tool_choice: "required" }
         : body;
+    console.log(
+      `[FunctionCallFallback] request: tools=${body.tools?.length ?? 0} stream=${body.stream ?? false} tool_choice=${(effectiveBody as any).tool_choice ?? "none"}`,
+    );
 
     const retryState = { upstream: 0, empty: 0, total: 0 };
 
