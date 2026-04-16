@@ -40,7 +40,7 @@ pnpm run playground
 
 To use AutoBE, clone the repository and run the playground application locally. This allows you to chat with AutoBE's AI agents, manage multiple sessions, and use various LLM providers including local models like `qwen3.5-397b-a17b`.
 
-After installation, the playground will be available at http://localhost:5713. You can interact with AutoBE through a chat interface - simply describe what you want to build, and AutoBE will generate the backend application for you.
+After installation, the playground will be available at http://localhost:5173. You can interact with AutoBE through a chat interface - simply describe what you want to build, and AutoBE will generate the backend application for you.
 
 Here's an example conversation script that guides AutoBE to create an "Economic/Political Discussion Board":
 
@@ -52,7 +52,7 @@ Here's an example conversation script that guides AutoBE to create an "Economic/
 
 ![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-z-ai-glm-5.png)
 
-> The playground includes a replay feature at http://localhost:5713/replay/index.html where you can view chat sessions from the AutoBE development team's testing and benchmarks.
+> The playground includes a replay feature at http://localhost:5173/replay/index.html where you can view chat sessions from the AutoBE development team's testing and benchmarks.
 
 ## Documentation Resources
 
