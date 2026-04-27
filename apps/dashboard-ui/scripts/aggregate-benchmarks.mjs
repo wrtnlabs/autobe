@@ -77,6 +77,7 @@ function extractPhaseDetail(phase) {
 const MODEL_TO_RESULTS_PATH = {
   "claude-sonnet-4.6": "anthropic/claude-sonnet-4.6",
   "deepseek-v3.2": "deepseek/deepseek-v3.2",
+  "deepseek-v4-flash": "deepseek/deepseek-v4-flash",
   "minimax-m2.7": "minimax/minimax-m2.7",
   "kimi-k2.5": "moonshotai/kimi-k2.5",
   "gpt-5.4": "openai/gpt-5.4",
