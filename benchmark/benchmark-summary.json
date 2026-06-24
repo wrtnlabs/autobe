@@ -168,7 +168,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T17:43:28.386Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.142Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.091Z",
         "totalDurationMs": 6223,
         "evaluatedFiles": 258
       },
@@ -358,7 +358,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T17:56:05.650Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.143Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.092Z",
         "totalDurationMs": 5317,
         "evaluatedFiles": 226
       },
@@ -570,7 +570,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:01:47.042Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.147Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.096Z",
         "totalDurationMs": 13949,
         "evaluatedFiles": 581
       },
@@ -748,7 +748,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:14:50.725Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.148Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.097Z",
         "totalDurationMs": 2705,
         "evaluatedFiles": 90
       },
@@ -982,7 +982,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:18:31.770Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.148Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.098Z",
         "totalDurationMs": 8,
         "evaluatedFiles": 0
       },
@@ -1216,7 +1216,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:18:36.899Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.148Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.098Z",
         "totalDurationMs": 7,
         "evaluatedFiles": 0
       },
@@ -1450,7 +1450,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:18:41.846Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.148Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.098Z",
         "totalDurationMs": 5,
         "evaluatedFiles": 0
       },
@@ -1684,7 +1684,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:18:46.798Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.148Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.098Z",
         "totalDurationMs": 6,
         "evaluatedFiles": 0
       },
@@ -1953,7 +1953,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-27T02:50:59.267Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.149Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.099Z",
         "totalDurationMs": 12427,
         "evaluatedFiles": 326
       },
@@ -2220,7 +2220,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-27T03:02:57.821Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.150Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.100Z",
         "totalDurationMs": 9739,
         "evaluatedFiles": 324
       },
@@ -2513,7 +2513,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-27T03:07:55.856Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.151Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.100Z",
         "totalDurationMs": 25164,
         "evaluatedFiles": 674
       },
@@ -2716,7 +2716,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-27T03:24:15.262Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.152Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.101Z",
         "totalDurationMs": 4652,
         "evaluatedFiles": 106
       },
@@ -2940,7 +2940,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:56:24.940Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.153Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.103Z",
         "totalDurationMs": 6078,
         "evaluatedFiles": 285
       },
@@ -3136,7 +3136,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T22:02:13.722Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.153Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.103Z",
         "totalDurationMs": 4301,
         "evaluatedFiles": 185
       },
@@ -3355,7 +3355,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T22:03:57.737Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.154Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.103Z",
         "totalDurationMs": 9224,
         "evaluatedFiles": 415
       },
@@ -3539,7 +3539,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T22:08:17.675Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.154Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.104Z",
         "totalDurationMs": 2610,
         "evaluatedFiles": 84
       },
@@ -3751,7 +3751,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:56:58.844Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.166Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.116Z",
         "totalDurationMs": 9642,
         "evaluatedFiles": 412
       },
@@ -3957,7 +3957,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:07:54.651Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.170Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.119Z",
         "totalDurationMs": 10511,
         "evaluatedFiles": 460
       },
@@ -4163,7 +4163,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:16:23.560Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.171Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.121Z",
         "totalDurationMs": 12624,
         "evaluatedFiles": 518
       },
@@ -4341,7 +4341,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:24:45.588Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.172Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.122Z",
         "totalDurationMs": 2678,
         "evaluatedFiles": 97
       },
@@ -4577,7 +4577,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:13:12.541Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.155Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.105Z",
         "totalDurationMs": 7547,
         "evaluatedFiles": 324
       },
@@ -4765,7 +4765,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:25:05.355Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.157Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.106Z",
         "totalDurationMs": 5168,
         "evaluatedFiles": 246
       },
@@ -5014,7 +5014,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:28:38.601Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.160Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.109Z",
         "totalDurationMs": 18658,
         "evaluatedFiles": 669
       },
@@ -5223,7 +5223,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:36:48.854Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.160Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.109Z",
         "totalDurationMs": 2753,
         "evaluatedFiles": 99
       },
@@ -5514,7 +5514,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:38:05.867Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.160Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.110Z",
         "totalDurationMs": 8139,
         "evaluatedFiles": 362
       },
@@ -5733,7 +5733,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:45:14.009Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.161Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.111Z",
         "totalDurationMs": 7368,
         "evaluatedFiles": 333
       },
@@ -6016,7 +6016,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:48:49.778Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.163Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.113Z",
         "totalDurationMs": 11125,
         "evaluatedFiles": 489
       },
@@ -6236,7 +6236,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:55:22.419Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.163Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.113Z",
         "totalDurationMs": 2770,
         "evaluatedFiles": 93
       },
@@ -6444,7 +6444,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:52:49.290Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.172Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.123Z",
         "totalDurationMs": 5352,
         "evaluatedFiles": 244
       },
@@ -6714,7 +6714,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:58:46.218Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.173Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.123Z",
         "totalDurationMs": 9265,
         "evaluatedFiles": 410
       },
@@ -6950,7 +6950,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T11:05:05.546Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.175Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.125Z",
         "totalDurationMs": 21898,
         "evaluatedFiles": 748
       },
@@ -7122,7 +7122,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T19:09:35.834Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.175Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.125Z",
         "totalDurationMs": 2572,
         "evaluatedFiles": 87
       },
@@ -7432,7 +7432,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:19:01.224Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.176Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.127Z",
         "totalDurationMs": 9528,
         "evaluatedFiles": 389
       },
@@ -7707,7 +7707,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:29:45.217Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.176Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.127Z",
         "totalDurationMs": 7341,
         "evaluatedFiles": 326
       },
@@ -7992,7 +7992,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:37:08.349Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.177Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.127Z",
         "totalDurationMs": 24778,
         "evaluatedFiles": 822
       },
@@ -8181,7 +8181,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T18:50:04.336Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.177Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.128Z",
         "totalDurationMs": 2474,
         "evaluatedFiles": 75
       },
@@ -8415,7 +8415,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:29:58.593Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.178Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.129Z",
         "totalDurationMs": 7,
         "evaluatedFiles": 0
       },
@@ -8649,7 +8649,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:30:03.467Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.178Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.129Z",
         "totalDurationMs": 6,
         "evaluatedFiles": 0
       },
@@ -8883,7 +8883,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:30:08.259Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.178Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.129Z",
         "totalDurationMs": 6,
         "evaluatedFiles": 0
       },
@@ -9117,7 +9117,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:30:13.242Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.178Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.129Z",
         "totalDurationMs": 5,
         "evaluatedFiles": 0
       },
@@ -9406,7 +9406,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:30:26.939Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.179Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.129Z",
         "totalDurationMs": 8753,
         "evaluatedFiles": 389
       },
@@ -9666,7 +9666,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:35:55.490Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.179Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.129Z",
         "totalDurationMs": 5528,
         "evaluatedFiles": 259
       },
@@ -9948,7 +9948,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:39:32.821Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.181Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.131Z",
         "totalDurationMs": 14749,
         "evaluatedFiles": 597
       },
@@ -10172,7 +10172,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:48:29.343Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.181Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.131Z",
         "totalDurationMs": 2828,
         "evaluatedFiles": 114
       },
@@ -10425,7 +10425,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:52:53.532Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.181Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.132Z",
         "totalDurationMs": 6673,
         "evaluatedFiles": 322
       },
@@ -10660,7 +10660,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T20:56:22.450Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.182Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.132Z",
         "totalDurationMs": 6240,
         "evaluatedFiles": 297
       },
@@ -10927,7 +10927,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:02:26.958Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.184Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.134Z",
         "totalDurationMs": 13728,
         "evaluatedFiles": 568
       },
@@ -11141,7 +11141,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:11:47.116Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.184Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.134Z",
         "totalDurationMs": 2728,
         "evaluatedFiles": 96
       },
@@ -11401,7 +11401,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:13:25.785Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.184Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.135Z",
         "totalDurationMs": 8290,
         "evaluatedFiles": 364
       },
@@ -11658,7 +11658,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:20:47.114Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.185Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.136Z",
         "totalDurationMs": 7552,
         "evaluatedFiles": 348
       },
@@ -11946,7 +11946,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:26:17.315Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.188Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.138Z",
         "totalDurationMs": 19966,
         "evaluatedFiles": 730
       },
@@ -12164,7 +12164,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:35:28.664Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.188Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.139Z",
         "totalDurationMs": 2955,
         "evaluatedFiles": 109
       },
@@ -12412,7 +12412,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:39:58.392Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.189Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.140Z",
         "totalDurationMs": 5651,
         "evaluatedFiles": 256
       },
@@ -12639,7 +12639,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:44:43.769Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.189Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.140Z",
         "totalDurationMs": 4774,
         "evaluatedFiles": 223
       },
@@ -12918,7 +12918,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:46:53.746Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.190Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.141Z",
         "totalDurationMs": 16666,
         "evaluatedFiles": 655
       },
@@ -13127,7 +13127,7 @@
       },
       "meta": {
         "evaluatedAt": "2026-04-08T21:55:17.691Z",
-        "reportUpdatedAt": "2026-04-27T04:05:33.190Z",
+        "reportUpdatedAt": "2026-06-24T12:25:43.141Z",
         "totalDurationMs": 2567,
         "evaluatedFiles": 82
       },
@@ -13176,5 +13176,5 @@
     "shopping",
     "erp"
   ],
-  "generatedAt": "2026-04-27T04:06:34.900Z"
+  "generatedAt": "2026-06-24T12:26:48.240Z"
 }
