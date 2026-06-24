@@ -24,6 +24,7 @@
     "@autobe/agent": "workspace:^",
     "@autobe/benchmark": "workspace:^",
     "@autobe/compiler": "workspace:^",
+    "@autobe/estimate": "workspace:^",
     "@autobe/filesystem": "workspace:^",
     "@autobe/interface": "workspace:^",
     "@autobe/playground-api": "workspace:^",

@@ -32,7 +32,7 @@ export function createEmptyPhaseResult(phase: Phase): PhaseResult {
 /** Generate score explanation from issues */
 export function generateExplanation(
   issues: Issue[],
-  score: number,
+  _score: number,
 ): ScoreExplanation {
   const reasons: string[] = [];
   const suggestions: string[] = [];

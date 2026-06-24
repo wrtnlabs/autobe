@@ -5,7 +5,7 @@
   "description": "AutoBE Station",
   "packageManager": "pnpm@10.6.4",
   "scripts": {
-    "test": "pnpm --filter=./packages/** -r test",
+    "test": "pnpm --filter=./test start",
     "build": "pnpm --filter=./packages/** --filter=./apps/** --filter=./test -r build",
     "package:latest": "pnpm --filter=./packages/** -r publish --tag latest",
     "package:next": "bash next.bash",
