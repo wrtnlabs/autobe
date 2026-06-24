@@ -38,21 +38,15 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepack": "pnpm build",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:ui": "vitest --ui"
+    "prepack": "pnpm build"
   },
   "devDependencies": {
     "@autobe/interface": "workspace:*",
     "@types/react": "catalog:ui",
     "@types/react-dom": "catalog:ui",
-    "@vitest/ui": "^2.0.0",
-    "happy-dom": "^15.0.0",
     "react": "catalog:ui",
     "react-dom": "catalog:ui",
-    "typescript": "catalog:typescript",
-    "vitest": "^2.0.0"
+    "typescript": "catalog:typescript"
   },
   "dependencies": {
     "@stackblitz/sdk": "^1.11.0",
