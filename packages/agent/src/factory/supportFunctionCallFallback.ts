@@ -18,6 +18,11 @@ import {
  * Without this patch, text-based function calls are treated as assistant
  * messages, causing `enforceFunctionCall` checks to fail.
  *
+ * The wrapping is also used to enforce `tool_choice: "required"` for
+ * non-streaming requests that include tools. The request body passed by
+ * MicroAgentica is a frozen/sealed object, so we spread it into a new object
+ * to safely set additional fields.
+ *
  * The wrapping is idempotent — calling this multiple times with the same vendor
  * will only wrap once (guarded by a Symbol).
  *
@@ -38,10 +43,23 @@ export const supportFunctionCallFallback = (
     body: ICreateBody,
     options?: Record<string, unknown>,
   ): Promise<unknown> {
+    // Enforce function calling: require the model to call one of the tools.
+    // The body object from MicroAgentica may be frozen/sealed, so we spread
+    // into a new object rather than mutating directly.
+    // NOTE: Apply to both streaming and non-streaming requests — Ollama and
+    // compatible local model servers support tool_choice on streaming calls too.
+    const effectiveBody: ICreateBody =
+      body.tools?.length
+        ? { ...body, tool_choice: "required" }
+        : body;
+    console.log(
+      `[FunctionCallFallback] request: tools=${body.tools?.length ?? 0} stream=${body.stream ?? false} tool_choice=${(effectiveBody as any).tool_choice ?? "none"}`,
+    );
+
     const retryState = { upstream: 0, empty: 0, total: 0 };
 
     while (retryState.total < TOTAL_RETRY_CAP) {
-      const result = await originalCreate(body, options);
+      const result = await originalCreate(effectiveBody, options);
 
       // OpenRouter returns upstream errors (502, etc.) as HTTP 200 with error body
       const maybeError = result as Record<string, unknown>;
@@ -62,7 +80,7 @@ export const supportFunctionCallFallback = (
       }
 
       // Empty response: model returned nothing (no content, no tool_calls)
-      if (!body.stream && body.tools?.length) {
+      if (!effectiveBody.stream && effectiveBody.tools?.length) {
         const comp = result as ICompletion;
         if (isEmptyCompletion(comp)) {
           retryState.empty++;
@@ -74,7 +92,7 @@ export const supportFunctionCallFallback = (
           await upstreamBackoffDelay(retryState.empty - 1);
           continue;
         }
-        patchCompletionIfNeeded(comp, body.tools);
+        patchCompletionIfNeeded(comp, effectiveBody.tools);
         // Re-check after patching: malformed tool_calls may have been
         // filtered out, leaving choices with no content and no valid
         // tool_calls.
@@ -94,7 +112,7 @@ export const supportFunctionCallFallback = (
     }
 
     throw new Error(
-      `OpenRouter upstream error: retries exhausted (upstream=${retryState.upstream}/${UPSTREAM_502_RETRY}, empty=${retryState.empty}/${EMPTY_RESPONSE_RETRY}, total=${retryState.total}/${TOTAL_RETRY_CAP})`,
+      `[FunctionCallFallback] Retries exhausted (upstream=${retryState.upstream}/${UPSTREAM_502_RETRY}, empty=${retryState.empty}/${EMPTY_RESPONSE_RETRY}, total=${retryState.total}/${TOTAL_RETRY_CAP})`,
     );
   };
 
@@ -147,6 +165,7 @@ interface ICompletion {
 }
 
 interface IChoice {
+  finish_reason?: string | null;
   message: {
     content?: string | null;
     tool_calls?: IToolCall[];
